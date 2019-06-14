@@ -1,0 +1,129 @@
+""" ComPotts Object : contains MSA files locations, Potts models, etc. """
+
+import os
+import files_management as fm
+from util import *
+from tool_wrapper import *
+from potts_model import *
+
+
+class ComPotts_Object:
+
+    @classmethod
+    def from_hhblits_output(cls, seq_file, a3m_file, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, rescale_mrf=False, output_folder="", **kwargs):
+        obj = cls()
+        if 'name' in kwargs:
+            obj.name = kwargs['name']
+        else:
+            obj.name = fm.get_first_sequence_name(seq_file)+"_hhblits"
+        obj.seq_file = seq_file
+        obj.a3m_file = a3m_file
+        obj.folder = fm.create_folder(output_folder+obj.name+"/")
+        f = obj.folder+obj.name
+        obj.aln_filtered = f+"_filtered_80.a3m"
+        if (not os.path.isfile(obj.aln_filtered)):
+            call_hhfilter(obj.a3m_file, obj.aln_filtered, hhfilter_threshold)
+        obj.reformat_file=f+"_reformat.fasta"
+        if (not os.path.isfile(obj.reformat_file)):
+            call_reformat(obj.aln_filtered, obj.reformat_file)
+        obj.aln_less = f+"_less.fasta"
+        if (not os.path.isfile(obj.aln_less)):
+            fm.create_fasta_file_with_less_sequences(obj.reformat_file, obj.aln_less, nb_sequences)
+        if perform_trim:
+            print("trim ON")
+            obj.colnumbering_file = f+"_colnumbering.csv"
+            obj.aln_trimmed = f+"_trim_"+str(int(trimal_gt*100))+".fasta"
+            if (not os.path.isfile(obj.aln_trimmed)):
+                call_trimal(obj.aln_less, obj.aln_trimmed, trimal_gt, obj.colnumbering_file)
+            obj.trimal_ncol = fm.get_trimal_ncol(obj.colnumbering_file)
+            obj.train_msa = obj.aln_trimmed
+        else:
+            print("trim OFF")
+            obj.train_msa = obj.aln_less
+
+        obj.mrf_file = f+obj.name+".mrf"
+        if (not os.path.isfile(obj.mrf_file)):
+            obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
+        else:
+            obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
+        if (rescale_mrf):
+            print("rescaling MRF")
+            obj.mrf = obj.mrf.get_rescaled_version()
+            obj.mrf.to_msgpack(obj.mrf_file)
+        else:
+            print("using MRF as is (no rescaling)")
+        obj.real_seq = fm.get_first_sequence_in_fasta_file(obj.seq_file)
+        obj.trimmed_seq = ''.join([obj.real_seq[col] for col in obj.get_real_positions([k for k in range(obj.mrf.ncol)])])
+        return obj
+
+
+    @classmethod 
+    def from_seq_file_to_one_hot(cls, seq_file, output_folder="", **kwargs):
+        obj = cls()
+        if 'name' in kwargs:
+            obj.name = kwargs['name']
+        else:
+            obj.name = fm.get_first_sequence_name(seq_file)+"_one_hot"
+        obj.folder = fm.create_folder(output_folder+obj.name+"/")
+        obj.seq_file = seq_file
+        obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file)
+        obj.trimmed_seq = obj.real_seq
+        x = code_whole_seq(obj.real_seq)
+        v = np.zeros((len(x),q))
+        for i in range(len(x)):
+            v[i,x[i]]=1
+        w = np.zeros((len(x),len(x),q,q,))
+        for i in range(len(x)):
+            for j in range(len(x)):
+                w[i,j,x[i],x[j]] = 1
+        obj.mrf_file = obj.folder+obj.name+".mrf"
+        obj.mrf = Potts_Model.from_parameters(v, w, seq_file=obj.seq_file, name=obj.name)
+        obj.mrf.to_msgpack(obj.mrf_file)
+        obj.train_msa = obj.seq_file
+        return obj
+
+
+    def from_merge(cls, obj1, obj2, res_aln_file, rescale_mrf=False, hhfilter_threshold=80, **kwargs):
+        obj = cls()
+        if name in kwargs:
+            obj.name = kwargs['name']
+        else:
+            obj.name = '_'.join(obj1.name, obj2.name)
+        obj.folder = fm.create_folder_for_compotts_object(obj)
+        obj.aln_unfiltered = obj.folder+obj.name+"_unfiltered.fasta"
+        get_msas_aligned(res_aln_file, [obj1.train_msa, obj2.train_msa], obj.aln_unfiltered)
+        obj.aln_filtered = obj.folder+obj.name+"_filtered.fasta"
+        if (not os.path.isfile(obj.aln_filtered)):
+            call_hhfilter(obj.aln_unfiltered, obj.aln_filtered, hhfilter_threshold)
+        obj.train_msa = obj.aln_filtered
+        obj.mrf_file = obj.folder+obj.name+".mrf"
+        if os.path.isfile(obj.mrf_file):
+            obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
+        else:
+            obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
+        if (rescale_mrf):
+            print("rescaling MRF")
+            obj.mrf = obj.mrf.get_rescaled_version()
+            obj.mrf.to_msgpack(obj.mrf_file)
+        else:
+            print("using MRF as is (no rescaling)")
+        return obj
+
+
+    def get_real_positions(self, positions_list):
+        if hasattr(self, 'trimal_ncol'):
+            before_trimal = [self.trimal_ncol[j] for j in positions_list]
+        else:
+            before_trimal = positions_list
+        if hasattr(self, 'reformat_file'):
+            reformat_seq = fm.get_first_sequence_in_fasta_file(self.reformat_file)
+            small_to_real_list = get_small_to_real_list(self.real_seq, reformat_seq)
+        else:
+            small_to_real_list = [k for k in range(len(self.real_seq))]
+        real_positions = [small_to_real_list[j] for j in before_trimal]
+        return real_positions
+
+
+    def get_real_letter_at_trimmed_pos(self, position): # TODO check if deprecated
+        return self.trimmed_seq[position]
+

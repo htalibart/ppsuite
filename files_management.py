@@ -1,0 +1,56 @@
+import os
+import re
+from Bio import SeqIO, AlignIO
+
+def create_folder(name):
+    if not os.path.isdir(name):
+        os.mkdir(name)
+    return name
+
+
+def create_seq_fasta(seq, fastaseq_file, seq_name="Billy"):
+    """ crée un fichier fasta de nom @fastaseq_file avec la séquence @seq dedans, et retourne son nom """
+    with open(fastaseq_file, 'w') as of:
+        of.write(">"+seq_name+"\n")
+        of.write(seq+"\n")
+    return seq_name
+
+
+def get_sequence_by_name_in_fasta_file(seqname, fasta_file):
+    record_dict = SeqIO.to_dict(SeqIO.parse(fasta_file, "fasta"))
+    return record_dict[seqname]
+
+
+def get_first_sequence_in_fasta_file(seq_file):
+    return str(list(SeqIO.parse(seq_file, "fasta"))[0].seq)
+
+def get_first_sequence_name(seq_file):
+    return str(list(SeqIO.parse(seq_file, "fasta"))[0].id)
+
+
+def create_fasta_file_with_less_sequences(aln_file, aln_1000, nb_sequences=1000):
+    AlignIO.write(AlignIO.read(aln_file, "fasta")[:nb_sequences], open(aln_1000, 'w'), "fasta")
+
+
+def get_seq_names_from_seq_folder(seq_folder):
+    seq_names = []
+    for f in os.listdir(seq_folder):
+        seq_names.append(f[:-len(".fasta")])
+    return seq_names
+
+
+def separate_fasta(fasta_file, seq_folder):
+    records = SeqIO.parse(open(fasta_file), "fasta")
+    create_folder(seq_folder)
+    for record in records:
+        with open(seq_folder+str(record.id)+".fasta",'w') as f:
+            SeqIO.write(record, f, "fasta")
+
+def get_trimal_ncol(colnumbering_file):
+    with open(colnumbering_file, 'r') as f:
+        col_list = re.sub('[^0-9,.]', '', f.read()).split(',')
+    return [int(s) for s in col_list]
+
+
+def get_script_path():
+    return os.path.abspath(os.path.dirname(__file__))+'/' 
