@@ -1,5 +1,6 @@
 from compotts_wrapper import compute_scores
 from potts_model import *
+import ctypes
 
 COMPOTTS_LOCATION = "./ComPotts"
 
@@ -10,6 +11,12 @@ COMPOTTS_LOCATION = "./ComPotts"
 #int disp_level(1);
 #float epsilon=1;
 #//float epsilon= 0.00000001;
+
+
+
+def test_call():
+    douze = 12
+    ctypes.CDLL("./compotts_solver.so").test_call(ctypes.c_int(douze))
 
 
 

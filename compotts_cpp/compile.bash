@@ -1,3 +1,3 @@
-touch main_mrf.cpp
+touch main_compotts.cpp
 make -f Makefile
-cp ComPotts ..
+cp compotts_solver.so ..
