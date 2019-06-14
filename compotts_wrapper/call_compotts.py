@@ -1,47 +1,28 @@
-from compotts_wrapper import compute_scores
+from compotts_wrapper.compute_scores import *
 from potts_model import *
 import ctypes
 
 COMPOTTS_LOCATION = "./ComPotts"
-
-#//Optional parameters
-#int n_limit_param(INFINITY);
-#int iter_limit_param(INFINITY);
-#int t_limit(36000);
-#int disp_level(1);
-#float epsilon=1;
-#//float epsilon= 0.00000001;
+COMPOTTS_SOLVER = ctypes.CDLL("./compotts_solver.so")
+INFINITY = 10000000 
 
 
-
-def test_call():
-    douze = 12
-    ctypes.CDLL("./compotts_solver.so").test_call(ctypes.c_int(douze))
-
-
-
-def align_two_potts_models_objects(mrfs, aln_res_file, info_res_file, **kwargs):
-    call = COMPOTTS_LOCATION+" --out_aln "+aln_res_file+" --out_info "+info_res_file
-    if 'scores_folder' not in kwargs:
-        kwargs['scores_folder'] = fm.create_folder('temp_scores/')
-    scores_files_dict = compute_scores.get_all_scores_in_files(mrfs, **kwargs)
-    for score_option in scores_files_dict:
-        call+=" --"+score_option+" "+scores_dict[score_option]
-    for key_arg in kwargs:
-        if key_arg in possible_compotts_options:
-            call+=" --"+key_arg+" "+kwargs[key_arg]
-    print("ComPotts call :")
-    print(call)
-    os.system(call)
+def align_two_potts_models(mrfs, aln_res_file, info_res_file, n_limit_param=INFINITY, iter_limit_param=INFINITY, t_limit=36000, disp_level=1, epsilon=1, v_score_function=scalar_product, w_score_function=scalar_product, **kwargs):
+    v_scores = compute_v_scores(*mrfs, v_score_function)
+    c_v_scores = ctypes.c_void_p(v_scores.ctypes.data)
+    w_scores = compute_w_scores(*mrfs, w_score_function)
+    c_w_scores = ctypes.c_void_p(w_scores.ctypes.data)
+    edges_mapA = get_edges_map(mrfs[0])
+    c_edges_mapA = ctypes.c_void_p(edges_mapA.ctypes.data)
+    edges_mapB = get_edges_map(mrfs[1])
+    c_edges_mapB = ctypes.c_void_p(edges_mapB.ctypes.data)
+    selfcompA = compute_selfscore(mrfs[0])
+    selfcompB = compute_selfscore(mrfs[1])
+    COMPOTTS_SOLVER.call_from_python(c_v_scores, c_w_scores, ctypes.c_int(mrfs[0].ncol), ctypes.c_int(mrfs[1].ncol), c_edges_mapA, c_edges_mapB, ctypes.c_double(selfcompA), ctypes.c_double(selfcompB), ctypes.c_double(gap_open), ctypes.c_double(gap_extend), ctypes.c_char_p(aln_res_file), ctypes.c_char_p(info_res_file), ctypes.c_int(iter_limit_param), ctypes.c_int(t_limit), ctypes.c_int(disp_level), ctypes.c_double(c_epsilon))
 
 
 def align_two_objects(objects, aln_res_file, info_res_file, **kwargs):
-    align_two_potts_models_objects([o.mrf for o in objects], aln_res_file, info_res_file, **kwargs)
-
-
-def align_two_potts_models(mrf_files, aln_res_file, info_res_file, **kwargs):
-    mrf = [Potts_Model.from_msgpack(mrf_file) for mrf_file in mrf_files]
-    align_two_potts_models_objects(mrfs, aln_res_file, info_res_file, **kwargs)
+    align_two_potts_models([o.mrf for o in objects], aln_res_file, info_res_file, **kwargs)
 
 
 def align_hhblits_output(seq_files, a3m_files, aln_res_file, info_res_file, **kwargs):
