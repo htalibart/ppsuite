@@ -7,18 +7,17 @@ COMPOTTS_SOLVER = ctypes.CDLL("./compotts_solver.so")
 INFINITY = 10000000 
 
 
-def align_two_potts_models(mrfs, aln_res_file, info_res_file, n_limit_param=INFINITY, iter_limit_param=INFINITY, t_limit=36000, disp_level=1, epsilon=1, v_score_function=scalar_product, w_score_function=scalar_product, **kwargs):
+def align_two_potts_models(mrfs, aln_res_file, info_res_file, n_limit_param=INFINITY, iter_limit_param=INFINITY, t_limit=36000, disp_level=1, epsilon=1, v_score_function=scalar_product, w_score_function=scalar_product, gap_open=0, gap_extend=0, w_threshold=8, **kwargs):
     v_scores = compute_v_scores(*mrfs, v_score_function)
     c_v_scores = ctypes.c_void_p(v_scores.ctypes.data)
-    w_scores = compute_w_scores(*mrfs, w_score_function)
+    edges_maps = [get_edges_map(mrf, w_threshold) for mrf in mrfs]
+    w_scores = compute_w_scores(*mrfs, *edges_maps, w_score_function)
     c_w_scores = ctypes.c_void_p(w_scores.ctypes.data)
-    edges_mapA = get_edges_map(mrfs[0])
-    c_edges_mapA = ctypes.c_void_p(edges_mapA.ctypes.data)
-    edges_mapB = get_edges_map(mrfs[1])
-    c_edges_mapB = ctypes.c_void_p(edges_mapB.ctypes.data)
-    selfcompA = compute_selfscore(mrfs[0])
-    selfcompB = compute_selfscore(mrfs[1])
-    COMPOTTS_SOLVER.call_from_python(c_v_scores, c_w_scores, ctypes.c_int(mrfs[0].ncol), ctypes.c_int(mrfs[1].ncol), c_edges_mapA, c_edges_mapB, ctypes.c_double(selfcompA), ctypes.c_double(selfcompB), ctypes.c_double(gap_open), ctypes.c_double(gap_extend), ctypes.c_char_p(aln_res_file), ctypes.c_char_p(info_res_file), ctypes.c_int(iter_limit_param), ctypes.c_int(t_limit), ctypes.c_int(disp_level), ctypes.c_double(c_epsilon))
+    c_edges_mapA = ctypes.c_void_p(edges_maps[0].ctypes.data)
+    c_edges_mapB = ctypes.c_void_p(edges_maps[1].ctypes.data)
+    selfcompA = compute_selfscore(mrfs[0], v_score_function, w_score_function)
+    selfcompB = compute_selfscore(mrfs[1], v_score_function, w_score_function)
+    COMPOTTS_SOLVER.call_from_python(c_v_scores, c_w_scores, ctypes.c_int(mrfs[0].ncol), ctypes.c_int(mrfs[1].ncol), c_edges_mapA, c_edges_mapB, ctypes.c_double(selfcompA), ctypes.c_double(selfcompB), ctypes.c_double(gap_open), ctypes.c_double(gap_extend), ctypes.c_char_p(aln_res_file.encode('utf-8')), ctypes.c_char_p(info_res_file.encode('utf-8')), ctypes.c_int(iter_limit_param), ctypes.c_int(t_limit), ctypes.c_int(disp_level), ctypes.c_double(epsilon))
 
 
 def align_two_objects(objects, aln_res_file, info_res_file, **kwargs):

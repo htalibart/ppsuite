@@ -1,5 +1,6 @@
 import os
 import numpy as np
+import math
 import msgpack
 
 POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff", "reg-lambda-single", "reg-lambda-pair-factor", "reg-L2", "reg-noscaling", "reg-scale-by-L", "v-center", "v-zero", "max-gap-pos", "max-gap_seq", "pc-uniform", "pc-submat", "pc-constant", "pc-none", "pc-count", "pc-pair-count"] # TODO mettre toutes les options
@@ -103,7 +104,7 @@ class Potts_Model:
 
 
     def get_w_norms(self):
-        if hasattr(self, w_norms):
+        if hasattr(self, 'w_norms'):
             return self.w_norms
         else:
             w_norms = np.zeros((self.ncol, self.ncol))
@@ -116,7 +117,7 @@ class Potts_Model:
 
 
     def get_w_norm_at_pos(self, i, j):
-        if hasattr(self, w_norms):
+        if hasattr(self, 'w_norms'):
             return self.w_norms[i][j]
         else:
             frobenius = 0

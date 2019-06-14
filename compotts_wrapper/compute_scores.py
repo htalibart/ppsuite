@@ -1,7 +1,11 @@
 from util import *
 import numpy as np
 
-# TODO vectoriser
+# TODO vectoriser ou edges_map
+
+
+def get_edges_map(mrf, threshold):
+    return mrf.get_w_norms()>threshold
 
 
 def compute_v_scores(mrf1, mrf2, v_score_function, **kwargs):
@@ -12,16 +16,23 @@ def compute_v_scores(mrf1, mrf2, v_score_function, **kwargs):
     return v_scores
 
 
-def compute_w_scores(mrf1, mrf2, w_score_function, **kwargs):
+def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, **kwargs):
     w_scores = np.zeros((mrf1.ncol, mrf1.ncol, mrf2.ncol, mrf2.ncol))
     for i in range(mrf1.ncol-1):
         for j in range(i+1, mrf1.ncol):
             for k in range(mrf2.ncol-1):
                 for l in range(k+1, mrf2.ncol):
-                    print(i, j, k, l)
-                    w_scores[i][j][k][l] = w_score_function(mrf1.w[i][j], mrf2.w[k][l])
-                    w_scores[j][i][k][l] = w_scores[i][j][k][l]
-                    w_scores[i][j][l][k] = w_scores[i][j][k][l]
-                    w_scores[j][i][l][k] = w_scores[i][j][k][l]
+                    if (edges_map1[i][j] and edges_map2[k][l]): # TODO edges_map
+                        print(i, j, k, l)
+                        w_scores[i][j][k][l] = w_score_function(mrf1.w[i][j], mrf2.w[k][l])
+                        w_scores[j][i][k][l] = w_scores[i][j][k][l]
+                        w_scores[i][j][l][k] = w_scores[i][j][k][l]
+                        w_scores[j][i][l][k] = w_scores[i][j][k][l]
     return w_scores
 
+
+
+def compute_selfscore(mrf, v_score_function, w_score_function):
+    v_score = sum([v_score_function(vi,vi) for vi in mrf.v])
+    w_score = sum([w_score_function(wij,wij) for wi in mrf.w for wij in wi])
+    return v_score+w_score
