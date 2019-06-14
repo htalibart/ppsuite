@@ -3,6 +3,15 @@ from potts_model import *
 
 COMPOTTS_LOCATION = "./ComPotts"
 
+#//Optional parameters
+#int n_limit_param(INFINITY);
+#int iter_limit_param(INFINITY);
+#int t_limit(36000);
+#int disp_level(1);
+#float epsilon=1;
+#//float epsilon= 0.00000001;
+
+
 
 def align_two_potts_models_objects(mrfs, aln_res_file, info_res_file, **kwargs):
     call = COMPOTTS_LOCATION+" --out_aln "+aln_res_file+" --out_info "+info_res_file

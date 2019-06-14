@@ -1,8 +1,7 @@
-TARGET_LIB=compotts_solver.so
 
 #Sources files
 
-CSRC = graph_apurva.cpp dp_mat_apurva.cpp problem_apurva.cpp bandb.cpp Domains.cpp main_compotts.cpp
+CSRC = graph_apurva.cpp dp_mat_apurva.cpp problem_apurva.cpp bandb.cpp Domains.cpp main_mrf.cpp
 COBJ = $(CSRC:.cpp=.o)
 
 #C compilator
@@ -14,12 +13,11 @@ CC = g++ #-fopenmp #-pg
 OPTIM = -O3 -march=core2 -ffast-math #-DNUM_THREADS=1 -fopenmp
 DEBUG = -O0 -Wall -g -Wextra -ffast-math #-DNUM_THREADS=1 -fopenmp -pg
 #CXXFLAGS = $(DEBUG)
-CXXFLAGS = $(OPTIM) -fPIC -O2 -g
-#CXXFLAGS = $(OPTIM) -fPIC -Wall -Wextra -O2 -g
-LFLAGS = -lm -shared
+CXXFLAGS = $(OPTIM)
+LFLAGS = -lm
 
 #main work
-$(TARGET_LIB): $(COBJ)
+ComPotts: $(COBJ)
 	$(CC) $(STDFLAG) -o $@ $(COBJ) $(LFLAGS)
 	@echo
 	@echo "    *******************************"
@@ -33,7 +31,7 @@ Bounds: main_boundcomp.o
 
 mrf: graph_apurva.o dp_mat_apurva.o problem_apurva.o bandb.o
 	$(CC) -I msgpack-c/mrf.h
-	$(CC) -o $@ graph_apurva.o dp_mat_apurva.o problem_apurva.o bandb.o main_compotts.o $(LFLAGS)
+	$(CC) -o $@ graph_apurva.o dp_mat_apurva.o problem_apurva.o bandb.o main_mrf.o $(LFLAGS)
 
 
 #remove .o

@@ -1,7 +1,7 @@
 #include "main.h"
-#include "mrf.h"
 #include <fstream>
 #include <string>
+#include <vector>
 #include <iostream>
 #include <sstream>
 #include <cstring>
@@ -12,48 +12,21 @@
 
 using namespace std;
 
-//RES alignment data
-int ** forbidden_res = NULL;
-int *res_alignment = NULL;
-double res_ub(0);
-double res_lb(0);
-
-//Optional parameters
-//int n_limit_param(10000000);
-int n_limit_param(INFINITY);
-//int iter_limit_param(1000);
-int iter_limit_param(INFINITY);
-//int t_limit(1800);
-int t_limit(36000);
-int disp_level(1);
-float epsilon=1;
-//float epsilon= 0.00000001;
-
 //various time check
 double load_map_times(0.);
-double res_alloc_time(0.);
-double res_solve_time(0.);
 double total_time(0.);
 
-//
+
+// scores and lengths are global variables because of f_vertex_mrf and f_edge_mrf
+double* v_scores;
+double* w_scores;
 int LA;
 int LB;
 
 
-// scores
-double* v_scores;
-double* w_scores;
-
-// score function
-int use_w = 1;
-
 // gap_open and gap_extend
 double gap_open = 0.0;
 double gap_extend = 0.0;
-
-// output files
-char* output_fname = NULL;
-char* info_fname = NULL;
 
 
 double f_vertex_mrf(int k, int i)
@@ -69,16 +42,157 @@ double f_edge_mrf(int k, int i, int l, int j)
 }
 
 
+//display the alignment
+void display_alignment(int *res_alignment)
+{
+	int col(0);
+	int nseg(0);
+	while(col < LB)
+	{
+		//find begin of segment
+		while(col < LB && res_alignment[col] == -1)
+		{
+			col++;
+		}
+		if(col < LB)
+		{
+			nseg++;
+			col++;
+			
+			//find end of segment
+			while( col < LB && res_alignment[col] == (res_alignment[col-1] + 1))
+			{
+				col++;
+			}
+		}
+	}
+	
+	cout << "ALIGNMENT:\n" << nseg << " segments\n";
+	
+	int rowb, rowe,colb,cole;
+	int *srowb = new int[nseg];
+	int *srowe = new int[nseg];
+	int *scolb = new int[nseg];
+	int *scole = new int[nseg];
+	
+	/* Filling segments area */
+	col=0;
+	nseg=0;
 
-void display_results(int LA, int LB, int nb_edges_A, int nb_edges_B, double self1, double self2, double res_lb, double res_ub, double total_time, double res_alloc_time, double res_solve_time, int nb_bb_nodes, res_alignment)
+	while(col < LB)
+	{
+		//find begin of segment
+		while(col < LB && res_alignment[col] == -1)
+		{
+			col++;
+		}
+		if(col < LB)
+		{
+			colb = col;
+			rowb = res_alignment[col];
+			col++;
+			
+			//find end of segment
+			while(col < LB && res_alignment[col] == (res_alignment[col-1] + 1))
+			{
+				col++;
+			}
+			cole = col-1;
+			rowe = res_alignment[col-1];
+			
+			srowb[nseg] = rowb;
+			srowe[nseg] = rowe;
+			scolb[nseg] = colb;
+			scole[nseg] = cole;
+			nseg++;
+		}
+	}
+	
+	for(int i(0); i<nseg; ++i)
+	{		
+		cout << "[" << srowb[i] << " - " << srowe[i] << "] <-> [" << scolb[i] << " - " << scole[i] << "]\n";
+	}
+	cout << "\n";
+
+	delete[] srowb;
+	delete[] srowe;
+	delete[] scolb;
+	delete[] scole;
+}
+
+
+
+//display the aligned nodes
+void display_aligned_nodes(int *res_alignment, int*  edges_mapA, int* edges_mapB, char* output_fname)
+{
+
+	// Get the profit for each position
+	vector<double> profits;
+	for(int col1=0; col1<LB; ++col1)
+	{
+		if(res_alignment[col1] != -1)
+		{
+			double profit = f_vertex_mrf(col1,res_alignment[col1]);
+			for(int col2=0; col2<LB; ++col2)
+			{
+				if(res_alignment[col2] != -1 && col2 != col1)
+				{
+					if(edges_mapB[col1*LB+col2] == 1 && edges_mapA[res_alignment[col1]*LA+res_alignment[col2]] == 1)
+					{
+						profit += 0.5*f_edge_mrf(col1,res_alignment[col1],col2,res_alignment[col2]);
+					}
+				}
+			}
+			profits.push_back(profit);
+		}
+	}
+
+	cout << "ALIGNED_NODES:" << endl;
+
+	ofstream output_file;
+  	output_file.open(output_fname);
+	output_file << "pos_ref,pos_2" << endl;
+
+	vector<double>::iterator it = profits.begin();
+	for(int col=0; col<LB; ++col)
+	{
+		if(res_alignment[col] != -1)
+		{
+			cout << res_alignment[col] << " " << col << " " << *it << endl;
+			output_file << res_alignment[col] << "," << col << endl;
+			++it;
+		}
+	}
+	cout << endl;
+	output_file.close();
+
+}
+
+
+
+int count_edges(int* edges_map, int L)
+{
+	int nb_edges=0;
+	for (int i=0; i<L; i++)
+	{
+		for (int j=0; j<L; j++)
+		{
+			nb_edges+=edges_map[i*L+j];
+		}
+	}
+	return nb_edges;
+}
+
+
+void display_results_and_print_to_files(int* edges_mapA, int* edges_mapB, double self1, double self2, double res_lb, double res_ub, double total_time, double res_alloc_time, double res_solve_time, int nb_bb_nodes, int* res_alignment, int disp_level, char* aln_fname, char* info_fname)
 {
 	cout << endl << "RESULT:" << endl;
         if(disp_level >= 1)
         {
                 cout << "      |N1| = " << LA <<"\n";
                 cout << "      |N2| = " << LB <<"\n";
-                cout << "      |E1| = " << nb_edges_A <<"\n";
-                cout << "      |E2| = " << nb_edges_B <<"\n";
+                cout << "      |E1| = " << count_edges(edges_mapA, LA) <<"\n";
+                cout << "      |E2| = " << count_edges(edges_mapB, LB) <<"\n";
                 cout << "      UB = " << -res_lb <<"\n";
                 cout << "      LB = " << -res_ub <<"\n";
                 cout << "      Similarity_global = " << 2.0*-res_ub/(self1+self2) <<"\n";
@@ -92,8 +206,8 @@ void display_results(int LA, int LB, int nb_edges_A, int nb_edges_B, double self
         }
         cout << "\n";
 
-        display_alignment(LB, res_alignment);
-        display_aligned_nodes(LB, res_alignment);
+        display_alignment(res_alignment);
+        display_aligned_nodes(res_alignment, edges_mapA, edges_mapB, aln_fname);
 
 	ofstream output_file;
         output_file.open(info_fname);
@@ -104,7 +218,7 @@ void display_results(int LA, int LB, int nb_edges_A, int nb_edges_B, double self
 
 
 
-int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_time, double &ub, double &lb, int& nb_bb_nodes, double dalih_bound = 0.0)
+int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_time, double &ub, double &lb, int& nb_bb_nodes, int** row_map, int** col_map, double self1, double self2, int iter_limit_param, int n_limit_param, double t_limit, double epsilon, double dalih_bound = 0.0)
 {
     std::cout << "started solving problem" << std::endl;
     int status(0);
@@ -117,8 +231,6 @@ int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_tim
     int nb_row = LA;
     int nb_col = LB;
 
-    int ** row_map = A.get_edges_map(); // TODO réécrire
-    int ** col_map = B.get_edges_map();
 
     //start time
     long tic_per_sec = sysconf(_SC_CLK_TCK);
@@ -166,154 +278,32 @@ int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_tim
 }
 
 
-//display the alignment
-void display_alignment(int nb_node2, int *res_alignment)
+int** unflatten(int* flat_array, int length)
 {
-	int col(0);
-	int nseg(0);
-	while(col < nb_node2)
+	int** uf = new int*[length];
+	for (int i=0; i<length; i++)
 	{
-		//find begin of segment
-		while(col < nb_node2 && res_alignment[col] == -1)
+		uf[i] = new int[length];
+		for (int j=0; j<length; j++)
 		{
-			col++;
-		}
-		if(col < nb_node2)
-		{
-			nseg++;
-			col++;
-			
-			//find end of segment
-			while( col < nb_node2 && res_alignment[col] == (res_alignment[col-1] + 1))
-			{
-				col++;
-			}
+			uf[i][j] = flat_array[i*length+j];
 		}
 	}
-	
-	cout << "ALIGNMENT:\n" << nseg << " segments\n";
-	
-	int rowb, rowe,colb,cole;
-	int *srowb = new int[nseg];
-	int *srowe = new int[nseg];
-	int *scolb = new int[nseg];
-	int *scole = new int[nseg];
-	
-	/* Filling segments area */
-	col=0;
-	nseg=0;
-
-	while(col < nb_node2)
-	{
-		//find begin of segment
-		while(col < nb_node2 && res_alignment[col] == -1)
-		{
-			col++;
-		}
-		if(col < nb_node2)
-		{
-			colb = col;
-			rowb = res_alignment[col];
-			col++;
-			
-			//find end of segment
-			while(col < nb_node2 && res_alignment[col] == (res_alignment[col-1] + 1))
-			{
-				col++;
-			}
-			cole = col-1;
-			rowe = res_alignment[col-1];
-			
-			srowb[nseg] = rowb;
-			srowe[nseg] = rowe;
-			scolb[nseg] = colb;
-			scole[nseg] = cole;
-			nseg++;
-		}
-	}
-	
-	for(int i(0); i<nseg; ++i)
-	{		
-		cout << "[" << srowb[i] << " - " << srowe[i] << "] <-> [" << scolb[i] << " - " << scole[i] << "]\n";
-	}
-	cout << "\n";
-
-	delete[] srowb;
-	delete[] srowe;
-	delete[] scolb;
-	delete[] scole;
+	return uf;
 }
 
 
-
-//display the aligned nodes
-void display_aligned_nodes(int nb_node2, int *res_alignment)
-{
-
-	// Get the profit for each position
-	int** edges_mapA = A.get_edges_map();
-	int** edges_mapB = B.get_edges_map();
-	vector<double> profits;
-	for(int col1=0; col1<nb_node2; ++col1)
-	{
-		if(res_alignment[col1] != -1)
-		{
-			double profit = f_vertex_mrf(col1,res_alignment[col1]);
-			for(int col2=0; col2<nb_node2; ++col2)
-			{
-				if(res_alignment[col2] != -1 && col2 != col1)
-				{
-					if(edges_mapB[col1][col2] == 1 && edges_mapA[res_alignment[col1]][res_alignment[col2]] == 1)
-					{
-						profit += 0.5*f_edge_mrf(col1,res_alignment[col1],col2,res_alignment[col2]);
-					}
-				}
-			}
-			profits.push_back(profit);
-		}
-	}
-
-	cout << "ALIGNED_NODES:" << endl;
-
-	ofstream output_file;
-  	output_file.open(output_fname);
-	output_file << "pos_ref,pos_2" << endl;
-
-	vector<double>::iterator it = profits.begin();
-	for(int col=0; col<nb_node2; ++col)
-	{
-		if(res_alignment[col] != -1)
-		{
-			cout << res_alignment[col] << " " << col << " " << *it << endl;
-			output_file << res_alignment[col] << "," << col << endl;
-			++it;
-		}
-	}
-	cout << endl;
-	output_file.close();
-
-}
-
-
-int call_from_python(double* v_scores_, double* w_scores_, int LA_, int LB_, double selfcompA_, double selfcompB_, int use_w_, double gap_open_, double gap_extend_, char*output_fname_, char* info_fname_, int n_limit_param_, int iter_limit_param_, int t_limit_, int disp_level_, float epsilon_)
+int call_from_python(double* v_scores_, double* w_scores_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, int t_limit, int disp_level, float epsilon)
 {
 	int status(0);
+
 	v_scores = v_scores_;
 	w_scores = w_scores_;
 	LA = LA_;
 	LB = LB_;
-	selfcompA = selfcompA_;
-	selfcompB = selfcompB_;
-	use_w = use_w_;
+
 	gap_open = gap_open_;
 	gap_extend = gap_extend_;
-	output_fname = output_fname_;
-	info_fname = info_fname_;
-	n_limit_param = n_limit_param_;
-	iter_limit_param_ = iter_limit_param_;
-	t_limit = t_limit_;
-	disp_level = disp_level_;
-	epsilon = epsilon_;
 
 	// computation time
 	long tic_per_sec = sysconf(_SC_CLK_TCK);
@@ -322,17 +312,17 @@ int call_from_python(double* v_scores_, double* w_scores_, int LA_, int LB_, dou
 
 
 	// alloc residues contact map filter (TODO : check if deprecated)
-	forbidden_res = new int* [nb_node2];
-    	for(int col(0); col != nb_node2; ++col)
+	int** forbidden_res = new int* [LB];
+    	for(int col(0); col != LB; ++col)
     	{
-        	forbidden_res[col] = new int [nb_node1];
+        	forbidden_res[col] = new int [LA];
         	//by default all nodes are allowed
-        	fill_n(forbidden_res[col], nb_node1, static_cast<int>(0));
+        	fill_n(forbidden_res[col], LA, static_cast<int>(0));
     	}
 
 
 	// alloc solution arrays
-	res_alignment = new int[LB];
+	int* res_alignment = new int[LB];
 	for(int col(0); col != LB; ++col) // TODO pourquoi ?
     	{
                 res_alignment[col] = -1;
@@ -341,16 +331,24 @@ int call_from_python(double* v_scores_, double* w_scores_, int LA_, int LB_, dou
 
 	// solve
 	int nb_bb_nodes = 0;
-	solve_prb(forbidden_res, res_alignment, res_alloc_time, res_solve_time, res_ub, res_lb, nb_bb_nodes, -INFINITY);
+	double res_ub = 0;
+	double res_lb = 0;
+	double res_alloc_time(0.);
+	double res_solve_time(0.);
+
+	int** row_map = unflatten(edges_mapA, LB);
+	int** col_map = unflatten(edges_mapB, LB);
+
+	solve_prb(forbidden_res, res_alignment, res_alloc_time, res_solve_time, res_ub, res_lb, nb_bb_nodes, row_map, col_map, self1, self2, iter_limit_param, n_limit_param, t_limit, epsilon, -INFINITY);
 
 
 	// computation time
 	int tic2 = times(&end);
 	total_time = ((double)tic2 - (double)tic1) / (double)tic_per_sec;
 
-	display_results_and_print_to_files();
+	display_results_and_print_to_files(edges_mapA, edges_mapB, self1, self2, res_lb, res_ub, total_time, res_alloc_time, res_solve_time, nb_bb_nodes, res_alignment, disp_level, aln_fname, info_fname);
 
-	for(int col(0); col != nb_node2; ++col)
+	for(int col(0); col != LB; ++col)
 	{
 		delete[] forbidden_res[col];
     	}
