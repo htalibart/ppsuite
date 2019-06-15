@@ -302,11 +302,6 @@ extern "C" int call_from_python(double* v_scores_, double* w_scores_, int LA_, i
 	w_scores = w_scores_;
 	LA = LA_;
 	LB = LB_;
-
-	for (int i=0; i<LA; i++)
-	{
-		std::cout << w_scores[LA*LA+i] << " ";
-	}
 	gap_open = gap_open_;
 	gap_extend = gap_extend_;
 
