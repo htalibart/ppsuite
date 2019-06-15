@@ -303,6 +303,10 @@ extern "C" int call_from_python(double* v_scores_, double* w_scores_, int LA_, i
 	LA = LA_;
 	LB = LB_;
 
+	for (int i=0; i<LA; i++)
+	{
+		std::cout << w_scores[LA*LA+i] << " ";
+	}
 	gap_open = gap_open_;
 	gap_extend = gap_extend_;
 
@@ -336,7 +340,6 @@ extern "C" int call_from_python(double* v_scores_, double* w_scores_, int LA_, i
 	double res_lb = 0;
 	double res_alloc_time(0.);
 	double res_solve_time(0.);
-
 
 	int** row_map = unflatten(edges_mapA, LA);
 	int** col_map = unflatten(edges_mapB, LB);

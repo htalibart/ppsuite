@@ -40,8 +40,19 @@ def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, **kwa
     return w_scores
 
 
+def compute_self_w_scores(mrf, edges_map, w_score_function, **kwargs):
+    w_score = 0
+    for i in range(mrf.ncol-1):
+        for j in range(i+1,mrf.ncol):
+            if edges_map[i][j]:
+                w_score+=w_score_function(mrf.w[i][j],mrf.w[i][j])
+    return w_score
 
-def compute_selfscore(mrf, v_score_function, w_score_function):
+
+
+def compute_selfscore(mrf, edges_map, v_score_function, w_score_function):
     v_score = sum([v_score_function(vi,vi) for vi in mrf.v])
-    w_score = sum([w_score_function(wij,wij) for wi in mrf.w for wij in wi])
-    return v_score+w_score
+    w_score = compute_self_w_scores(mrf, edges_map, w_score_function)
+    selfcomp = v_score+w_score
+    print(selfcomp)
+    return selfcomp
