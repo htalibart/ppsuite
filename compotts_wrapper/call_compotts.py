@@ -8,6 +8,8 @@ INFINITY = 10000000
 
 
 
+# TODO stocker les scores en utilisant la symétrie pour prendre moins de mémoire
+
 def align_two_potts_models(mrfs, aln_res_file, info_res_file, n_limit_param=INFINITY, iter_limit_param=INFINITY, t_limit=36000, disp_level=1, epsilon=1, v_score_function=scalar_product, w_score_function=scalar_product, gap_open=0, gap_extend=0, w_threshold=0, **kwargs):
 
     v_scores = compute_v_scores(*mrfs, v_score_function)
@@ -48,7 +50,8 @@ def align_hhblits_output(seq_files, a3m_files, aln_res_file, info_res_file, **kw
 def align_one_hot(seq_files, aln_res_file, info_res_file, **kwargs):
     objects = []
     for seq_file in seq_files :
-        objects.append(compotts_object.from_seq_file_to_one_hot(seq_file))
+        objects.append(ComPotts_Object.from_seq_file_to_one_hot(seq_file))
+    align_two_objects(objects, aln_res_file, info_res_file, **kwargs)
 
 
 # def multiple_alignment() TODO

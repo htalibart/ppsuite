@@ -65,6 +65,7 @@ def get_msas_aligned(res_aln_file, train_msa_files, output_msa):
         AlignIO.write(new_alignment, f, "fasta")
 
 
+# TODO gérer si position pas alignée
 def get_pos_aligned_at_pos(res_aln_file, pos):
     df = pd.read_csv(res_aln_file)
     return int(df[df.pos_ref==pos]['pos_2'])
