@@ -1,4 +1,5 @@
 from compotts_wrapper.compute_scores import *
+from compotts_wrapper.compotts_object import *
 from potts_model import *
 import ctypes
 
@@ -40,8 +41,8 @@ def align_two_objects(objects, aln_res_file, info_res_file, **kwargs):
 def align_hhblits_output(seq_files, a3m_files, aln_res_file, info_res_file, **kwargs):
     objects = []
     for seq_file, a3m_file in zip(seq_files, a3m_files):
-        objects.append(compotts_object.from_hhblits_output(seq_file, a3m_file, kwargs))
-    align_two_objects(objects, aln_res_file, info_res_file, kwargs)
+        objects.append(ComPotts_Object.from_hhblits_output(seq_file, a3m_file, **kwargs))
+    align_two_objects(objects, aln_res_file, info_res_file, **kwargs)
 
 
 def align_one_hot(seq_files, aln_res_file, info_res_file, **kwargs):
