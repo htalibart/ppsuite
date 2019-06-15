@@ -54,5 +54,4 @@ def compute_selfscore(mrf, edges_map, v_score_function, w_score_function):
     v_score = sum([v_score_function(vi,vi) for vi in mrf.v])
     w_score = compute_self_w_scores(mrf, edges_map, w_score_function)
     selfcomp = v_score+w_score
-    print(selfcomp)
     return selfcomp

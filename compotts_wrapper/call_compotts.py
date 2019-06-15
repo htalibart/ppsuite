@@ -28,6 +28,11 @@ def align_two_potts_models(mrfs, aln_res_file, info_res_file, n_limit_param=INFI
     COMPOTTS_SOLVER.call_from_python(c_v_scores, c_w_scores, ctypes.c_int(mrfs[0].ncol), ctypes.c_int(mrfs[1].ncol), c_edges_mapA, c_edges_mapB, ctypes.c_double(selfcompA), ctypes.c_double(selfcompB), ctypes.c_double(gap_open), ctypes.c_double(gap_extend), ctypes.c_char_p(aln_res_file.encode('utf-8')), ctypes.c_char_p(info_res_file.encode('utf-8')), ctypes.c_int(iter_limit_param), ctypes.c_int(t_limit), ctypes.c_int(disp_level), ctypes.c_double(epsilon))
 
 
+def align_two_potts_models_from_files(mrf_files, aln_res_file, info_res_file, **kwargs):
+    mrfs = [Potts_Model.from_msgpack(mrf_file) for mrf_file in mrf_files]
+    align_two_potts_models(mrfs, aln_res_file, info_res_file, **kwargs)
+
+
 def align_two_objects(objects, aln_res_file, info_res_file, **kwargs):
     align_two_potts_models([o.mrf for o in objects], aln_res_file, info_res_file, **kwargs)
 

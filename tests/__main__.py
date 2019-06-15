@@ -51,7 +51,6 @@ class TestComPottsObject(unittest.TestCase):
         assert(similarity_global==1)
 
 
-
     def test_align_small_fake_mrfs(self):
         f = TEST_OUTPUT_FOLDER
         templates = [["1", "0", "3", "2"],["[0]", "y", "[1]", "[2]"]]
