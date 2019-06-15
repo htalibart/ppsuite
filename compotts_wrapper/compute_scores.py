@@ -4,7 +4,12 @@ import numpy as np
 # TODO vectoriser ou edges_map
 
 
-#def vectorize_w_score_function(wi, wk):    
+def count_edges(edges_map):
+    nb=0
+    for i in range(len(edges_map)):
+        for j in range(len(edges_map)):
+            nb+=edges_map[i][j]
+    return nb
 
 
 def get_edges_map(mrf, threshold):

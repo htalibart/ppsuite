@@ -294,12 +294,6 @@ int** unflatten(int* flat_array, int length)
 
 
 
-extern "C" void test_call(int douze)
-{
-	std::cout << douze << std::endl;
-}
-
-
 extern "C" int call_from_python(double* v_scores_, double* w_scores_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, int t_limit, int disp_level, float epsilon)
 {
 	int status(0);
@@ -343,7 +337,8 @@ extern "C" int call_from_python(double* v_scores_, double* w_scores_, int LA_, i
 	double res_alloc_time(0.);
 	double res_solve_time(0.);
 
-	int** row_map = unflatten(edges_mapA, LB);
+
+	int** row_map = unflatten(edges_mapA, LA);
 	int** col_map = unflatten(edges_mapB, LB);
 
 	solve_prb(forbidden_res, res_alignment, res_alloc_time, res_solve_time, res_ub, res_lb, nb_bb_nodes, row_map, col_map, self1, self2, iter_limit_param, n_limit_param, t_limit, epsilon, -INFINITY);
