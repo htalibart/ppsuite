@@ -7,7 +7,7 @@ COMPOTTS_SOLVER = ctypes.CDLL("./compotts_solver.so")
 INFINITY = 10000000 
 
 
-def align_two_potts_models(mrfs, aln_res_file, info_res_file, n_limit_param=INFINITY, iter_limit_param=INFINITY, t_limit=36000, disp_level=1, epsilon=1, v_score_function=scalar_product, w_score_function=scalar_product, gap_open=0, gap_extend=0, w_threshold=8, **kwargs):
+def align_two_potts_models(mrfs, aln_res_file, info_res_file, n_limit_param=INFINITY, iter_limit_param=INFINITY, t_limit=36000, disp_level=1, epsilon=1, v_score_function=scalar_product, w_score_function=scalar_product, gap_open=0, gap_extend=0, w_threshold=0, **kwargs):
     v_scores = compute_v_scores(*mrfs, v_score_function)
     c_v_scores = ctypes.c_void_p(v_scores.ctypes.data)
     edges_maps = [get_edges_map(mrf, w_threshold) for mrf in mrfs]

@@ -1,3 +1,5 @@
+import numpy as np
+
 from Bio import pairwise2
 
 from global_variables import ALPHABET
@@ -31,12 +33,8 @@ def euclidean_norm(vector):
     return np.linalg.norm(vector)
 
 
-
 def scalar_product(v1, v2):
-    if len(v1.shape)==1:
-        return sum([x*y for x,y in zip(v1,v2)])
-    else:
-        return sum([v1[a][b]*v2[a][b] for a in range(len(v1[0])) for b in range(len(v1[0]))])
+    return np.dot(v1.flatten(), v2.flatten())
 
 
 def sign_ind(x):

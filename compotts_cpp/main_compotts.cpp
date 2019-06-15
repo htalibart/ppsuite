@@ -123,7 +123,7 @@ void display_alignment(int *res_alignment)
 
 
 //display the aligned nodes
-void display_aligned_nodes(int *res_alignment, int*  edges_mapA, int* edges_mapB, char* output_fname)
+void display_aligned_nodes(int *res_alignment, int** row_map, int** col_map, char* output_fname)
 {
 
 	// Get the profit for each position
@@ -137,7 +137,7 @@ void display_aligned_nodes(int *res_alignment, int*  edges_mapA, int* edges_mapB
 			{
 				if(res_alignment[col2] != -1 && col2 != col1)
 				{
-					if(edges_mapB[col1*LB+col2] == 1 && edges_mapA[res_alignment[col1]*LA+res_alignment[col2]] == 1)
+					if(col_map[col1][col2] == 1 && row_map[res_alignment[col1]][res_alignment[col2]] == 1)
 					{
 						profit += 0.5*f_edge_mrf(col1,res_alignment[col1],col2,res_alignment[col2]);
 					}
@@ -170,29 +170,29 @@ void display_aligned_nodes(int *res_alignment, int*  edges_mapA, int* edges_mapB
 
 
 
-int count_edges(int* edges_map, int L)
+int count_edges(int** edges_map, int L)
 {
 	int nb_edges=0;
 	for (int i=0; i<L; i++)
 	{
 		for (int j=0; j<L; j++)
 		{
-			nb_edges+=edges_map[i*L+j];
+			nb_edges+=edges_map[i][j];
 		}
 	}
 	return nb_edges;
 }
 
 
-void display_results_and_print_to_files(int* edges_mapA, int* edges_mapB, double self1, double self2, double res_lb, double res_ub, double total_time, double res_alloc_time, double res_solve_time, int nb_bb_nodes, int* res_alignment, int disp_level, char* aln_fname, char* info_fname)
+void display_results_and_print_to_files(int** row_map, int** col_map, double self1, double self2, double res_lb, double res_ub, double total_time, double res_alloc_time, double res_solve_time, int nb_bb_nodes, int* res_alignment, int disp_level, char* aln_fname, char* info_fname)
 {
 	cout << endl << "RESULT:" << endl;
         if(disp_level >= 1)
         {
                 cout << "      |N1| = " << LA <<"\n";
                 cout << "      |N2| = " << LB <<"\n";
-                cout << "      |E1| = " << count_edges(edges_mapA, LA) <<"\n";
-                cout << "      |E2| = " << count_edges(edges_mapB, LB) <<"\n";
+                cout << "      |E1| = " << count_edges(row_map, LA) <<"\n";
+                cout << "      |E2| = " << count_edges(col_map, LB) <<"\n";
                 cout << "      UB = " << -res_lb <<"\n";
                 cout << "      LB = " << -res_ub <<"\n";
                 cout << "      Similarity_global = " << 2.0*-res_ub/(self1+self2) <<"\n";
@@ -207,7 +207,7 @@ void display_results_and_print_to_files(int* edges_mapA, int* edges_mapB, double
         cout << "\n";
 
         display_alignment(res_alignment);
-        display_aligned_nodes(res_alignment, edges_mapA, edges_mapB, aln_fname);
+        display_aligned_nodes(res_alignment, row_map, col_map, aln_fname);
 
 	ofstream output_file;
         output_file.open(info_fname);
@@ -353,7 +353,7 @@ extern "C" int call_from_python(double* v_scores_, double* w_scores_, int LA_, i
 	int tic2 = times(&end);
 	total_time = ((double)tic2 - (double)tic1) / (double)tic_per_sec;
 
-	display_results_and_print_to_files(edges_mapA, edges_mapB, self1, self2, res_lb, res_ub, total_time, res_alloc_time, res_solve_time, nb_bb_nodes, res_alignment, disp_level, aln_fname, info_fname);
+	display_results_and_print_to_files(row_map, col_map, self1, self2, res_lb, res_ub, total_time, res_alloc_time, res_solve_time, nb_bb_nodes, res_alignment, disp_level, aln_fname, info_fname);
 
 	for(int col(0); col != LB; ++col)
 	{
