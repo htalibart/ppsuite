@@ -2,7 +2,6 @@ from compotts_wrapper.compute_scores import *
 from potts_model import *
 import ctypes
 
-COMPOTTS_LOCATION = "./ComPotts"
 COMPOTTS_SOLVER = ctypes.CDLL("./compotts_solver.so")
 INFINITY = 10000000 
 

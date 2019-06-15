@@ -1,3 +1,5 @@
+import pandas as pd
+
 def get_real_aln_df(res_aln_file, compotts_objects):
     df_res = pd.read_csv(res_aln_file)
     c_names = list(df_res.columns)
