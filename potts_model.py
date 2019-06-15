@@ -108,9 +108,10 @@ class Potts_Model:
             return self.w_norms
         else:
             w_norms = np.zeros((self.ncol, self.ncol))
-            for i in range(0, self.ncol):
-                for j in range(0, self.ncol):
+            for i in range(0, self.ncol-1):
+                for j in range(i+1, self.ncol):
                     w_norms[i][j] = self.get_w_norm_at_pos(i,j)
+                    w_norms[j][i] = w_norms[i][j]
             self.w_norms = w_norms
             return w_norms
 
