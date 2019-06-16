@@ -18,6 +18,11 @@ if __name__ == '__main__':
 
     aln_res_file = args["aln_res_file"]
     info_res_file = args["info_res_file"]
+
+    if aln_res_file is None:
+        aln_res_file = "aln.csv"
+    if info_res_file is None:
+        info_res_file = "info.csv"
     
     if (args["potts_model_1"] is not None) and (args["potts_model_2"] is not None):
         align_two_potts_models_from_files([args["potts_model_1"], args["potts_model_2"]], aln_res_file, info_res_file)

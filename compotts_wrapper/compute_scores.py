@@ -30,6 +30,7 @@ def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, **kwa
     for i in range(mrf1.ncol-1):
         for j in range(i+1, mrf1.ncol):
             if edges_map1[i][j]:
+                print(i,j)
                 for k in range(mrf2.ncol-1):
                     for l in range(k+1, mrf2.ncol):
                         if edges_map2[k][l]: # TODO edges_map

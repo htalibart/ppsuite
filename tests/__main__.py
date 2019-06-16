@@ -69,7 +69,7 @@ class TestComPottsObject(unittest.TestCase):
         seq_file = test_name+".fasta"
         aln_res_file = TEST_OUTPUT_FOLDER+SIMPLE_TEST+"_"+SIMPLE_TEST+"_aln.csv"
         info_res_file = TEST_OUTPUT_FOLDER+SIMPLE_TEST+"_"+SIMPLE_TEST+"_info.csv"
-        align_one_hot([seq_file, seq_file], aln_res_file, info_res_file)
+        align_one_hot([seq_file, seq_file], aln_res_file, info_res_file, output_folder=TEST_OUTPUT_FOLDER)
         similarity_global = get_info("similarity_global", info_res_file)
         assert(similarity_global==1)
 
