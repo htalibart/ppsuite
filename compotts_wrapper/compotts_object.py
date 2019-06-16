@@ -82,7 +82,7 @@ class ComPotts_Object:
         obj.train_msa = obj.seq_file
         return obj
 
-
+    @classmethod
     def from_merge(cls, obj1, obj2, res_aln_file, rescale_mrf=False, hhfilter_threshold=80, **kwargs):
         obj = cls()
         if name in kwargs:

@@ -9,6 +9,7 @@ INFINITY = 10000000
 
 
 # TODO stocker les scores en utilisant la symétrie pour prendre moins de mémoire
+# TODO aln_res_file et info_res_file comme sortie de ComPotts -> variables
 
 def align_two_potts_models(mrfs, aln_res_file, info_res_file, n_limit_param=INFINITY, iter_limit_param=INFINITY, t_limit=36000, disp_level=1, epsilon=1, v_score_function=scalar_product, w_score_function=scalar_product, gap_open=0, gap_extend=0, w_threshold=0, **kwargs):
 
@@ -17,10 +18,8 @@ def align_two_potts_models(mrfs, aln_res_file, info_res_file, n_limit_param=INFI
 
     edges_maps = [get_edges_map(mrf, w_threshold) for mrf in mrfs]
     c_int_p = ctypes.POINTER(ctypes.c_int)
-    #c_edges_mapA = ctypes.c_void_p(np.ascontiguousarray(edges_maps[0].flatten()).ctypes.data)
     c_edges_mapA = np.ascontiguousarray(edges_maps[0].flatten(), dtype=np.int32).ctypes.data_as(c_int_p)
     c_edges_mapB = np.ascontiguousarray(edges_maps[1].flatten(), dtype=np.int32).ctypes.data_as(c_int_p)
-    #c_edges_mapB = ctypes.c_void_p(np.ascontiguousarray(edges_maps[1].flatten()).ctypes.data)
 
     w_scores = compute_w_scores(*mrfs, *edges_maps, w_score_function)
     c_w_scores = ctypes.c_void_p(w_scores.ctypes.data)
@@ -52,6 +51,3 @@ def align_one_hot(seq_files, aln_res_file, info_res_file, **kwargs):
     for seq_file in seq_files :
         objects.append(ComPotts_Object.from_seq_file_to_one_hot(seq_file))
     align_two_objects(objects, aln_res_file, info_res_file, **kwargs)
-
-
-# def multiple_alignment() TODO
