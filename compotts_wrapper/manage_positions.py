@@ -45,25 +45,6 @@ def get_seq_trimmed_for_ref(res_aln_file, ref_object, query_object):
     return trimmed_seq
 
 
-def get_msas_aligned(res_aln_file, train_msa_files, output_msa):
-    print("merging "+train_msa_files[0]+" and "+train_msa_files[1])
-    df = pd.read_csv(res_aln_file)
-    aligned_positions = [df['pos_ref'].tolist(), df['pos_2'].tolist()]
-    aligns = [SeqIO.parse(f, "fasta") for f in train_msa_files]
-    records = []
-    for k in range(2):
-        align = aligns[k]
-        for record in align:
-            new_record = record
-            new_seq=""
-            for pos in aligned_positions[k]:
-               new_seq+=record[pos]
-            new_record.seq=Seq(new_seq)
-            records.append(new_record)
-    new_alignment = MultipleSeqAlignment(records)
-    with open(output_msa, 'w') as f:
-        AlignIO.write(new_alignment, f, "fasta")
-
 
 # TODO gérer si position pas alignée
 def get_pos_aligned_at_pos(res_aln_file, pos):

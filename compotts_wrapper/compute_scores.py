@@ -2,7 +2,7 @@ from util import *
 import numpy as np
 
 # TODO vectoriser ou edges_map
-
+# TODO décider d'un seuil
 
 def count_edges(edges_map):
     nb=0
