@@ -8,6 +8,13 @@ def create_folder(name):
     return name
 
 
+def get_info_res_file_name(output_folder):
+    return output_folder+"info.csv"
+
+def get_aln_res_file_name(output_folder):
+    return output_folder+"aln.csv"
+
+
 def create_seq_fasta(seq, fastaseq_file, seq_name="Billy"):
     """ crée un fichier fasta de nom @fastaseq_file avec la séquence @seq dedans, et retourne son nom """
     with open(fastaseq_file, 'w') as of:

@@ -1,7 +1,9 @@
+import ctypes
+
 from compotts_wrapper.compute_scores import *
 from compotts_wrapper.compotts_object import *
 from potts_model import *
-import ctypes
+import files_management as fm
 
 COMPOTTS_SOLVER = ctypes.CDLL("./compotts_solver.so")
 INFINITY = 10000000 
@@ -13,8 +15,8 @@ INFINITY = 10000000
 
 def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=INFINITY, t_limit=36000, disp_level=1, epsilon=1, v_score_function=scalar_product, w_score_function=scalar_product, gap_open=0, gap_extend=0, w_threshold=0, **kwargs):
 
-    aln_res_file = output_folder+"aln.csv"
-    info_res_file = output_folder+"info.csv"
+    aln_res_file = fm.get_aln_res_file_name(output_folder)
+    info_res_file = fm.get_info_res_file_name(output_folder)
 
     v_scores = compute_v_scores(*mrfs, v_score_function)
     c_v_scores = ctypes.c_void_p(v_scores.ctypes.data)
