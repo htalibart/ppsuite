@@ -4,10 +4,10 @@ from Bio import SeqIO, AlignIO
 from Bio.Seq import Seq
 from Bio.Align import MultipleSeqAlignment
 
-def get_msas_aligned(res_aln_file, train_msa_files, output_msa):
+import files_management as fm
+
+def get_msas_aligned(aligned_positions, train_msa_files, output_msa_file):
     print("merging "+train_msa_files[0]+" and "+train_msa_files[1])
-    df = pd.read_csv(res_aln_file)
-    aligned_positions = [df['pos_ref'].tolist(), df['pos_2'].tolist()]
     aligns = [SeqIO.parse(f, "fasta") for f in train_msa_files]
     records = []
     for k in range(2):
@@ -20,7 +20,7 @@ def get_msas_aligned(res_aln_file, train_msa_files, output_msa):
             new_record.seq=Seq(new_seq)
             records.append(new_record)
     new_alignment = MultipleSeqAlignment(records)
-    with open(output_msa, 'w') as f:
+    with open(output_msa_file, 'w') as f:
         AlignIO.write(new_alignment, f, "fasta")
 
 
@@ -32,4 +32,5 @@ if __name__=="__main__":
     parser.add_argument('-a', '--aln_res_file', help="output ComPotts aln file")
     args = vars(parser.parse_args())
 
-    get_msas_aligned(args["aln_res_file"], [args["msa_1"], args["msa_2"]], args["output_msa"])
+    aligned_positions = fm.get_aligned_positions_dict_from_compotts_output_file(args["aln_res_file"]):
+    get_msas_aligned(aligned_positions, [args["msa_1"], args["msa_2"]], args["output_msa"])

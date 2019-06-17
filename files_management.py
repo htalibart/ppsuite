@@ -1,5 +1,6 @@
 import os
 import re
+import pandas as pd
 from Bio import SeqIO, AlignIO
 
 def create_folder(name):
@@ -13,6 +14,15 @@ def get_info_res_file_name(output_folder):
 
 def get_aln_res_file_name(output_folder):
     return output_folder+"aln.csv"
+
+
+def get_aligned_positions_dict_from_compotts_output_file(aln_res_file):
+    df = pd.read_csv(aln_res_file)
+    return df.to_dict('list') 
+
+def get_infos_solver_dict_from_compotts_output_file(infos_res_file):
+    df = pd.read_csv(infos_res_file)
+    return df.loc[0].to_dict()
 
 
 def create_seq_fasta(seq, fastaseq_file, seq_name="Billy"):

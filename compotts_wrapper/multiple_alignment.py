@@ -24,11 +24,10 @@ def get_subalignment(node, compotts_objects, output_folder):
     else:
         obj1 = get_subalignment(node.left, compotts_objects, output_folder)
         obj2 = get_subalignment(node.right, compotts_objects, output_folder)
-        res_aln_file = output_folder+obj1.name+"_"+obj2.name+"_aln.csv"
-        res_info_file = output_folder+obj1.name+"_"+obj2.name+"_info.csv"
-        if not os.path.isfile(res_aln_file):
-            align_two_objects([obj1, obj2], res_aln_file, res_info_file, **params)
-        return Compotts_Object.from_merge(obj1, obj2, res_aln_file, **kwargs)
+        sub_output_folder = create_folder(output_folder+obj1.name+"_"+obj2.name+"/")
+        if not os.path.isfile(fm.get_aln_res_filename(sub_output_folder)):
+            aligned_positions, info_solver = align_two_objects([obj1, obj2], sub_output_folder, **params)
+        return Compotts_Object.from_merge(obj1, obj2, aligned_positions, **kwargs)
 
 
 def multiple_alignment(seq_files, a3m_files, output_folder, **kwargs):

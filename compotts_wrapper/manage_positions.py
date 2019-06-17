@@ -1,18 +1,15 @@
 import pandas as pd
 
-def get_real_aln_df(res_aln_file, compotts_objects):
-    df_res = pd.read_csv(res_aln_file)
-    c_names = list(df_res.columns)
-    df_dict = {}
+def get_real_aligned_positions(aligned_positions, compotts_objects): # TODO test
+    real_aligned_positions = {}
+    c_names = aligned_positions.keys()
     for k in range(2):
-        df_dict[c_names[k]] = compotts_objects[k].get_real_positions(df_res[c_names[k]].tolist())
-    df = pd.DataFrame(df_dict)
-    return df
+        real_aligned_positions[c_names[k]] = compotts_objects[k].get_real_positions(aligned_positions[c_names[k]])
+    return real_aligned_positions
 
 
-def get_seqs_aligned(res_aln_file, compotts_objects):
-    df = get_real_aln_df(res_aln_file, compotts_objects)
-    positions = [df['pos_ref'].tolist(), df['pos_2'].tolist()]
+def get_seqs_aligned(aligned_positions, compotts_objects): #TODO test
+    positions = get_real_aligned_positions(aligned_positions)
     seqs_aligned = ["",""]
 
     for k in range(2):
@@ -31,32 +28,32 @@ def get_seqs_aligned(res_aln_file, compotts_objects):
 
 
 
-def get_seq_trimmed_for_ref(res_aln_file, ref_object, query_object):
-    df = pd.read_csv(res_aln_file)
-    aligned_positions = df['pos_ref'].tolist()
+def get_seq_trimmed_for_ref(aligned_positions, ref_object, query_object): #TODO test
+    aligned_positions_in_ref = aligned_positions['pos_ref']
     trimmed_seq=""
     for pos in range(ref_object.mrf.ncol):
-        if pos in aligned_positions:
-            ind = aligned_positions.index(pos)
-            pos_2 = df['pos_2'].tolist()[ind]
+        if pos in aligned_positions_in_ref:
+            ind = aligned_positions_in_ref.index(pos)
+            pos_2 = aligned_positions['pos_2'][ind]
             trimmed_seq+=query_object.get_real_letter_at_trimmed_pos(pos_2)
         else:
             trimmed_seq+='-'
     return trimmed_seq
 
 
+def get_pos_aligned_at_pos(aligned_positions_dict, pos): #TODO test
+    d = aligned_positions_dict
+    if pos in d['pos_ref']:
+        return d['pos_2'][d['pos_ref'].index(pos)]
+    else:
+        print(str(pos)+" is not aligned")
 
-# TODO gérer si position pas alignée
-def get_pos_aligned_at_pos(res_aln_file, pos):
-    df = pd.read_csv(res_aln_file)
-    return int(df[df.pos_ref==pos]['pos_2'])
 
 
-
-def get_aligned_v_scores(res_aln_file, v_scores):
-    aligned_v_scores = np.zeros(len(pd.read_csv(res_aln_file)['pos_ref'].tolist()))
+def get_aligned_v_scores(aligned_positions_dict, v_scores): #TODO test
+    aligned_v_scores = np.zeros(len(aligned_positions_dict['pos_ref']))
     pos=0
-    for i,k in zip(pd.read_csv(res_aln_file)['pos_ref'].tolist(), pd.read_csv(res_aln_file)['pos_2'].tolist()):
+    for i,k in zip(aligned_positions['pos_ref'], aligned_positions['pos_2']):
         aligned_v_scores[pos] = v_scores[i][k]
         pos+=1
     return aligned_v_scores

@@ -5,6 +5,7 @@ import files_management as fm
 from util import *
 from tool_wrapper import *
 from potts_model import *
+from compotts_wrapper.rescaling import *
 
 
 class ComPotts_Object:
@@ -48,7 +49,7 @@ class ComPotts_Object:
             obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
         if (rescale_mrf):
             print("rescaling MRF")
-            obj.mrf = obj.mrf.get_rescaled_version()
+            obj.mrf = get_rescaled_mrf(obj.mrf)
             obj.mrf.to_msgpack(obj.mrf_file)
         else:
             print("using MRF as is (no rescaling)")
@@ -83,7 +84,7 @@ class ComPotts_Object:
         return obj
 
     @classmethod
-    def from_merge(cls, obj1, obj2, res_aln_file, rescale_mrf=False, hhfilter_threshold=80, **kwargs):
+    def from_merge(cls, obj1, obj2, aligned_positions, rescale_mrf=False, hhfilter_threshold=80, **kwargs):
         obj = cls()
         if name in kwargs:
             obj.name = kwargs['name']
@@ -91,7 +92,7 @@ class ComPotts_Object:
             obj.name = '_'.join(obj1.name, obj2.name)
         obj.folder = fm.create_folder_for_compotts_object(obj)
         obj.aln_unfiltered = obj.folder+obj.name+"_unfiltered.fasta"
-        get_msas_aligned(res_aln_file, [obj1.train_msa, obj2.train_msa], obj.aln_unfiltered)
+        get_msas_aligned(aligned_positions, [obj1.train_msa, obj2.train_msa], obj.aln_unfiltered)
         obj.aln_filtered = obj.folder+obj.name+"_filtered.fasta"
         if (not os.path.isfile(obj.aln_filtered)):
             call_hhfilter(obj.aln_unfiltered, obj.aln_filtered, hhfilter_threshold)
@@ -103,7 +104,7 @@ class ComPotts_Object:
             obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
         if (rescale_mrf):
             print("rescaling MRF")
-            obj.mrf = obj.mrf.get_rescaled_version()
+            obj.mrf = get_rescaled_mrf(obj.mrf)
             obj.mrf.to_msgpack(obj.mrf_file)
         else:
             print("using MRF as is (no rescaling)")

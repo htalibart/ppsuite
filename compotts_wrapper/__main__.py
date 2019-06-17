@@ -3,6 +3,10 @@ import argparse
 from call_compotts import *
 import time
 
+
+# TODO structure de fichiers
+# TODO rescaling
+
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
     parser.add_argument('-p1', '--potts_model_1', help="Potts model 1")
