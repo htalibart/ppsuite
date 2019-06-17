@@ -72,7 +72,7 @@ class TestComPottsObject(unittest.TestCase):
         seq_file = EXAMPLES_FOLDER+SIMPLE_TEST+".fasta"
         aligned_positions, infos_solver = align_one_hot([seq_file, seq_file], output_folder)
         similarity_global = infos_solver["similarity_global"]
-        self.assertTrue(similarity_global==1)
+        self.assertEqual(similarity_global,1)
 
 
     def test_identity_rescaling(self):

@@ -38,7 +38,21 @@ double f_vertex_mrf(int k, int i)
 // score pour l'alignement de deux arcs (A.(i,j),B.(k,l))
 double f_edge_mrf(int k, int i, int l, int j)
 {
-	return w_scores[i*LA*LB*LB+j*LB*LB+k*LB+l];
+	if (l<=k)
+	{
+		if (j<=i)
+		{
+			return w_scores[(j+(i*(i+1))/2)*((LA*(LA+1))/2) + l+(k*(k+1))/2];
+		}
+		else
+		{
+			return f_edge_mrf(k,j,l,i);
+		}
+	}
+	else
+	{
+		return f_edge_mrf(l,i,k,j);
+	}
 }
 
 
