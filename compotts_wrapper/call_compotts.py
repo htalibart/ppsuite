@@ -16,7 +16,7 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     aln_res_file = fm.get_aln_res_file_name(output_folder)
     info_res_file = fm.get_info_res_file_name(output_folder)
 
-    v_scores = compute_v_scores(*mrfs, v_score_function)
+    v_scores = np.ascontiguousarray(compute_v_scores(*mrfs, v_score_function).flatten())
     c_v_scores = ctypes.c_void_p(v_scores.ctypes.data)
 
     edges_maps = [get_edges_map(mrf, w_threshold) for mrf in mrfs]

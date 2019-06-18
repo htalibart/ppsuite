@@ -31,7 +31,7 @@ double gap_extend = 0.0;
 
 double f_vertex_mrf(int k, int i)
 {
-	return v_scores[i*LA+k];
+	return v_scores[i*LB+k];
 }
 
 

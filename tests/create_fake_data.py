@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import os
-from global_variables import ALPHABET
+from global_variables import ALPHABET_WITHOUT_GAP
 
 
 """
@@ -273,7 +273,7 @@ def create_fake_fasta(aln_file, output_fasta):
 
 
 
-def main(templates, alnfnames, fastafnames, alphabet=ALPHABET, n=1000, proba_noise=0.001, nb_letters_conserved=4):
+def main(templates, alnfnames, fastafnames, alphabet=ALPHABET_WITHOUT_GAP, n=1000, proba_noise=0.01, nb_letters_conserved=4):
     ref = None
     for i in range(len(templates)):
         msa, new_ref = create_MSA(templates[i], n, alphabet, proba_noise , nb_letters_conserved, ref)
