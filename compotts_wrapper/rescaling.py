@@ -8,7 +8,9 @@ def original_rescaling(x, **kwargs):# TODO test
 
 def get_rescaled_mrf(mrf, rescaling_function_name, **kwargs): # TODO test
     rescaling_function = eval(rescaling_function_name)
-    t_v = [rescale_parameter(vi, rescaling_function) for vi in mrf.v]
+    t_v = np.zeros_like(mrf.v)
+    for i in range(len(mrf.v)):
+        t_v[i] = rescale_parameter(mrf.v[i], rescaling_function)
     t_w = np.zeros_like(mrf.w)
     for i in range(len(mrf.w)):
         for j in range(len(mrf.w)):

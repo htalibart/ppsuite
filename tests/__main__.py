@@ -30,9 +30,6 @@ def are_templates_aligned(template2, aligned_positions):
 
 class TestComPottsObject(unittest.TestCase):
 
-    def test_dummy(self):
-        self.assertEqual(sum([1, 2, 3]), 6, "Should be 6")
-
     def test_import_hhblits(self):
         test_name = EXAMPLES_FOLDER+SIMPLE_TEST
         a3m_file = test_name+".a3m"
@@ -113,7 +110,20 @@ class TestComPottsObject(unittest.TestCase):
         a3m_file = test_name+".a3m"
         seq_file = test_name+".fasta"
         obj = ComPotts_Object.from_hhblits_output(seq_file, a3m_file, output_folder=TEST_OUTPUT_FOLDER, nb_sequences=200, rescaling_function="original_rescaling")
-        
+
+
+    def test_aligned_rescaled_mrf_to_itself(self):
+        test_name = EXAMPLES_FOLDER+SIMPLE_TEST
+        rescaling_function="original_rescaling"
+        output_folder = fm.create_folder(TEST_OUTPUT_FOLDER+SIMPLE_TEST+"_"+SIMPLE_TEST+"_"+rescaling_function+"/")
+        a3m_file = test_name+".a3m"
+        seq_file = test_name+".fasta"
+        obj = ComPotts_Object.from_hhblits_output(seq_file, a3m_file, output_folder=output_folder, nb_sequences=200, rescaling_function=rescaling_function)
+        aligned_positions, infos_solver = align_two_objects([obj, obj], output_folder)
+        similarity_global = infos_solver["similarity_global"]
+        self.assertEqual(similarity_global,1)
+
+
 
 if __name__=='__main__':
     unittest.main()

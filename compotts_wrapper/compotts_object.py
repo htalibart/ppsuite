@@ -50,7 +50,6 @@ class ComPotts_Object:
         if (rescaling_function!="identity"):
             print("rescaling MRF")
             obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function)
-            obj.mrf.to_msgpack(obj.mrf_file)
         else:
             print("using MRF as is (no rescaling)")
         obj.real_seq = fm.get_first_sequence_in_fasta_file(obj.seq_file)
@@ -105,7 +104,6 @@ class ComPotts_Object:
         if (rescaling_function!="identity"):
             print("rescaling MRF")
             obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function)
-            obj.mrf.to_msgpack(obj.mrf_file)
         else:
             print("using MRF as is (no rescaling)")
         return obj
