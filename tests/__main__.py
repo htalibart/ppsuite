@@ -78,16 +78,15 @@ class TestComPottsObject(unittest.TestCase):
             self.assertTrue(np.array_equal(identity(x), x))
 
 
-    def test_count_edges(self):
-        self.assertEqual(count_edges(np.ones((3,3))),9)
-        self.assertEqual(count_edges(np.zeros((3,3))),0)
-
-
     def test_get_edges_map(self):
         mrf = Potts_Model.from_msgpack(EXAMPLES_FOLDER+SIMPLE_TEST+".mrf")
         edges_map = get_edges_map(mrf, 0)
+        self.assertEqual(edges_map.shape, mrf.get_w_norms())
         self.assertEqual(sum([abs(edges_map[i][i]) for i in range(mrf.ncol)]), 0)
 
+    def test_count_edges(self):
+        self.assertEqual(count_edges(np.ones((3,3))),9)
+        self.assertEqual(count_edges(np.zeros((3,3))),0)
 
     def test_get_seqs_aligned(self):
         objs = []
@@ -103,6 +102,9 @@ class TestComPottsObject(unittest.TestCase):
     def test_rescale_mrf(self):
         mrf = Potts_Model.from_msgpack(EXAMPLES_FOLDER+SIMPLE_TEST+".mrf")
         resc_mrf = get_rescaled_mrf(mrf, "original_rescaling")
+        self.assertEqual(mrf.v.shape,resc_mrf.v.shape)
+        self.assertEqual(mrf.w.shape,resc_mrf.w.shape)
+        self.assertEqual(mrf.ncol, resc_mrf.ncol)
 
 
     def test_rescale_compotts_object(self):

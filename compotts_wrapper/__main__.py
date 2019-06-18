@@ -1,6 +1,7 @@
 import argparse
 
 from call_compotts import *
+import files_management as fm
 import time
 
 
@@ -23,7 +24,7 @@ if __name__ == '__main__':
     output_folder = args["output_folder"]
     if output_folder is None:
         output_folder = time.strftime("%Y%m%d-%H%M%S")
-    create_folder(output_folder)
+    fm.create_folder(output_folder)
 
     no_kwargs = ["potts_model_1", "potts_model_2", "sequence_file_1", "sequence_file_2", "a3m_file_1", "a3m_file_2", "output_folder"]
     arguments = {}
