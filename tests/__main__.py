@@ -27,6 +27,7 @@ def are_templates_aligned(template2, aligned_positions):
     return good_alignment
 
 
+
 class TestComPottsObject(unittest.TestCase):
 
     def test_dummy(self):
@@ -85,6 +86,12 @@ class TestComPottsObject(unittest.TestCase):
         self.assertEqual(count_edges(np.zeros((3,3))),0)
 
 
+    def test_get_edges_map(self):
+        mrf = Potts_Model.from_msgpack(EXAMPLES_FOLDER+SIMPLE_TEST+".mrf")
+        edges_map = get_edges_map(mrf, 0)
+        self.assertEqual(sum([abs(edges_map[i][i]) for i in range(mrf.ncol)]), 0)
+
+
     def test_get_seqs_aligned(self):
         objs = []
         for k in range(2):
@@ -95,6 +102,18 @@ class TestComPottsObject(unittest.TestCase):
         self.assertEqual(seqs_aligned[0], '----MA-IKEH-')
         self.assertEqual(seqs_aligned[1], '----MA-IKDH-')
 
+
+    def test_rescale_mrf(self):
+        mrf = Potts_Model.from_msgpack(EXAMPLES_FOLDER+SIMPLE_TEST+".mrf")
+        resc_mrf = get_rescaled_mrf(mrf, "original_rescaling")
+
+
+    def test_rescale_compotts_object(self):
+        test_name = EXAMPLES_FOLDER+SIMPLE_TEST
+        a3m_file = test_name+".a3m"
+        seq_file = test_name+".fasta"
+        obj = ComPotts_Object.from_hhblits_output(seq_file, a3m_file, output_folder=TEST_OUTPUT_FOLDER, nb_sequences=200, rescaling_function="original_rescaling")
+        
 
 if __name__=='__main__':
     unittest.main()

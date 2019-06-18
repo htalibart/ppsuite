@@ -9,7 +9,7 @@ def count_edges(edges_map):
     return sum(edges_map.flatten())
 
 
-def get_edges_map(mrf, threshold): # TODO checker 0 diagonale
+def get_edges_map(mrf, threshold):
     return 1*(mrf.get_w_norms()>threshold)
 
 
@@ -21,7 +21,6 @@ def compute_v_scores(mrf1, mrf2, v_score_function, **kwargs):
     return v_scores
 
 
-# TODO fix bug assert
 def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, **kwargs):
     print("computing w scores (symmetric matrix : w[i][j]=v[j+i*(i+1)/2]")
     len1 = int(mrf1.ncol*(mrf1.ncol+1)/2)
@@ -44,7 +43,6 @@ def compute_self_w_scores(mrf, edges_map, w_score_function, **kwargs):
             if edges_map[i][j]:
                 w_score+=w_score_function(mrf.w[i][j],mrf.w[i][j])
     return w_score
-
 
 
 def compute_selfscore(mrf, edges_map, v_score_function, w_score_function):

@@ -11,7 +11,7 @@ from compotts_wrapper.rescaling import *
 class ComPotts_Object:
 
     @classmethod
-    def from_hhblits_output(cls, seq_file, a3m_file, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, rescale_mrf=False, output_folder="", **kwargs):
+    def from_hhblits_output(cls, seq_file, a3m_file, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, rescaling_function="identity", output_folder="", **kwargs):
         obj = cls()
         if 'name' in kwargs:
             obj.name = kwargs['name']
@@ -47,9 +47,9 @@ class ComPotts_Object:
             obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
         else:
             obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
-        if (rescale_mrf):
+        if (rescaling_function!="identity"):
             print("rescaling MRF")
-            obj.mrf = get_rescaled_mrf(obj.mrf)
+            obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function)
             obj.mrf.to_msgpack(obj.mrf_file)
         else:
             print("using MRF as is (no rescaling)")
@@ -84,7 +84,7 @@ class ComPotts_Object:
         return obj
 
     @classmethod
-    def from_merge(cls, obj1, obj2, aligned_positions, rescale_mrf=False, hhfilter_threshold=80, **kwargs):
+    def from_merge(cls, obj1, obj2, aligned_positions, rescaling_function="identity", hhfilter_threshold=80, **kwargs):
         obj = cls()
         if name in kwargs:
             obj.name = kwargs['name']
@@ -102,9 +102,9 @@ class ComPotts_Object:
             obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
         else:
             obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
-        if (rescale_mrf):
+        if (rescaling_function!="identity"):
             print("rescaling MRF")
-            obj.mrf = get_rescaled_mrf(obj.mrf)
+            obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function)
             obj.mrf.to_msgpack(obj.mrf_file)
         else:
             print("using MRF as is (no rescaling)")
