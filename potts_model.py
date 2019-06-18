@@ -3,6 +3,8 @@ import numpy as np
 import math
 import msgpack
 
+from util import *
+
 POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff", "reg-lambda-single", "reg-lambda-pair-factor", "reg-L2", "reg-noscaling", "reg-scale-by-L", "v-center", "v-zero", "max-gap-pos", "max-gap_seq", "pc-uniform", "pc-submat", "pc-constant", "pc-none", "pc-count", "pc-pair-count"] # TODO mettre toutes les options
 
 class Potts_Model:

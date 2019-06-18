@@ -1,6 +1,8 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 
+from global_variables import ALPHABET
+from util import *
 
 def get_reordered_v(v, alphabet):
     idx = [ALPHABET.find(a) for a in alphabet]
@@ -50,7 +52,7 @@ def visualize_parameters(v, v_norm, w_norm, name, alphabet=ALPHABET, start_at_1=
 
 
 def visualize_mrf(mrf, alphabet=ALPHABET, start_at_1=True, show_figure=True):
-    visualize_parameters(mrf.v, mrf.get_v_norms(), mrf.get_w_norms(), mrf_name, alphabet, start_at_1, show_figure)
+    visualize_parameters(mrf.v, mrf.get_v_norms(), mrf.get_w_norms(), mrf.name, alphabet, start_at_1, show_figure)
 
 
 

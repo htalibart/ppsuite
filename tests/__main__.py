@@ -6,7 +6,7 @@ from compotts_wrapper.compotts_object import *
 from compotts_wrapper.call_compotts import *
 from compotts_wrapper.manage_positions import *
 from compotts_wrapper.rescaling import *
-import create_fake_data as crfake
+import tests.create_fake_data as crfake
 from potts_model import *
 import files_management as fm
 
@@ -28,7 +28,7 @@ def are_templates_aligned(template2, aligned_positions):
 
 
 
-class TestComPottsObject(unittest.TestCase):
+class TestComPotts(unittest.TestCase):
 
     def test_import_hhblits(self):
         test_name = EXAMPLES_FOLDER+SIMPLE_TEST
@@ -64,6 +64,17 @@ class TestComPottsObject(unittest.TestCase):
         self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
 
 
+    def test_align_different_sizes(self):
+        output_folder = fm.create_folder(TEST_OUTPUT_FOLDER+"fake_diff_size/")
+        templates = [["y", "y", "y"],["[0]", "y", "[1]", "[2]"]]
+        alnfnames = [output_folder+"fake_"+str(i)+".aln" for i in range(2)]
+        fastafnames = [output_folder+"fake_"+str(i)+".fasta" for i in range(2)]
+        crfake.main(templates, alnfnames, fastafnames, nb_letters_conserved=1)
+        mrfs = [Potts_Model.from_training_set(fastafnames[i], output_folder+"fake_diff_size_"+str(i)+".mrf") for i in range(2)]
+        aligned_positions, infos_solver = align_two_potts_models(mrfs, output_folder)
+        self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
+
+
     def test_align_one_hot_to_itself(self):
         test_name = SIMPLE_TEST+"_one_hot"
         output_folder = fm.create_folder(TEST_OUTPUT_FOLDER+test_name+"/")
@@ -81,7 +92,7 @@ class TestComPottsObject(unittest.TestCase):
     def test_get_edges_map(self):
         mrf = Potts_Model.from_msgpack(EXAMPLES_FOLDER+SIMPLE_TEST+".mrf")
         edges_map = get_edges_map(mrf, 0)
-        self.assertEqual(edges_map.shape, mrf.get_w_norms())
+        self.assertEqual(edges_map.shape, mrf.w.shape[0:2])
         self.assertEqual(sum([abs(edges_map[i][i]) for i in range(mrf.ncol)]), 0)
 
     def test_count_edges(self):
@@ -124,6 +135,10 @@ class TestComPottsObject(unittest.TestCase):
         aligned_positions, infos_solver = align_two_objects([obj, obj], output_folder)
         similarity_global = infos_solver["similarity_global"]
         self.assertEqual(similarity_global,1)
+
+
+
+        
 
 
 

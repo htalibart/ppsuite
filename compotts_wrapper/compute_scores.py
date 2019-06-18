@@ -38,7 +38,6 @@ def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, **kwa
 
 def compute_self_w_scores(mrf, edges_map, w_score_function, **kwargs):
     w_score = 0
-    print(mrf.ncol)
     for i in range(mrf.ncol-1):
         for j in range(i+1,mrf.ncol):
             if edges_map[i][j]:

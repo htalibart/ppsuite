@@ -3,7 +3,7 @@ import numpy as np
 from util import *
 from potts_model import *
 
-def get_rescaled_mrf(mrf, rescaling_function_name, **kwargs): # TODO test
+def get_rescaled_mrf(mrf, rescaling_function_name, **kwargs): # TODO optimiser
     rescaling_function = eval(rescaling_function_name)
     t_v = np.zeros_like(mrf.v)
     for i in range(len(mrf.v)):
