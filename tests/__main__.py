@@ -85,6 +85,16 @@ class TestComPottsObject(unittest.TestCase):
         self.assertEqual(count_edges(np.zeros((3,3))),0)
 
 
+    def test_get_seqs_aligned(self):
+        objs = []
+        for k in range(2):
+            seq_file = EXAMPLES_FOLDER+"fake_seq_"+str(k)+".fasta"
+            objs.append(ComPotts_Object.from_seq_file_to_one_hot(seq_file, output_folder=TEST_OUTPUT_FOLDER))
+        aligned_positions = {"pos_ref":[4,5,7,8,9,10], "pos_2":[0,1,2,3,4,5]} 
+        seqs_aligned = get_seqs_aligned(aligned_positions, objs)
+        self.assertEqual(seqs_aligned[0], '----MA-IKEH-')
+        self.assertEqual(seqs_aligned[1], '----MA-IKDH-')
+
 
 if __name__=='__main__':
     unittest.main()

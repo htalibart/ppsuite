@@ -2,18 +2,17 @@ import pandas as pd
 
 def get_real_aligned_positions(aligned_positions, compotts_objects): # TODO test
     real_aligned_positions = {}
-    c_names = aligned_positions.keys()
-    for k in range(2):
-        real_aligned_positions[c_names[k]] = compotts_objects[k].get_real_positions(aligned_positions[c_names[k]])
+    for c_name, obj in zip(aligned_positions.keys(), compotts_objects):
+        real_aligned_positions[c_name] = obj.get_real_positions(aligned_positions[c_name])
     return real_aligned_positions
 
 
 def get_seqs_aligned(aligned_positions, compotts_objects): #TODO test
-    positions = get_real_aligned_positions(aligned_positions)
+    positions = list(get_real_aligned_positions(aligned_positions, compotts_objects).values())
     seqs_aligned = ["",""]
 
     for k in range(2):
-        seqs_aligned[k]+='-'*(max(positions[0][0], positions[1][0])-1)+compotts_objects[k].real_seq[positions[k][0]]
+        seqs_aligned[k]+='-'*(max(positions[0][0], positions[1][0]))+compotts_objects[k].real_seq[positions[k][0]]
 
     old = [positions[0][0], positions[1][0]]
     for pos in range(1,len(positions[0])):
@@ -47,6 +46,7 @@ def get_pos_aligned_at_pos(aligned_positions_dict, pos): #TODO test
         return d['pos_2'][d['pos_ref'].index(pos)]
     else:
         print(str(pos)+" is not aligned")
+        return None
 
 
 

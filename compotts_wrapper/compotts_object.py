@@ -111,7 +111,7 @@ class ComPotts_Object:
         return obj
 
 
-    def get_real_positions(self, positions_list):
+    def get_real_positions(self, positions_list): # TODO test
         if hasattr(self, 'trimal_ncol'):
             before_trimal = [self.trimal_ncol[j] for j in positions_list]
         else:
