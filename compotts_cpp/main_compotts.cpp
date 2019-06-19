@@ -42,7 +42,7 @@ double f_edge_mrf(int k, int i, int l, int j)
 	{
 		if (j<=i)
 		{
-			return w_scores[(j+(i*(i+1))/2)*((LA*(LA+1))/2) + l+(k*(k+1))/2];
+			return w_scores[(j+(i*(i+1))/2)*(LB*(LB+1)/2) + l+(k*(k+1))/2]; // SEGFAULT ICI
 		}
 		else
 		{

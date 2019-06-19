@@ -137,6 +137,8 @@ class TestComPotts(unittest.TestCase):
         self.assertEqual(similarity_global,1)
 
 
+    #def test_multiple_alignment(self):
+    #   
 
         
 
