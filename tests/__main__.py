@@ -73,6 +73,10 @@ class TestComPotts(unittest.TestCase):
         mrfs = [Potts_Model.from_training_set(fastafnames[i], output_folder+"fake_diff_size_"+str(i)+".mrf") for i in range(2)]
         aligned_positions, infos_solver = align_two_potts_models(mrfs, output_folder)
         self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
+        mrfs.reverse()
+        templates.reverse()
+        aligned_positions, infos_solver = align_two_potts_models(mrfs, output_folder)
+        self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
 
 
     def test_align_one_hot_to_itself(self):

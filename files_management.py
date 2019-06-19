@@ -4,6 +4,8 @@ import pandas as pd
 from Bio import SeqIO, AlignIO
 
 def create_folder(name):
+    if name[-1]!='/':
+        name+='/'
     if not os.path.isdir(name):
         os.mkdir(name)
     return name

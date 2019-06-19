@@ -32,5 +32,5 @@ if __name__=="__main__":
     parser.add_argument('-a', '--aln_res_file', help="output ComPotts aln file")
     args = vars(parser.parse_args())
 
-    aligned_positions = fm.get_aligned_positions_dict_from_compotts_output_file(args["aln_res_file"]):
+    aligned_positions = fm.get_aligned_positions_dict_from_compotts_output_file(args["aln_res_file"])
     get_msas_aligned(aligned_positions, [args["msa_1"], args["msa_2"]], args["output_msa"])
