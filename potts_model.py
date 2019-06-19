@@ -58,8 +58,9 @@ class Potts_Model:
         """
         call = "ccmpred "+aln_file+ " -b "+binary_file
         for key_arg in kwargs:
-           if key_arg in POSSIBLE_CCMPRED_OPTIONS:
-                call+=" --"+key_arg+" "+str(kwargs[key_arg])
+            arg_ccm = key_arg.replace('_', '-')
+            if arg_ccm in POSSIBLE_CCMPRED_OPTIONS:
+                call+=" --"+arg_ccm+" "+str(kwargs[key_arg])
         os.system(call)
         if not os.path.exists(binary_file):
             raise Exception("CCMpredPy wasn't able to infer the MRF. Protein is probably too long ?")
