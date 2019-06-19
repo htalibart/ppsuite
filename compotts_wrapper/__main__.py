@@ -6,7 +6,7 @@ import time
 
 
 # TODO structure de fichiers
-# TODO rescaling
+
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()
@@ -17,7 +17,8 @@ if __name__ == '__main__':
     parser.add_argument('-h1', '--a3m_file_1', help="HH-blits output file 1")
     parser.add_argument('-h2', '--a3m_file_2', help="HH-blits output file 2")
     parser.add_argument('-o', '--output_folder', help="Output folder")
-    parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters. Available : identity, original_rescaling", default="identity")
+    parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling'))
+    parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     args = vars(parser.parse_args())
 
 
@@ -31,6 +32,9 @@ if __name__ == '__main__':
     for key in args.keys():
         if key not in no_kwargs:
             arguments[key]=args[key]
+
+    if args['no_w']:
+        arguments["w_threshold"]=float('inf')
 
 
     if (args["potts_model_1"] is not None) and (args["potts_model_2"] is not None):
