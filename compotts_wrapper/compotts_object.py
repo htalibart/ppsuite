@@ -19,6 +19,8 @@ class ComPotts_Object:
             obj.name = fm.get_first_sequence_name(seq_file)+"_hhblits"
         obj.seq_file = seq_file
         obj.a3m_file = a3m_file
+        if len(output_folder)>0:
+            output_folder = fm.create_folder(output_folder)
         obj.folder = fm.create_folder(output_folder+obj.name+"/")
         f = obj.folder+obj.name
         obj.aln_filtered = f+"_filtered_80.a3m"

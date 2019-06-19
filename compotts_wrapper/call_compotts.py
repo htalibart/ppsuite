@@ -19,7 +19,7 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     v_scores = np.ascontiguousarray(compute_v_scores(*mrfs, v_score_function).flatten())
     c_v_scores = ctypes.c_void_p(v_scores.ctypes.data)
 
-    if not no_w:
+    if not kwargs['no_w']:
         edges_maps = [get_edges_map(mrf, w_threshold) for mrf in mrfs]
         w_scores = compute_w_scores(*mrfs, *edges_maps, w_score_function)
         c_w_scores = ctypes.c_void_p(w_scores.ctypes.data)
