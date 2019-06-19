@@ -15,7 +15,7 @@ def get_msas_aligned(aligned_positions, train_msa_files, output_msa_file):
         for record in align:
             new_record = record
             new_seq=""
-            for pos in aligned_positions[k]:
+            for pos in list(aligned_positions.values())[k]:
                new_seq+=record[pos]
             new_record.seq=Seq(new_seq)
             records.append(new_record)
