@@ -32,7 +32,7 @@ def get_subalignment(node, compotts_objects, output_folder):
 
 def multiple_alignment(seq_files, a3m_files, output_folder, **kwargs):
     objs_dict = collections.OrderedDict()
-    for seq_file in seq_files:
+    for seq_file, a3m_file in zip(seq_files, a3m_files):
         obj = ComPotts_Object.from_hhblits_output(seq_file, a3m_file, **kwargs)
         objs_dict[obj.name] = obj
     first_node = cluster_compotts_objects(objs_dict)

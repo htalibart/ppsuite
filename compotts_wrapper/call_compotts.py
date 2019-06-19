@@ -11,7 +11,7 @@ INFINITY = 10000000
 # TODO stocker les scores en utilisant la symétrie pour prendre moins de mémoire
 # TODO aln_res_file et info_res_file comme sortie de ComPotts -> variables
 
-def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=INFINITY, t_limit=36000, disp_level=1, epsilon=1, v_score_function=scalar_product, w_score_function=scalar_product, gap_open=0, gap_extend=0, w_threshold=0, **kwargs):
+def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=INFINITY, t_limit=36000, disp_level=1, epsilon=1, v_score_function=scalar_product, w_score_function=scalar_product, gap_open=0, gap_extend=0, w_threshold=0, use_w=True, **kwargs):
 
     aln_res_file = fm.get_aln_res_file_name(output_folder)
     info_res_file = fm.get_info_res_file_name(output_folder)
@@ -19,10 +19,14 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     v_scores = np.ascontiguousarray(compute_v_scores(*mrfs, v_score_function).flatten())
     c_v_scores = ctypes.c_void_p(v_scores.ctypes.data)
 
-    if not kwargs['no_w']:
+    if use_w:
         edges_maps = [get_edges_map(mrf, w_threshold) for mrf in mrfs]
         w_scores = compute_w_scores(*mrfs, *edges_maps, w_score_function)
-        c_w_scores = ctypes.c_void_p(w_scores.ctypes.data)
+    else:
+        edges_maps = [np.zeros((mrf.w.shape[0:2])) for mrf in mrfs]
+        w_scores = np.zeros((mrfs[0].w.shape[0],mrfs[0].w.shape[1],mrfs[1].w.shape[0],mrfs[1].w.shape[1]))
+    
+    c_w_scores = ctypes.c_void_p(w_scores.ctypes.data)
 
     c_int_p = ctypes.POINTER(ctypes.c_int)
     c_edges_maps = [np.ascontiguousarray(edges_map.flatten(), dtype=np.int32).ctypes.data_as(c_int_p) for edges_map in edges_maps]
@@ -54,4 +58,9 @@ def align_hhblits_output(seq_files, a3m_files, output_folder, **kwargs):
 
 def align_one_hot(seq_files, output_folder, **kwargs):
     objects = [ComPotts_Object.from_seq_file_to_one_hot(seq_file, output_folder=output_folder) for seq_file in seq_files]
+    return align_two_objects(objects, output_folder, **kwargs)
+
+
+def align_two_sequences_via_ccmpred(seq_files, output_folder, **kwargs):
+    objects = [ComPotts_Object.from_seq_file_via_ccmpred(seq_file, output_folder=output_folder) for seq_file in seq_files]
     return align_two_objects(objects, output_folder, **kwargs)

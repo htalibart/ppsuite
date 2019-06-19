@@ -10,6 +10,7 @@ def call_hhfilter(input_file, output_file, hhid):
     os.system("hhfilter -i "+input_file+" -o "+output_file+" -id "+str(hhid))
 
 
+# mieux gérer trimal -> cf Q12404
 def call_trimal(input_file, output_file, trimal_gt, colnumbering_file):
     print("calling trimal "+str(trimal_gt)+" on "+input_file)
     os.system("trimal -in "+input_file+" -out "+output_file+" -gt "+str(trimal_gt)+" -colnumbering > "+colnumbering_file)

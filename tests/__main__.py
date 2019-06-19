@@ -141,10 +141,12 @@ class TestComPotts(unittest.TestCase):
         self.assertEqual(similarity_global,1)
 
 
-    #def test_multiple_alignment(self):
-    #   
-
-        
+    def test_align_sequence_to_self_via_ccmpred(self):
+        seq_file = EXAMPLES_FOLDER+SIMPLE_TEST+".fasta"
+        output_folder = fm.create_folder(TEST_OUTPUT_FOLDER+SIMPLE_TEST+"_"+SIMPLE_TEST+"_ccmpred_submat/")
+        aligned_positions, infos_solver = align_two_sequences_via_ccmpred([seq_file, seq_file], output_folder)
+        similarity_global = infos_solver["similarity_global"]
+        self.assertEqual(similarity_global,1)
 
 
 

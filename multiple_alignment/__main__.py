@@ -1,7 +1,8 @@
+import os
 import argparse
 
 import files_management as fm
-from multiple_alignment.multiple_alignment import *
+from multiple_alignment import *
 
 
 if __name__=="__main__":
@@ -17,7 +18,15 @@ if __name__=="__main__":
         output_folder = time.strftime("%Y%m%d-%H%M%S")
     fm.create_folder(output_folder)
 
-    seq_files = os.listdir(args['seq_folder'])
-    a3m_files = os.listdir(args['a3m_folder'])
+    seq_folder = args['seq_folder']
+    if seq_folder[-1]!='/':
+        seq_folder+='/'
+
+    a3m_folder = args['a3m_folder']
+    if a3m_folder[-1]!='/':
+        a3m_folder+='/'
+
+    seq_files = [seq_folder+f for f in os.listdir(seq_folder)]
+    a3m_files = [a3m_folder+f for f in os.listdir(a3m_folder)]
 
     multiple_alignment(seq_files, a3m_files, output_folder)

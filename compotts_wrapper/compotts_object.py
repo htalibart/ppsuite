@@ -85,6 +85,23 @@ class ComPotts_Object:
         return obj
 
     @classmethod
+    def from_seq_file_via_ccmpred(cls, seq_file, output_folder="", **kwargs):
+        obj = cls()
+        if 'name' in kwargs:    
+            obj.name = kwargs['name']
+        else:
+            obj.name = fm.get_first_sequence_name(seq_file)+"_one_hot"
+        obj.folder = fm.create_folder(output_folder+obj.name+"/")
+        obj.seq_file = seq_file
+        obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file)
+        obj.trimmed_seq = obj.real_seq
+        obj.mrf_file = obj.folder+obj.name+".mrf"
+        obj.mrf = Potts_Model.from_training_set(obj.seq_file, obj.mrf_file, pc_submat="")
+        obj.train_msa = obj.seq_file
+        return obj
+
+
+    @classmethod
     def from_merge(cls, obj1, obj2, aligned_positions, rescaling_function="identity", hhfilter_threshold=80, **kwargs):
         obj = cls()
         if name in kwargs:
