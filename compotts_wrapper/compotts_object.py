@@ -90,7 +90,7 @@ class ComPotts_Object:
         if 'name' in kwargs:    
             obj.name = kwargs['name']
         else:
-            obj.name = fm.get_first_sequence_name(seq_file)+"_one_hot"
+            obj.name = fm.get_first_sequence_name(seq_file)+"_submat"
         obj.folder = fm.create_folder(output_folder+obj.name+"/")
         obj.seq_file = seq_file
         obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file)
