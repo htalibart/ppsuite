@@ -5,5 +5,4 @@ setup(
     version='0.1dev',
     packages=find_packages(),
     install_requires=['numpy', 'pandas', 'biopython', 'msgpack'],
-    long_description=open('README.md').read(),
 )
