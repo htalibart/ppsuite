@@ -5,7 +5,7 @@ from compotts_wrapper.compotts_object import *
 from potts_model import *
 import files_management as fm
 
-COMPOTTS_SOLVER = fm.get_compots_solver()
+COMPOTTS_SOLVER = ctypes.CDLL("./compotts_solver.so")
 INFINITY = 10000000 
 
 # TODO stocker les scores en utilisant la symétrie pour prendre moins de mémoire
