@@ -17,6 +17,7 @@ if __name__ == '__main__':
     parser.add_argument('-h1', '--a3m_file_1', help="HH-blits output file 1")
     parser.add_argument('-h2', '--a3m_file_2', help="HH-blits output file 2")
     parser.add_argument('-o', '--output_folder', help="Output folder")
+#    parser.add_argument('-of', '--align_train_msas', help="Align MSAs that were used to train the Potts Model using positions aligned by ComPotts")
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling'))
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_ccmpred'), default='one_seq_ccmpred')
@@ -49,18 +50,20 @@ if __name__ == '__main__':
         else:
             print("Need msgpack files")
 
+    else:
+        seq_files = [args["sequence_file_1"], args["sequence_file_2"]]
 
-    elif args['mode']=='hhblits':
-        if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None) and (args["a3m_file_1"] is not None) and (args["a3m_file_2"] is not None):
-            align_hhblits_output([args["sequence_file_1"],args["sequence_file_2"]], [args["a3m_file_1"],args["a3m_file_2"]], output_folder, **arguments)
-        else:
-            print("Need sequence files and a3m files")
+        if args['mode']=='hhblits':
+            if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None) and (args["a3m_file_1"] is not None) and (args["a3m_file_2"] is not None):
+                compotts_objects = [ComPotts_Object.from_hhblits_output(sf, a3m, output_folder, **arguments) for sf, a3m in zip(seq_files, [args["a3m_file_1"], args["a3m_file_2"]])]
+            else:
+                print("Need sequence files and a3m files")
 
-    elif args['mode']=='one_hot':
-        if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None):
-            align_one_hot([args["sequence_file_1"],args["sequence_file_2"]], output_folder, **arguments)
-        else:
-            print("Need sequence files")
+        elif args['mode']=='one_hot' or args['mode']=='one_seq_ccmpred':
+            if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None):
+                compotts_objects = [ComPotts_Object.from_seq_file_to_one_hot(sf, output_folder, **arguments) for sf in seq_files]
+            else:
+                print("Need sequence files")
 
-    elif args['mode']=='one_seq_ccmpred':
-        align_two_sequences_via_ccmpred([args["sequence_file_1"], args["sequence_file_2"]], output_folder, **arguments)
+
+        align_two_objects(compotts_objects, output_folder, **arguments)

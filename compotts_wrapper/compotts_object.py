@@ -11,7 +11,7 @@ from compotts_wrapper.rescaling import *
 class ComPotts_Object:
 
     @classmethod
-    def from_hhblits_output(cls, seq_file, a3m_file, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, rescaling_function="identity", output_folder="", **kwargs):
+    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, rescaling_function="identity", **kwargs):
         obj = cls()
         if 'name' in kwargs:
             obj.name = kwargs['name']
@@ -44,7 +44,7 @@ class ComPotts_Object:
             print("trim OFF")
             obj.train_msa = obj.aln_less
 
-        obj.mrf_file = f+obj.name+".mrf"
+        obj.mrf_file = f+".mrf"
         if (not os.path.isfile(obj.mrf_file)):
             obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
         else:
@@ -60,7 +60,7 @@ class ComPotts_Object:
 
 
     @classmethod 
-    def from_seq_file_to_one_hot(cls, seq_file, output_folder="", **kwargs):
+    def from_seq_file_to_one_hot(cls, seq_file, output_folder, **kwargs):
         obj = cls()
         if 'name' in kwargs:
             obj.name = kwargs['name']
@@ -85,7 +85,7 @@ class ComPotts_Object:
         return obj
 
     @classmethod
-    def from_seq_file_via_ccmpred(cls, seq_file, output_folder="", **kwargs):
+    def from_seq_file_via_ccmpred(cls, seq_file, output_folder, **kwargs):
         obj = cls()
         if 'name' in kwargs:    
             obj.name = kwargs['name']
@@ -102,13 +102,13 @@ class ComPotts_Object:
 
 
     @classmethod
-    def from_merge(cls, obj1, obj2, aligned_positions, rescaling_function="identity", hhfilter_threshold=80, **kwargs):
+    def from_merge(cls, obj1, obj2, aligned_positions, output_folder, rescaling_function="identity", hhfilter_threshold=80, **kwargs):
         obj = cls()
         if name in kwargs:
             obj.name = kwargs['name']
         else:
             obj.name = '_'.join(obj1.name, obj2.name)
-        obj.folder = fm.create_folder_for_compotts_object(obj)
+        obj.folder = output_folder
         obj.aln_unfiltered = obj.folder+obj.name+"_unfiltered.fasta"
         get_msas_aligned(aligned_positions, [obj1.train_msa, obj2.train_msa], obj.aln_unfiltered)
         obj.aln_filtered = obj.folder+obj.name+"_filtered.fasta"

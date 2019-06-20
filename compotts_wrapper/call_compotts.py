@@ -50,17 +50,3 @@ def align_two_potts_models_from_files(mrf_files, output_folder, **kwargs):
 def align_two_objects(objects, output_folder, **kwargs):
     return align_two_potts_models([o.mrf for o in objects], output_folder, **kwargs)
 
-
-def align_hhblits_output(seq_files, a3m_files, output_folder, **kwargs):
-    objects = [ComPotts_Object.from_hhblits_output(seq_file, a3m_file, output_folder=output_folder, **kwargs) for seq_file, a3m_file in zip(seq_files, a3m_files)]
-    return align_two_objects(objects, output_folder, **kwargs)
-
-
-def align_one_hot(seq_files, output_folder, **kwargs):
-    objects = [ComPotts_Object.from_seq_file_to_one_hot(seq_file, output_folder=output_folder) for seq_file in seq_files]
-    return align_two_objects(objects, output_folder, **kwargs)
-
-
-def align_two_sequences_via_ccmpred(seq_files, output_folder, **kwargs):
-    objects = [ComPotts_Object.from_seq_file_via_ccmpred(seq_file, output_folder=output_folder) for seq_file in seq_files]
-    return align_two_objects(objects, output_folder, **kwargs)
