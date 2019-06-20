@@ -1,4 +1,4 @@
-from util import *
+from ..util import *
 import numpy as np
 import math
 
