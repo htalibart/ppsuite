@@ -1,4 +1,8 @@
 import pandas as pd
+from Bio import SeqIO
+from Bio.Seq import Seq
+from Bio.SeqRecord import SeqRecord
+from Bio.Alphabet import IUPAC
 
 def get_real_aligned_positions(aligned_positions, compotts_objects): # TODO test
     real_aligned_positions = {}
@@ -24,6 +28,19 @@ def get_seqs_aligned(aligned_positions, compotts_objects): #TODO test
     for k in range(2):
         seqs_aligned[k]+='-'*gap_length
     return seqs_aligned
+
+
+
+# TODO AlignIO ?
+def get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_file):
+    seqs_aligned = get_seqs_aligned(aligned_positions, compotts_objects)
+    print("Aligned sequences :")
+    for s in seqs_aligned:
+        print(s)
+    seq_records = [SeqRecord(Seq(s, IUPAC.protein), id=o.name, description='') for s,o in zip(seqs_aligned, compotts_objects)]
+    with open(output_file, 'w') as f:
+        SeqIO.write(seq_records, f, "fasta")
+    print("output can be found at "+output_file)
 
 
 
