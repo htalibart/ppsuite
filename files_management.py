@@ -46,6 +46,10 @@ def get_first_sequence_name(seq_file):
     return str(list(SeqIO.parse(seq_file, "fasta"))[0].id)
 
 
+def get_name_from_first_sequence_name(seq_file):
+    actual_name = get_first_sequence_name(seq_file)
+    return ''.join(e for e in actual_name if e.isalnum())
+
 def create_fasta_file_with_less_sequences(aln_file, aln_1000, nb_sequences=1000):
     AlignIO.write(AlignIO.read(aln_file, "fasta")[:nb_sequences], open(aln_1000, 'w'), "fasta")
 

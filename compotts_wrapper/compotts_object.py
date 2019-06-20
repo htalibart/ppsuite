@@ -16,7 +16,7 @@ class ComPotts_Object:
         if 'name' in kwargs:
             obj.name = kwargs['name']
         else:
-            obj.name = fm.get_first_sequence_name(seq_file)+"_hhblits"
+            obj.name = fm.get_name_from_first_sequence_name(seq_file)+"_hhblits"
         obj.seq_file = seq_file
         obj.a3m_file = a3m_file
         if len(output_folder)>0:
@@ -65,7 +65,7 @@ class ComPotts_Object:
         if 'name' in kwargs:
             obj.name = kwargs['name']
         else:
-            obj.name = fm.get_first_sequence_name(seq_file)+"_one_hot"
+            obj.name = fm.get_name_from_first_sequence_name(seq_file)+"_one_hot"
         obj.folder = fm.create_folder(output_folder+obj.name+"/")
         obj.seq_file = seq_file
         obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file)
@@ -90,7 +90,7 @@ class ComPotts_Object:
         if 'name' in kwargs:    
             obj.name = kwargs['name']
         else:
-            obj.name = fm.get_first_sequence_name(seq_file)+"_submat"
+            obj.name = fm.get_name_from_first_sequence_name(seq_file)+"_submat"
         obj.folder = fm.create_folder(output_folder+obj.name+"/")
         obj.seq_file = seq_file
         obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file)

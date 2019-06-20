@@ -29,7 +29,8 @@ if __name__ == '__main__':
 
     output_folder = args["output_folder"]
     if output_folder is None:
-        output_folder = time.strftime("%Y%m%d-%H%M%S")
+        general_output_folder = fm.create_folder("output_compotts")
+        output_folder = general_output_folder+time.strftime("%Y%m%d-%H%M%S")
     if output_folder[-1]!='/':
         output_folder+='/'
     fm.create_folder(output_folder)
