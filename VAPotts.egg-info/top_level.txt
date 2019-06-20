@@ -1,4 +1,0 @@
-compotts
-multiple_alignment
-tests
-vizpotts
