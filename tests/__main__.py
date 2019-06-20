@@ -27,14 +27,22 @@ def are_templates_aligned(template2, aligned_positions):
     return good_alignment
 
 
+def get_simple_hhblits_object(**kwargs):
+    f = EXAMPLES_FOLDER+SIMPLE_TEST
+    a3m_file = f+".a3m"
+    seq_file = f+".fasta"
+    if 'output_folder' in kwargs:
+        output_folder=kwargs['output_folder']
+        del kwargs['output_folder']
+    else:
+        output_folder = TEST_OUTPUT_FOLDER
+    return ComPotts_Object.from_hhblits_output(seq_file, a3m_file, output_folder, **kwargs)
+
 
 class TestComPotts(unittest.TestCase):
 
     def test_import_hhblits(self):
-        test_name = EXAMPLES_FOLDER+SIMPLE_TEST
-        a3m_file = test_name+".a3m"
-        seq_file = test_name+".fasta"
-        obj = ComPotts_Object.from_hhblits_output(seq_file, a3m_file, output_folder=TEST_OUTPUT_FOLDER, nb_sequences=200)
+        obj = get_simple_hhblits_object(nb_sequences=200)
 
 
     def test_to_one_hot(self):
@@ -45,9 +53,7 @@ class TestComPotts(unittest.TestCase):
     def test_align_compotts_object_to_itself(self):
         test_name = EXAMPLES_FOLDER+SIMPLE_TEST
         output_folder = fm.create_folder(TEST_OUTPUT_FOLDER+SIMPLE_TEST+"_"+SIMPLE_TEST+"/")
-        a3m_file = test_name+".a3m"
-        seq_file = test_name+".fasta"
-        obj = ComPotts_Object.from_hhblits_output(seq_file, a3m_file, output_folder=output_folder, nb_sequences=200)
+        obj = get_simple_hhblits_object(output_folder=output_folder)
         aligned_positions, infos_solver = align_two_objects([obj, obj], output_folder)
         similarity_global = infos_solver["similarity_global"]
         self.assertEqual(similarity_global,1)
@@ -83,7 +89,8 @@ class TestComPotts(unittest.TestCase):
         test_name = SIMPLE_TEST+"_one_hot"
         output_folder = fm.create_folder(TEST_OUTPUT_FOLDER+test_name+"/")
         seq_file = EXAMPLES_FOLDER+SIMPLE_TEST+".fasta"
-        aligned_positions, infos_solver = align_one_hot([seq_file, seq_file], output_folder)
+        obj = ComPotts_Object.from_seq_file_to_one_hot(seq_file, output_folder)
+        aligned_positions, infos_solver = align_two_objects([obj, obj], output_folder)
         similarity_global = infos_solver["similarity_global"]
         self.assertEqual(similarity_global,1)
 
@@ -123,19 +130,13 @@ class TestComPotts(unittest.TestCase):
 
 
     def test_rescale_compotts_object(self):
-        test_name = EXAMPLES_FOLDER+SIMPLE_TEST
-        a3m_file = test_name+".a3m"
-        seq_file = test_name+".fasta"
-        obj = ComPotts_Object.from_hhblits_output(seq_file, a3m_file, output_folder=TEST_OUTPUT_FOLDER, nb_sequences=200, rescaling_function="original_rescaling")
-
+        obj = get_simple_hhblits_object(rescaling_function="original_rescaling")
 
     def test_aligned_rescaled_mrf_to_itself(self):
         test_name = EXAMPLES_FOLDER+SIMPLE_TEST
-        rescaling_function="original_rescaling"
+        rescaling_function = "original_rescaling"
         output_folder = fm.create_folder(TEST_OUTPUT_FOLDER+SIMPLE_TEST+"_"+SIMPLE_TEST+"_"+rescaling_function+"/")
-        a3m_file = test_name+".a3m"
-        seq_file = test_name+".fasta"
-        obj = ComPotts_Object.from_hhblits_output(seq_file, a3m_file, output_folder=output_folder, nb_sequences=200, rescaling_function=rescaling_function)
+        obj = get_simple_hhblits_object(rescaling_function=rescaling_function, output_folder=output_folder)
         aligned_positions, infos_solver = align_two_objects([obj, obj], output_folder)
         similarity_global = infos_solver["similarity_global"]
         self.assertEqual(similarity_global,1)
@@ -144,7 +145,8 @@ class TestComPotts(unittest.TestCase):
     def test_align_sequence_to_self_via_ccmpred(self):
         seq_file = EXAMPLES_FOLDER+SIMPLE_TEST+".fasta"
         output_folder = fm.create_folder(TEST_OUTPUT_FOLDER+SIMPLE_TEST+"_"+SIMPLE_TEST+"_ccmpred_submat/")
-        aligned_positions, infos_solver = align_two_sequences_via_ccmpred([seq_file, seq_file], output_folder)
+        obj = ComPotts_Object.from_seq_file_via_ccmpred(seq_file, output_folder)
+        aligned_positions, infos_solver = align_two_objects([obj, obj], output_folder)
         similarity_global = infos_solver["similarity_global"]
         self.assertEqual(similarity_global,1)
 
