@@ -1,6 +1,7 @@
 import argparse
 
 from call_compotts import *
+from manage_positions import *
 from align_msas import *
 import files_management as fm
 import time
@@ -19,6 +20,7 @@ if __name__ == '__main__':
     parser.add_argument('-h2', '--a3m_file_2', help="HH-blits output file 2")
     parser.add_argument('-o', '--output_folder', help="Output folder")
     parser.add_argument('-of', '--align_train_msas', help="Align MSAs that were used to train the Potts Model using positions aligned by ComPotts", action='store_true')
+    parser.add_argument('-os', '--disp_aligned_sequences', help="Display aligned sequences using positions aligned by ComPotts", action='store_true')
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling'))
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_ccmpred'), default='one_seq_ccmpred')
@@ -67,6 +69,14 @@ if __name__ == '__main__':
             else:
                 print("Need sequence files")
 
+
+        elif args['mode']=='one_seq_ccmpred':
+            if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None):
+                compotts_objects = [ComPotts_Object.from_seq_file_via_ccmpred(sf, output_folder, **arguments) for sf in seq_files]
+            else:
+                print("Need sequence files")
+
+ 
         # alignement
         aligned_positions, infos_solver = align_two_objects(compotts_objects, output_folder, **arguments)
 
@@ -75,3 +85,8 @@ if __name__ == '__main__':
         if args["align_train_msas"]:
             output_msa = output_folder+'_'.join(o.name for o in compotts_objects)+".fasta"
             get_msas_aligned(aligned_positions, [o.train_msa for o in compotts_objects], output_msa)
+
+        if args["disp_aligned_sequences"]:
+            seqs_aligned = get_seqs_aligned(aligned_positions, compotts_objects)
+            for s in seqs_aligned:
+                print(s)
