@@ -2,10 +2,10 @@ import unittest
 
 import numpy as np
 
-from compotts_wrapper.compotts_object import *
-from compotts_wrapper.call_compotts import *
-from compotts_wrapper.manage_positions import *
-from compotts_wrapper.rescaling import *
+from compotts.compotts_object import *
+from compotts.call_compotts import *
+from compotts.manage_positions import *
+from compotts.rescaling import *
 import tests.create_fake_data as crfake
 from potts_model import *
 import files_management as fm

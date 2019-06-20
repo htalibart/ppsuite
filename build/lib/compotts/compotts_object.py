@@ -5,13 +5,12 @@ import files_management as fm
 from util import *
 from tool_wrapper import *
 from potts_model import *
-from compotts_wrapper.rescaling import *
-
+from compotts.rescaling import *
 
 class ComPotts_Object:
 
     @classmethod
-    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, rescaling_function="identity", **kwargs):
+    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, mrf_file=None, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, rescaling_function="identity", **kwargs):
         obj = cls()
         if 'name' in kwargs:
             obj.name = kwargs['name']
@@ -44,17 +43,18 @@ class ComPotts_Object:
             print("trim OFF")
             obj.train_msa = obj.aln_less
 
-        obj.mrf_file = f+".mrf"
-        if (not os.path.isfile(obj.mrf_file)):
+        if mrf_file is None:
+            obj.mrf_file = f+".mrf"
             obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
         else:
+            obj.mrf_file = mrf_file
             obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
         if (rescaling_function!="identity"):
             print("rescaling MRF")
             obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function)
         else:
             print("using MRF as is (no rescaling)")
-        obj.real_seq = fm.get_first_sequence_in_fasta_file(obj.seq_file)
+        obj.real_seq = fm.get_first_sequence_in_fasta_file(obj.seq_file).upper()
         obj.trimmed_seq = ''.join([obj.real_seq[col] for col in obj.get_real_positions([k for k in range(obj.mrf.ncol)])])
         return obj
 
@@ -68,7 +68,7 @@ class ComPotts_Object:
             obj.name = fm.get_name_from_first_sequence_name(seq_file)+"_one_hot"
         obj.folder = fm.create_folder(output_folder+obj.name+"/")
         obj.seq_file = seq_file
-        obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file)
+        obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         obj.trimmed_seq = obj.real_seq
         x = code_whole_seq(obj.real_seq)
         v = np.zeros((len(x),q))
@@ -93,7 +93,7 @@ class ComPotts_Object:
             obj.name = fm.get_name_from_first_sequence_name(seq_file)+"_submat"
         obj.folder = fm.create_folder(output_folder+obj.name+"/")
         obj.seq_file = seq_file
-        obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file)
+        obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         obj.trimmed_seq = obj.real_seq
         obj.mrf_file = obj.folder+obj.name+".mrf"
         obj.mrf = Potts_Model.from_training_set(obj.seq_file, obj.mrf_file, pc_submat="")

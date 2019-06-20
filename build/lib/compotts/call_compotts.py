@@ -1,7 +1,7 @@
 import ctypes
 
-from compotts_wrapper.compute_scores import *
-from compotts_wrapper.compotts_object import *
+from compotts.compute_scores import *
+from compotts.compotts_object import *
 from potts_model import *
 import files_management as fm
 

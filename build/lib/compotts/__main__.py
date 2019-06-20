@@ -1,13 +1,14 @@
 import argparse
 
-from compotts_wrapper.call_compotts import *
-from compotts_wrapper.manage_positions import *
-from compotts_wrapper.align_msas import *
+from compotts.call_compotts import *
+from compotts.manage_positions import *
+from compotts.align_msas import *
 import files_management as fm
 import time
 
 
 # TODO structure de fichiers
+# TODO séparer dossiers sortie CCMpred et sortie ComPotts
 
 
 if __name__ == '__main__':
@@ -18,6 +19,8 @@ if __name__ == '__main__':
     parser.add_argument('-s2', '--sequence_file_2', help="Sequence file 2")
     parser.add_argument('-h1', '--a3m_file_1', help="HH-blits output file 1")
     parser.add_argument('-h2', '--a3m_file_2', help="HH-blits output file 2")
+    parser.add_argument('-f1', '--input_folder_1', help="Folder containing files for sequence 1")
+    parser.add_argument('-f2', '--input_folder_2', help="Folder containing files for sequence 2")
     parser.add_argument('-o', '--output_folder', help="Output folder")
     parser.add_argument('-of', '--align_train_msas', help="Align MSAs that were used to train the Potts Model using positions aligned by ComPotts", action='store_true')
     parser.add_argument('-os', '--align_sequences', help="Display aligned sequences using positions aligned by ComPotts", action='store_true')
@@ -35,7 +38,7 @@ if __name__ == '__main__':
         output_folder+='/'
     fm.create_folder(output_folder)
 
-    no_kwargs = ["potts_model_1", "potts_model_2", "sequence_file_1", "sequence_file_2", "a3m_file_1", "a3m_file_2", "output_folder", "mode", "no_w"]
+    no_kwargs = ["potts_model_1", "potts_model_2", "sequence_file_1", "sequence_file_2", "a3m_file_1", "a3m_file_2", "output_folder", "mode", "no_w"] # TODO voir si utile
     arguments = {}
     for key in args.keys():
         if key not in no_kwargs:
@@ -49,18 +52,36 @@ if __name__ == '__main__':
 
 
     if args['mode']=='msgpack': # alignement de deux fichiers msgpack seulement
+        for k in range(1,3):
+            if (args["potts_model_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
+                args["potts_model_"+str(k)] = fm.get_potts_model_file_from_folder(args["input_folder_"+str(k)])
         if (args["potts_model_1"] is not None) and (args["potts_model_2"] is not None):
             align_two_potts_models_from_files([args["potts_model_1"], args["potts_model_2"]], output_folder, **arguments)
         else:
             print("Need msgpack files")
 
+
+
     else: # tout le reste (fichiers fasta, ...)
+        for k in range(1,3):
+            if (args["sequence_file_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
+                args["sequence_file_"+str(k)] = fm.get_sequence_file_from_folder(args["input_folder_"+str(k)])
+
         seq_files = [args["sequence_file_1"], args["sequence_file_2"]]
 
         # récupération des objects ComPotts
         if args['mode']=='hhblits':
+            for k in range(1,3):
+                if (args["a3m_file_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
+                    args["a3m_file_"+str(k)] = fm.get_a3m_file_from_folder(args["input_folder_"+str(k)])
+                if (args["potts_model_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
+                    args["potts_model_"+str(k)] = fm.get_potts_model_file_from_folder(args["input_folder_"+str(k)])
+
             if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None) and (args["a3m_file_1"] is not None) and (args["a3m_file_2"] is not None):
-                compotts_objects = [ComPotts_Object.from_hhblits_output(sf, a3m, output_folder, **arguments) for sf, a3m in zip(seq_files, [args["a3m_file_1"], args["a3m_file_2"]])]
+                compotts_objects = []
+                for k in range(2):
+                    obj = ComPotts_Object.from_hhblits_output(seq_files[k], args["a3m_file_"+str(k+1)], output_folder, mrf_file=args["potts_model_"+str(k+1)])
+                    compotts_objects.append(obj)
             else:
                 print("Need sequence files and a3m files")
 
