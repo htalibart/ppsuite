@@ -79,4 +79,21 @@ def get_trimal_ncol(colnumbering_file):
 
 
 def get_script_path():
-    return os.path.abspath(os.path.dirname(__file__))+'/' 
+    return os.path.abspath(os.path.dirname(__file__))+'/'
+
+
+def get_file_from_folder_ending_with_extension(folder, extension):
+    files = [f for f in os.listdir(folder) if f.endswith(extension)]
+    if len(files)>1:
+        print("more than 1 file ending with "+extension+", using "+files[0])
+    return folder+files[0]
+
+def get_potts_model_file_from_folder(folder):
+   return get_file_from_folder_ending_with_extension(folder, ".mrf")
+
+def get_sequence_file_from_folder(folder):
+   return get_file_from_folder_ending_with_extension(folder, ".fasta")
+
+def get_a3m_file_from_folder(folder):
+   return get_file_from_folder_ending_with_extension(folder, ".a3m")
+
