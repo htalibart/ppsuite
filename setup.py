@@ -10,5 +10,6 @@ setup(
     package_data={
         'compotts_solver':['compotts_solver.so'],
         'soeding_reformat':['reformat.pl']
-        }
+        },
+    include_package_data=True
 )
