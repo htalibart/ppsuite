@@ -52,29 +52,28 @@ if __name__ == '__main__':
 
 
     if args['mode']=='msgpack': # alignement de deux fichiers msgpack seulement
-        if (args["potts_model_1"] is None) and (args["input_folder_1"] is not None):
-            args["potts_model_1"] = fm.get_potts_model_file_from_folder(args["input_folder_1"])
-        if (args["potts_model_2"] is None) and (args["input_folder_2"] is not None):
-            args["potts_model_2"] = fm.get_potts_model_file_from_folder(args["input_folder_2"])
+        for k in range(1,3):
+            if (args["potts_model_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
+                args["potts_model_"+str(k)] = fm.get_potts_model_file_from_folder(args["input_folder_"+str(k)])
         if (args["potts_model_1"] is not None) and (args["potts_model_2"] is not None):
             align_two_potts_models_from_files([args["potts_model_1"], args["potts_model_2"]], output_folder, **arguments)
         else:
             print("Need msgpack files")
 
+
+
     else: # tout le reste (fichiers fasta, ...)
-        if (args["sequence_file_1"] is None) and (args["input_folder_1"] is not None):
-            args["sequence_file_1"] = fm.get_sequence_file_from_folder(args["input_folder_1"])
-        if (args["sequence_file_2"] is None) and (args["input_folder_2"] is not None):
-            args["sequence_file_2"] = fm.get_sequence_file_from_folder(args["input_folder_2"])
+        for k in range(1,3):
+            if (args["sequence_file_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
+                args["sequence_file_"+str(k)] = fm.get_sequence_file_from_folder(args["input_folder_"+str(k)])
 
         seq_files = [args["sequence_file_1"], args["sequence_file_2"]]
 
         # récupération des objects ComPotts
         if args['mode']=='hhblits':
-            if (args["a3m_file_1"] is None) and (args["input_folder_1"] is not None):
-                args["a3m_file_1"] = fm.get_a3m_file_from_folder(args["input_folder_1"])
-            if (args["a3m_file_2"] is None) and (args["input_folder_2"] is not None):
-                args["a3m_file_2"] = fm.get_a3m_file_from_folder(args["input_folder_2"])
+            for k in range(1,3):
+                if (args["a3m_file_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
+                    args["a3m_file_"+str(k)] = fm.get_a3m_file_from_folder(args["input_folder_"+str(k)])
 
             if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None) and (args["a3m_file_1"] is not None) and (args["a3m_file_2"] is not None):
                 compotts_objects = [ComPotts_Object.from_hhblits_output(sf, a3m, output_folder, **arguments) for sf, a3m in zip(seq_files, [args["a3m_file_1"], args["a3m_file_2"]])] # TODO MRF exists
