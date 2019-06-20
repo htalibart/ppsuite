@@ -38,6 +38,11 @@ if __name__ == '__main__':
         output_folder+='/'
     fm.create_folder(output_folder)
 
+    for k in range(1,3):
+        if args["input_folder_"+str(k)] is not None:
+            if args["input_folder_"+str(k)][-1]!='/':
+                args["input_folder_"+str(k)]+='/'
+
     no_kwargs = ["potts_model_1", "potts_model_2", "sequence_file_1", "sequence_file_2", "a3m_file_1", "a3m_file_2", "output_folder", "mode", "no_w"] # TODO voir si utile
     arguments = {}
     for key in args.keys():

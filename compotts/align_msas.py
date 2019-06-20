@@ -4,7 +4,7 @@ from Bio import SeqIO, AlignIO
 from Bio.Seq import Seq
 from Bio.Align import MultipleSeqAlignment
 
-import files_management as fm
+import basic_modules.files_management as fm
 
 def get_msas_aligned(aligned_positions, train_msa_files, output_msa_file):
     print("merging "+train_msa_files[0]+" and "+train_msa_files[1])
