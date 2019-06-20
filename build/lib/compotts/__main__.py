@@ -1,8 +1,8 @@
 import argparse
 
-from compotts.call_compotts import *
-from compotts.manage_positions import *
-from compotts.align_msas import *
+from compotts_wrapper.call_compotts import *
+from compotts_wrapper.manage_positions import *
+from compotts_wrapper.align_msas import *
 import files_management as fm
 import time
 

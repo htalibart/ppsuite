@@ -1,4 +1,4 @@
-compotts_wrapper
+compotts
 multiple_alignment
 tests
 vizpotts

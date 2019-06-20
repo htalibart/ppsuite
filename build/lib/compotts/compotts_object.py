@@ -5,7 +5,7 @@ import files_management as fm
 from util import *
 from tool_wrapper import *
 from potts_model import *
-from compotts.rescaling import *
+from compotts_wrapper.rescaling import *
 
 
 class ComPotts_Object:
