@@ -74,9 +74,14 @@ if __name__ == '__main__':
             for k in range(1,3):
                 if (args["a3m_file_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
                     args["a3m_file_"+str(k)] = fm.get_a3m_file_from_folder(args["input_folder_"+str(k)])
+                if (args["potts_model_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
+                    args["potts_model_"+str(k)] = fm.get_potts_model_file_from_folder(args["input_folder_"+str(k)])
 
             if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None) and (args["a3m_file_1"] is not None) and (args["a3m_file_2"] is not None):
-                compotts_objects = [ComPotts_Object.from_hhblits_output(sf, a3m, output_folder, **arguments) for sf, a3m in zip(seq_files, [args["a3m_file_1"], args["a3m_file_2"]])] # TODO MRF exists
+                compotts_objects = []
+                for k in range(2):
+                    obj = ComPotts_Object.from_hhblits_output(seq_files[k], args["a3m_file_"+str(k+1)], output_folder, mrf_file=args["potts_model_"+str(k+1)])
+                    compotts_objects.append(obj)
             else:
                 print("Need sequence files and a3m files")
 

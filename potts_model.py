@@ -34,6 +34,7 @@ class Potts_Model:
                 b'x_pair' : np.array(ncol, ncol, 21, 21)
                 b'meta'
             """
+        print("getting Potts model from "+binary_file)
         ncol = df[b'ncol']
         v_20 = np.array(df[b'x_single']).reshape((ncol,20))
         v = np.zeros((ncol,21))

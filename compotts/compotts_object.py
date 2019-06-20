@@ -7,11 +7,10 @@ from tool_wrapper import *
 from potts_model import *
 from compotts.rescaling import *
 
-
 class ComPotts_Object:
 
     @classmethod
-    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, rescaling_function="identity", **kwargs):
+    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, mrf_file=None, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, rescaling_function="identity", **kwargs):
         obj = cls()
         if 'name' in kwargs:
             obj.name = kwargs['name']
@@ -44,10 +43,11 @@ class ComPotts_Object:
             print("trim OFF")
             obj.train_msa = obj.aln_less
 
-        obj.mrf_file = f+".mrf"
-        if (not os.path.isfile(obj.mrf_file)):
+        if mrf_file is None:
+            obj.mrf_file = f+".mrf"
             obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
         else:
+            obj.mrf_file = mrf_file
             obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
         if (rescaling_function!="identity"):
             print("rescaling MRF")
