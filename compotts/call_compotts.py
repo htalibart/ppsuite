@@ -2,8 +2,8 @@ import ctypes
 
 from compotts.compute_scores import *
 from compotts.compotts_object import *
-from potts_model import *
-import files_management as fm
+from basic_modules.potts_model import *
+import basic_modules.files_management as fm
 
 COMPOTTS_SOLVER = fm.get_compots_solver()
 INFINITY = 10000000 

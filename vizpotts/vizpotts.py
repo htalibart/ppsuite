@@ -2,7 +2,7 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 
 from global_variables import ALPHABET
-from util import *
+from basic_modules.util import *
 
 def get_reordered_v(v, alphabet):
     idx = [ALPHABET.find(a) for a in alphabet]

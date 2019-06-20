@@ -1,7 +1,7 @@
 from math import *
 import numpy as np
-from util import *
-from potts_model import *
+from basic_modules.util import *
+from basic_modules.potts_model import *
 
 def get_rescaled_mrf(mrf, rescaling_function_name, **kwargs): # TODO optimiser
     rescaling_function = eval(rescaling_function_name)

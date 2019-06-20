@@ -1,7 +1,7 @@
 import argparse
 
 from vizpotts import *
-from potts_model import *
+from basic_modules.potts_model import *
 
 if __name__ == '__main__':
     parser = argparse.ArgumentParser()

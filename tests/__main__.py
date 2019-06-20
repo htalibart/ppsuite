@@ -7,11 +7,13 @@ from compotts.call_compotts import *
 from compotts.manage_positions import *
 from compotts.rescaling import *
 import tests.create_fake_data as crfake
-from potts_model import *
-import files_management as fm
+from basic_modules.potts_model import *
+import basic_modules.files_management as fm
 
-TEST_OUTPUT_FOLDER = "tests_output/"
-EXAMPLES_FOLDER = "examples/"
+
+TEST_FOLDER = os.path.abspath(os.path.dirname(__file__))+'/'
+TEST_OUTPUT_FOLDER = TEST_FOLDER+"tests_output/"
+EXAMPLES_FOLDER = TEST_FOLDER+"examples/"
 SIMPLE_TEST = "1cc8"
 
 def are_templates_aligned(template2, aligned_positions):

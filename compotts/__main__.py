@@ -3,7 +3,7 @@ import argparse
 from compotts.call_compotts import *
 from compotts.manage_positions import *
 from compotts.align_msas import *
-import files_management as fm
+import basic_modules.files_management as fm
 import time
 
 

@@ -1,10 +1,10 @@
 """ ComPotts Object : contains MSA files locations, Potts models, etc. """
 
 import os
-import files_management as fm
-from util import *
-from tool_wrapper import *
-from potts_model import *
+import basic_modules.files_management as fm
+from basic_modules.util import *
+from basic_modules.tool_wrapper import *
+from basic_modules.potts_model import *
 from compotts.rescaling import *
 
 class ComPotts_Object:

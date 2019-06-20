@@ -1,7 +1,7 @@
 import numpy as np
 import random
 import os
-from global_variables import ALPHABET_WITHOUT_GAP
+from basic_modules.global_variables import ALPHABET_WITHOUT_GAP
 
 
 """
