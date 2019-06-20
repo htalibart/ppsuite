@@ -63,7 +63,7 @@ if __name__ == '__main__':
             else:
                 print("Need sequence files and a3m files")
 
-        elif args['mode']=='one_hot' or args['mode']=='one_seq_ccmpred':
+        elif args['mode']=='one_hot':
             if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None):
                 compotts_objects = [ComPotts_Object.from_seq_file_to_one_hot(sf, output_folder, **arguments) for sf in seq_files]
             else:
