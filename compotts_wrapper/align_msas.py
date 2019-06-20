@@ -22,6 +22,7 @@ def get_msas_aligned(aligned_positions, train_msa_files, output_msa_file):
     new_alignment = MultipleSeqAlignment(records)
     with open(output_msa_file, 'w') as f:
         AlignIO.write(new_alignment, f, "fasta")
+    print("output can be found at "+output_msa_file)
 
 
 if __name__=="__main__":

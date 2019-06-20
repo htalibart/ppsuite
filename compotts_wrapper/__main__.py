@@ -1,6 +1,7 @@
 import argparse
 
 from call_compotts import *
+from align_msas import *
 import files_management as fm
 import time
 
@@ -17,7 +18,7 @@ if __name__ == '__main__':
     parser.add_argument('-h1', '--a3m_file_1', help="HH-blits output file 1")
     parser.add_argument('-h2', '--a3m_file_2', help="HH-blits output file 2")
     parser.add_argument('-o', '--output_folder', help="Output folder")
-#    parser.add_argument('-of', '--align_train_msas', help="Align MSAs that were used to train the Potts Model using positions aligned by ComPotts")
+    parser.add_argument('-of', '--align_train_msas', help="Align MSAs that were used to train the Potts Model using positions aligned by ComPotts", action='store_true')
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling'))
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_ccmpred'), default='one_seq_ccmpred')
@@ -44,15 +45,16 @@ if __name__ == '__main__':
         arguments["use_w"]=True
 
 
-    if args['mode']=='msgpack':
+    if args['mode']=='msgpack': # alignement de deux fichiers msgpack seulement
         if (args["potts_model_1"] is not None) and (args["potts_model_2"] is not None):
             align_two_potts_models_from_files([args["potts_model_1"], args["potts_model_2"]], output_folder, **arguments)
         else:
             print("Need msgpack files")
 
-    else:
+    else: # tout le reste (fichiers fasta, ...)
         seq_files = [args["sequence_file_1"], args["sequence_file_2"]]
 
+        # récupération des objects ComPotts
         if args['mode']=='hhblits':
             if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None) and (args["a3m_file_1"] is not None) and (args["a3m_file_2"] is not None):
                 compotts_objects = [ComPotts_Object.from_hhblits_output(sf, a3m, output_folder, **arguments) for sf, a3m in zip(seq_files, [args["a3m_file_1"], args["a3m_file_2"]])]
@@ -65,5 +67,11 @@ if __name__ == '__main__':
             else:
                 print("Need sequence files")
 
+        # alignement
+        aligned_positions, infos_solver = align_two_objects(compotts_objects, output_folder, **arguments)
 
-        align_two_objects(compotts_objects, output_folder, **arguments)
+
+        # on fait des trucs avec les positions alignées
+        if args["align_train_msas"]:
+            output_msa = output_folder+'_'.join(o.name for o in compotts_objects)+".fasta"
+            get_msas_aligned(aligned_positions, [o.train_msa for o in compotts_objects], output_msa)
