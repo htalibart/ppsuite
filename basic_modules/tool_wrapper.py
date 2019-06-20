@@ -17,7 +17,7 @@ def call_trimal(input_file, output_file, trimal_gt, colnumbering_file):
 
 
 def call_reformat(input_file, output_file):
-    print("will reformat "+input_file+" using "+fm.get_script_path()+"./reformat.pl to "+output_file)
-    call = fm.get_script_path()+"./reformat.pl a3m fas "+input_file+" "+output_file+" -r"
+    print("will reformat "+input_file+" using "+fm.get_main_folder_path()+"./reformat.pl to "+output_file)
+    call = fm.get_main_folder_path()+"./reformat.pl a3m fas "+input_file+" "+output_file+" -r"
     print(call)
     os.system(call)

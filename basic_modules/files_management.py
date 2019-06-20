@@ -5,7 +5,7 @@ from Bio import SeqIO, AlignIO
 import ctypes
 
 def get_compots_solver():
-    return ctypes.CDLL(get_script_path()+"../compotts_solver.so")
+    return ctypes.CDLL(get_main_folder_path()+"compotts_solver.so")
 
 def create_folder(name):
     if name[-1]!='/':
@@ -78,8 +78,8 @@ def get_trimal_ncol(colnumbering_file):
     return [int(s) for s in col_list]
 
 
-def get_script_path(): # TODO checker où c'est utilisé et modifier pour que ça marche
-    return os.path.abspath(os.path.dirname(__file__))+'/'
+def get_main_folder_path():
+    return os.path.abspath(os.path.dirname(os.path.dirname(__file__)))+'/'
 
 
 def get_file_from_folder_ending_with_extension(folder, extension):
