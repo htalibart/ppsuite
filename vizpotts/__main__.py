@@ -1,9 +1,10 @@
 import argparse
 
-from vizpotts import *
+from vizpotts.vizpotts import *
 from basic_modules.potts_model import *
 
-if __name__ == '__main__':
+
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-p', '--potts_model', help="Potts model (msgpack file)")
     #parser.add_argument('-m', '--mode', help="Visualization mode", choices=("whole_potts_model"), default="whole_potts_model")
@@ -16,3 +17,8 @@ if __name__ == '__main__':
 
     mrf = Potts_Model.from_msgpack(args["potts_model"])
     visualize_mrf(mrf, start_at_1=start_at_1)
+
+
+
+if __name__ == '__main__':
+    main()
