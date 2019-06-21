@@ -11,7 +11,7 @@ import time
 # TODO séparer dossiers sortie CCMpred et sortie ComPotts
 
 
-if __name__ == '__main__':
+def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-p1', '--potts_model_1', help="Potts model 1")
     parser.add_argument('-p2', '--potts_model_2', help="Potts model 2")
@@ -116,3 +116,7 @@ if __name__ == '__main__':
         if args["align_sequences"]:
             output_fasta_file = output_folder+'_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta"
             get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
+
+
+if __name__=="__main__":
+    main()

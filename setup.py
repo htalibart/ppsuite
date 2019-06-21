@@ -10,4 +10,7 @@ setup(
     package_data={
         'compotts':['compotts_solver.so'],
         },
+    entry_points={
+        'console_scripts':['compotts = compotts.__main__:main']
+        }
 )
