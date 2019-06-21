@@ -6,8 +6,6 @@ from basic_modules.potts_model import *
 import basic_modules.files_management as fm
 
 import pkg_resources
-
-DATA_PATH = pkg_resources.resource_filename('compotts', '')
 COMPOTTS_CPP_LIBRARY = pkg_resources.resource_filename('compotts', 'compotts_solver.so')
 
 COMPOTTS_SOLVER = ctypes.CDLL(COMPOTTS_CPP_LIBRARY)

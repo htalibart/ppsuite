@@ -75,10 +75,6 @@ def get_trimal_ncol(colnumbering_file):
     return [int(s) for s in col_list]
 
 
-def get_main_folder_path():
-    return os.path.abspath(os.path.dirname(os.path.dirname(__file__)))+'/'
-
-
 def get_file_from_folder_ending_with_extension(folder, extension):
     files = [f for f in os.listdir(folder) if f.endswith(extension)]
     if len(files)>1:
