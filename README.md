@@ -1,5 +1,5 @@
-# ComPotts and VizPotts
+# ComPotts
 
-## ComPotts wrapper
+## Requirements
+CCMpredPy : https://github.com/susannvorberg/CCmpredPy
 
-## VizPotts
