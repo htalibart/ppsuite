@@ -9,6 +9,5 @@ setup(
     install_requires=['numpy', 'pandas', 'biopython', 'msgpack'],
     package_data={
         'compotts':['compotts_solver.so'],
-        'basic_modules':['reformat.pl']
         },
 )
