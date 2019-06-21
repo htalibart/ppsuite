@@ -5,7 +5,12 @@ from compotts.compotts_object import *
 from basic_modules.potts_model import *
 import basic_modules.files_management as fm
 
-COMPOTTS_SOLVER = fm.get_compots_solver()
+import pkg_resources
+
+DATA_PATH = pkg_resources.resource_filename('compotts', '')
+COMPOTTS_CPP_LIBRARY = pkg_resources.resource_filename('compotts', 'compotts_solver.so')
+
+COMPOTTS_SOLVER = ctypes.CDLL(COMPOTTS_CPP_LIBRARY)
 INFINITY = 10000000 
 
 # TODO stocker les scores en utilisant la symétrie pour prendre moins de mémoire

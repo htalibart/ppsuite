@@ -1,3 +1,3 @@
 touch main_compotts.cpp
 make -f Makefile
-cp compotts_solver.so ..
+cp compotts_solver.so ../compotts

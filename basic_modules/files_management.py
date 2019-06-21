@@ -4,9 +4,6 @@ import pandas as pd
 from Bio import SeqIO, AlignIO
 import ctypes
 
-def get_compots_solver():
-    return ctypes.CDLL(get_main_folder_path()+"compotts_solver.so")
-
 def create_folder(name):
     if name[-1]!='/':
         name+='/'
