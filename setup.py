@@ -12,5 +12,6 @@ setup(
         },
     entry_points={
         'console_scripts':['compotts = compotts.__main__:main']
-        }
+        },
+    test_suite="tests",
 )
