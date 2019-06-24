@@ -30,7 +30,7 @@ class Test_Call_ComPotts_Simple(unittest.TestCase):
 
     def setUp(self):
         PROTEIN_NAME = "1cc8"
-        self.mrf = Potts_Model.from_msgpack(EXAMPLES_FOLDER+PROTEIN_NAME+".mrf")
+        self.mrf = Potts_Model.from_msgpack(os.path.join(EXAMPLES_FOLDER,PROTEIN_NAME+".mrf"))
         self.output_folder = tempfile.mkdtemp()
 
 

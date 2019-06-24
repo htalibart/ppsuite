@@ -1,6 +1,7 @@
 import unittest
 import shutil, tempfile
-
+import os
+import pathlib
 import numpy as np
 
 from compotts.compotts_object import *
@@ -15,8 +16,8 @@ class Test_Call_ComPotts_HHblits(unittest.TestCase):
 
     def setUp(self):
         PROTEIN_NAME = "1cc8"
-        seq_file = EXAMPLES_FOLDER+PROTEIN_NAME+".fasta"
-        a3m_file = EXAMPLES_FOLDER+PROTEIN_NAME+".a3m"
+        seq_file = os.path.join(EXAMPLES_FOLDER,PROTEIN_NAME+".fasta")
+        a3m_file = os.path.join(EXAMPLES_FOLDER,PROTEIN_NAME+".a3m")
         self.output_folder = tempfile.mkdtemp()
         self.obj = ComPotts_Object.from_hhblits_output(seq_file, a3m_file, self.output_folder)
 

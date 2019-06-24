@@ -96,7 +96,7 @@ class ComPotts_Object:
             obj.name = kwargs['name']
         else:
             obj.name = fm.get_name_from_first_sequence_name(seq_file)+"_submat"
-        obj.folder = fm.create_folder(output_folder+obj.name+"/")
+        obj.folder = fm.create_folder(output_folder+obj.name)
         obj.seq_file = seq_file
         obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         obj.trimmed_seq = obj.real_seq

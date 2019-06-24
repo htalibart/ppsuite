@@ -280,11 +280,7 @@ def main(templates, alnfnames, fastafnames, alphabet=ALPHABET_WITHOUT_GAP, n=100
         if i==0:
             ref = new_ref
         print_result_in_file(msa, n, alnfnames[i], False)
-        #create_fake_seq_fasta(alnfname, seqfname)
         create_fake_fasta(alnfnames[i], fastafnames[i])
-        #os.system("ccmpred "+fastafnames[i]+" -b "+mrfnames[i]+" --pc-submat --v-center --reg-lambda-single 0.01 --reg-lambda-pair-factor 10 --pc-pair-count 1 --epsilon 1e-5 --ofn-pll")
-        #os.system("ccmpred "+fastafnames[i]+" -b "+mrfnames[i]+" --v-center --reg-lambda-single 0.01 --reg-lambda-pair-factor 10 --pc-pair-count 1 --epsilon 1e-5 --ofn-pll")
-#        os.system("cp "+mrfnames[i]+" ~/Documents/wohlers/a_purva/")
 
 
 if __name__=="__main__":

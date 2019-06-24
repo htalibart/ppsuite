@@ -31,7 +31,7 @@ def main():
     parser.add_argument('-os', '--align_sequences', help="Display aligned sequences using positions aligned by ComPotts", action='store_true')
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling'))
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
-    parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="percentile_80") # TODO checker si c'est bien fait avant le rescaling
+    parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_ccmpred'), default='one_seq_ccmpred')
     args = vars(parser.parse_args())
 
@@ -40,7 +40,6 @@ def main():
     if output_folder is None:
         general_output_folder = fm.create_folder("output_compotts")
         output_folder = os.path.join(general_output_folder,time.strftime("%Y%m%d-%H%M%S"))
-        output_folder+='/'
     fm.create_folder(output_folder)
 
     no_kwargs = ["potts_model_1", "potts_model_2", "sequence_file_1", "sequence_file_2", "a3m_file_1", "a3m_file_2", "output_folder", "mode", "no_w"] # TODO voir si utile
