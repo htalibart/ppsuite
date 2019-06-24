@@ -47,6 +47,9 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
 
 def align_two_potts_models_from_files(mrf_files, output_folder, **kwargs):
     mrfs = [Potts_Model.from_msgpack(mrf_file) for mrf_file in mrf_files]
+    if "rescaling_function" in kwargs:
+        if "rescaling_function"!="identity":
+            mrfs = [get_rescaled_mrf(mrf, kwargs["rescaling_function"]) for mrf in mrfs]
     return align_two_potts_models(mrfs, output_folder, **kwargs)
 
 

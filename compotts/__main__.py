@@ -22,7 +22,7 @@ def main():
     parser.add_argument('-f1', '--input_folder_1', help="Folder containing files for sequence 1")
     parser.add_argument('-f2', '--input_folder_2', help="Folder containing files for sequence 2")
     parser.add_argument('-o', '--output_folder', help="Output folder")
-    parser.add_argument('-of', '--align_train_msas', help="Align MSAs that were used to train the Potts Model using positions aligned by ComPotts", action='store_true')
+    parser.add_argument('-of', '--align_train_msas', help="Align MSAs that were used to train the Potts Model using positions aligned by ComPotts", action='store_true') # devrait être fait par défaut...?
     parser.add_argument('-os', '--align_sequences', help="Display aligned sequences using positions aligned by ComPotts", action='store_true')
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling'))
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
@@ -60,6 +60,7 @@ def main():
         for k in range(1,3):
             if (args["potts_model_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
                 args["potts_model_"+str(k)] = fm.get_potts_model_file_from_folder(args["input_folder_"+str(k)])
+        # TODO rescaling
         if (args["potts_model_1"] is not None) and (args["potts_model_2"] is not None):
             align_two_potts_models_from_files([args["potts_model_1"], args["potts_model_2"]], output_folder, **arguments)
         else:
@@ -85,7 +86,7 @@ def main():
             if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None) and (args["a3m_file_1"] is not None) and (args["a3m_file_2"] is not None):
                 compotts_objects = []
                 for k in range(2):
-                    obj = ComPotts_Object.from_hhblits_output(seq_files[k], args["a3m_file_"+str(k+1)], output_folder, mrf_file=args["potts_model_"+str(k+1)])
+                    obj = ComPotts_Object.from_hhblits_output(seq_files[k], args["a3m_file_"+str(k+1)], output_folder, mrf_file=args["potts_model_"+str(k+1)], **arguments)
                     compotts_objects.append(obj)
             else:
                 print("Need sequence files and a3m files")
