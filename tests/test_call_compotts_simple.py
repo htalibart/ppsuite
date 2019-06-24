@@ -68,7 +68,7 @@ class Test_Call_ComPotts_Simple(unittest.TestCase):
 
 
     def test_get_edges_map(self):
-        edges_map = get_edges_map(self.mrf, 0)
+        edges_map = get_edges_map(self.mrf, "none")
         self.assertEqual(edges_map.shape, self.mrf.w.shape[0:2])
         self.assertEqual(sum([abs(edges_map[i][i]) for i in range(self.mrf.ncol)]), 0)
 

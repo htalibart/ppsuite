@@ -9,8 +9,17 @@ def count_edges(edges_map):
     return sum(edges_map.flatten())
 
 
-def get_edges_map(mrf, threshold):
-    return 1*(mrf.get_w_norms()>threshold)
+def get_w_threshold(mrf, w_threshold_method):
+    if w_threshold_method.startswith("percentile_"):
+        p = int(w_threshold_method[len("percentile_"):])
+        return np.percentile(mrf.get_w_norms(), p)
+    else:
+        return 0
+
+
+def get_edges_map(mrf, w_threshold_method):
+    w_threshold = get_w_threshold(mrf, w_threshold_method)
+    return 1*(mrf.get_w_norms()>w_threshold)
 
 
 def compute_v_scores(mrf1, mrf2, v_score_function, **kwargs):
