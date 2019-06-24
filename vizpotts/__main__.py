@@ -1,4 +1,5 @@
 import argparse
+import pathlib
 
 from vizpotts.vizpotts import *
 from basic_modules.potts_model import *
@@ -6,7 +7,7 @@ from basic_modules.potts_model import *
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p', '--potts_model', help="Potts model (msgpack file)")
+    parser.add_argument('-p', '--potts_model', help="Potts model (msgpack file)", type=pathlib.Path)
     #parser.add_argument('-m', '--mode', help="Visualization mode", choices=("whole_potts_model"), default="whole_potts_model")
     parser.add_argument('-1', '--start_at_1', help="Start numbering at 1", action='store_true', default=True), 
     parser.add_argument('-0', '--start_at_0', help="Start numbering at 0", action='store_true', default=False), 

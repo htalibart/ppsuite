@@ -1,4 +1,5 @@
 import os
+import pathlib
 import numpy as np
 import math
 import msgpack
@@ -34,7 +35,7 @@ class Potts_Model:
                 b'x_pair' : np.array(ncol, ncol, 21, 21)
                 b'meta'
             """
-        print("getting Potts model from "+binary_file)
+        print("getting Potts model from "+str(binary_file))
         ncol = df[b'ncol']
         v_20 = np.array(df[b'x_single']).reshape((ncol,20))
         v = np.zeros((ncol,21))
@@ -47,7 +48,7 @@ class Potts_Model:
             w[i, j, :, :] = mat
             w[j, i, :, :] = mat.T
         if 'name' not in kwargs:
-            kwargs['name'] = binary_file.replace('/','-')
+            kwargs['name'] = str(binary_file).replace('/','-')
         mrf = cls(v, w, **kwargs)
         mrf.binary_file = binary_file
         return mrf
@@ -57,7 +58,7 @@ class Potts_Model:
         """
             initialize MRF from training set
         """
-        call = "ccmpred "+aln_file+ " -b "+binary_file
+        call = "ccmpred "+str(aln_file)+ " -b "+str(binary_file)
         for key_arg in kwargs:
             arg_ccm = key_arg.replace('_', '-')
             if arg_ccm in POSSIBLE_CCMPRED_OPTIONS:
@@ -104,7 +105,7 @@ class Potts_Model:
 
             f.write(msgpack.packb(out, encoding="utf-8"))
 
-        return filename
+        return pathlib.Path(filename)
 
 
     def get_w_norms(self):
