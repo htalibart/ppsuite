@@ -125,12 +125,7 @@ class Potts_Model:
         if hasattr(self, 'w_norms'):
             return self.w_norms[i][j]
         else:
-            frobenius = 0
-            for a in range (0,20):
-                for b in range(0,20):
-                    frobenius+=self.w[i][j][a][b]*self.w[i][j][a][b]
-            frobenius = math.sqrt(frobenius)
-            return frobenius
+            return math.sqrt(scalar_product(self.w[i][j],self.w[i][j]))
 
 
     def get_v_norms(self):
