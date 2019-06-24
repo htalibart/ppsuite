@@ -1,4 +1,6 @@
 import ctypes
+import time
+import pandas as pd
 
 from compotts.compute_scores import *
 from compotts.compotts_object import *
@@ -19,6 +21,8 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     aln_res_file = fm.get_aln_res_file_name(output_folder)
     info_res_file = fm.get_info_res_file_name(output_folder)
 
+    time_start = time.clock()
+
     v_scores = np.ascontiguousarray(compute_v_scores(*mrfs, v_score_function).flatten())
     c_v_scores = ctypes.c_void_p(v_scores.ctypes.data)
 
@@ -38,7 +42,12 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     
     COMPOTTS_SOLVER.call_from_python(c_v_scores, c_w_scores, *[ctypes.c_int(mrf.ncol) for mrf in mrfs], *c_edges_maps, *[ctypes.c_double(selfcomp) for selfcomp in selfcomps], ctypes.c_double(gap_open), ctypes.c_double(gap_extend), ctypes.c_char_p(aln_res_file.encode('utf-8')), ctypes.c_char_p(info_res_file.encode('utf-8')), ctypes.c_int(iter_limit_param), ctypes.c_int(t_limit), ctypes.c_int(disp_level), ctypes.c_double(epsilon))
 
+    total_computation_time = time.clock()-time_start
+
     aligned_positions_dict = fm.get_aligned_positions_dict_from_compotts_output_file(aln_res_file)
+    df = pd.read_csv(info_res_file)
+    df['total_compotts_time'] = total_computation_time
+    df.to_csv(info_res_file)
     infos_solver = fm.get_infos_solver_dict_from_compotts_output_file(info_res_file)
 
     return aligned_positions_dict, infos_solver

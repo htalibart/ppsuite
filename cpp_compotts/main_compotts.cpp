@@ -225,7 +225,7 @@ void display_results_and_print_to_files(int** row_map, int** col_map, double sel
 
 	ofstream output_file;
         output_file.open(info_fname);
-        output_file << "similarity_global,time,UB,LB,nb_visited_nodes,selfcomp1,selfcomp2" << endl;
+        output_file << "similarity_global,solver_time,UB,LB,nb_visited_nodes,selfcomp1,selfcomp2" << endl;
         output_file << 2.0*-res_ub/(self1+self2) << "," << total_time << "," << -res_lb << "," << -res_ub << "," << nb_bb_nodes << "," << self1 << "," << self2 << endl;
         output_file.close();
 }
