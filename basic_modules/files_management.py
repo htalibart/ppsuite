@@ -13,10 +13,10 @@ def create_folder(name):
 
 
 def get_info_res_file_name(output_folder):
-    return output_folder+"info.csv"
+    return os.path.join(output_folder,"info.csv")
 
 def get_aln_res_file_name(output_folder):
-    return output_folder+"aln.csv"
+    return os.path.join(output_folder,"aln.csv")
 
 def get_aligned_positions_dict_from_compotts_output_file(aln_res_file):
     df = pd.read_csv(aln_res_file)

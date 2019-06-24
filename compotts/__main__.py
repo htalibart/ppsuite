@@ -29,7 +29,7 @@ def main():
     parser.add_argument('-o', '--output_folder', help="Output folder", type=pathlib.Path)
     parser.add_argument('-of', '--align_train_msas', help="Align MSAs that were used to train the Potts Model using positions aligned by ComPotts", action='store_true') # devrait être fait par défaut...?
     parser.add_argument('-os', '--align_sequences', help="Display aligned sequences using positions aligned by ComPotts", action='store_true')
-    parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling'))
+    parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like'))
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_ccmpred'), default='one_seq_ccmpred')
@@ -118,7 +118,7 @@ def main():
             get_msas_aligned(aligned_positions, [o.train_msa for o in compotts_objects], output_msa)
 
         if args["align_sequences"]:
-            output_fasta_file = os.path.join(output_folder+'_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
+            output_fasta_file = os.path.join(output_folder,'_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
             get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 
 

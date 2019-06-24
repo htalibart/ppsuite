@@ -14,6 +14,7 @@ def get_rescaled_mrf(mrf, rescaling_function_name, **kwargs): # TODO optimiser
             t_w[i][j] = rescale_parameter(mrf.w[i][j], rescaling_function)
     return Potts_Model.from_parameters(t_v, t_w, name=mrf.name+"_"+rescaling_function_name)
 
+
 def rescale_parameter(x, rescaling_function, **kwargs): # TODO test
     vfunc = np.vectorize(rescaling_function)
     return vfunc(x, **kwargs)
@@ -22,7 +23,10 @@ def rescale_parameter(x, rescaling_function, **kwargs): # TODO test
 def identity(x, **kwargs):
     return x
 
+
 def original_rescaling(x, **kwargs):# TODO test
     return sign_ind(x)*(exp(abs(x))-1)
 
 
+def symmetric_relu_like(x, lower_threshold=-1, upper_threshold=1, **kwargs):
+    return x*((x>=upper_threshold) or (x<=lower_threshold))
