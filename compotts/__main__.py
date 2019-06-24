@@ -6,10 +6,14 @@ from compotts.align_msas import *
 import basic_modules.files_management as fm
 import time
 
+import json
 
 # TODO structure de fichiers
-# TODO séparer dossiers sortie CCMpred et sortie ComPotts
-# TODO README dans le dossier output
+
+def write_readme(folder, **kwargs):
+    with open(folder+"README.txt", 'w') as f:
+        json.dump(kwargs, f)
+
 
 def main():
     parser = argparse.ArgumentParser()
@@ -103,6 +107,9 @@ def main():
                 compotts_objects = [ComPotts_Object.from_seq_file_via_ccmpred(sf, output_folder, **arguments) for sf in seq_files]
             else:
                 print("Need sequence files")
+
+
+        write_readme(output_folder, **arguments)
 
  
         # alignement
