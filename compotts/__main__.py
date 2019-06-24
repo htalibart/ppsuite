@@ -9,7 +9,7 @@ import time
 
 # TODO structure de fichiers
 # TODO séparer dossiers sortie CCMpred et sortie ComPotts
-
+# TODO README dans le dossier output
 
 def main():
     parser = argparse.ArgumentParser()
