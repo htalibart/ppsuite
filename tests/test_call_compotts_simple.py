@@ -4,6 +4,7 @@ import shutil, tempfile
 import numpy as np
 
 from compotts.compotts_object import *
+from compotts.call_compotts import *
 from basic_modules.potts_model import *
 import tests.create_fake_data as crfake
 

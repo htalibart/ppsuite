@@ -67,7 +67,7 @@ class Potts_Model:
         if not os.path.exists(binary_file):
             raise Exception("CCMpredPy wasn't able to infer the MRF. Protein is probably too long ?")
         mrf = cls.from_msgpack(binary_file)
-        mrf.training_set = aln_file
+        mrf.training_set = pathlib.Path(aln_file)
         return mrf
 
 
