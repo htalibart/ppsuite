@@ -116,6 +116,7 @@ def main():
         # alignement
         aligned_positions, infos_solver = align_two_objects(compotts_objects, output_folder, **arguments)
 
+        print("Total time : "+str(infos_solver["total_compotts_time"]))
 
         # on fait des trucs avec les positions alignées
         if args["align_train_msas"]:

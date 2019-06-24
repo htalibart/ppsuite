@@ -11,7 +11,7 @@ setup(
         'compotts':['compotts_solver.so'],
         },
     entry_points={
-        'console_scripts':['compotts = compotts.__main__:main', 'vizpotts = vizpotts.__main__:main']
+        'console_scripts':['compotts = compotts.__main__:main', 'vizpotts = vizpotts.__main__:main', 'filepotts = compotts.align_msas:main']
         },
     test_suite="tests",
 )
