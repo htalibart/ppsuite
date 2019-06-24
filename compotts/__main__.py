@@ -1,31 +1,32 @@
 import argparse
+import time
+import json
+import pathlib
 
 from compotts.call_compotts import *
 from compotts.manage_positions import *
 from compotts.align_msas import *
 import basic_modules.files_management as fm
-import time
-
-import json
 
 # TODO structure de fichiers
 
 def write_readme(folder, **kwargs):
-    with open(folder+"README.txt", 'w') as f:
-        json.dump(kwargs, f)
+    p = os.path.join(folder, 'README.txt')
+    with open(p, 'w') as f:
+        json.dump(kwargs, f, default=str)
 
 
 def main():
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p1', '--potts_model_1', help="Potts model 1")
-    parser.add_argument('-p2', '--potts_model_2', help="Potts model 2")
-    parser.add_argument('-s1', '--sequence_file_1', help="Sequence file 1")
-    parser.add_argument('-s2', '--sequence_file_2', help="Sequence file 2")
-    parser.add_argument('-h1', '--a3m_file_1', help="HH-blits output file 1")
-    parser.add_argument('-h2', '--a3m_file_2', help="HH-blits output file 2")
-    parser.add_argument('-f1', '--input_folder_1', help="Folder containing files for sequence 1")
-    parser.add_argument('-f2', '--input_folder_2', help="Folder containing files for sequence 2")
-    parser.add_argument('-o', '--output_folder', help="Output folder")
+    parser.add_argument('-p1', '--potts_model_1', help="Potts model 1", type=pathlib.Path)
+    parser.add_argument('-p2', '--potts_model_2', help="Potts model 2", type=pathlib.Path)
+    parser.add_argument('-s1', '--sequence_file_1', help="Sequence file 1", type=pathlib.Path)
+    parser.add_argument('-s2', '--sequence_file_2', help="Sequence file 2", type=pathlib.Path)
+    parser.add_argument('-h1', '--a3m_file_1', help="HH-blits output file 1", type=pathlib.Path)
+    parser.add_argument('-h2', '--a3m_file_2', help="HH-blits output file 2", type=pathlib.Path)
+    parser.add_argument('-f1', '--input_folder_1', help="Folder containing files for sequence 1", type=pathlib.Path)
+    parser.add_argument('-f2', '--input_folder_2', help="Folder containing files for sequence 2", type=pathlib.Path)
+    parser.add_argument('-o', '--output_folder', help="Output folder", type=pathlib.Path)
     parser.add_argument('-of', '--align_train_msas', help="Align MSAs that were used to train the Potts Model using positions aligned by ComPotts", action='store_true') # devrait être fait par défaut...?
     parser.add_argument('-os', '--align_sequences', help="Display aligned sequences using positions aligned by ComPotts", action='store_true')
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling'))
@@ -38,15 +39,9 @@ def main():
     output_folder = args["output_folder"]
     if output_folder is None:
         general_output_folder = fm.create_folder("output_compotts")
-        output_folder = general_output_folder+time.strftime("%Y%m%d-%H%M%S")
-    if output_folder[-1]!='/':
+        output_folder = os.path.join(general_output_folder,time.strftime("%Y%m%d-%H%M%S"))
         output_folder+='/'
     fm.create_folder(output_folder)
-
-    for k in range(1,3):
-        if args["input_folder_"+str(k)] is not None:
-            if args["input_folder_"+str(k)][-1]!='/':
-                args["input_folder_"+str(k)]+='/'
 
     no_kwargs = ["potts_model_1", "potts_model_2", "sequence_file_1", "sequence_file_2", "a3m_file_1", "a3m_file_2", "output_folder", "mode", "no_w"] # TODO voir si utile
     arguments = {}
@@ -120,11 +115,11 @@ def main():
 
         # on fait des trucs avec les positions alignées
         if args["align_train_msas"]:
-            output_msa = output_folder+'_'.join(o.name for o in compotts_objects)+"_train_msas.fasta"
+            output_msa = os.path.join(output_folder,'_'.join(o.name for o in compotts_objects)+"_train_msas.fasta")
             get_msas_aligned(aligned_positions, [o.train_msa for o in compotts_objects], output_msa)
 
         if args["align_sequences"]:
-            output_fasta_file = output_folder+'_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta"
+            output_fasta_file = os.path.join(output_folder+'_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
             get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 
 

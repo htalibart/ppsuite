@@ -3,12 +3,12 @@ import re
 import pandas as pd
 from Bio import SeqIO, AlignIO
 import ctypes
+import pathlib
 
 def create_folder(name):
-    if name[-1]!='/':
-        name+='/'
-    if not os.path.isdir(name):
-        os.mkdir(name)
+    p = pathlib.Path(name) 
+    if not p.is_dir():
+        p.mkdir()
     return name
 
 
@@ -80,7 +80,7 @@ def get_file_from_folder_ending_with_extension(folder, extension):
     if len(files)>0:
         if len(files)>1:
             print("more than 1 file ending with "+extension+", using "+files[0])
-        return folder+files[0]
+        return os.path.join(folder,files[0])
     else:
         return None
 
