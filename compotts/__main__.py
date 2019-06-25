@@ -85,7 +85,7 @@ def main():
             if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None) and (args["a3m_file_1"] is not None) and (args["a3m_file_2"] is not None):
                 compotts_objects = []
                 for k in range(2):
-                    obj = ComPotts_Object.from_hhblits_output(seq_files[k], args["a3m_file_"+str(k+1)], output_folder, mrf_file=args["potts_model_"+str(k+1)], **arguments)
+                    obj = ComPotts_Object.from_hhblits_output(seq_files[k], args["a3m_file_"+str(k+1)], output_folder, mrf_file=args["potts_model_"+str(k+1)], input_folder=args["input_folder_"+str(k+1)], **arguments)
                     compotts_objects.append(obj)
             else:
                 print("Need sequence files and a3m files")

@@ -10,7 +10,7 @@ from compotts.rescaling import *
 class ComPotts_Object:
 
     @classmethod
-    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, mrf_file=None, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, rescaling_function="identity", **kwargs):
+    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, input_folder=None, mrf_file=None, hhfilter_threshold=80, nb_sequences=200, perform_trim=True, trimal_gt=0.8, rescaling_function="identity", **kwargs):
         obj = cls()
         if 'name' in kwargs:
             obj.name = kwargs['name']
@@ -18,9 +18,12 @@ class ComPotts_Object:
             obj.name = fm.get_name_from_first_sequence_name(seq_file)+"_hhblits"
         obj.seq_file = seq_file
         obj.a3m_file = a3m_file
-        if len(output_folder)>0:
-            output_folder = fm.create_folder(output_folder)
-        obj.folder = fm.create_folder(os.path.join(output_folder,obj.name))
+        if input_folder is not None:
+            obj.folder = input_folder
+        else:
+            if len(output_folder)>0:
+                output_folder = fm.create_folder(output_folder)
+            obj.folder = fm.create_folder(os.path.join(output_folder,obj.name))
         obj.aln_filtered = os.path.join(obj.folder,obj.name+"_filtered_80.a3m")
         if (not os.path.isfile(obj.aln_filtered)):
             call_hhfilter(obj.a3m_file, obj.aln_filtered, hhfilter_threshold)
@@ -96,7 +99,7 @@ class ComPotts_Object:
             obj.name = kwargs['name']
         else:
             obj.name = fm.get_name_from_first_sequence_name(seq_file)+"_submat"
-        obj.folder = fm.create_folder(output_folder+obj.name)
+        obj.folder = fm.create_folder(os.path.join(output_folder,obj.name))
         obj.seq_file = seq_file
         obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         obj.trimmed_seq = obj.real_seq

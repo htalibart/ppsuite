@@ -9,7 +9,7 @@ def create_folder(name):
     p = pathlib.Path(name) 
     if not p.is_dir():
         p.mkdir()
-    return name
+    return p
 
 
 def get_info_res_file_name(output_folder):
@@ -78,9 +78,11 @@ def get_trimal_ncol(colnumbering_file):
 def get_file_from_folder_ending_with_extension(folder, extension):
     files = [f for f in os.listdir(folder) if f.endswith(extension)]
     if len(files)>0:
+        files.sort(key = len)
+        shortest = files[0]
         if len(files)>1:
-            print("more than 1 file ending with "+extension+", using "+files[0])
-        return os.path.join(folder,files[0])
+            print("more than 1 file ending with "+extension+", using the one with the shortest name"+shortest)
+        return os.path.join(folder,shortest)
     else:
         return None
 
