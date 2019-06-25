@@ -126,7 +126,7 @@ class ComPotts_Object:
             obj.name = kwargs['name']
         else:
             obj.name = '_'.join([obj1.name, obj2.name])
-        obj.folder = output_folder
+        obj.folder = fm.create_folder(os.path.join(output_folder,obj.name))
         obj.aln_unfiltered = os.path.join(obj.folder,obj.name+"_unfiltered.fasta")
         get_msas_aligned(aligned_positions, [obj1.train_msa, obj2.train_msa], obj.aln_unfiltered)
         obj.aln_filtered = os.path.join(obj.folder,obj.name+"_filtered.fasta")
