@@ -6,6 +6,7 @@ from basic_modules.util import *
 from basic_modules.tool_wrapper import *
 from basic_modules.potts_model import *
 from compotts.rescaling import *
+from compotts.align_msas import *
 
 class ComPotts_Object:
 
@@ -47,7 +48,10 @@ class ComPotts_Object:
 
         if mrf_file is None:
             obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
-            obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
+            if not os.path.isfile(obj.mrf_file):
+                obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
+            else:
+                obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
         else:
             obj.mrf_file = mrf_file
             obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
@@ -118,10 +122,10 @@ class ComPotts_Object:
     @classmethod
     def from_merge(cls, obj1, obj2, aligned_positions, output_folder, rescaling_function="identity", hhfilter_threshold=80, **kwargs):
         obj = cls()
-        if name in kwargs:
+        if "name" in kwargs:
             obj.name = kwargs['name']
         else:
-            obj.name = '_'.join(obj1.name, obj2.name)
+            obj.name = '_'.join([obj1.name, obj2.name])
         obj.folder = output_folder
         obj.aln_unfiltered = os.path.join(obj.folder,obj.name+"_unfiltered.fasta")
         get_msas_aligned(aligned_positions, [obj1.train_msa, obj2.train_msa], obj.aln_unfiltered)
