@@ -11,7 +11,7 @@ from compotts.align_msas import *
 class ComPotts_Object:
 
     @classmethod
-    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, input_folder=None, mrf_file=None, hhfilter_threshold=80, nb_sequences=200, perform_trim=True, trimal_gt=0.8, rescaling_function="identity", **kwargs):
+    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, input_folder=None, mrf_file=None, hhfilter_threshold=80, nb_sequences=200, perform_trim=True, trimal_gt=0.8, rescaling_function="identity", use_w=True, **kwargs):
         obj = cls()
         if 'name' in kwargs:
             obj.name = kwargs['name']
@@ -57,7 +57,7 @@ class ComPotts_Object:
             obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
         if (rescaling_function!="identity"):
             print("rescaling MRF")
-            obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function)
+            obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function, use_w=use_w)
         else:
             print("using MRF as is (no rescaling)")
         obj.real_seq = fm.get_first_sequence_in_fasta_file(obj.seq_file).upper()
@@ -66,7 +66,7 @@ class ComPotts_Object:
 
 
     @classmethod 
-    def from_seq_file_to_one_hot(cls, seq_file, output_folder, rescaling_function="identity",**kwargs):
+    def from_seq_file_to_one_hot(cls, seq_file, output_folder, rescaling_function="identity", use_w=True, **kwargs):
         obj = cls()
         if 'name' in kwargs:
             obj.name = kwargs['name']
@@ -89,7 +89,7 @@ class ComPotts_Object:
         obj.mrf.to_msgpack(obj.mrf_file)
         if (rescaling_function!="identity"):
             print("rescaling MRF")
-            obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function)
+            obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function, use_w=use_w)
         else:
             print("using MRF as is (no rescaling)")
 
@@ -97,7 +97,7 @@ class ComPotts_Object:
         return obj
 
     @classmethod
-    def from_seq_file_via_ccmpred(cls, seq_file, output_folder, rescaling_function = "identity", **kwargs):
+    def from_seq_file_via_ccmpred(cls, seq_file, output_folder, rescaling_function = "identity", use_w=True, **kwargs):
         obj = cls()
         if 'name' in kwargs:    
             obj.name = kwargs['name']
@@ -112,7 +112,7 @@ class ComPotts_Object:
         obj.train_msa = obj.seq_file
         if (rescaling_function!="identity"):
             print("rescaling MRF")
-            obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function)
+            obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function, use_w=use_w)
         else:
             print("using MRF as is (no rescaling)")
 
@@ -120,7 +120,7 @@ class ComPotts_Object:
 
 
     @classmethod
-    def from_merge(cls, obj1, obj2, aligned_positions, output_folder, rescaling_function="identity", hhfilter_threshold=80, **kwargs):
+    def from_merge(cls, obj1, obj2, aligned_positions, output_folder, rescaling_function="identity", hhfilter_threshold=80, use_w=True, **kwargs):
         obj = cls()
         if "name" in kwargs:
             obj.name = kwargs['name']
@@ -140,7 +140,7 @@ class ComPotts_Object:
             obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
         if (rescaling_function!="identity"):
             print("rescaling MRF")
-            obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function)
+            obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function, use_w=use_w)
         else:
             print("using MRF as is (no rescaling)")
         return obj
