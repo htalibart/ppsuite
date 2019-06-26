@@ -1,4 +1,5 @@
 import argparse
+import sys
 import time
 import json
 import pathlib
@@ -6,6 +7,7 @@ import pathlib
 from compotts.call_compotts import *
 from compotts.manage_positions import *
 from compotts.align_msas import *
+from vizpotts.vizpotts import *
 import basic_modules.files_management as fm
 
 # TODO structure de fichiers
@@ -16,7 +18,7 @@ def write_readme(folder, **kwargs):
         json.dump(kwargs, f, default=str)
 
 
-def main():
+def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument('-p1', '--potts_model_1', help="Potts model 1", type=pathlib.Path)
     parser.add_argument('-p2', '--potts_model_2', help="Potts model 2", type=pathlib.Path)
@@ -31,9 +33,9 @@ def main():
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=0)
-    parser.add_argument('-gp', '--gap_extend', help="gap extend", type=float, default=0)
+    parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)
     parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_ccmpred'), default='hhblits')
-    args = vars(parser.parse_args())
+    args = vars(parser.parse_args(args))
 
 
     output_folder = args["output_folder"]
@@ -116,6 +118,7 @@ def main():
         if args["mode"]!="msgpack":
             output_msa = os.path.join(output_folder,'_'.join(o.name for o in compotts_objects)+"_train_msas.fasta")
             get_msas_aligned(aligned_positions, [o.train_msa for o in compotts_objects], output_msa)
+            #visualize_v_alignment([o.mrf for o in compotts_objects], aligned_positions) # TODO remove
             output_fasta_file = os.path.join(output_folder,'_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
             get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 
