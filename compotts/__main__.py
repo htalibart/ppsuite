@@ -27,8 +27,6 @@ def main():
     parser.add_argument('-f1', '--input_folder_1', help="Folder containing files for sequence 1", type=pathlib.Path)
     parser.add_argument('-f2', '--input_folder_2', help="Folder containing files for sequence 2", type=pathlib.Path)
     parser.add_argument('-o', '--output_folder', help="Output folder", type=pathlib.Path)
-    parser.add_argument('-of', '--align_train_msas', help="Align MSAs that were used to train the Potts Model using positions aligned by ComPotts", action='store_true') # devrait être fait par défaut...?
-    parser.add_argument('-os', '--align_sequences', help="Display aligned sequences using positions aligned by ComPotts", action='store_true')
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like'))
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
@@ -113,11 +111,9 @@ def main():
         print("Total time : "+str(infos_solver["total_compotts_time"]))
 
         # on fait des trucs avec les positions alignées
-        if args["align_train_msas"]:
+        if args["mode"]!="msgpack":
             output_msa = os.path.join(output_folder,'_'.join(o.name for o in compotts_objects)+"_train_msas.fasta")
             get_msas_aligned(aligned_positions, [o.train_msa for o in compotts_objects], output_msa)
-
-        if args["align_sequences"]:
             output_fasta_file = os.path.join(output_folder,'_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
             get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 
