@@ -34,9 +34,6 @@ def get_seqs_aligned(aligned_positions, compotts_objects): #TODO test
 # TODO AlignIO ?
 def get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_file):
     seqs_aligned = get_seqs_aligned(aligned_positions, compotts_objects)
-    print("Aligned sequences :")
-    for s in seqs_aligned:
-        print(s)
     seq_records = [SeqRecord(Seq(s, IUPAC.protein), id=o.name, description='') for s,o in zip(seqs_aligned, compotts_objects)]
     with open(output_file, 'w') as f:
         SeqIO.write(seq_records, f, "fasta")
