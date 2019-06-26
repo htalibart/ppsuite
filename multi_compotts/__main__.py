@@ -8,7 +8,7 @@ from compotts.compotts_object import *
 from compotts.call_compotts import *
 import basic_modules.files_management as fm
 
-# TODO tester
+# TODO README
 
 def distance_metric(obj1, obj2):
     return 1-seq_identity(obj1.real_seq, obj2.real_seq)
@@ -28,8 +28,8 @@ def get_subalignment(node, compotts_objects, output_folder, **kwargs):
     if node.is_leaf():
         return compotts_objects[list(compotts_objects.keys())[node.id]]
     else:
-        obj1 = get_subalignment(node.left, compotts_objects, output_folder)
-        obj2 = get_subalignment(node.right, compotts_objects, output_folder)
+        obj1 = get_subalignment(node.left, compotts_objects, output_folder, **kwargs)
+        obj2 = get_subalignment(node.right, compotts_objects, output_folder, **kwargs)
         sub_output_folder = fm.create_folder(os.path.join(output_folder,obj1.name+"_"+obj2.name))
         if not os.path.isfile(fm.get_aln_res_file_name(sub_output_folder)):
             aligned_positions, info_solver = align_two_objects([obj1, obj2], sub_output_folder, **kwargs)
@@ -53,13 +53,15 @@ def main():
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--folders', help="folders for each protein (with sequence files and a3m files)", nargs='+', default=[])
     parser.add_argument('-of', '--output_folder', help="output folder", default="output_multiple", type=pathlib.Path)
+    parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like'))
+    parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
+    parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     args = vars(parser.parse_args())
 
     if not os.path.isdir(args["output_folder"]):
         os.mkdir(args["output_folder"])
 
-    # temporary
-    multiple_alignment(args["folders"], args["output_folder"], use_w=False)
+    multiple_alignment(args["folders"], args["output_folder"], use_w=(not args["no_w"]), w_threshold_method=args["w_threshold_method"])
 
 
 if __name__=="__main__":

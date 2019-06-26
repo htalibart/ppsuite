@@ -31,9 +31,10 @@ def compute_v_scores(mrf1, mrf2, v_score_function, **kwargs):
 
 
 def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, **kwargs):
-    print("computing w scores (symmetric matrix : w[i][j]=v[j+i*(i+1)/2])")
+    """ symmetric matrix : w[i][j]=v[j+i*(i+1)/2])"""
     len1 = int(mrf1.ncol*(mrf1.ncol+1)/2)
     len2 = int(mrf2.ncol*(mrf2.ncol+1)/2)
+    print("computing w scores (LA="+str(mrf1.ncol)+", LB="+str(mrf2.ncol)+" : "+str(len1)+"x"+str(len2)+")")
     w_scores = np.zeros((len1,len2))
     for i in range(mrf1.ncol):
         for j in range(i+1):
