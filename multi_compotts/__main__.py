@@ -57,12 +57,16 @@ def main():
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like'))
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
+    parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=0)
+    parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)
     args = vars(parser.parse_args())
 
     if not os.path.isdir(args["output_folder"]):
         os.mkdir(args["output_folder"])
 
-    multiple_alignment(args["folders"], args["output_folder"], use_w=(not args["no_w"]), w_threshold_method=args["w_threshold_method"])
+    fm.write_readme(output_folder, **arguments)
+
+    multiple_alignment(args["folders"], args["output_folder"], use_w=(not args["no_w"]), w_threshold_method=args["w_threshold_method"], gap_open=args["gap_open"], gap_extend=args["gap_extend"])
 
 
 if __name__=="__main__":

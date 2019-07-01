@@ -95,3 +95,10 @@ def get_sequence_file_from_folder(folder):
 def get_a3m_file_from_folder(folder):
    return get_file_from_folder_ending_with_extension(folder, ".a3m")
 
+
+def write_readme(folder, **kwargs):
+    p = os.path.join(folder, 'README.txt')
+    with open(p, 'w') as f:
+        json.dump(kwargs, f, default=str)
+
+

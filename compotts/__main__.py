@@ -12,11 +12,6 @@ import basic_modules.files_management as fm
 
 # TODO structure de fichiers
 
-def write_readme(folder, **kwargs):
-    p = os.path.join(folder, 'README.txt')
-    with open(p, 'w') as f:
-        json.dump(kwargs, f, default=str)
-
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
@@ -113,7 +108,7 @@ def main(args=sys.argv[1:]):
                 print("Need sequence files")
 
 
-        write_readme(output_folder, **arguments)
+        fm.write_readme(output_folder, **arguments)
 
  
         # alignement
