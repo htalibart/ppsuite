@@ -31,7 +31,6 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
         w_scores = compute_w_scores(*mrfs, *edges_maps, w_score_function)
     else:
         edges_maps = [np.zeros((mrf.w.shape[0:2])) for mrf in mrfs]
-        #w_scores = np.zeros((mrfs[0].w.shape[0],mrfs[0].w.shape[1],mrfs[1].w.shape[0],mrfs[1].w.shape[1]))
         w_scores = np.zeros(1)
     
     c_w_scores = ctypes.c_void_p(w_scores.ctypes.data)
