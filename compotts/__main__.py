@@ -29,12 +29,19 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-f1', '--input_folder_1', help="Folder containing files for sequence 1", type=pathlib.Path)
     parser.add_argument('-f2', '--input_folder_2', help="Folder containing files for sequence 2", type=pathlib.Path)
     parser.add_argument('-o', '--output_folder', help="Output folder", type=pathlib.Path)
-    parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like'))
+    parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like', 'shifted_relu'))
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=0)
     parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)
     parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_ccmpred'), default='hhblits')
+    parser.add_argument('-ali', '--call_aliview', help="Call aliview at the end", action='store_true')
+
+
+    # arguments pour CCMpred
+    parser.add_argument('--pc-count', help="CCMpred : Specify number of pseudocounts (default : 1)")
+
+
     args = vars(parser.parse_args(args))
 
 
@@ -118,9 +125,13 @@ def main(args=sys.argv[1:]):
         if args["mode"]!="msgpack":
             output_msa = os.path.join(output_folder,'_'.join(o.name for o in compotts_objects)+"_train_msas.fasta")
             get_msas_aligned(aligned_positions, [o.train_msa for o in compotts_objects], output_msa)
-            #visualize_v_alignment([o.mrf for o in compotts_objects], aligned_positions) # TODO remove
+            if args["call_aliview"]:
+                os.system("aliview "+output_msa)
             output_fasta_file = os.path.join(output_folder,'_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
             get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
+
+
+        return {"compotts_objects": compotts_objects, "aligned_positions":aligned_positions}
 
 
 if __name__=="__main__":

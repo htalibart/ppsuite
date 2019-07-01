@@ -103,7 +103,8 @@ def visualize_v_alignment(aligned_mrfs, dict_aligned_pos, alphabet=ALPHABET, sta
 
 
 
-def visualize_pos_contributions_alignment(aligned_mrfs, aligned_pos, start_at_1=True, show_figure=True, tick_space=3):
+def visualize_pos_contributions_alignment(aligned_mrfs, dict_aligned_pos, start_at_1=True, show_figure=True, tick_space=3):
+    aligned_pos = list(dict_aligned_pos.values())
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1]})
     for k in range(2):
         mrf = aligned_mrfs[k]
@@ -121,12 +122,20 @@ def visualize_pos_contributions_alignment(aligned_mrfs, aligned_pos, start_at_1=
         plt.show()
 
 
-def visualize_v_w_scores_alignment(aligned_mrfs, aligned_pos, aligned_v_scores, aligned_w_scores, show_figure=True, tick_space=3):
+def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, aligned_v_scores, aligned_w_scores, show_figure=True, tick_space=3, label_with_ref=False, label_with_2=False):
+    aligned_pos = list(dict_aligned_pos.values())
     plt.figure()
     scores = np.zeros((2, len(aligned_pos[0])))
     scores[0] = aligned_v_scores
     scores[1] = aligned_w_scores
-    sns.heatmap(scores, yticklabels=["v","w"], cmap="RdBu", center=0)
+    if label_with_ref:
+        xticklabels = aligned_pos[0]
+    elif label_with_2:
+        xticklabels = aligned_pos[1]
+    else:
+        insp = inspect.getargspec(sns.heatmap)
+        xticklabels = insp.defaults[insp.args.index('xticklabels')]
+    sns.heatmap(scores, yticklabels=["v","w"], xticklabels=xticklabels, cmap="RdBu", center=0)
     plt.tight_layout()
     plt.draw()
     if show_figure:
@@ -134,7 +143,9 @@ def visualize_v_w_scores_alignment(aligned_mrfs, aligned_pos, aligned_v_scores, 
 
 
 
-def visualize_v_norm_alignment(aligned_mrfs, aligned_pos, start_at_1=True, show_figure=True, tick_space=3):
+def visualize_v_norm_alignment(aligned_mrfs, dict_aligned_pos, start_at_1=True, show_figure=True, tick_space=3):
+
+    aligned_pos = list(dict_aligned_pos.values())
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1]})
     for k in range(2):
         v_norms = [euclidean_norm(aligned_mrfs[k].v[i]) for i in aligned_pos[k]]

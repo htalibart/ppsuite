@@ -29,7 +29,7 @@ def original_rescaling(x, **kwargs):
     return sign_ind(x)*(exp(abs(x))-1)
 
 
-def symmetric_relu_like(x, v_lower_threshold=-1, v_upper_threshold=1, w_lower_threshold=-0.01, w_upper_threshold=0.01, **kwargs):
+def symmetric_relu_like(x, v_lower_threshold=-2, v_upper_threshold=3, w_lower_threshold=-0.01, w_upper_threshold=0.01, **kwargs):
     if kwargs["parameter_type"]=="v":
         lower_threshold = v_lower_threshold
         upper_threshold = v_upper_threshold
@@ -37,3 +37,11 @@ def symmetric_relu_like(x, v_lower_threshold=-1, v_upper_threshold=1, w_lower_th
         lower_threshold = w_lower_threshold
         upper_threshold = w_upper_threshold
     return x*((x>=upper_threshold) or (x<=lower_threshold))
+
+
+def shifted_relu(x, v_threshold=1, w_threshold=0.01, **kwargs):
+    if kwargs["parameter_type"]=="v":
+        threshold = v_threshold
+    else:
+        threshold = w_threshold
+    return x*(x>=threshold)

@@ -55,6 +55,7 @@ class ComPotts_Object:
         else:
             obj.mrf_file = mrf_file
             obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
+        obj.original_mrf=obj.mrf
         if (rescaling_function!="identity"):
             print("rescaling MRF")
             obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function, use_w=use_w)
@@ -87,6 +88,7 @@ class ComPotts_Object:
         obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
         obj.mrf = Potts_Model.from_parameters(v, w, seq_file=obj.seq_file, name=obj.name)
         obj.mrf.to_msgpack(obj.mrf_file)
+        obj.original_mrf=obj.mrf
         if (rescaling_function!="identity"):
             print("rescaling MRF")
             obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function, use_w=use_w)
@@ -110,6 +112,7 @@ class ComPotts_Object:
         obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
         obj.mrf = Potts_Model.from_training_set(obj.seq_file, obj.mrf_file, pc_submat="")
         obj.train_msa = obj.seq_file
+        obj.original_mrf=obj.mrf
         if (rescaling_function!="identity"):
             print("rescaling MRF")
             obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function, use_w=use_w)
@@ -138,6 +141,7 @@ class ComPotts_Object:
             obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
         else:
             obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
+        obj.original_mrf=obj.mrf
         if (rescaling_function!="identity"):
             print("rescaling MRF")
             obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function, use_w=use_w)
