@@ -64,6 +64,10 @@ def main():
     parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=0)
     parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)
     parser.add_argument('-dm', '--distance_metric', help="distance metric", choices=("seq_id_distance", "inverse_seq_id_distance"), default="seq_id_distance")
+    
+    # arguments CCMpred
+    parser.add_argument('--pc-count', help="CCMpred : Specify number of pseudocounts (default : 1)")
+
     args = vars(parser.parse_args())
 
     if not os.path.isdir(args["output_folder"]):
@@ -72,7 +76,7 @@ def main():
     fm.write_readme(args["output_folder"], **args)
 
     multiple_alignment(args["folders"], args["output_folder"], distance_metric=args["distance_metric"],
-    use_w=(not args["no_w"]), w_threshold_method=args["w_threshold_method"], gap_open=args["gap_open"], gap_extend=args["gap_extend"])
+    use_w=(not args["no_w"]), w_threshold_method=args["w_threshold_method"], gap_open=args["gap_open"], gap_extend=args["gap_extend"], pc_count=args["pc_count"])
 
 
 if __name__=="__main__":
