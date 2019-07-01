@@ -1,5 +1,6 @@
 import os
 import re
+import json
 import pandas as pd
 from Bio import SeqIO, AlignIO
 import ctypes

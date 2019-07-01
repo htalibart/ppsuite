@@ -1,7 +1,6 @@
 import argparse
 import sys
 import time
-import json
 import pathlib
 
 from compotts.call_compotts import *

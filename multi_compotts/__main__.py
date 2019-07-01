@@ -1,6 +1,7 @@
 import argparse
 import pathlib
 import os
+import json
 from scipy.cluster.hierarchy import *
 from matplotlib import pyplot as plt
 import collections
@@ -10,13 +11,16 @@ import basic_modules.files_management as fm
 
 # TODO README
 
-def distance_metric(obj1, obj2):
+def seq_id_distance(obj1, obj2):
     return 1-seq_identity(obj1.real_seq, obj2.real_seq)
 
+def inverse_seq_id_distance(obj1, obj2):
+    return seq_identity(obj1.real_seq, obj2.real_seq)
 
-def cluster_compotts_objects(objs, draw_dendro=False):
+
+def cluster_compotts_objects(objs, distance_metric, draw_dendro=False):
     seq_names = list(objs.keys())
-    Z = linkage([distance_metric(objs[seq_names[j]], objs[seq_names[k]]) for j in range(len(objs)) for k in range(j+1, len(objs))])
+    Z = linkage([eval(distance_metric)(objs[seq_names[j]], objs[seq_names[k]]) for j in range(len(objs)) for k in range(j+1, len(objs))])
     if draw_dendro:
         plt.figure()
         dendro = dendrogram(Z, labels=seq_names, leaf_font_size=8, distance_sort='ascending')
@@ -38,7 +42,7 @@ def get_subalignment(node, compotts_objects, output_folder, **kwargs):
         return ComPotts_Object.from_merge(obj1, obj2, aligned_positions, output_folder, **kwargs)
 
 
-def multiple_alignment(protein_folders, output_folder, **kwargs):
+def multiple_alignment(protein_folders, output_folder, distance_metric="seq_id_distance", **kwargs):
     objs_dict = collections.OrderedDict()
     for pf in protein_folders:
         seq_file = fm.get_sequence_file_from_folder(pf)
@@ -46,7 +50,7 @@ def multiple_alignment(protein_folders, output_folder, **kwargs):
         mrf_file = fm.get_potts_model_file_from_folder(pf)
         obj = ComPotts_Object.from_hhblits_output(seq_file, a3m_file, output_folder, input_folder=pf, mrf_file=mrf_file, **kwargs)
         objs_dict[obj.name] = obj
-    first_node = cluster_compotts_objects(objs_dict)
+    first_node = cluster_compotts_objects(objs_dict, distance_metric=distance_metric)
     get_subalignment(first_node, objs_dict, output_folder, **kwargs)
 
 
@@ -59,14 +63,16 @@ def main():
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=0)
     parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)
+    parser.add_argument('-dm', '--distance_metric', help="distance metric", choices=("seq_id_distance", "inverse_seq_id_distance"), default="seq_id_distance")
     args = vars(parser.parse_args())
 
     if not os.path.isdir(args["output_folder"]):
         os.mkdir(args["output_folder"])
 
-    fm.write_readme(output_folder, **arguments)
+    fm.write_readme(args["output_folder"], **args)
 
-    multiple_alignment(args["folders"], args["output_folder"], use_w=(not args["no_w"]), w_threshold_method=args["w_threshold_method"], gap_open=args["gap_open"], gap_extend=args["gap_extend"])
+    multiple_alignment(args["folders"], args["output_folder"], distance_metric=args["distance_metric"],
+    use_w=(not args["no_w"]), w_threshold_method=args["w_threshold_method"], gap_open=args["gap_open"], gap_extend=args["gap_extend"])
 
 
 if __name__=="__main__":
