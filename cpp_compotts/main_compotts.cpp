@@ -308,7 +308,7 @@ int** unflatten(int* flat_array, int length)
 
 
 
-extern "C" int call_from_python(double* v_scores_, float* w_scores_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, int t_limit, int disp_level, float epsilon)
+extern "C" int call_from_python(double* v_scores_, float* w_scores_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, float epsilon)
 {
 	int status(0);
 
