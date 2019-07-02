@@ -31,8 +31,11 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_ccmpred'), default='hhblits')
     parser.add_argument('-ali', '--call_aliview', help="Call aliview at the end", action='store_true')
 
+    # solver options
+    parser.add_argument('-t', '--t_limit', help="solver time limit", type=float, default=36000)
+    parser.add_argument('-e', '--epsilon', help="solver precision", type=float, default=1)
 
-    # arguments pour CCMpred
+    # CCMpred options
     parser.add_argument('--pc-count', help="CCMpred : Specify number of pseudocounts (default : 1)")
 
 
