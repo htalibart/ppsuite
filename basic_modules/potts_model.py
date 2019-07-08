@@ -92,10 +92,10 @@ class Potts_Model:
 
 
     @classmethod
-    def from_seq_file_with_submat(cls, seq_file, pc_count, **kwargs): # TODO checker pourquoi le MRF est différent en inférant avec CCMpredPy
+    def from_seq_file_with_submat(cls, seq_file, npc=1, **kwargs): # TODO checker pourquoi le MRF est différent en inférant avec CCMpredPy
         """ substitution matrix pseudocounts """
         seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
-        tau = pc_count/(1+pc_count)
+        tau = npc/(1+npc)
         x = code_whole_seq(seq)
         v = np.zeros((len(x), q))
         v = np.zeros((len(x),q))

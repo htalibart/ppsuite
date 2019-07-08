@@ -28,7 +28,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=0)
     parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)
-    parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_ccmpred'), default='hhblits')
+    parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_submat', 'one_seq_ccmpred'), default='hhblits')
     parser.add_argument('-ali', '--call_aliview', help="Call aliview at the end", action='store_true')
 
     # solver options
@@ -109,6 +109,11 @@ def main(args=sys.argv[1:]):
             else:
                 print("Need sequence files")
 
+        elif args['mode']=='one_seq_submat':
+            if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None):
+                compotts_objects = [ComPotts_Object.from_seq_file_with_submat(sf, output_folder, **arguments) for sf in seq_files]
+            else:
+                print("Need sequence files")
 
         fm.write_readme(output_folder, **arguments)
 

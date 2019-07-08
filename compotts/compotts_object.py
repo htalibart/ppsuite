@@ -89,6 +89,30 @@ class ComPotts_Object:
         obj.train_msa = obj.seq_file
         return obj
 
+    @classmethod 
+    def from_seq_file_with_submat(cls, seq_file, output_folder, rescaling_function="identity", use_w=True, **kwargs): # TODO tester
+        obj = cls()
+        if 'name' in kwargs:
+            obj.name = kwargs['name']
+        else:
+            obj.name = fm.get_name_from_first_sequence_name(seq_file)+"_one_submat"
+        obj.folder = fm.create_folder(os.path.join(output_folder,obj.name))
+        obj.seq_file = seq_file
+        obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
+        obj.trimmed_seq = obj.real_seq
+        obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
+        obj.mrf = Potts_Model.from_seq_file_with_submat(obj.seq_file, name=obj.name, **kwargs)
+        obj.mrf.to_msgpack(obj.mrf_file)
+        obj.original_mrf=obj.mrf
+        if (rescaling_function!="identity"):
+            print("rescaling MRF")
+            obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function, use_w=use_w)
+        else:
+            print("using MRF as is (no rescaling)")
+        obj.train_msa = obj.seq_file
+        return obj
+
+
     @classmethod
     def from_seq_file_via_ccmpred(cls, seq_file, output_folder, rescaling_function = "identity", use_w=True, **kwargs):
         obj = cls()
