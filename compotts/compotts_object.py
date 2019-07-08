@@ -67,7 +67,7 @@ class ComPotts_Object:
 
 
     @classmethod 
-    def from_seq_file_to_one_hot(cls, seq_file, output_folder, rescaling_function="identity", use_w=True, **kwargs):
+    def from_seq_file_to_one_hot(cls, seq_file, output_folder, rescaling_function="identity", use_w=True, **kwargs): # TODO tester
         obj = cls()
         if 'name' in kwargs:
             obj.name = kwargs['name']
@@ -77,16 +77,8 @@ class ComPotts_Object:
         obj.seq_file = seq_file
         obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         obj.trimmed_seq = obj.real_seq
-        x = code_whole_seq(obj.real_seq)
-        v = np.zeros((len(x),q))
-        for i in range(len(x)):
-            v[i,x[i]]=1
-        w = np.zeros((len(x),len(x),q,q,))
-        for i in range(len(x)):
-            for j in range(len(x)):
-                w[i,j,x[i],x[j]] = 1
         obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
-        obj.mrf = Potts_Model.from_parameters(v, w, seq_file=obj.seq_file, name=obj.name)
+        obj.mrf = Potts_Model.from_seq_file_to_one_hot(obj.seq_file, name=obj.name, **kwargs)
         obj.mrf.to_msgpack(obj.mrf_file)
         obj.original_mrf=obj.mrf
         if (rescaling_function!="identity"):
@@ -94,7 +86,6 @@ class ComPotts_Object:
             obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function, use_w=use_w)
         else:
             print("using MRF as is (no rescaling)")
-
         obj.train_msa = obj.seq_file
         return obj
 

@@ -5,8 +5,10 @@ import math
 import msgpack
 
 from basic_modules.util import *
+from basic_modules import files_management as fm
+from basic_modules import pseudocounts
 
-POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff", "reg-lambda-single", "reg-lambda-pair-factor", "reg-L2", "reg-noscaling", "reg-scale-by-L", "v-center", "v-zero", "max-gap-pos", "max-gap_seq", "pc-uniform", "pc-submat", "pc-constant", "pc-none", "pc-count", "pc-pair-count"] # TODO mettre toutes les options
+POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff", "reg-lambda-single", "reg-lambda-pair-factor", "reg-L2", "reg-noscaling", "reg-scale-by-L", "v-center", "v-zero", "max-gap-pos", "max-gap_seq", "pc-uniform", "pc-submat", "pc-constant", "pc-none", "pc-count", "pc-pair-count", "maxit"] # TODO mettre toutes les options
 
 class Potts_Model:
 
@@ -72,7 +74,44 @@ class Potts_Model:
 
 
     @classmethod
-    def from_parameters(cls, v, w, **kwargs): # TODO où est l'encodage one hot ? (besoin d'un from_sequence...)
+    def from_seq_file_to_one_hot(cls, seq_file, **kwargs):
+        """ one hot encoding """
+        seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
+        x = code_whole_seq(seq)
+        v = np.zeros((len(x),q))
+        for i in range(len(x)):
+            v[i,x[i]]=1
+        w = np.zeros((len(x),len(x),q,q,)) # TODO laisser à 0 ? # , ?
+        for i in range(len(x)):
+            for j in range(len(x)):
+                w[i,j,x[i],x[j]] = 1
+        obj = cls.from_parameters(v, w, **kwargs)
+        obj.training_set = seq_file
+        return obj
+
+
+
+    @classmethod
+    def from_seq_file_with_submat(cls, seq_file, pc_count, **kwargs): # TODO checker pourquoi le MRF est différent en inférant avec CCMpredPy
+        """ substitution matrix pseudocounts """
+        seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
+        tau = pc_count/(1+pc_count)
+        x = code_whole_seq(seq)
+        v = np.zeros((len(x), q))
+        v = np.zeros((len(x),q))
+        p_submat = pseudocounts.get_probas()
+        for i in range(len(x)):
+            sum_b = (1/(q-1))*sum([math.log((1-tau)*(x[i]==b)+tau*p_submat[b]) for b in range(q-1)])
+            for a in range(q-1):
+                v[i,a] = math.log((1-tau)*(x[i]==a)+tau*p_submat[a])-sum_b
+        w = np.zeros((len(x),len(x),q,q))
+        obj = cls.from_parameters(v, w, **kwargs)
+        obj.training_set = seq_file
+        return obj
+
+
+    @classmethod
+    def from_parameters(cls, v, w, **kwargs): 
         """
             initialize MRF from pre-computed parameters
         """
