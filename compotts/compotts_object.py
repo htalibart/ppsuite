@@ -11,7 +11,7 @@ from compotts.align_msas import *
 class ComPotts_Object:
 
     @classmethod
-    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, input_folder=None, mrf_file=None, hhfilter_threshold=80, nb_sequences=200, perform_trim=True, trimal_gt=0.8, rescaling_function="identity", use_w=True, **kwargs):
+    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, input_folder=None, mrf_file=None, hhfilter_threshold=80, nb_sequences=200, perform_trim=True, trimal_gt=0.8, trimal_cons=60, rescaling_function="identity", use_w=True, set_mrf=True, **kwargs):
         obj = cls()
         if 'name' in kwargs:
             obj.name = kwargs['name']
@@ -39,31 +39,32 @@ class ComPotts_Object:
             obj.colnumbering_file = os.path.join(obj.folder,obj.name+"_colnumbering.csv")
             obj.aln_trimmed = os.path.join(obj.folder,obj.name+"_trim_"+str(int(trimal_gt*100))+".fasta")
             if (not os.path.isfile(obj.aln_trimmed)):
-                call_trimal(obj.aln_less, obj.aln_trimmed, trimal_gt, obj.colnumbering_file)
+                call_trimal(obj.aln_less, obj.aln_trimmed, trimal_gt, trimal_cons, obj.colnumbering_file)
             obj.trimal_ncol = fm.get_trimal_ncol(obj.colnumbering_file)
             obj.train_msa = obj.aln_trimmed
         else:
             print("trim OFF")
             obj.train_msa = obj.aln_less
 
-        if mrf_file is None:
-            obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
-            if not os.path.isfile(obj.mrf_file):
-                obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
+        if set_mrf: # useful if we only want the MSA files
+            if mrf_file is None:
+                obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
+                if not os.path.isfile(obj.mrf_file):
+                    obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, **kwargs)
+                else:
+                    obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
             else:
+                obj.mrf_file = mrf_file
                 obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
-        else:
-            obj.mrf_file = mrf_file
-            obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
-        obj.original_mrf=obj.mrf
-        if (rescaling_function!="identity"):
-            print("rescaling MRF")
-            obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function, use_w=use_w)
-        else:
-            print("using MRF as is (no rescaling)")
-        obj.real_seq = fm.get_first_sequence_in_fasta_file(obj.seq_file).upper()
-        obj.trimmed_seq = ''.join([obj.real_seq[col] for col in obj.get_real_positions([k for k in range(obj.mrf.ncol)])])
-        return obj
+            obj.original_mrf=obj.mrf
+            if (rescaling_function!="identity"):
+                print("rescaling MRF")
+                obj.mrf = get_rescaled_mrf(obj.mrf, rescaling_function, use_w=use_w)
+            else:
+                print("using MRF as is (no rescaling)")
+            obj.real_seq = fm.get_first_sequence_in_fasta_file(obj.seq_file).upper()
+            obj.trimmed_seq = ''.join([obj.real_seq[col] for col in obj.get_real_positions([k for k in range(obj.mrf.ncol)])])
+            return obj
 
 
     @classmethod 

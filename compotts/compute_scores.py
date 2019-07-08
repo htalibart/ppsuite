@@ -13,6 +13,9 @@ def get_w_threshold(mrf, w_threshold_method):
     if w_threshold_method.startswith("percentile_"):
         p = int(w_threshold_method[len("percentile_"):])
         return np.percentile(mrf.get_w_norms(), p)
+    elif w_threshold_method=="magnitude":
+        w_max = np.max(mrf.get_w_norms().flatten())
+        return w_max/10
     else:
         return 0
 

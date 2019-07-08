@@ -12,7 +12,6 @@ def create_folder(name):
         p.mkdir()
     return p
 
-
 def get_info_res_file_name(output_folder):
     return os.path.join(output_folder,"info.csv")
 
