@@ -68,7 +68,7 @@ class ComPotts_Object:
 
 
     @classmethod
-    def from_folder(cls, folder, **args): # TODO tester
+    def from_folder(cls, folder, **args):
          seq_file = fm.get_sequence_file_from_folder(folder)
          a3m_file = fm.get_a3m_file_from_folder(folder)
          mrf_file = fm.get_potts_model_file_from_folder(folder)
