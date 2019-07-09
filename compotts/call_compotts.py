@@ -15,7 +15,7 @@ INFINITY = 1000000000
 
 # TODO aln_res_file et info_res_file comme sortie de ComPotts -> variables
 
-def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon=1.0, v_score_function=scalar_product, w_score_function=scalar_product, gap_open=5, gap_extend=0, w_threshold_method="none", use_w=True, use_v=True, **kwargs):
+def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=INFINITY, t_limit=36000, disp_level=1, epsilon=1.0, v_score_function=scalar_product, w_score_function=scalar_product, gap_open=5, gap_extend=0, w_threshold_method="none", use_w=True, use_v=True, **kwargs):
 
     aln_res_file = fm.get_aln_res_file_name(output_folder)
     info_res_file = fm.get_info_res_file_name(output_folder)
