@@ -234,6 +234,11 @@ void display_results_and_print_to_files(int** row_map, int** col_map, double sel
 
 int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_time, double &ub, double &lb, int& nb_bb_nodes, int** row_map, int** col_map, double self1, double self2, int iter_limit_param, int n_limit_param, double t_limit, double epsilon, double dalih_bound = 0.0)
 {
+	std::cout << "self1 " << self1 << endl;
+	std::cout << "self2 " << self2 << endl;
+	std::cout << "iter_limit " << iter_limit_param << endl;
+	std::cout << "n_limit " << n_limit_param << endl;
+	std::cout << "epsilon " << epsilon << endl;
     std::cout << "started solving problem" << std::endl;
     int status(0);
 

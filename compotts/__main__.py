@@ -37,7 +37,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-e', '--epsilon', help="solver precision", type=float, default=1)
 
     # CCMpred options
-    parser.add_argument('--pc-count', help="CCMpred : Specify number of pseudocounts (default : 1)", default=1)
+    parser.add_argument('--pc-count', help="CCMpred : Specify number of pseudocounts (default : 1)", default=1000)
 
 
     args = vars(parser.parse_args(args))

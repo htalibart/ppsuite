@@ -50,7 +50,7 @@ class ComPotts_Object:
             if mrf_file is None:
                 obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
                 if not os.path.isfile(obj.mrf_file):
-                    obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, ipc_count=pc_count, **kwargs)
+                    obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, pc_count=pc_count, **kwargs)
                 else:
                     obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
             else:
