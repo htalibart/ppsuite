@@ -11,7 +11,7 @@ from compotts.align_msas import *
 class ComPotts_Object:
 
     @classmethod
-    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, input_folder=None, mrf_file=None, hhfilter_threshold=80, nb_sequences=200, perform_trim=True, trimal_gt=0.8, trimal_cons=60, rescaling_function="identity", use_w=True, set_mrf=True, **kwargs):
+    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, input_folder=None, mrf_file=None, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, trimal_cons=60, rescaling_function="identity", use_w=True, set_mrf=True, **kwargs):
         obj = cls()
         if 'name' in kwargs:
             obj.name = kwargs['name']
