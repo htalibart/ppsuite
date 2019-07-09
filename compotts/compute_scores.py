@@ -58,8 +58,14 @@ def compute_self_w_scores(mrf, edges_map, w_score_function, **kwargs):
     return w_score
 
 
-def compute_selfscore(mrf, edges_map, v_score_function, w_score_function):
-    v_score = sum([v_score_function(vi,vi) for vi in mrf.v])
-    w_score = compute_self_w_scores(mrf, edges_map, w_score_function)
+def compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v=True, use_w=True):
+    if use_v:
+        v_score = sum([v_score_function(vi,vi) for vi in mrf.v])
+    else:
+        v_score = 0
+    if use_w:
+        w_score = compute_self_w_scores(mrf, edges_map, w_score_function)
+    else:
+        w_score = 0
     selfcomp = v_score+w_score
     return selfcomp

@@ -40,7 +40,7 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     c_int_p = ctypes.POINTER(ctypes.c_int)
     c_edges_maps = [np.ascontiguousarray(edges_map.flatten(), dtype=np.int32).ctypes.data_as(c_int_p) for edges_map in edges_maps]
 
-    selfcomps = [compute_selfscore(mrf, edges_map, v_score_function, w_score_function) for mrf, edges_map in zip(mrfs, edges_maps)]
+    selfcomps = [compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v, use_w) for mrf, edges_map in zip(mrfs, edges_maps)]
     
     COMPOTTS_SOLVER.call_from_python(c_v_scores, c_w_scores, *[ctypes.c_int(mrf.ncol) for mrf in mrfs], *c_edges_maps, *[ctypes.c_double(selfcomp) for selfcomp in selfcomps], ctypes.c_double(gap_open), ctypes.c_double(gap_extend), ctypes.c_char_p(aln_res_file.encode('utf-8')), ctypes.c_char_p(info_res_file.encode('utf-8')), ctypes.c_int(n_limit_param), ctypes.c_int(iter_limit_param), ctypes.c_double(t_limit), ctypes.c_int(disp_level), ctypes.c_double(epsilon))
 
