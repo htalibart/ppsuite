@@ -25,6 +25,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-o', '--output_folder', help="Output folder", type=pathlib.Path)
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like', 'shifted_relu'))
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
+    parser.add_argument('-nv', '--no_v', help="Don't use v scores", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=5)
     parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)

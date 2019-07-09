@@ -992,7 +992,7 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
         	//int tic2_tmp = times(&end);
         	//cout << "Update lambda: " << ((double)tic2_tmp - (double)tic1_tmp) / (double)tic_per_sec << endl;
         }
-
+	cout << "UB-LB=" << ub - lb << endl;
     	tic2 = times(&end);
     	solve_time += ((double)tic2 - (double)tic1) / (double)tic_per_sec;
 
