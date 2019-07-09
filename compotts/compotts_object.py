@@ -67,6 +67,15 @@ class ComPotts_Object:
             return obj
 
 
+    @classmethod
+    def from_folder(cls, folder, **args): # TODO tester
+         seq_file = fm.get_sequence_file_from_folder(folder)
+         a3m_file = fm.get_a3m_file_from_folder(folder)
+         mrf_file = fm.get_potts_model_file_from_folder(folder)
+         return ComPotts_Object.from_hhblits_output(seq_file, a3m_file, folder, input_folder=folder, mrf_file=mrf_file, **args)
+
+
+
     @classmethod 
     def from_seq_file_to_one_hot(cls, seq_file, output_folder, rescaling_function="identity", use_w=True, **kwargs): # TODO tester
         obj = cls()
