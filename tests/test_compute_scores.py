@@ -26,22 +26,20 @@ class Test_Compute_Scores(unittest.TestCase):
     def test_selfscore_no_w(self):
         v_score_function = scalar_product
         w_score_function = scalar_product
-        edges_map = get_edges_map(self.mrf, "percentile_10")
+        edges_map = get_edges_map(self.mrf, "")
         selfcomp = compute_selfscore(self.mrf, edges_map, v_score_function, w_score_function, use_v=True, use_w=False)
         aln_dict, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=False)
         UB = infos_solver['UB']
-        print(selfcomp, UB)
         self.assertTrue(abs(selfcomp-UB)<1)
 
 
     def test_selfscore(self):
         v_score_function = scalar_product
         w_score_function = scalar_product
-        edges_map = get_edges_map(self.mrf, "percentile_10")
+        edges_map = get_edges_map(self.mrf, "")
         selfcomp = compute_selfscore(self.mrf, edges_map, v_score_function, w_score_function, use_v=True, use_w=True)
         aln_dict, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=True)
         UB = infos_solver['UB']
-        print(selfcomp, UB)
         self.assertTrue(abs(selfcomp-UB)<1)
 
 

@@ -49,7 +49,7 @@ def main(args=sys.argv[1:]):
         output_folder = os.path.join(general_output_folder,time.strftime("%Y%m%d-%H%M%S"))
     fm.create_folder(output_folder)
 
-    no_kwargs = ["potts_model_1", "potts_model_2", "sequence_file_1", "sequence_file_2", "a3m_file_1", "a3m_file_2", "output_folder", "mode", "no_w"] # TODO voir si utile
+    no_kwargs = ["potts_model_1", "potts_model_2", "sequence_file_1", "sequence_file_2", "a3m_file_1", "a3m_file_2", "output_folder", "mode", "no_w", "no_v"] # TODO voir si utile
     arguments = {}
     for key in args.keys():
         if key not in no_kwargs:
@@ -60,6 +60,9 @@ def main(args=sys.argv[1:]):
         arguments["use_w"]=False
     else:
         arguments["use_w"]=True
+
+
+    arguments["use_v"]= not args["no_v"]
 
 
     if args['mode']=='msgpack': # alignement de deux fichiers msgpack seulement
