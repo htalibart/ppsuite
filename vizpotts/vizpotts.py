@@ -3,6 +3,7 @@ import seaborn as sns
 
 from basic_modules.global_variables import ALPHABET
 from basic_modules.util import *
+from basic_modules.potts_model import *
 
 def get_reordered_v(v, alphabet):
     idx = [ALPHABET.find(a) for a in alphabet]

@@ -92,18 +92,24 @@ class Potts_Model:
 
 
     @classmethod
-    def from_seq_file_with_submat(cls, seq_file, npc=1, **kwargs): # TODO checker pourquoi le MRF est différent en inférant avec CCMpredPy
+    def from_seq_file_with_submat(cls, seq_file, npc=1, **kwargs):
         """ substitution matrix pseudocounts """
         seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         tau = npc/(1+npc)
         x = code_whole_seq(seq)
         v = np.zeros((len(x), q))
         v = np.zeros((len(x),q))
-        p_submat = pseudocounts.get_probas()
+
+        tau = npc/(1+npc)
         for i in range(len(x)):
-            sum_b = (1/(q-1))*sum([math.log((1-tau)*(x[i]==b)+tau*p_submat[b]) for b in range(q-1)])
+            fi = np.zeros(q-1)
+            log_sum=0
             for a in range(q-1):
-                v[i,a] = math.log((1-tau)*(x[i]==a)+tau*p_submat[a])-sum_b
+                fi[a] = (1-tau)*(a==x[i]) + tau*pseudocounts.get_cond_proba(a,x[i])
+                log_sum+=math.log(fi[a])
+            for a in range(q-1):
+                v[i][a] = math.log(fi[a])-(1/20)*log_sum
+
         w = np.zeros((len(x),len(x),q,q))
         obj = cls.from_parameters(v, w, **kwargs)
         obj.training_set = seq_file
