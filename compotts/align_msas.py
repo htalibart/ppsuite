@@ -8,7 +8,7 @@ from Bio.Align import MultipleSeqAlignment
 import basic_modules.files_management as fm
 
 def get_msas_aligned(aligned_positions, train_msa_files, output_msa_file):
-    print("merging "+train_msa_files[0]+" and "+train_msa_files[1])
+    print("merging "+str(train_msa_files[0])+" and "+str(train_msa_files[1]))
     aligns = [SeqIO.parse(f, "fasta") for f in train_msa_files]
     records = []
     for k in range(2):
@@ -23,7 +23,7 @@ def get_msas_aligned(aligned_positions, train_msa_files, output_msa_file):
     new_alignment = MultipleSeqAlignment(records)
     with open(output_msa_file, 'w') as f:
         AlignIO.write(new_alignment, f, "fasta")
-    print("output can be found at "+output_msa_file)
+    print("output can be found at "+str(output_msa_file))
 
 
 def main():
