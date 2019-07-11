@@ -63,9 +63,9 @@ def visualize_mrf_difference(mrf1, mrf2, alphabet=ALPHABET, start_at_1=True, sho
     v_norm_diff = [euclidean_norm(mrf1.v[i])-euclidean_norm(mrf2.v[i]) for i in range(mrf1.ncol)]
     w_norm = mrf1.get_w_norms()-mrf2.get_w_norms()
     name = mrf1.name+"-"+mrf2.name
-    visualize_parameters(v_diff, v_norm_diff, w_norm, alphabet, name, start_at_1, show_figure)
+    visualize_parameters(v_diff, v_norm_diff, w_norm, name, alphabet, start_at_1, show_figure)
 
-    mrf_diff = Potts_Model.from_parameters(mrf1.ncol, mrf1.v-mrf2.v, mrf1.w-mrf2.w, name+"_diffmrf")
+    mrf_diff = Potts_Model.from_parameters(mrf1.v-mrf2.v, mrf1.w-mrf2.w, name=name+"_diffmrf")
     visualize_mrf(mrf_diff, alphabet, start_at_1, show_figure)
 
 
