@@ -1,0 +1,7 @@
+biopython
+matplotlib
+msgpack
+numpy
+pandas
+scipy
+seaborn
