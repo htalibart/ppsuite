@@ -76,7 +76,7 @@ def get_trimal_ncol(colnumbering_file):
 
 
 def get_file_from_folder_ending_with_extension(folder, extension):
-    files = [f for f in os.listdir(folder) if f.endswith(extension)]
+    files = [str(f) for f in folder.glob('*'+extension)]
     if len(files)>0:
         files.sort(key = len)
         shortest = files[0]
