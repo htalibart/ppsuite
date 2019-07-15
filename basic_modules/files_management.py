@@ -13,10 +13,10 @@ def create_folder(name):
     return p
 
 def get_info_res_file_name(output_folder):
-    return os.path.join(output_folder,"info.csv")
+    return output_folder/"info.csv"
 
 def get_aln_res_file_name(output_folder):
-    return os.path.join(output_folder,"aln.csv")
+    return output_folder/"aln.csv"
 
 def get_aligned_positions_dict_from_compotts_output_file(aln_res_file):
     df = pd.read_csv(aln_res_file)
@@ -82,7 +82,7 @@ def get_file_from_folder_ending_with_extension(folder, extension):
         shortest = files[0]
         if len(files)>1:
             print("more than 1 file ending with "+extension+", using the one with the shortest name : "+shortest)
-        return os.path.join(folder,shortest)
+        return folder/shortest
     else:
         return None
 
@@ -97,7 +97,7 @@ def get_a3m_file_from_folder(folder):
 
 
 def write_readme(folder, **kwargs):
-    p = os.path.join(folder, 'README.txt')
+    p = folder/'README.txt'
     with open(p, 'w') as f:
         json.dump(kwargs, f, default=str)
 

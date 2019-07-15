@@ -34,7 +34,7 @@ def get_subalignment(node, compotts_objects, output_folder, **kwargs):
     else:
         obj1 = get_subalignment(node.left, compotts_objects, output_folder, **kwargs)
         obj2 = get_subalignment(node.right, compotts_objects, output_folder, **kwargs)
-        sub_output_folder = fm.create_folder(os.path.join(output_folder,obj1.name+"_"+obj2.name))
+        sub_output_folder = fm.create_folder(output_folder/obj1.name+"_"+obj2.name)
         if not os.path.isfile(fm.get_aln_res_file_name(sub_output_folder)):
             aligned_positions, info_solver = align_two_objects([obj1, obj2], sub_output_folder, **kwargs)
         else:

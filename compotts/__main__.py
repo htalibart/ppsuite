@@ -52,7 +52,7 @@ def main(args=sys.argv[1:]):
     output_folder = args["output_folder"]
     if output_folder is None:
         general_output_folder = fm.create_folder("output_compotts")
-        output_folder = os.path.join(general_output_folder,time.strftime("%Y%m%d-%H%M%S"))
+        output_folder = general_output_folder / time.strftime("%Y%m%d-%H%M%S")
     fm.create_folder(output_folder)
 
     no_kwargs = ["potts_model_1", "potts_model_2", "sequence_file_1", "sequence_file_2", "a3m_file_1", "a3m_file_2", "output_folder", "mode", "no_w", "no_v"] # TODO voir si utile
@@ -135,11 +135,11 @@ def main(args=sys.argv[1:]):
 
         # on fait des trucs avec les positions alignées
         if args["mode"]!="msgpack":
-            output_msa = os.path.join(output_folder,'_'.join(o.name for o in compotts_objects)+"_train_msas.fasta")
+            output_msa = output_folder/('_'.join(o.name for o in compotts_objects)+"_train_msas.fasta")
             get_msas_aligned(aligned_positions, [o.train_msa for o in compotts_objects], output_msa)
             if args["call_aliview"]:
                 os.system("aliview "+output_msa)
-            output_fasta_file = os.path.join(output_folder,'_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
+            output_fasta_file = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta"))
             get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 
 

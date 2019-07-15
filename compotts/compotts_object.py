@@ -24,20 +24,20 @@ class ComPotts_Object:
         else:
             if len(output_folder)>0:
                 output_folder = fm.create_folder(output_folder)
-            obj.folder = fm.create_folder(os.path.join(output_folder,obj.name))
-        obj.aln_filtered = os.path.join(obj.folder,obj.name+"_filtered_80.a3m")
+            obj.folder = fm.create_folder(output_folder/obj.name)
+        obj.aln_filtered = obj.folder/obj.name+"_filtered_80.a3m"
         if (not os.path.isfile(obj.aln_filtered)):
             call_hhfilter(obj.a3m_file, obj.aln_filtered, hhfilter_threshold)
-        obj.reformat_file=os.path.join(obj.folder,obj.name+"_reformat.fasta")
+        obj.reformat_file=obj.folder/obj.name+"_reformat.fasta"
         if (not os.path.isfile(obj.reformat_file)):
             call_reformat(obj.aln_filtered, obj.reformat_file)
-        obj.aln_less = os.path.join(obj.folder,obj.name+"_less.fasta")
+        obj.aln_less = obj.folder/obj.name+"_less.fasta"
         if (not os.path.isfile(obj.aln_less)):
             fm.create_fasta_file_with_less_sequences(obj.reformat_file, obj.aln_less, nb_sequences)
         if perform_trim:
             print("trim ON")
-            obj.colnumbering_file = os.path.join(obj.folder,obj.name+"_colnumbering.csv")
-            obj.aln_trimmed = os.path.join(obj.folder,obj.name+"_trim_"+str(int(trimal_gt*100))+".fasta")
+            obj.colnumbering_file = obj.folder/obj.name+"_colnumbering.csv"
+            obj.aln_trimmed = obj.folder/obj.name+"_trim_"+str(int(trimal_gt*100))+".fasta"
             if (not os.path.isfile(obj.aln_trimmed)):
                 call_trimal(obj.aln_less, obj.aln_trimmed, trimal_gt, trimal_cons, obj.colnumbering_file)
             obj.trimal_ncol = fm.get_trimal_ncol(obj.colnumbering_file)
@@ -48,7 +48,7 @@ class ComPotts_Object:
 
         if set_mrf: # useful if we only want the MSA files
             if mrf_file is None:
-                obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
+                obj.mrf_file = obj.folder/obj.name+".mrf"
                 if not os.path.isfile(obj.mrf_file):
                     obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, pc_count=pc_count, **kwargs)
                 else:
@@ -83,11 +83,11 @@ class ComPotts_Object:
             obj.name = kwargs['name']
         else:
             obj.name = fm.get_name_from_first_sequence_name(seq_file)+"_one_hot"
-        obj.folder = fm.create_folder(os.path.join(output_folder,obj.name))
+        obj.folder = fm.create_folder(output_folder/obj.name)
         obj.seq_file = seq_file
         obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         obj.trimmed_seq = obj.real_seq
-        obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
+        obj.mrf_file = obj.folder/obj.name+".mrf"
         obj.mrf = Potts_Model.from_seq_file_to_one_hot(obj.seq_file, name=obj.name, **kwargs)
         obj.mrf.to_msgpack(obj.mrf_file)
         obj.original_mrf=obj.mrf
@@ -106,11 +106,11 @@ class ComPotts_Object:
             obj.name = kwargs['name']
         else:
             obj.name = fm.get_name_from_first_sequence_name(seq_file)+"_one_submat"
-        obj.folder = fm.create_folder(os.path.join(output_folder,obj.name))
+        obj.folder = fm.create_folder(output_folder/obj.name)
         obj.seq_file = seq_file
         obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         obj.trimmed_seq = obj.real_seq
-        obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
+        obj.mrf_file = obj.folder/obj.name+".mrf"
         obj.mrf = Potts_Model.from_seq_file_with_submat(obj.seq_file, name=obj.name, **kwargs)
         obj.mrf.to_msgpack(obj.mrf_file)
         obj.original_mrf=obj.mrf
@@ -130,11 +130,11 @@ class ComPotts_Object:
             obj.name = kwargs['name']
         else:
             obj.name = fm.get_name_from_first_sequence_name(seq_file)+"_submat"
-        obj.folder = fm.create_folder(os.path.join(output_folder,obj.name))
+        obj.folder = fm.create_folder(output_folder/obj.name)
         obj.seq_file = seq_file
         obj.real_seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         obj.trimmed_seq = obj.real_seq
-        obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
+        obj.mrf_file = obj.folder/obj.name+".mrf"
         obj.mrf = Potts_Model.from_training_set(obj.seq_file, obj.mrf_file, pc_submat="")
         obj.train_msa = obj.seq_file
         obj.original_mrf=obj.mrf
@@ -154,14 +154,14 @@ class ComPotts_Object:
             obj.name = kwargs['name']
         else:
             obj.name = '_'.join([obj1.name, obj2.name])
-        obj.folder = fm.create_folder(os.path.join(output_folder,obj.name))
-        obj.aln_unfiltered = os.path.join(obj.folder,obj.name+"_unfiltered.fasta")
+        obj.folder = fm.create_folder(output_folder/obj.name)
+        obj.aln_unfiltered = obj.folder/obj.name+"_unfiltered.fasta"
         get_msas_aligned(aligned_positions, [obj1.train_msa, obj2.train_msa], obj.aln_unfiltered)
-        obj.aln_filtered = os.path.join(obj.folder,obj.name+"_filtered.fasta")
+        obj.aln_filtered = obj.folder/obj.name+"_filtered.fasta"
         if (not os.path.isfile(obj.aln_filtered)):
             call_hhfilter(obj.aln_unfiltered, obj.aln_filtered, hhfilter_threshold)
         obj.train_msa = obj.aln_filtered
-        obj.mrf_file = os.path.join(obj.folder,obj.name+".mrf")
+        obj.mrf_file = obj.folder/obj.name+".mrf"
         if os.path.isfile(obj.mrf_file):
             obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
         else:
