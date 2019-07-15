@@ -838,11 +838,12 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
     double gamma(params.gamma);
     double theta(params.theta);
     double stepsize_min(params.stepsize_min);
+    int nb_non_increasing_steps_max(params.nb_non_increasing_steps_max);
     int cnt_non_increas(0);
     int cnt_increas(0);
     int cnt_break(0);
 
-    cout.precision(12);
+    cout.precision(12); // utilité ??
 
     long tic_per_sec = sysconf(_SC_CLK_TCK);
     struct tms start, end;
@@ -970,9 +971,9 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
         	cout <<"Stepsize less than " << stepsize_min << ". Stop now.\n";
             status = APPROXIMATE;
         }
-        else if(cnt_break > 500)
+        else if(cnt_break > nb_non_increasing_steps_max)
         {
-            cout << "More than 500 non increasing steps. Stop now.\n";
+            cout << "More than " << nb_non_increasing_steps_max <<" non increasing steps. Stop now.\n";
             status = APPROXIMATE;
         }
         else if(solve_time >= params.my_time_limit)

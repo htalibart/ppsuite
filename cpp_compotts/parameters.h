@@ -49,6 +49,10 @@ class parameters
         * Stepsize_min parameter, used during Sub-Gradient Descent process.
         */
         double stepsize_min;
+	/**
+        * Max nb of non-increasint steps during Subg-Gradient Descent process.
+        */
+	int nb_non_increasing_steps_max;
 
 
 
@@ -64,7 +68,8 @@ class parameters
                    limit_lb(INFINITY),
                    gamma(1.),
                    theta(0.9), /*0.5*/
-		   stepsize_min(0.000000005)
+		   stepsize_min(0.000000005),
+		   nb_non_increasing_steps_max(500)
                    {};
 
         /**

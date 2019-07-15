@@ -232,7 +232,7 @@ void display_results_and_print_to_files(int** row_map, int** col_map, double sel
 
 
 
-int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_time, double &ub, double &lb, int& nb_bb_nodes, int** row_map, int** col_map, double self1, double self2, int iter_limit_param, int n_limit_param, double t_limit, double epsilon, double gamma, double theta, double stepsize_min, double dalih_bound = 0.0)
+int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_time, double &ub, double &lb, int& nb_bb_nodes, int** row_map, int** col_map, double self1, double self2, int iter_limit_param, int n_limit_param, double t_limit, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double dalih_bound = 0.0)
 {
 	std::cout << "self1 " << self1 << endl;
 	std::cout << "self2 " << self2 << endl;
@@ -264,6 +264,7 @@ int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_tim
     p.gamma = gamma;
     p.theta = theta;
     p.stepsize_min = stepsize_min;
+    p.nb_non_increasing_steps_max = nb_non_increasing_steps_max;
 
 
     //create problem
@@ -316,7 +317,7 @@ int** unflatten(int* flat_array, int length)
 
 
 
-extern "C" int call_from_python(double* v_scores_, float* w_scores_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min)
+extern "C" int call_from_python(double* v_scores_, float* w_scores_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max)
 {
 	int status(0);
 
@@ -361,7 +362,7 @@ extern "C" int call_from_python(double* v_scores_, float* w_scores_, int LA_, in
 	int** row_map = unflatten(edges_mapA, LA);
 	int** col_map = unflatten(edges_mapB, LB);
 
-	solve_prb(forbidden_res, res_alignment, res_alloc_time, res_solve_time, res_ub, res_lb, nb_bb_nodes, row_map, col_map, self1, self2, iter_limit_param, n_limit_param, t_limit, epsilon, gamma, theta, stepsize_min, -INFINITY);
+	solve_prb(forbidden_res, res_alignment, res_alloc_time, res_solve_time, res_ub, res_lb, nb_bb_nodes, row_map, col_map, self1, self2, iter_limit_param, n_limit_param, t_limit, epsilon, gamma, theta, stepsize_min, nb_non_increasing_steps_max, -INFINITY);
 
 
 	// computation time
