@@ -56,7 +56,7 @@ def create_fasta_file_with_less_sequences(aln_file, aln_1000, nb_sequences=1000)
 
 
 def get_seq_names_from_seq_folder(seq_folder):
-    return([str(f)[:-len(".fasta")] for f in seq_folder.glob('*.fasta')
+    return [str(f)[:-len(".fasta")] for f in seq_folder.glob('*.fasta')]
 
 def separate_fasta(fasta_file, seq_folder):
     records = SeqIO.parse(open(str(fasta_file)), "fasta")
