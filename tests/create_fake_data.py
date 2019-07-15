@@ -59,8 +59,9 @@ def generate_probadict_for_pseudoconserved_column(conserved_letters, proba_noise
     probadict = {}
     proba_not_noise = 1-proba_noise
     proba_each_conserved_letter = proba_not_noise/len(conserved_letters)
+    proba_each_noise = proba_noise/(len(alphabet)-len(conserved_letters))
     for l in alphabet:
-        probadict[l] = proba_noise
+        probadict[l] = proba_each_noise
     for l in conserved_letters:
         probadict[l] = proba_each_conserved_letter
     return probadict
@@ -77,7 +78,7 @@ def generate_column_from_probadict(n, probadict, proba_noise, alphabet):
         if noise(proba_noise):
             l = one_random_letter(alphabet)
         else:
-            l = np.random.choice(letters, weights)[0]
+            l = np.random.choice(letters, p=weights)[0]
         c.append(l)
     return c
 
@@ -123,7 +124,7 @@ def get_correlated_column(c1, n, alphabet, proba_noise, probadict):
             items = probadict[l1].items()
             letters2 = [item[0] for item in items]
             weights = [item[1] for item in items]
-            l2 = random.choices(letters2, weights)[0]
+            l2 = np.random.choice(letters2, p=weights)[0]
         else:
             l2 = one_random_letter(alphabet)
         c2.append(l2)
