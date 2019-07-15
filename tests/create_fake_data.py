@@ -77,7 +77,7 @@ def generate_column_from_probadict(n, probadict, proba_noise, alphabet):
         if noise(proba_noise):
             l = one_random_letter(alphabet)
         else:
-            l = random.choices(letters, weights)[0]
+            l = np.random.choice(letters, weights)[0]
         c.append(l)
     return c
 
