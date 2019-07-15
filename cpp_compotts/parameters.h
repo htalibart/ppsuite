@@ -45,6 +45,12 @@ class parameters
         * Theta parameters, used to dynamicaly change Gamma during Sub-Gradient Descent process.
         */
         double theta;
+	/**
+        * Stepsize_min parameter, used during Sub-Gradient Descent process.
+        */
+        double stepsize_min;
+
+
 
         /**
         * Default Constructor, usualy for root problem
@@ -57,7 +63,8 @@ class parameters
                    epsilon(0.0),
                    limit_lb(INFINITY),
                    gamma(1.),
-                   theta(0.9) /*0.5*/
+                   theta(0.9), /*0.5*/
+		   stepsize_min(0.000000005)
                    {};
 
         /**

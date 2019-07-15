@@ -36,6 +36,10 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-t', '--t_limit', help="solver : time limit", type=float, default=36000)
     parser.add_argument('-lit', '--iter_limit_param', help="solver : nb Lagrangian iterations", type=int, default=1000)
     parser.add_argument('-e', '--epsilon', help="solver : precision", type=float, default=1)
+    parser.add_argument('-ga', '--gamma', help="solver : gamma", type=float, default=1.0)
+    parser.add_argument('-th', '--theta', help="solver : theta", type=float, default=0.9)
+    parser.add_argument('-stp', '--stepsize_min', help="solver : stepsize_min", type=float, default=0.000000005)
+    
 
     # CCMpred options
     parser.add_argument('--pc-count', help="CCMpred : Specify number of pseudocounts (default : 1)", default=1000)

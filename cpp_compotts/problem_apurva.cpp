@@ -837,6 +837,7 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 
     double gamma(params.gamma);
     double theta(params.theta);
+    double stepsize_min(params.stepsize_min);
     int cnt_non_increas(0);
     int cnt_increas(0);
     int cnt_break(0);
@@ -964,9 +965,9 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
         	cout <<"Useless node. Stop now.\n";
             status = APPROXIMATE;
         }
-        else if(gamma <= 0.000000005)
+        else if(gamma <= stepsize_min)
         {
-        	cout <<"Stepsize less than 0.000000005. Stop now.\n";
+        	cout <<"Stepsize less than " << stepsize_min << ". Stop now.\n";
             status = APPROXIMATE;
         }
         else if(cnt_break > 500)
