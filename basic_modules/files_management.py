@@ -56,7 +56,7 @@ def create_fasta_file_with_less_sequences(aln_file, aln_1000, nb_sequences=1000)
 
 
 def get_seq_names_from_seq_folder(seq_folder):
-    return [str(f)[:-len(".fasta")] for f in seq_folder.glob('*.fasta')]
+    return [str(f)[str(len(seq_folder)):-len(".fasta")] for f in seq_folder.glob('*.fasta')]
 
 def separate_fasta(fasta_file, seq_folder):
     records = SeqIO.parse(open(str(fasta_file)), "fasta")
@@ -78,7 +78,7 @@ def get_file_from_folder_ending_with_extension(folder, extension):
         shortest = files[0]
         if len(files)>1:
             print("more than 1 file ending with "+extension+", using the one with the shortest name : "+shortest)
-        return folder/shortest
+        return shortest
     else:
         return None
 
