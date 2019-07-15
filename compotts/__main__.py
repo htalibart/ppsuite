@@ -139,7 +139,7 @@ def main(args=sys.argv[1:]):
             get_msas_aligned(aligned_positions, [o.train_msa for o in compotts_objects], output_msa)
             if args["call_aliview"]:
                 os.system("aliview "+output_msa)
-            output_fasta_file = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta"))
+            output_fasta_file = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
             get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 
 
