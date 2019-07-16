@@ -27,7 +27,7 @@ class Potts_Model:
         """
             initialize MRF from msgpack file given by CCMpredPy
         """
-        with open(binary_file, 'rb') as data_file:
+        with open(str(binary_file), 'rb') as data_file:
             df = msgpack.unpackb(data_file.read())
             """
             df est un dictionnaire :
@@ -130,7 +130,7 @@ class Potts_Model:
     def to_msgpack(self, filename=None):
         if filename is None:
             filename = self.name.replace('/','-')
-        with open(filename, 'wb') as f:
+        with open(str(filename), 'wb') as f:
             x_single = self.v[:,:20].reshape(self.ncol*20).tolist()
             x_pair = {}
             for i in range(self.ncol):
