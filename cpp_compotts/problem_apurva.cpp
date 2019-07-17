@@ -984,6 +984,9 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
         else
         {
             step = gamma * (current_ub - lb) / sub_gr_norm;
+	    //cout << "current UB-LB="<< current_ub-lb << endl;
+	    //cout << "sub_gr_norm=" << sub_gr_norm << endl;
+	    //cout << "step=" << step << endl;
             if(step <= 0.)
             {
                 cout << "Error in step value (negative step are not allowed)\n";

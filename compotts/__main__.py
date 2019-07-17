@@ -24,6 +24,9 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-f2', '--input_folder_2', help="Folder containing files for sequence 2", type=pathlib.Path)
     parser.add_argument('-o', '--output_folder', help="Output folder", type=pathlib.Path)
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like', 'shifted_relu'))
+    parser.add_argument('-n', '--nb_sequences', help="Number of sequences in the MRF training alignment", default=1000, type=int)
+
+    # options alignement
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-nv', '--no_v', help="Don't use v scores", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
@@ -34,7 +37,7 @@ def main(args=sys.argv[1:]):
 
     # solver options
     parser.add_argument('-t', '--t_limit', help="solver : time limit", type=float, default=36000)
-    parser.add_argument('-lit', '--iter_limit_param', help="solver : nb Lagrangian iterations", type=int, default=1000)
+    parser.add_argument('-lit', '--iter_limit_param', help="solver : nb Lagrangian iterations", type=int, default=1000000000)
     parser.add_argument('-e', '--epsilon', help="solver : precision", type=float, default=1)
     parser.add_argument('-ga', '--gamma', help="solver : gamma", type=float, default=1.0)
     parser.add_argument('-th', '--theta', help="solver : theta", type=float, default=0.9)
@@ -42,8 +45,13 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-stpm', '--nb_non_increasing_steps_max', help="solver : nb_non_increasing_steps_max", type=int, default=500)
     
 
-    # CCMpred options
-    parser.add_argument('--pc-count', help="CCMpred : Specify number of pseudocounts (default : 1000)", default=1000)
+    # CCMpredPy options
+    #parser.add_argument('--pc-count', help="CCMpred : Specify number of pseudocounts (default : 1000)", default=1000)
+    #parser.add_argument('--pc-pair-count', help="CCMpred : Specify number of pair pseudocounts (default : 1000)", default=1000)
+    parser.add_argument('--reg-lambda-pair-factor', help="CCMpred : Regularization parameter for pair potentials (L2 regularization with lambda_pair = lambda_pair-factor * scaling) [default: 0.2]", default=0.2)
+
+    # options related to CCMpredPy
+    parser.add_argument('--pc_count_factor', help="Number of pseudocounts for CCMpredPy will be (pc_count_factor)*(nb_sequences). Default : pc_count_factor=1", type=int, default=1)
 
 
     args = vars(parser.parse_args(args))
@@ -69,7 +77,6 @@ def main(args=sys.argv[1:]):
 
 
     arguments["use_v"]= not args["no_v"]
-
 
     if args['mode']=='msgpack': # alignement de deux fichiers msgpack seulement
         for k in range(1,3):
@@ -138,7 +145,7 @@ def main(args=sys.argv[1:]):
             output_msa = output_folder/('_'.join(o.name for o in compotts_objects)+"_train_msas.fasta")
             get_msas_aligned(aligned_positions, [o.train_msa for o in compotts_objects], output_msa)
             if args["call_aliview"]:
-                os.system("aliview "+output_msa)
+                os.system("aliview "+str(output_msa))
             output_fasta_file = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
             get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 

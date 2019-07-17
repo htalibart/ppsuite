@@ -11,7 +11,7 @@ from compotts.align_msas import *
 class ComPotts_Object:
 
     @classmethod
-    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, input_folder=None, mrf_file=None, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, trimal_cons=60, rescaling_function="identity", use_w=True, set_mrf=True, pc_count=1000, **kwargs):
+    def from_hhblits_output(cls, seq_file, a3m_file, output_folder, input_folder=None, mrf_file=None, hhfilter_threshold=80, nb_sequences=1000, perform_trim=True, trimal_gt=0.8, trimal_cons=60, rescaling_function="identity", use_w=True, set_mrf=True, pc_count_factor=1, **kwargs):
         obj = cls()
         if 'name' in kwargs:
             obj.name = kwargs['name']
@@ -50,7 +50,7 @@ class ComPotts_Object:
             if mrf_file is None:
                 obj.mrf_file = obj.folder/(obj.name+".mrf")
                 if not obj.mrf_file.is_file():
-                    obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, pc_count=pc_count, **kwargs)
+                    obj.mrf = Potts_Model.from_training_set(obj.train_msa, obj.mrf_file, name=obj.name, pc_count=pc_count_factor*nb_sequences, **kwargs)
                 else:
                     obj.mrf = Potts_Model.from_msgpack(obj.mrf_file, name=obj.name, **kwargs)
             else:
@@ -69,10 +69,11 @@ class ComPotts_Object:
 
     @classmethod
     def from_folder(cls, folder, **args):
-         seq_file = fm.get_sequence_file_from_folder(folder)
-         a3m_file = fm.get_a3m_file_from_folder(folder)
-         mrf_file = fm.get_potts_model_file_from_folder(folder)
-         return ComPotts_Object.from_hhblits_output(seq_file, a3m_file, folder, input_folder=folder, mrf_file=mrf_file, **args)
+        folder = pathlib.Path(folder)
+        seq_file = fm.get_sequence_file_from_folder(folder)
+        a3m_file = fm.get_a3m_file_from_folder(folder)
+        mrf_file = fm.get_potts_model_file_from_folder(folder)
+        return ComPotts_Object.from_hhblits_output(seq_file, a3m_file, folder, input_folder=folder, mrf_file=mrf_file, **args)
 
 
 
