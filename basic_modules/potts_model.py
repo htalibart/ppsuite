@@ -1,6 +1,7 @@
 import os
 import pathlib
 import numpy as np
+import numpy.linalg as LA
 import math
 import msgpack
 
@@ -176,6 +177,13 @@ class Potts_Model:
 
     def get_v_norms(self):
         return [euclidean_norm(vi) for vi in self.v]
+
+
+    def get_v_norm(self):
+        return LA.norm(self.v)
+
+    def get_w_norm(self):
+        return LA.norm(self.w)
 
 
     def Hamiltonian(self, a):

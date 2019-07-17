@@ -1,6 +1,6 @@
 import unittest
 import shutil, tempfile
-
+import pathlib
 import numpy as np
 
 from basic_modules.potts_model import *
@@ -8,14 +8,14 @@ from compotts.compute_scores import *
 from compotts.call_compotts import *
 
 import pkg_resources
-EXAMPLES_FOLDER = pkg_resources.resource_filename(__name__,'examples/test_call_compotts_simple/')
+EXAMPLES_FOLDER = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/test_call_compotts_simple/'))
 
 
 class Test_Compute_Scores(unittest.TestCase):
 
     def setUp(self):
         PROTEIN_NAME = "1cc8"
-        self.mrf = Potts_Model.from_msgpack(os.path.join(EXAMPLES_FOLDER,PROTEIN_NAME+".mrf"))
+        self.mrf = Potts_Model.from_msgpack(EXAMPLES_FOLDER/(PROTEIN_NAME+".mrf"))
         self.output_folder = tempfile.mkdtemp()
 
 

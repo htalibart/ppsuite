@@ -94,6 +94,10 @@ class Test_Call_ComPotts_Simple(unittest.TestCase):
         similarity_global = infos_solver["similarity_global"]
         self.assertEqual(similarity_global,1)
 
+    
+    def test_align_to_itself_vw_scoremax(self):
+       align_two_potts_models([self.mrf, self.mrf], self.output_folder, vw_coeff_method="scoremax_100") 
+
 
 if __name__=='__main__':
     unittest.main()

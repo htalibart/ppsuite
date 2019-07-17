@@ -52,9 +52,14 @@ def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, w_coe
 def get_vw_coeffs(mrfs, vw_coeff_method):
     if vw_coeff_method.startswith("arbitrary_"):
         return [float(strcoeff) for strcoeff in vw_coeff_method[len("arbitrary_"):].split('_')]
+    elif vw_coeff_method.startswith("scoremax_"):
+        hmax = float(vw_coeff_method[len("scoremax_"):])
+        v_coeff = hmax/(2*mrfs[0].get_v_norm()*mrfs[1].get_v_norm())
+        w_coeff = hmax/(mrfs[0].get_w_norm()*mrfs[1].get_w_norm())
+        return v_coeff, w_coeff
 
 
-def compute_scores_and_edges_maps(mrfs, v_score_function, w_score_function, use_v, use_w, vw_coeff_method="arbitrary_1_1", w_threshold_method="percentile_0", **kwargs):
+def compute_scores_and_edges_maps(mrfs, v_score_function=scalar_product, w_score_function=scalar_product, use_v=True, use_w=True, vw_coeff_method="arbitrary_1_1", w_threshold_method="percentile_0", **kwargs):
     v_coeff, w_coeff = get_vw_coeffs(mrfs, vw_coeff_method)
     if use_v:
         v_scores = compute_v_scores(*mrfs, v_score_function, v_coeff=v_coeff)
@@ -78,7 +83,8 @@ def compute_self_w_scores(mrf, edges_map, w_score_function, **kwargs):
     return w_score
 
 
-def compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v=True, use_w=True, v_coeff=1, w_coeff=1):
+def compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v=True, use_w=True, vw_coeff_method="arbitrary_1_1"):
+    v_coeff, w_coeff = get_vw_coeffs([mrf, mrf], vw_coeff_method)
     if use_v:
         v_score = sum([v_score_function(vi,vi) for vi in mrf.v])
     else:
