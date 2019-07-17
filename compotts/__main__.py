@@ -30,10 +30,9 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-nv', '--no_v', help="Don't use v scores", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
-    parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=5)
+    parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=6)
     parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)
     parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_submat', 'one_seq_ccmpred'), default='hhblits')
-    parser.add_argument('-ali', '--call_aliview', help="Call aliview at the end", action='store_true')
 
     # solver options
     parser.add_argument('-t', '--t_limit', help="solver : time limit", type=float, default=36000)
@@ -44,6 +43,10 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-stpz', '--stepsize_min', help="solver : stepsize_min", type=float, default=0.000000005)
     parser.add_argument('-stpm', '--nb_non_increasing_steps_max', help="solver : nb_non_increasing_steps_max", type=int, default=500)
     
+
+    # autres options
+    parser.add_argument('-ali', '--call_aliview', help="Call aliview at the end", action='store_true')
+
 
     # CCMpredPy options
     #parser.add_argument('--pc-count', help="CCMpred : Specify number of pseudocounts (default : 1000)", default=1000)
@@ -150,7 +153,8 @@ def main(args=sys.argv[1:]):
             get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 
 
-        return {"compotts_objects": compotts_objects, "aligned_positions":aligned_positions}
+        return {"compotts_objects": compotts_objects, "aligned_positions":aligned_positions, "infos_solver":infos_solver}
+
 
 
 if __name__=="__main__":

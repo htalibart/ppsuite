@@ -28,13 +28,8 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
         v_scores = np.ascontiguousarray(np.zeros(tuple([mrf.v.shape[0] for mrf in mrfs])).flatten())
     c_v_scores = ctypes.c_void_p(v_scores.ctypes.data)
 
-    if use_w:
-        edges_maps = [get_edges_map(mrf, w_threshold_method) for mrf in mrfs]
-        w_scores = compute_w_scores(*mrfs, *edges_maps, w_score_function)
-    else:
-        edges_maps = [np.zeros((mrf.w.shape[0:2])) for mrf in mrfs]
-        w_scores = np.zeros(1)
-    
+    v_scores, w_scores, edges_maps = compute_scores_and_edges_maps(mrfs, v_score_function, w_score_function, use_v, use_w, **kwargs)
+    c_v_scores = ctypes.c_void_p(np.ascontiguousarray(v_scores.flatten()).ctypes.data)
     c_w_scores = ctypes.c_void_p(w_scores.ctypes.data)
 
     c_int_p = ctypes.POINTER(ctypes.c_int)

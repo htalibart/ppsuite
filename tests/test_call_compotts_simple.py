@@ -1,6 +1,8 @@
 import unittest
 import shutil, tempfile
 
+import pathlib
+
 import numpy as np
 
 from compotts.compotts_object import *
@@ -11,7 +13,7 @@ import tests.create_fake_data as crfake
 
 
 import pkg_resources
-EXAMPLES_FOLDER = pkg_resources.resource_filename(__name__,'examples/test_call_compotts_simple/')
+EXAMPLES_FOLDER = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/test_call_compotts_simple/'))
 
 
 def are_templates_aligned(template2, aligned_positions):
@@ -32,8 +34,8 @@ class Test_Call_ComPotts_Simple(unittest.TestCase):
 
     def setUp(self):
         PROTEIN_NAME = "1cc8"
-        self.mrf = Potts_Model.from_msgpack(os.path.join(EXAMPLES_FOLDER,PROTEIN_NAME+".mrf"))
-        self.output_folder = tempfile.mkdtemp()
+        self.mrf = Potts_Model.from_msgpack(EXAMPLES_FOLDER/(PROTEIN_NAME+".mrf"))
+        self.output_folder = pathlib.Path(tempfile.mkdtemp())
 
 
     def tearDown(self):
@@ -42,20 +44,20 @@ class Test_Call_ComPotts_Simple(unittest.TestCase):
 
     def test_align_small_fake_mrfs(self):
         templates = [["1", "0", "3", "2"],["[0]", "y", "[1]", "[2]"]]
-        alnfnames = [self.output_folder+"fake_"+str(i)+".aln" for i in range(2)]
-        fastafnames = [self.output_folder+"fake_"+str(i)+".fasta" for i in range(2)]
+        alnfnames = [self.output_folder/("fake_"+str(i)+".aln") for i in range(2)]
+        fastafnames = [self.output_folder/("fake_"+str(i)+".fasta") for i in range(2)]
         crfake.main(templates, alnfnames, fastafnames)
-        mrfs = [Potts_Model.from_training_set(fastafnames[i], self.output_folder+"fake_"+str(i)+".mrf") for i in range(2)]
+        mrfs = [Potts_Model.from_training_set(fastafnames[i], self.output_folder/("fake_"+str(i)+".mrf")) for i in range(2)]
         aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder)
         self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
 
 
     def test_align_different_sizes(self):
         templates = [["y", "y", "y"],["[0]", "y", "[1]", "[2]"]]
-        alnfnames = [self.output_folder+"fake_"+str(i)+".aln" for i in range(2)]
-        fastafnames = [self.output_folder+"fake_"+str(i)+".fasta" for i in range(2)]
+        alnfnames = [self.output_folder/("fake_"+str(i)+".aln") for i in range(2)]
+        fastafnames = [self.output_folder/("fake_"+str(i)+".fasta") for i in range(2)]
         crfake.main(templates, alnfnames, fastafnames)
-        mrfs = [Potts_Model.from_training_set(fastafnames[i], self.output_folder+"fake_diff_size_"+str(i)+".mrf") for i in range(2)]
+        mrfs = [Potts_Model.from_training_set(fastafnames[i], self.output_folder/("fake_diff_size_"+str(i)+".mrf")) for i in range(2)]
         aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder)
         self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
         mrfs.reverse()

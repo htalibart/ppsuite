@@ -25,15 +25,15 @@ def get_edges_map(mrf, w_threshold_method):
     return 1*(mrf.get_w_norms()>w_threshold)
 
 
-def compute_v_scores(mrf1, mrf2, v_score_function, **kwargs):
+def compute_v_scores(mrf1, mrf2, v_score_function, v_coeff=1, **kwargs):
     v_scores = np.zeros((mrf1.ncol, mrf2.ncol))
     for i in range(mrf1.ncol):
         for k in range(mrf2.ncol):
             v_scores[i][k] = v_score_function(mrf1.v[i], mrf2.v[k])
-    return v_scores
+    return v_coeff*v_scores
 
 
-def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, **kwargs):
+def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, w_coeff=1, **kwargs):
     """ symmetric matrix : w[i][j]=v[j+i*(i+1)/2])"""
     len1 = int(mrf1.ncol*(mrf1.ncol+1)/2)
     len2 = int(mrf2.ncol*(mrf2.ncol+1)/2)
@@ -46,7 +46,27 @@ def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, **kwa
                     for l in range(k+1):
                         if edges_map2[k][l]:
                             w_scores[j+int(i*(i+1)/2)][l+int(k*(k+1)/2)] = w_score_function(mrf1.w[i][j], mrf2.w[k][l])
-    return w_scores
+    return w_coeff*w_scores
+
+
+def get_vw_coeffs(mrfs, vw_coeff_method):
+    if vw_coeff_method.startswith("arbitrary_"):
+        return [float(strcoeff) for strcoeff in vw_coeff_method[len("arbitrary_"):].split('_')]
+
+
+def compute_scores_and_edges_maps(mrfs, v_score_function, w_score_function, use_v, use_w, vw_coeff_method="arbitrary_1_1", w_threshold_method="percentile_0", **kwargs):
+    v_coeff, w_coeff = get_vw_coeffs(mrfs, vw_coeff_method)
+    if use_v:
+        v_scores = compute_v_scores(*mrfs, v_score_function, v_coeff=v_coeff)
+    else:
+        v_scores = np.zeros(tuple([mrf.v.shape[0] for mrf in mrfs]))
+    if use_w:
+        edges_maps = [get_edges_map(mrf, w_threshold_method) for mrf in mrfs]
+        w_scores = compute_w_scores(*mrfs, *edges_maps, w_score_function, w_coeff=w_coeff)
+    else:
+        edges_maps = [np.zeros((mrf.w.shape[0:2])) for mrf in mrfs]
+        w_scores = np.zeros(1)
+    return v_scores, w_scores, edges_maps
 
 
 def compute_self_w_scores(mrf, edges_map, w_score_function, **kwargs):
@@ -58,7 +78,7 @@ def compute_self_w_scores(mrf, edges_map, w_score_function, **kwargs):
     return w_score
 
 
-def compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v=True, use_w=True):
+def compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v=True, use_w=True, v_coeff=1, w_coeff=1):
     if use_v:
         v_score = sum([v_score_function(vi,vi) for vi in mrf.v])
     else:
@@ -67,5 +87,5 @@ def compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v=
         w_score = compute_self_w_scores(mrf, edges_map, w_score_function)
     else:
         w_score = 0
-    selfcomp = v_score+w_score
+    selfcomp = v_coeff*v_score+w_coeff*w_score
     return selfcomp
