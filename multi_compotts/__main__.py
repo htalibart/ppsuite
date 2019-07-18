@@ -34,7 +34,7 @@ def get_subalignment(node, compotts_objects, output_folder, **kwargs):
     else:
         obj1 = get_subalignment(node.left, compotts_objects, output_folder, **kwargs)
         obj2 = get_subalignment(node.right, compotts_objects, output_folder, **kwargs)
-        sub_output_folder = fm.create_folder(output_folder/obj1.name+"_"+obj2.name)
+        sub_output_folder = fm.create_folder(output_folder/(obj1.name+"_"+obj2.name))
         if not os.path.isfile(fm.get_aln_res_file_name(sub_output_folder)):
             aligned_positions, info_solver = align_two_objects([obj1, obj2], sub_output_folder, **kwargs)
         else:
@@ -42,7 +42,7 @@ def get_subalignment(node, compotts_objects, output_folder, **kwargs):
         return ComPotts_Object.from_merge(obj1, obj2, aligned_positions, output_folder, **kwargs)
 
 
-def multiple_alignment(protein_folders, output_folder, distance_metric="seq_id_distance", **kwargs):
+def multiple_alignment(protein_folders=[], output_folder=pathlib.Path("output_multiple/"), distance_metric="seq_id_distance", **kwargs):
     objs_dict = collections.OrderedDict()
     for pf in protein_folders:
         seq_file = fm.get_sequence_file_from_folder(pf)
@@ -61,12 +61,12 @@ def main():
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like'))
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
-    parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=0)
-    parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)
+    #parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=0)
+    #parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)
     parser.add_argument('-dm', '--distance_metric', help="distance metric", choices=("seq_id_distance", "inverse_seq_id_distance"), default="seq_id_distance")
     
     # arguments CCMpred
-    parser.add_argument('--pc-count', help="CCMpred : Specify number of pseudocounts (default : 1)")
+    parser.add_argument('--pc-count', help="CCMpred : Specify number of pseudocounts (default : 1)", default=1000)
 
     args = vars(parser.parse_args())
 
@@ -75,8 +75,9 @@ def main():
 
     fm.write_readme(args["output_folder"], **args)
 
-    multiple_alignment(args["folders"], args["output_folder"], distance_metric=args["distance_metric"],
-    use_w=(not args["no_w"]), w_threshold_method=args["w_threshold_method"], gap_open=args["gap_open"], gap_extend=args["gap_extend"], pc_count=args["pc_count"])
+    args["use_w"] = not args["no_w"]
+    args["protein_folders"] = [pathlib.Path(f) for f in args["folders"]]
+    multiple_alignment(**args)
 
 
 if __name__=="__main__":

@@ -30,8 +30,8 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-nv', '--no_v', help="Don't use v scores", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
-    parser.add_argument('-vwc', '--vw_coeff_method', help="vw coeff method", default="arbitrary_1_1") # TODO doc
-    parser.add_argument('-gc', '--gap_cost_method', help="gap costs method", default="arbitrary_5_0") # TODO doc
+    parser.add_argument('-vwc', '--vw_coeff_method', help="vw coeff method", default="scoremax_1000") # TODO doc
+    parser.add_argument('-gc', '--gap_cost_method', help="gap costs method", default="2_max_score_v") # TODO doc
     #parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=6)
     #parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)
     parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_submat', 'one_seq_ccmpred'), default='hhblits')
@@ -40,7 +40,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-t', '--t_limit', help="solver : time limit", type=float, default=36000)
     parser.add_argument('-lit', '--iter_limit_param', help="solver : nb Lagrangian iterations", type=int, default=1000000000)
     #parser.add_argument('-e', '--epsilon', help="solver : precision", type=float, default=1)
-    parser.add_argument('-e', '--epsilon_method', help="solver : precision method", default="arbitrary_1")
+    parser.add_argument('-e', '--epsilon_method', help="solver : precision method", default="p_scoremax_0.001")
     parser.add_argument('-ga', '--gamma', help="solver : gamma", type=float, default=1.0)
     parser.add_argument('-th', '--theta', help="solver : theta", type=float, default=0.9)
     parser.add_argument('-stpz', '--stepsize_min', help="solver : stepsize_min", type=float, default=0.000000005)

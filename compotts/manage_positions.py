@@ -12,26 +12,35 @@ def get_real_aligned_positions(aligned_positions, compotts_objects): # TODO test
     return real_aligned_positions
 
 
-def get_seqs_aligned(aligned_positions, compotts_objects): #TODO test
-    dict_pos = get_real_aligned_positions(aligned_positions, compotts_objects)
-    c_names = ['pos_ref', 'pos_2']
-    seqs_aligned = {ck:"" for ck in c_names}
-
-    for k, ck in zip(range(2), c_names):
-        seqs_aligned[ck]+='-'*(max(dict_pos['pos_ref'][0], dict_pos['pos_2'][0]))+compotts_objects[k].real_seq[dict_pos[ck][0]]
-
-    old = [dict_pos['pos_ref'][0], dict_pos['pos_2'][0]]
-    for pos in range(1,len(dict_pos['pos_ref'])):
-        gap_length = max([dict_pos[ck][pos]-old[k] for k in range(2)])-1
-        for k, ck in zip(range(2), c_names):
-            seqs_aligned[ck]+='-'*gap_length+compotts_objects[k].real_seq[dict_pos[ck][pos]]
-        old = [dict_pos['pos_ref'][pos],dict_pos['pos_2'][pos]]
-    gap_length = max([len(compotts_objects[k].real_seq)-old[k] for k in range(2)])
+def get_seqs_aligned(aligned_positions, compotts_objects):
+    real_aligned_positions = get_real_aligned_positions(aligned_positions, compotts_objects)
+    c_names = ["pos_ref", "pos_2"]
+    prec_pos = {ck : 0 for ck in c_names}
+    seqs_aligned = {ck : "" for ck in c_names}
+    seqs = {"pos_ref":compotts_objects[0].real_seq, "pos_2":compotts_objects[1].real_seq}
+    for pos_aln in range(len(aligned_positions["pos_ref"])):
+        pos = {}
+        for ck in c_names:
+            pos[ck] = real_aligned_positions[ck][pos_aln]
+        if (pos["pos_ref"]-prec_pos["pos_ref"])==(pos["pos_2"]-prec_pos["pos_2"]):
+            for ck in c_names:
+                seqs_aligned[ck]+=seqs[ck][prec_pos[ck]+1:pos[ck]+1]
+        else:
+            for ck in c_names:
+                seqs_aligned[ck]+='X'+seqs[ck][pos[ck]]
+        prec_pos = {ck : pos[ck] for ck in c_names}
+    pos = {ck : len(seqs[ck])-1 for ck in c_names}
     for ck in c_names:
-        seqs_aligned[ck]+='-'*gap_length
-    return [seqs_aligned['pos_ref'], seqs_aligned['pos_2']]
+            pos[ck] = real_aligned_positions[ck][pos_aln]
+    if (pos["pos_ref"]-prec_pos["pos_ref"])==(pos["pos_2"]-prec_pos["pos_2"]):
+        for ck in c_names:
+            seqs_aligned[ck]+=seqs[ck][prec_pos[ck]+1:pos[ck]+1]
+    else:
+        for ck in c_names:
+            seqs_aligned[ck]+='X'
+    return [seqs_aligned[ck] for ck in c_names]
 
-
+            
 
 # TODO AlignIO ?
 def get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_file):

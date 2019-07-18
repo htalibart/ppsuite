@@ -68,6 +68,9 @@ def get_gap_costs(gap_cost_method, v_scores):
     elif gap_cost_method=="2_max_score_v":
         gap_open = 2*np.max(v_scores.flatten())
         return[float(gap_open), 0]
+    else:
+        print("No gap cost method, returning 5")
+        return 5
 
 
 def get_epsilon(epsilon_method, vw_coeff_method):
@@ -77,6 +80,9 @@ def get_epsilon(epsilon_method, vw_coeff_method):
         Hmax = float(vw_coeff_method[len("scoremax_"):])
         p = float(epsilon_method[len("p_scoremax_"):])
         return p*Hmax
+    else:
+        print("No precision method, returning 1")
+        return 1
 
 
 
