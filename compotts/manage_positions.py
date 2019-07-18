@@ -22,12 +22,20 @@ def get_seqs_aligned(aligned_positions, compotts_objects):
         pos = {}
         for ck in c_names:
             pos[ck] = real_aligned_positions[ck][pos_aln]
-        if (pos["pos_ref"]-prec_pos["pos_ref"])==(pos["pos_2"]-prec_pos["pos_2"]):
+        diffs = {ck:pos[ck]-prec_pos[ck] for ck in c_names}
+        if (diffs["pos_ref"]==diffs["pos_2"]):
             for ck in c_names:
                 seqs_aligned[ck]+=seqs[ck][prec_pos[ck]+1:pos[ck]+1]
         else:
-            for ck in c_names:
-                seqs_aligned[ck]+='X'+seqs[ck][pos[ck]]
+            if (diffs["pos_ref"]==0):
+                seqs_aligned["pos_ref"]+="-"*diffs["pos_2"]
+                seqs_aligned["pos_2"]+=seqs["pos_2"][prec_pos["pos_2"]+1:pos["pos_2"]+1]
+            elif (diffs["pos_2"]==0):
+                seqs_aligned["pos_2"]+="-"*diffs["pos_ref"]
+                seqs_aligned["pos_ref"]+=seqs["pos_ref"][prec_pos["pos_ref"]+1:pos["pos_ref"]+1]
+            else:
+                for ck in c_names:
+                    seqs_aligned[ck]+='X'+seqs[ck][pos[ck]]
         prec_pos = {ck : pos[ck] for ck in c_names}
     pos = {ck : len(seqs[ck])-1 for ck in c_names}
     for ck in c_names:
