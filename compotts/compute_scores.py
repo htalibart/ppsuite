@@ -1,6 +1,7 @@
 from basic_modules.util import *
 import numpy as np
 import math
+from numpy import linalg as LA
 
 # TODO vectoriser ou edges_map
 # TODO décider d'un seuil
@@ -32,7 +33,6 @@ def compute_v_scores(mrf1, mrf2, v_score_function, v_coeff=1, **kwargs):
             v_scores[i][k] = v_score_function(mrf1.v[i], mrf2.v[k])
     return v_coeff*v_scores
 
-
 def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, w_coeff=1, **kwargs):
     """ symmetric matrix : w[i][j]=v[j+i*(i+1)/2])"""
     len1 = int(mrf1.ncol*(mrf1.ncol+1)/2)
@@ -49,28 +49,36 @@ def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, w_coe
     return w_coeff*w_scores
 
 
-def get_vw_coeffs(mrfs, vw_coeff_method):
+def get_vw_coeffs(mrfs, vw_coeff_method, edges_maps, v_score_function=scalar_product, w_score_function=scalar_product, use_v=True, use_w=True):
     if vw_coeff_method.startswith("arbitrary_"):
         return [float(strcoeff) for strcoeff in vw_coeff_method[len("arbitrary_"):].split('_')]
     elif vw_coeff_method.startswith("scoremax_"):
         hmax = float(vw_coeff_method[len("scoremax_"):])
-        v_coeff = hmax/(2*mrfs[0].get_v_norm()*mrfs[1].get_v_norm())
-        w_coeff = hmax/(mrfs[0].get_w_norm()*mrfs[1].get_w_norm())
-        return [v_coeff, w_coeff]
+        w_norms = [mrf.get_w_norms()*edge_map for mrf, edge_map in zip(mrfs, edges_maps)]
+        denom = mrfs[0].get_v_norm()*mrfs[1].get_v_norm()+(1/2)*LA.norm(w_norms[0])*LA.norm(w_norms[1])
+        alpha = hmax/denom
+        print("alpha=",alpha)
+        #alpha = 2*hmax/sum([compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v, use_w, v_coeff=1, w_coeff=1) for mrf, edges_map in zip(mrfs, edges_maps)])
+        return [alpha, alpha]
     else:
         return [1, 1]
 
 
 
-def get_gap_costs(gap_cost_method, v_scores):
+def get_gap_costs(gap_cost_method, v_scores, vw_coeff_method):
     if gap_cost_method.startswith("arbitrary_"):
         return [float(strcoeff) for strcoeff in gap_cost_method[len("arbitrary_"):].split('_')]
-    elif gap_cost_method=="2_max_score_v":
-        gap_open = 2*np.max(v_scores.flatten())
+    elif gap_cost_method.startswith("one_scoremax_pos") and (vw_coeff_method.startswith("scoremax_")):
+        hmax = float(vw_coeff_method[len("scoremax_"):])
+        gap_open = hmax/min(v_scores.shape[0], v_scores.shape[1])
+        return [gap_open,0]
+    elif gap_cost_method.startswith("max_score_v_times_"):
+        fact = float(gap_cost_method[len("max_score_v_times_"):])
+        gap_open = fact*np.max(v_scores.flatten())
         return[float(gap_open), 0]
     else:
-        print("No gap cost method, returning 5")
-        return 5
+        print("No gap cost method, returning [5,0]")
+        return [5,0]
 
 
 def get_epsilon(epsilon_method, vw_coeff_method):
@@ -87,19 +95,21 @@ def get_epsilon(epsilon_method, vw_coeff_method):
 
 
 def compute_scores_etc(mrfs, v_score_function=scalar_product, w_score_function=scalar_product, use_v=True, use_w=True, vw_coeff_method="arbitrary_1_1", w_threshold_method="percentile_0",gap_cost_method="arbitrary_5_0", epsilon_method="arbitrary_1", **kwargs):
-    [v_coeff, w_coeff] = get_vw_coeffs(mrfs, vw_coeff_method)
+    if use_w:
+        edges_maps = [get_edges_map(mrf, w_threshold_method) for mrf in mrfs]
+    else:
+        edges_maps = [np.zeros((mrf.w.shape[0:2])) for mrf in mrfs]
+    [v_coeff, w_coeff] = get_vw_coeffs(mrfs, vw_coeff_method, edges_maps, v_score_function, w_score_function, use_v, use_w)
     if use_v:
         v_scores = compute_v_scores(*mrfs, v_score_function, v_coeff=v_coeff)
     else:
         v_scores = np.zeros(tuple([mrf.v.shape[0] for mrf in mrfs]))
     if use_w:
-        edges_maps = [get_edges_map(mrf, w_threshold_method) for mrf in mrfs]
         w_scores = compute_w_scores(*mrfs, *edges_maps, w_score_function, w_coeff=w_coeff)
     else:
-        edges_maps = [np.zeros((mrf.w.shape[0:2])) for mrf in mrfs]
         w_scores = np.zeros(1)
-    [gap_open, gap_extend] = get_gap_costs(gap_cost_method, v_scores)
-    selfscores = [compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v, use_w, v_coeff, w_coeff, **kwargs) for mrf, edges_map in zip(mrfs, edges_maps)]
+    [gap_open, gap_extend] = get_gap_costs(gap_cost_method, v_scores, vw_coeff_method)
+    selfscores = [compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v, use_w, vw_coeff_method, **kwargs) for mrf, edges_map in zip(mrfs, edges_maps)]
     epsilon = get_epsilon(epsilon_method, vw_coeff_method)
     return v_scores, w_scores, edges_maps, selfscores, gap_open, gap_extend, epsilon
 
@@ -113,7 +123,8 @@ def compute_self_w_scores(mrf, edges_map, w_score_function, **kwargs):
     return w_score
 
 
-def compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v=True, use_w=True, v_coeff=1, w_coeff=1, **kwargs):
+def compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v=True, use_w=True, vw_coeff_method="arbitrary_1_1", **kwargs):
+    [v_coeff, w_coeff] = get_vw_coeffs([mrf,mrf], vw_coeff_method, [edges_map, edges_map], v_score_function, w_score_function, use_v, use_w)
     if use_v:
         v_score = sum([v_score_function(vi,vi) for vi in mrf.v])
     else:
