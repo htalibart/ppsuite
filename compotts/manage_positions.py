@@ -17,7 +17,7 @@ def get_seqs_aligned(aligned_positions, compotts_objects):
     c_names = ["pos_ref", "pos_2"]
     prec_pos = {ck : 0 for ck in c_names}
     seqs_aligned = {ck : "" for ck in c_names}
-    seqs = {"pos_ref":compotts_objects[0].real_seq, "pos_2":compotts_objects[1].real_seq}
+    seqs = {"pos_ref":compotts_objects[0].sequence, "pos_2":compotts_objects[1].sequence}
     for pos_aln in range(len(aligned_positions["pos_ref"])):
         pos = {}
         for ck in c_names:
