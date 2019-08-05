@@ -9,7 +9,19 @@ from compotts.align_msas import *
 from vizpotts.vizpotts import *
 import basic_modules.files_management as fm
 
-# TODO structure de fichiers
+
+def handle_args_for_obj(args, k):
+""" Returns a dictionary containing arguments @args except only those that are relevant for object @k and cleaning the names """
+new_args = {}
+for key in args:
+    if key.endswith(str(k)):
+        new_key = key[:-len("_"+str(k))]
+        new_args[new_key] = args[key]
+    elif not key.endswith(str(k%2+1)):
+        new_args[key] = args[key]
+    return new_args
+
+
 
 
 def main(args=sys.argv[1:]):
@@ -22,6 +34,9 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-h2', '--a3m_file_2', help="HH-blits output file 2", type=pathlib.Path)
     parser.add_argument('-f1', '--input_folder_1', help="Folder containing files for sequence 1", type=pathlib.Path)
     parser.add_argument('-f2', '--input_folder_2', help="Folder containing files for sequence 2", type=pathlib.Path)
+    parser.add_argument('-f1', '--input_folder_1', help="Folder containing files for sequence 1", type=pathlib.Path)
+    parser.add_argument('-aln1', '--fasta_file_1', help="Alignment file in fasta format 1", type=pathlib.Path)
+    parser.add_argument('-aln2', '--fasta_file_2', help="Alignment file in fasta format 2", type=pathlib.Path)
     parser.add_argument('-o', '--output_folder', help="Output folder", type=pathlib.Path)
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like', 'shifted_relu'))
     parser.add_argument('-n', '--nb_sequences', help="Number of sequences in the MRF training alignment", default=1000, type=int)
@@ -63,97 +78,61 @@ def main(args=sys.argv[1:]):
     args = vars(parser.parse_args(args))
 
 
-    output_folder = args["output_folder"]
-    if output_folder is None:
+    # CREATE_FOLDER IF NOT EXISTING
+    if args["output_folder"] is None:
         general_output_folder = fm.create_folder("output_compotts")
-        output_folder = general_output_folder / time.strftime("%Y%m%d-%H%M%S")
+        args["output_folder"] = general_output_folder / time.strftime("%Y%m%d-%H%M%S")
     fm.create_folder(output_folder)
 
-    no_kwargs = ["potts_model_1", "potts_model_2", "sequence_file_1", "sequence_file_2", "a3m_file_1", "a3m_file_2", "output_folder", "mode", "no_w", "no_v"] # TODO voir si utile
-    arguments = {}
-    for key in args.keys():
-        if key not in no_kwargs:
-            arguments[key]=args[key]
 
+#    no_kwargs = ["potts_model_1", "potts_model_2", "sequence_file_1", "sequence_file_2", "a3m_file_1", "a3m_file_2", "output_folder", "mode", "no_w", "no_v"] # TODO voir si utile
+#    arguments = {}
+#    for key in args.keys():
+#        if key not in no_kwargs:
+#            arguments[key]=args[key]
+
+
+    # HANDLING NO W / NO V ARGUMENTS
     if args['no_w']:
-        arguments["w_threshold"]=float('inf')
-        arguments["use_w"]=False
+        args["w_threshold"]=float('inf')
+        args["use_w"]=False
     else:
-        arguments["use_w"]=True
+        args["use_w"]=True
+
+    args["use_v"]= not args["no_v"]
 
 
-    arguments["use_v"]= not args["no_v"]
-
-    if args['mode']=='msgpack': # alignement de deux fichiers msgpack seulement
-        for k in range(1,3):
-            if (args["potts_model_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
-                args["potts_model_"+str(k)] = fm.get_potts_model_file_from_folder(args["input_folder_"+str(k)])
-        # TODO rescaling
-        if (args["potts_model_1"] is not None) and (args["potts_model_2"] is not None):
-            align_two_potts_models_from_files([args["potts_model_1"], args["potts_model_2"]], output_folder, **arguments)
-        else:
-            print("Need msgpack files")
+    # CREATING COMPOTTS OBJECTS
+    compotts_objects = [] 
+    for k in range(2):
+        new_args = handle_args_for_obj(args, k)
+        obj = ComPotts_Object(**new_args)
+        compotts_objects.append(obj) 
 
 
-
-    else: # tout le reste (fichiers fasta, ...)
-        for k in range(1,3):
-            if (args["sequence_file_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
-                args["sequence_file_"+str(k)] = fm.get_sequence_file_from_folder(args["input_folder_"+str(k)])
-
-        seq_files = [args["sequence_file_1"], args["sequence_file_2"]]
-
-        # récupération des objects ComPotts
-        if args['mode']=='hhblits':
-            for k in range(1,3):
-                if (args["a3m_file_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
-                    args["a3m_file_"+str(k)] = fm.get_a3m_file_from_folder(args["input_folder_"+str(k)])
-                if (args["potts_model_"+str(k)] is None) and (args["input_folder_"+str(k)] is not None):
-                    args["potts_model_"+str(k)] = fm.get_potts_model_file_from_folder(args["input_folder_"+str(k)])
-
-            if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None) and (args["a3m_file_1"] is not None) and (args["a3m_file_2"] is not None):
-                compotts_objects = []
-                for k in range(2):
-                    obj = ComPotts_Object.from_hhblits_output(seq_files[k], args["a3m_file_"+str(k+1)], output_folder, mrf_file=args["potts_model_"+str(k+1)], input_folder=args["input_folder_"+str(k+1)], **arguments)
-                    compotts_objects.append(obj)
-            else:
-                print("Need sequence files and a3m files")
-
-        elif args['mode']=='one_hot':
-            if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None):
-                compotts_objects = [ComPotts_Object.from_seq_file_to_one_hot(sf, output_folder, **arguments) for sf in seq_files]
-            else:
-                print("Need sequence files")
+    # WRITE README
+    fm.write_readme(output_folder, **arguments)
 
 
-        elif args['mode']=='one_seq_ccmpred':
-            if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None):
-                compotts_objects = [ComPotts_Object.from_seq_file_via_ccmpred(sf, output_folder, **arguments) for sf in seq_files]
-            else:
-                print("Need sequence files")
+    # ALIGNMENT
+    aligned_positions, infos_solver = align_two_objects(compotts_objects, output_folder, **args)
+    print("Total time : "+str(infos_solver["total_compotts_time"]))
 
-        elif args['mode']=='one_seq_submat':
-            if (args["sequence_file_1"] is not None) and (args["sequence_file_2"] is not None):
-                compotts_objects = [ComPotts_Object.from_seq_file_with_submat(sf, output_folder, **arguments) for sf in seq_files]
-            else:
-                print("Need sequence files")
 
-        fm.write_readme(output_folder, **arguments)
 
- 
-        # alignement
-        aligned_positions, infos_solver = align_two_objects(compotts_objects, output_folder, **arguments)
+    # MAYBE DO SOMETHING WITH THE ALIGNMENT
 
-        print("Total time : "+str(infos_solver["total_compotts_time"]))
-
-        # on fait des trucs avec les positions alignées
-        if args["mode"]!="msgpack":
-            output_msa = output_folder/('_'.join(o.name for o in compotts_objects)+"_train_msas.fasta")
-            get_msas_aligned(aligned_positions, [o.train_msa for o in compotts_objects], output_msa)
-            if args["call_aliview"]:
-                os.system("aliview "+str(output_msa))
-            output_fasta_file = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
-            get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
+    # ALIGN TRAINING MSAS
+    if all((o.training_set is not None) for o in compotts_objects):
+        output_msa = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_training_sets.fasta")
+        get_msas_aligned(aligned_positions, [o.training_set for o in compotts_objects], output_msa)
+        if args["call_aliview"]:
+            os.system("aliview "+str(output_msa))
+        
+    # ALIGN SEQUENCES
+    if all((o.seq is not None) for o in compotts_objects):
+        output_fasta_file = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
+        get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 
 
         return {"compotts_objects": compotts_objects, "aligned_positions":aligned_positions, "infos_solver":infos_solver}
