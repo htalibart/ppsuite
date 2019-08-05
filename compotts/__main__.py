@@ -11,14 +11,14 @@ import basic_modules.files_management as fm
 
 
 def handle_args_for_obj(args, k):
-""" Returns a dictionary containing arguments @args except only those that are relevant for object @k and cleaning the names """
-new_args = {}
-for key in args:
-    if key.endswith(str(k)):
-        new_key = key[:-len("_"+str(k))]
-        new_args[new_key] = args[key]
-    elif not key.endswith(str(k%2+1)):
-        new_args[key] = args[key]
+    """ Returns a dictionary containing arguments @args except only those that are relevant for object @k and cleaning the names """
+    new_args = {}
+    for key in args:
+        if str(key).endswith(str(k+1)):
+            new_key = key[:-len("_"+str(k))]
+            new_args[new_key] = args[key]
+        elif not key.endswith(str((k+1)%2+1)):
+            new_args[key] = args[key]
     return new_args
 
 
@@ -26,17 +26,16 @@ for key in args:
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
-    parser.add_argument('-p1', '--potts_model_1', help="Potts model 1", type=pathlib.Path)
-    parser.add_argument('-p2', '--potts_model_2', help="Potts model 2", type=pathlib.Path)
+    parser.add_argument('-p1', '--potts_model_file_1', help="Potts model 1", type=pathlib.Path)
+    parser.add_argument('-p2', '--potts_model_file_2', help="Potts model 2", type=pathlib.Path)
     parser.add_argument('-s1', '--sequence_file_1', help="Sequence file 1", type=pathlib.Path)
     parser.add_argument('-s2', '--sequence_file_2', help="Sequence file 2", type=pathlib.Path)
     parser.add_argument('-h1', '--a3m_file_1', help="HH-blits output file 1", type=pathlib.Path)
     parser.add_argument('-h2', '--a3m_file_2', help="HH-blits output file 2", type=pathlib.Path)
     parser.add_argument('-f1', '--input_folder_1', help="Folder containing files for sequence 1", type=pathlib.Path)
     parser.add_argument('-f2', '--input_folder_2', help="Folder containing files for sequence 2", type=pathlib.Path)
-    parser.add_argument('-f1', '--input_folder_1', help="Folder containing files for sequence 1", type=pathlib.Path)
-    parser.add_argument('-aln1', '--fasta_file_1', help="Alignment file in fasta format 1", type=pathlib.Path)
-    parser.add_argument('-aln2', '--fasta_file_2', help="Alignment file in fasta format 2", type=pathlib.Path)
+    parser.add_argument('-aln1', '--aln_fasta_1', help="Alignment file in fasta format 1", type=pathlib.Path)
+    parser.add_argument('-aln2', '--aln_fasta_2', help="Alignment file in fasta format 2", type=pathlib.Path)
     parser.add_argument('-o', '--output_folder', help="Output folder", type=pathlib.Path)
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like', 'shifted_relu'))
     parser.add_argument('-n', '--nb_sequences', help="Number of sequences in the MRF training alignment", default=1000, type=int)
@@ -81,25 +80,21 @@ def main(args=sys.argv[1:]):
     # CREATE_FOLDER IF NOT EXISTING
     if args["output_folder"] is None:
         general_output_folder = fm.create_folder("output_compotts")
-        args["output_folder"] = general_output_folder / time.strftime("%Y%m%d-%H%M%S")
+        output_folder = general_output_folder / time.strftime("%Y%m%d-%H%M%S")
     fm.create_folder(output_folder)
-
-
-#    no_kwargs = ["potts_model_1", "potts_model_2", "sequence_file_1", "sequence_file_2", "a3m_file_1", "a3m_file_2", "output_folder", "mode", "no_w", "no_v"] # TODO voir si utile
-#    arguments = {}
-#    for key in args.keys():
-#        if key not in no_kwargs:
-#            arguments[key]=args[key]
+    del args["output_folder"]
 
 
     # HANDLING NO W / NO V ARGUMENTS
-    if args['no_w']:
+    if args["no_w"]:
         args["w_threshold"]=float('inf')
         args["use_w"]=False
     else:
         args["use_w"]=True
+    del args["no_w"]
 
     args["use_v"]= not args["no_v"]
+    del args["no_v"]
 
 
     # CREATING COMPOTTS OBJECTS
@@ -111,7 +106,7 @@ def main(args=sys.argv[1:]):
 
 
     # WRITE README
-    fm.write_readme(output_folder, **arguments)
+    fm.write_readme(output_folder, **args)
 
 
     # ALIGNMENT

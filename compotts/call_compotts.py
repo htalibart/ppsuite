@@ -50,7 +50,7 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     return aligned_positions_dict, infos_solver
 
 
-
+# TODO deprecated ?
 def align_two_potts_models_from_files(mrf_files, output_folder, use_w=True, **kwargs):
     mrfs = [Potts_Model.from_msgpack(mrf_file) for mrf_file in mrf_files]
     if "rescaling_function" in kwargs:
@@ -58,7 +58,7 @@ def align_two_potts_models_from_files(mrf_files, output_folder, use_w=True, **kw
             mrfs = [get_rescaled_mrf(mrf, kwargs["rescaling_function"], use_w=use_w) for mrf in mrfs]
     return align_two_potts_models(mrfs, output_folder, **kwargs)
 
-
+# TODO deprecated ?
 def align_two_objects(objects, output_folder, **kwargs):
     return align_two_potts_models([o.mrf for o in objects], output_folder, **kwargs)
 
