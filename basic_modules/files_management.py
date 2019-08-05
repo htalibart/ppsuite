@@ -28,7 +28,7 @@ def get_infos_solver_dict_from_compotts_output_file(infos_res_file):
 
 
 def create_seq_fasta(seq, fastaseq_file, seq_name="Billy"):
-    """ crée un fichier fasta de nom @fastaseq_file avec la séquence @seq dedans, et retourne son nom """
+    """ crée un fichier fasta de nom @fastaseq_file avec la séquence @seq dedans, et retourne le nom de la séquence """
     with open(fastaseq_file, 'w') as of:
         of.write(">"+seq_name+"\n")
         of.write(seq+"\n")
@@ -47,9 +47,14 @@ def get_first_sequence_name(seq_file):
     return str(list(SeqIO.parse(str(seq_file), "fasta"))[0].id)
 
 
-def get_name_from_first_sequence_name(seq_file):
+def get_first_sequence_clean_name(seq_file):
     actual_name = get_first_sequence_name(seq_file)
     return ''.join(e for e in actual_name if e.isalnum())
+
+
+def get_nb_columns_in_alignment(aln_file):
+    return len(get_first_sequence_in_fasta_file(aln_file))
+
 
 def create_fasta_file_with_less_sequences(aln_file, aln_1000, nb_sequences=1000):
     AlignIO.write(AlignIO.read(str(aln_file), "fasta")[:nb_sequences], open(aln_1000, 'w'), "fasta")
