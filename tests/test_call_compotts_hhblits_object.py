@@ -19,7 +19,7 @@ class Test_Call_ComPotts_HHblits(unittest.TestCase):
         seq_file = os.path.join(EXAMPLES_FOLDER,PROTEIN_NAME+".fasta")
         a3m_file = os.path.join(EXAMPLES_FOLDER,PROTEIN_NAME+".a3m")
         self.output_folder = tempfile.mkdtemp()
-        self.obj = ComPotts_Object.from_hhblits_output(seq_file, a3m_file, self.output_folder)
+        self.obj = ComPotts_Object(seq_file=seq_file, a3m_file=a3m_file, input_folder=self.output_folder)
 
     def tearDown(self):
         shutil.rmtree(self.output_folder)

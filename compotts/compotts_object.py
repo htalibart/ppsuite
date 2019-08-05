@@ -43,6 +43,8 @@ class ComPotts_Object:
             self.name = fm.get_first_sequence_clean_name(self.a3m_file)
         elif mrf is not None:
             self.name = mrf.name
+        elif input_folder is not None:
+            self.name = input_folder.stem
         else:
             self.name = "Billy_"+time.strftime("%Y%m%d-%H%M%S")
 
@@ -141,13 +143,11 @@ class ComPotts_Object:
         elif input_folder is not None:
             self.potts_model_file = fm.get_potts_model_file_from_folder(input_folder)
 
-
         if mrf is not None:
             self.mrf = mrf
         else:
             if self.potts_model_file is not None:
-                self.potts_model_file = potts_model_file
-                self.mrf = Potts_Model.from_msgpack(potts_model_file, **kwargs)
+                self.mrf = Potts_Model.from_msgpack(self.potts_model_file, **kwargs)
             else:
                 self.potts_model_file = (self.folder)/(self.name+"_"+self.mrf_type+".fasta")
                 if (self.mrf_type=="standard"):
@@ -179,3 +179,7 @@ class ComPotts_Object:
         obj = cls(self, name=name, aln_fasta=aln_unfiltered, input_folder=input_folder, **kwargs)
 
         return obj
+
+
+    def get_real_positions(self, positions):
+        return [self.real_aln_pos[pos] for pos in positions]

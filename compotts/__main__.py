@@ -125,7 +125,7 @@ def main(args=sys.argv[1:]):
             os.system("aliview "+str(output_msa))
         
     # ALIGN SEQUENCES
-    if all((o.seq is not None) for o in compotts_objects):
+    if all((o.sequence is not None) for o in compotts_objects):
         output_fasta_file = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
         get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 
