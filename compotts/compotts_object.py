@@ -49,17 +49,10 @@ class ComPotts_Object:
         else:
             self.name = "Billy_"+time.strftime("%Y%m%d-%H%M%S")
 
-
-        # FOLDER
-        if input_folder is not None:
-            self.folder = input_folder
-        else:
-            self.folder = fm.create_folder(self.name)
-
  
         # REFORMAT A3M_FILE
         if (self.aln_fasta is None) and (self.a3m_file is not None):
-            self.a3m_reformat = self.folder/(self.name+"_reformat.fasta")
+            self.a3m_reformat = self.get_folder()/(self.name+"_reformat.fasta")
             if not self.a3m_reformat.is_file():
                 call_reformat(self.a3m_file, self.a3m_reformat)
             self.aln_fasta = self.a3m_reformat
@@ -76,7 +69,7 @@ class ComPotts_Object:
         # FILTER
         if (self.aln_fasta is not None) and (perform_filter):
             old_aln_fasta = self.aln_fasta
-            self.aln_fasta = self.folder/(self.name+"_filtered_"+str(hhfilter_threshold)+".fasta")
+            self.aln_fasta = self.get_folder()/(self.name+"_filtered_"+str(hhfilter_threshold)+".fasta")
             if not self.aln_fasta.is_file():
                 call_hhfilter(old_aln_fasta, self.aln_fasta, hhfilter_threshold)
 
@@ -84,7 +77,7 @@ class ComPotts_Object:
         # USE LESS SEQUENCES
         if (self.aln_fasta is not None) and (use_less_sequences):
             old_aln_fasta = self.aln_fasta
-            self.aln_fasta = self.folder/(self.name+"_less.fasta")
+            self.aln_fasta = self.get_folder()/(self.name+"_less.fasta")
             if not self.aln_fasta.is_file():
                 fm.create_fasta_file_with_less_sequences(old_aln_fasta, self.aln_fasta, nb_sequences)
 
@@ -92,8 +85,8 @@ class ComPotts_Object:
         # TRIM ALIGNMENT
         if (self.aln_fasta is not None) and (trim_alignment):
             old_aln_fasta = self.aln_fasta
-            self.aln_fasta = self.folder/(self.name+"_trim_"+str(int(trimal_gt*100))+".fasta")
-            colnumbering_file = self.folder/(self.name+"_colnumbering.csv")
+            self.aln_fasta = self.get_folder()/(self.name+"_trim_"+str(int(trimal_gt*100))+".fasta")
+            colnumbering_file = self.get_folder()/(self.name+"_colnumbering.csv")
             if not self.aln_fasta.is_file():
                 call_trimal(old_aln_fasta, self.aln_fasta, trimal_gt, trimal_cons, colnumbering_file)
             self.real_aln_pos = fm.get_trimal_ncol(colnumbering_file)
@@ -115,7 +108,6 @@ class ComPotts_Object:
             self.real_aln_pos = self.real_seq_pos
 
 
-
         # DIFFÉRENTES FAÇONS DE CRÉER UN MRF
         if mrf_type is not None:
             self.mrf_type=mrf_type
@@ -123,9 +115,12 @@ class ComPotts_Object:
             self.mrf_type="standard"
         elif self.sequence_file is not None: # if aln_fasta doesn't exist but we have a sequence file, it is used to train the MRF
            self.mrf_type="one_submat"
+        else:
+            self.mrf_type=mrf_type
 
 
         # TRAINING SET EN FONCTION DES DIFFÉRENTES FAÇONS DE CRÉER UN MRF
+        self.training_set = None
         if (self.mrf_type=="standard"):
             if (self.aln_fasta) is not None:
                 self.training_set = self.aln_fasta
@@ -153,7 +148,7 @@ class ComPotts_Object:
             if self.potts_model_file is not None:
                 self.mrf = Potts_Model.from_msgpack(self.potts_model_file, **kwargs)
             else:
-                self.potts_model_file = (self.folder)/(self.name+"_"+self.mrf_type+".fasta")
+                self.potts_model_file = (self.get_folder())/(self.name+"_"+self.mrf_type+".fasta")
                 if (self.mrf_type=="standard"):
                     self.mrf = Potts_Model.from_training_set(self.training_set, self.potts_model_file, **kwargs)
                 elif (self.mrf_type=="one_hot"):
@@ -185,6 +180,14 @@ class ComPotts_Object:
 
         return obj
 
+
+    def get_folder(self):
+        if not hasattr(self, "folder"):
+            self.folder = fm.create_folder(self.name)
+        elif self.folder is None:
+            self.folder = fm.create_folder(self.name)
+        return self.folder
+        
 
     def get_seq_positions(self, positions):
         return [self.real_seq_pos[pos] for pos in positions]

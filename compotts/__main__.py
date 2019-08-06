@@ -45,7 +45,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-nv', '--no_v', help="Don't use v scores", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     parser.add_argument('-vwc', '--vw_coeff_method', help="vw coeff method", default="arbitrary_1_1") # TODO doc
-    parser.add_argument('-gc', '--gap_cost_method', help="gap costs method", default="arbitrary_5_0") # TODO doc
+    parser.add_argument('-gc', '--gap_cost_method', help="gap costs method", default="arbitrary_8_0") # TODO doc
     #parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=6)
     #parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)
     parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_submat', 'one_seq_ccmpred'), default='hhblits')
@@ -81,6 +81,8 @@ def main(args=sys.argv[1:]):
     if args["output_folder"] is None:
         general_output_folder = fm.create_folder("output_compotts")
         output_folder = general_output_folder / time.strftime("%Y%m%d-%H%M%S")
+    else:
+        output_folder = args["output_folder"]
     fm.create_folder(output_folder)
     del args["output_folder"]
 
