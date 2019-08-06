@@ -13,8 +13,6 @@ COMPOTTS_CPP_LIBRARY = pkg_resources.resource_filename('compotts', 'compotts_sol
 COMPOTTS_SOLVER = ctypes.CDLL(COMPOTTS_CPP_LIBRARY)
 INFINITY = 1000000000
 
-# TODO aln_res_file et info_res_file comme sortie de ComPotts -> variables
-
 def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_method="arbitrary_1", v_score_function=scalar_product, w_score_function=scalar_product, w_threshold_method="none", use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, vw_coeff_method = "arbitrary_1_1", gap_cost_method="arbitrary_5_0", **kwargs):
 
     aln_res_file = fm.get_aln_res_file_name(output_folder)
@@ -50,15 +48,6 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     return aligned_positions_dict, infos_solver
 
 
-# TODO deprecated ?
-def align_two_potts_models_from_files(mrf_files, output_folder, use_w=True, **kwargs):
-    mrfs = [Potts_Model.from_msgpack(mrf_file) for mrf_file in mrf_files]
-    if "rescaling_function" in kwargs:
-        if "rescaling_function"!="identity":
-            mrfs = [get_rescaled_mrf(mrf, kwargs["rescaling_function"], use_w=use_w) for mrf in mrfs]
-    return align_two_potts_models(mrfs, output_folder, **kwargs)
-
-# TODO deprecated ?
 def align_two_objects(objects, output_folder, **kwargs):
     return align_two_potts_models([o.mrf for o in objects], output_folder, **kwargs)
 

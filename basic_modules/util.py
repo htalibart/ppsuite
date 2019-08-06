@@ -17,18 +17,6 @@ def code_whole_seq(sequence):
     return [code(c) for c in sequence]
 
 
-def is_gap_column(i, msa):
-    """ returns True iff the column @i of @msa contains only gaps """
-    gap = True
-    s=0
-    while ( (gap==True) and (s<len(msa)) ):
-        seq = msa[s].seq
-        if (seq[i]!="-"):
-            gap = False
-        s+=1
-    return gap
-
-
 def euclidean_norm(vector):
     return np.linalg.norm(vector)
 
@@ -38,10 +26,7 @@ def scalar_product(v1, v2):
 
 
 def sign_ind(x):
-    if (x>=0):
-        return 1
-    else:
-        return -1
+    return 2*(x>=0)-1
 
 
 def seq_identity(seq1, seq2):
@@ -53,6 +38,17 @@ def seq_identity(seq1, seq2):
     score = nb_matches/length_alignment
     return score
 
+
+def is_gap_column(i, msa):
+    """ returns True iff the column @i of @msa contains only gaps """
+    gap = True
+    s=0
+    while ( (gap==True) and (s<len(msa)) ):
+        seq = msa[s].seq
+        if (seq[i]!="-"):
+            gap = False
+        s+=1
+    return gap
 
 
 def get_trimmed_sequence_for_msa(msa_file, seq):

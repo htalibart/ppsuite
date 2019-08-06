@@ -227,19 +227,3 @@ class Potts_Model:
                 sw+=self.w[i, j, code(x[i]), code(x[j])]
             p+=self.v[i,code(x[i])]+sw-math.log(Zi)
         return p
-
-
-    def get_rescaled_version(self, v_rescaling_function, w_rescaling_function):
-        q=len(ALPHABET)
-        t_v = np.zeros((mrf.ncol, q))
-        for i in range(mrf.ncol):
-            for a in range(q):
-                t_v[i][a] = v_rescaling_function(self.v[i][a])
-        t_w = np.zeros((mrf.ncol, mrf.ncol, q, q))
-        for i in range(mrf.ncol):
-                for j in range(mrf.ncol):
-                    for a in range(q):
-                        for b in range(q):
-                            t_w_[i][j][a][b] = w_rescaling_function(self.w[i][j][a][b])
-        t_mrf = Potts_Model.from_parameters(self.ncol, t_v, t_w, name=self.name+"_rescaled")
-        return t_mrf

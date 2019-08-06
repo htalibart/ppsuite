@@ -4,6 +4,7 @@ from basic_modules.util import *
 from basic_modules.potts_model import *
 
 def get_rescaled_mrf(mrf, rescaling_function_name, use_w=True, **kwargs):
+    """ returns a copy of Potts Model @mrf rescaled using @rescaled_function_name rescaling function, and using or not w """
     rescaling_function = eval(rescaling_function_name)
     t_v = np.zeros_like(mrf.v)
     for i in range(len(mrf.v)):
@@ -17,13 +18,16 @@ def get_rescaled_mrf(mrf, rescaling_function_name, use_w=True, **kwargs):
 
 
 def rescale_parameter(x, rescaling_function, **kwargs):
+    """ rescale one parameter with @rescaling_function """
     vfunc = np.vectorize(rescaling_function)
     return vfunc(x, **kwargs)
 
 
+
+# AVAILABLE RESCALING FUNCTIONS
+
 def identity(x, **kwargs):
     return x
-
 
 def original_rescaling(x, **kwargs):
     return sign_ind(x)*(exp(abs(x))-1)

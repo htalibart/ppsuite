@@ -107,8 +107,6 @@ class ComPotts_Object:
             if (self.a3m_reformat is not None):
                 aln_first_seq = fm.get_first_sequence_in_fasta_file(self.a3m_reformat)
                 seq_aln_pos = get_real_pos_list(self.sequence, aln_first_seq)
-                print(self.real_aln_pos)
-                print(seq_aln_pos)
                 self.real_seq_pos = [seq_aln_pos[pos] for pos in self.real_aln_pos]
             else:
                 self.real_seq_pos = self.real_aln_pos

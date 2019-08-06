@@ -5,6 +5,7 @@ from numpy import linalg as LA
 
 # TODO vectoriser ou edges_map
 # TODO décider d'un seuil
+# TODO commenter
 
 def count_edges(edges_map):
     return sum(edges_map.flatten())
@@ -57,7 +58,6 @@ def get_vw_coeffs(mrfs, vw_coeff_method, edges_maps, v_score_function=scalar_pro
         w_norms = [mrf.get_w_norms()*edge_map for mrf, edge_map in zip(mrfs, edges_maps)]
         denom = mrfs[0].get_v_norm()*mrfs[1].get_v_norm()+(1/2)*LA.norm(w_norms[0])*LA.norm(w_norms[1])
         alpha = hmax/denom
-        #alpha = 2*hmax/sum([compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v, use_w, v_coeff=1, w_coeff=1) for mrf, edges_map in zip(mrfs, edges_maps)])
         return [alpha, alpha]
     else:
         return [1, 1]
