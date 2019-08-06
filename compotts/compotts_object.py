@@ -184,5 +184,5 @@ class ComPotts_Object:
         return obj
 
 
-    def get_real_positions(self, positions):
-        return [self.real_aln_pos[pos] for pos in positions]
+    def get_seq_positions(self, positions):
+        return [self.real_seq_pos[pos] for pos in positions]

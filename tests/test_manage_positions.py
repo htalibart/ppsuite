@@ -31,7 +31,6 @@ class Test_ManagePositions(unittest.TestCase):
         res = get_alignment_with_gaps(aligned_positions)
         self.assertEqual(alignment_with_gaps, res)
 
-
     def test_get_alignment_with_gaps_2(self):
         aligned_positions = {"pos_ref":[0,1,2,3], "pos_2":[0,2,3,4]}
         alignment_with_gaps = {"pos_ref":[0,'-',1,2,3], "pos_2":[0,1,2,3,4]}
@@ -44,7 +43,6 @@ class Test_ManagePositions(unittest.TestCase):
         res = get_alignment_with_gaps(aligned_positions)
         self.assertEqual(alignment_with_gaps, res)
 
-
     def test_get_seqs_aligned(self):
         objs = []
         for k in range(2):
@@ -52,7 +50,6 @@ class Test_ManagePositions(unittest.TestCase):
             objs.append(ComPotts_Object(sequence_file=seq_file, input_folder=self.output_folder, mrf_type="one_hot"))
         aligned_positions = {"pos_ref":[4,5,7,8,9,10], "pos_2":[0,1,2,3,4,5]}
         seqs_aligned = get_seqs_aligned(aligned_positions, objs)
-        print(seqs_aligned)
         self.assertEqual(seqs_aligned[0], 'YFYFMAEIKEH')
         self.assertEqual(seqs_aligned[1], '----MA-IKDH')
 

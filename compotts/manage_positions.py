@@ -6,6 +6,7 @@ from Bio.Alphabet import IUPAC
 
 
 def get_alignment_with_gaps(aligned_positions):
+    """ input : dict of lists of aligned positions, output : alignment with gaps and "unknown areas" """
     c_names = ["pos_ref", "pos_2"]
     aligned_positions_with_gaps = {ck:[] for ck in c_names}
     # positions 0 and before
@@ -36,18 +37,19 @@ def get_alignment_with_gaps(aligned_positions):
     return aligned_positions_with_gaps
 
 
-def get_real_aligned_positions(aligned_positions, compotts_objects): # TODO test
-    real_aligned_positions = {}
+def get_seq_positions(aligned_positions, compotts_objects):
+    """ input : dict of lists of positions aligned by solver, output : dict of lists of positions in the original sequence """
+    real_seq_positions = {}
     c_names = ['pos_ref', 'pos_2']
     for k in range(2):
-        real_aligned_positions[c_names[k]] = compotts_objects[k].get_real_positions(aligned_positions[c_names[k]])
-    return real_aligned_positions
+        real_seq_positions[c_names[k]] = compotts_objects[k].get_seq_positions(aligned_positions[c_names[k]])
+    return real_seq_positions
 
 
 def get_seqs_aligned(aligned_positions, compotts_objects):
+    """ input : dict of lists of aligned positions + corresponding compotts objects, output : sequences aligned """
     c_names = ["pos_ref", "pos_2"]
-    real_aligned_positions = get_real_aligned_positions(aligned_positions, compotts_objects)
-    seq_positions = get_alignment_with_gaps(real_aligned_positions)
+    seq_positions = get_alignment_with_gaps(get_seq_positions(aligned_positions, compotts_objects))
     seqs_aligned = ["",""]
     for k in range(2):
         ck = c_names[k]
