@@ -1,6 +1,0 @@
-[console_scripts]
-compotts = compotts.__main__:main
-filepotts = compotts.align_msas:main
-multi_compotts = multi_compotts.__main__:main
-vizpotts = vizpotts.__main__:main
-

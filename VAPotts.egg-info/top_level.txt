@@ -1,5 +1,0 @@
-basic_modules
-compotts
-multi_compotts
-tests
-vizpotts
