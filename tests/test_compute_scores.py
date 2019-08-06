@@ -16,7 +16,7 @@ class Test_Compute_Scores(unittest.TestCase):
     def setUp(self):
         PROTEIN_NAME = "1cc8"
         self.mrf = Potts_Model.from_msgpack(EXAMPLES_FOLDER/(PROTEIN_NAME+".mrf"))
-        self.output_folder = tempfile.mkdtemp()
+        self.output_folder = pathlib.Path(tempfile.mkdtemp())
 
 
     def tearDown(self):

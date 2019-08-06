@@ -4,6 +4,38 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import IUPAC
 
+
+def get_alignment_with_gaps(aligned_positions):
+    c_names = ["pos_ref", "pos_2"]
+    aligned_positions_with_gaps = {ck:[] for ck in c_names}
+    # positions 0 and before
+    if aligned_positions["pos_ref"][0]==0:
+        aligned_positions_with_gaps["pos_ref"]+=['-']*aligned_positions["pos_2"][0]+[0]
+        aligned_positions_with_gaps["pos_2"]+=list(range(aligned_positions["pos_2"][0]+1))
+    elif aligned_positions["pos_2"][0]==0:
+        aligned_positions_with_gaps["pos_2"]+=['-']*aligned_positions["pos_ref"][0]+[0]
+        aligned_positions_with_gaps["pos_ref"]+=list(range(aligned_positions["pos_ref"][0]+1))
+    else:
+        for ck in c_names:
+            aligned_positions_with_gaps[ck]+=['X',aligned_positions[ck][0]]
+    # positions [1:]
+    for pos_aln in range(1,len(aligned_positions["pos_ref"])):
+        diffs={ck : aligned_positions[ck][pos_aln]-aligned_positions[ck][pos_aln-1] for ck in c_names}
+        if diffs["pos_ref"]==diffs["pos_2"]:
+            for ck in c_names:
+                aligned_positions_with_gaps[ck]+=list(range(aligned_positions[ck][pos_aln-1]+1,aligned_positions[ck][pos_aln]+1))
+        elif diffs["pos_ref"]==1:
+            aligned_positions_with_gaps["pos_ref"]+=['-']*(aligned_positions["pos_2"][pos_aln]-aligned_positions["pos_2"][pos_aln-1]-1)+[aligned_positions["pos_ref"][pos_aln]]
+            aligned_positions_with_gaps["pos_2"]+=list(range(aligned_positions["pos_2"][pos_aln-1]+1,aligned_positions["pos_2"][pos_aln]+1))
+        elif diffs["pos_2"]==1:
+            aligned_positions_with_gaps["pos_2"]+=['-']*(aligned_positions["pos_ref"][pos_aln]-aligned_positions["pos_ref"][pos_aln-1]-1)+[aligned_positions["pos_2"][pos_aln]]
+            aligned_positions_with_gaps["pos_ref"]+=list(range(aligned_positions["pos_ref"][pos_aln-1]+1,aligned_positions["pos_ref"][pos_aln]+1))
+        else:
+            for ck in c_names:
+                aligned_positions_with_gaps[ck]+=['X']+[aligned_positions[ck][pos_aln]]
+    return aligned_positions_with_gaps
+
+
 def get_real_aligned_positions(aligned_positions, compotts_objects): # TODO test
     real_aligned_positions = {}
     c_names = ['pos_ref', 'pos_2']
@@ -13,40 +45,19 @@ def get_real_aligned_positions(aligned_positions, compotts_objects): # TODO test
 
 
 def get_seqs_aligned(aligned_positions, compotts_objects):
-    real_aligned_positions = get_real_aligned_positions(aligned_positions, compotts_objects)
     c_names = ["pos_ref", "pos_2"]
-    prec_pos = {ck : 0 for ck in c_names}
-    seqs_aligned = {ck : "" for ck in c_names}
-    seqs = {"pos_ref":compotts_objects[0].sequence, "pos_2":compotts_objects[1].sequence}
-    for pos_aln in range(len(aligned_positions["pos_ref"])):
-        pos = {}
-        for ck in c_names:
-            pos[ck] = real_aligned_positions[ck][pos_aln]
-        diffs = {ck:pos[ck]-prec_pos[ck] for ck in c_names}
-        if (diffs["pos_ref"]==diffs["pos_2"]):
-            for ck in c_names:
-                seqs_aligned[ck]+=seqs[ck][prec_pos[ck]+1:pos[ck]+1]
-        else:
-            if (diffs["pos_ref"]==0):
-                seqs_aligned["pos_ref"]+="-"*diffs["pos_2"]
-                seqs_aligned["pos_2"]+=seqs["pos_2"][prec_pos["pos_2"]+1:pos["pos_2"]+1]
-            elif (diffs["pos_2"]==0):
-                seqs_aligned["pos_2"]+="-"*diffs["pos_ref"]
-                seqs_aligned["pos_ref"]+=seqs["pos_ref"][prec_pos["pos_ref"]+1:pos["pos_ref"]+1]
+    real_aligned_positions = get_real_aligned_positions(aligned_positions, compotts_objects)
+    seq_positions = get_alignment_with_gaps(real_aligned_positions)
+    seqs_aligned = ["",""]
+    for k in range(2):
+        ck = c_names[k]
+        for pos in seq_positions[ck]:
+            if pos=='-':
+                car='-'
             else:
-                for ck in c_names:
-                    seqs_aligned[ck]+='X'+seqs[ck][pos[ck]]
-        prec_pos = {ck : pos[ck] for ck in c_names}
-    pos = {ck : len(seqs[ck])-1 for ck in c_names}
-    for ck in c_names:
-            pos[ck] = real_aligned_positions[ck][pos_aln]
-    if (pos["pos_ref"]-prec_pos["pos_ref"])==(pos["pos_2"]-prec_pos["pos_2"]):
-        for ck in c_names:
-            seqs_aligned[ck]+=seqs[ck][prec_pos[ck]+1:pos[ck]+1]
-    else:
-        for ck in c_names:
-            seqs_aligned[ck]+='X'
-    return [seqs_aligned[ck] for ck in c_names]
+                car=compotts_objects[k].sequence[pos]
+            seqs_aligned[k]+=car
+    return seqs_aligned
 
             
 

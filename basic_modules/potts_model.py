@@ -75,7 +75,7 @@ class Potts_Model:
 
 
     @classmethod
-    def from_seq_file_to_one_hot(cls, seq_file, **kwargs):
+    def from_sequence_file_to_one_hot(cls, seq_file, **kwargs):
         """ one hot encoding """
         seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         x = code_whole_seq(seq)
@@ -93,7 +93,7 @@ class Potts_Model:
 
 
     @classmethod
-    def from_seq_file_with_submat(cls, seq_file, npc=1, **kwargs):
+    def from_sequence_file_with_submat(cls, seq_file, npc=1, **kwargs):
         """ substitution matrix pseudocounts """
         seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         tau = npc/(1+npc)

@@ -74,7 +74,7 @@ class ComPotts_Object:
         # FILTER
         if (self.aln_fasta is not None) and (perform_filter):
             old_aln_fasta = self.aln_fasta
-            self.aln_fasta = self.folder/(self.name+"_filter_"+str(hhfilter_threshold)+".fasta")
+            self.aln_fasta = self.folder/(self.name+"_filtered_"+str(hhfilter_threshold)+".fasta")
             if not self.aln_fasta.is_file():
                 call_hhfilter(old_aln_fasta, self.aln_fasta, hhfilter_threshold)
 
@@ -110,6 +110,8 @@ class ComPotts_Object:
                 self.real_seq_pos = self.real_aln_pos
         elif (self.sequence is not None):
             self.real_seq_pos = [pos for pos in range(len(self.sequence))]
+            self.real_aln_pos = self.real_seq_pos
+
 
 
         # DIFFÉRENTES FAÇONS DE CRÉER UN MRF
@@ -165,6 +167,7 @@ class ComPotts_Object:
 
     @classmethod
     def from_merge(cls, obj1, obj2, aligned_positions, output_folder, **kwargs):
+        """ Creating a ComPotts object by merging two ComPotts objects """
         if "name" in kwargs:
             name = kwargs['name']
         else:
