@@ -54,20 +54,6 @@ def seq_identity(seq1, seq2):
     return score
 
 
-def get_small_to_real_list(real_seq, smaller_seq):
-    """ retourne un dictionnaire où small_to_real_dict[k] est la position dans la vraie séquence @real_seq correspondant à la position k de @smaller_seq """
-    alignments = pairwise2.align.globalxx(smaller_seq, real_seq)
-    aln = alignments[0][0]
-    pos_in_smaller_seq = 0
-    pos_in_real_seq = 0
-    small_to_real_dict = []
-    for i in range(len(aln)):
-        if (aln[i]!='-'):
-            small_to_real_dict.append(pos_in_real_seq)
-            pos_in_smaller_seq+=1
-        pos_in_real_seq+=1
-    return small_to_real_dict
-
 
 def get_trimmed_sequence_for_msa(msa_file, seq):
     """ retourne la séquence @seq taillée pour qu'elle rentre dans le MSA @msa_file : on enlève toutes les positions insérées """

@@ -1,9 +1,8 @@
 import pandas as pd
-from Bio import SeqIO
+from Bio import SeqIO, pairwise2
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import IUPAC
-
 
 def get_alignment_with_gaps(aligned_positions):
     """ input : dict of lists of aligned positions, output : alignment with gaps and "unknown areas" """
@@ -34,6 +33,7 @@ def get_alignment_with_gaps(aligned_positions):
         else:
             for ck in c_names:
                 aligned_positions_with_gaps[ck]+=['X']+[aligned_positions[ck][pos_aln]]
+    print(aligned_positions_with_gaps)
     return aligned_positions_with_gaps
 
 
@@ -54,8 +54,8 @@ def get_seqs_aligned(aligned_positions, compotts_objects):
     for k in range(2):
         ck = c_names[k]
         for pos in seq_positions[ck]:
-            if pos=='-':
-                car='-'
+            if (pos=='-') or (pos=='X'):
+                car=pos
             else:
                 car=compotts_objects[k].sequence[pos]
             seqs_aligned[k]+=car
@@ -93,6 +93,22 @@ def get_pos_aligned_at_pos(aligned_positions_dict, pos): #TODO test
     else:
         print(str(pos)+" is not aligned")
         return None
+
+
+def get_real_pos_list(real_seq, other_seq):
+    """ retourne une liste où other_to_real_dict[k] est la position dans la vraie séquence @real_seq correspondant à la position k de @other_seq """
+    alignments = pairwise2.align.globalxx(other_seq, real_seq)
+    aln = alignments[0][0]
+    print(aln)
+    pos_in_other_seq = 0
+    pos_in_real_seq = 0
+    other_to_real_dict = []
+    for i in range(len(aln)):
+        if (aln[i]!='-'):
+            other_to_real_dict.append(pos_in_real_seq)
+            pos_in_other_seq+=1
+        pos_in_real_seq+=1
+    return other_to_real_dict
 
 
 

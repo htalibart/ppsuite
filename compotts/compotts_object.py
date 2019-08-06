@@ -8,6 +8,7 @@ from basic_modules.tool_wrapper import *
 from basic_modules.potts_model import *
 from compotts.rescaling import *
 from compotts.align_msas import *
+from compotts.manage_positions import *
 
 class ComPotts_Object:
 
@@ -58,9 +59,10 @@ class ComPotts_Object:
  
         # REFORMAT A3M_FILE
         if (self.aln_fasta is None) and (self.a3m_file is not None):
-            self.aln_fasta = self.folder/(self.name+"_reformat.fasta")
-            if not self.aln_fasta.is_file():
-                call_reformat(self.a3m_file, self.aln_fasta)
+            self.a3m_reformat = self.folder/(self.name+"_reformat.fasta")
+            if not self.a3m_reformat.is_file():
+                call_reformat(self.a3m_file, self.a3m_reformat)
+            self.aln_fasta = self.a3m_reformat
 
         # SEQUENCE
         if self.sequence_file is not None:
@@ -90,7 +92,7 @@ class ComPotts_Object:
         # TRIM ALIGNMENT
         if (self.aln_fasta is not None) and (trim_alignment):
             old_aln_fasta = self.aln_fasta
-            self.aln_fasta = self.folder/(self.name+"_trim_"+str(trimal_gt*100)+".fasta")
+            self.aln_fasta = self.folder/(self.name+"_trim_"+str(int(trimal_gt*100))+".fasta")
             colnumbering_file = self.folder/(self.name+"_colnumbering.csv")
             if not self.aln_fasta.is_file():
                 call_trimal(old_aln_fasta, self.aln_fasta, trimal_gt, trimal_cons, colnumbering_file)
@@ -102,9 +104,11 @@ class ComPotts_Object:
 
         # ALIGNMENT POSITIONS -> SEQUENCE POSITIONS
         if (self.aln_fasta is not None) and (self.sequence is not None):
-            if (self.a3m_file is not None):
-                aln_first_seq = fm.get_first_sequence_in_fasta_file(self.a3m_file)
-                seq_aln_pos = get_small_to_real_list(self.sequence, aln_first_seq)
+            if (self.a3m_reformat is not None):
+                aln_first_seq = fm.get_first_sequence_in_fasta_file(self.a3m_reformat)
+                seq_aln_pos = get_real_pos_list(self.sequence, aln_first_seq)
+                print(self.real_aln_pos)
+                print(seq_aln_pos)
                 self.real_seq_pos = [seq_aln_pos[pos] for pos in self.real_aln_pos]
             else:
                 self.real_seq_pos = self.real_aln_pos
