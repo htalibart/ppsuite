@@ -12,7 +12,9 @@ from compotts.manage_positions import *
 
 class ComPotts_Object:
 
-    def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=60, pc_count_factor=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, **kwargs):
+    def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=60, pc_count=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, **kwargs):
+
+        self.folder = input_folder
 
         # SEQ_FILE
         if sequence_file is not None:
@@ -97,7 +99,7 @@ class ComPotts_Object:
 
         # ALIGNMENT POSITIONS -> SEQUENCE POSITIONS
         if (self.aln_fasta is not None) and (self.sequence is not None):
-            if (self.a3m_reformat is not None):
+            if (hasattr(self, "a3m_reformat")):
                 aln_first_seq = fm.get_first_sequence_in_fasta_file(self.a3m_reformat)
                 seq_aln_pos = get_real_pos_list(self.sequence, aln_first_seq)
                 self.real_seq_pos = [seq_aln_pos[pos] for pos in self.real_aln_pos]
@@ -148,9 +150,9 @@ class ComPotts_Object:
             if self.potts_model_file is not None:
                 self.mrf = Potts_Model.from_msgpack(self.potts_model_file, **kwargs)
             else:
-                self.potts_model_file = (self.get_folder())/(self.name+"_"+self.mrf_type+".fasta")
+                self.potts_model_file = (self.get_folder())/(self.name+"_"+self.mrf_type+".mrf")
                 if (self.mrf_type=="standard"):
-                    self.mrf = Potts_Model.from_training_set(self.training_set, self.potts_model_file, **kwargs)
+                    self.mrf = Potts_Model.from_training_set(self.training_set, self.potts_model_file, pc_count=pc_count, reg_lambda_pair_factor=reg_lambda_pair_factor, **kwargs)
                 elif (self.mrf_type=="one_hot"):
                     self.mrf = Potts_Model.from_sequence_file_to_one_hot(self.training_set, **kwargs)
                 elif (self.mrf_type=="one_submat"):

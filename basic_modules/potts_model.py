@@ -4,6 +4,7 @@ import numpy as np
 import numpy.linalg as LA
 import math
 import msgpack
+import json
 
 from basic_modules.util import *
 from basic_modules import files_management as fm
@@ -56,8 +57,9 @@ class Potts_Model:
         mrf.binary_file = binary_file
         return mrf
 
+
     @classmethod
-    def from_training_set(cls, aln_file, binary_file, **kwargs):
+    def from_training_set(cls, aln_file, binary_file, write_readme=True, readme_file=None, **kwargs):
         """
             initialize MRF from training set
         """
@@ -65,7 +67,16 @@ class Potts_Model:
         for key_arg in kwargs:
             arg_ccm = key_arg.replace('_', '-')
             if arg_ccm in POSSIBLE_CCMPRED_OPTIONS:
-                call+=" --"+arg_ccm+" "+str(kwargs[key_arg])
+                if kwargs[key_arg] is bool:
+                    arg_value=""
+                else:
+                    arg_value=str(kwargs[key_arg])
+                call+=" --"+arg_ccm+" "+arg_value
+        if write_readme:
+            if readme_file is None:
+                readme_file = pathlib.Path(str(binary_file)[:-len(".mrf")]+"_mrf_README.txt")
+            with readme_file.open(mode='w') as f:
+                json.dump(call, f, default=str)
         os.system(call)
         if not os.path.exists(binary_file):
             raise Exception("CCMpredPy wasn't able to infer the MRF. Protein is probably too long ?")

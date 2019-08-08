@@ -46,9 +46,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     parser.add_argument('-vwc', '--vw_coeff_method', help="vw coeff method", default="arbitrary_1_1") # TODO doc
     parser.add_argument('-gc', '--gap_cost_method', help="gap costs method", default="arbitrary_8_0") # TODO doc
-    #parser.add_argument('-go', '--gap_open', help="gap open", type=float, default=6)
-    #parser.add_argument('-ge', '--gap_extend', help="gap extend", type=float, default=0)
-    parser.add_argument('-m', '--mode', help="Mode", choices=('msgpack', 'hhblits', 'one_hot', 'one_seq_submat', 'one_seq_ccmpred'), default='hhblits')
+    parser.add_argument('-m', '--mrf_type', help="Mode", choices=('standard', 'one_hot', 'one_submat'), default='standard')
 
     # solver options
     parser.add_argument('-t', '--t_limit', help="solver : time limit", type=float, default=36000)
@@ -66,12 +64,11 @@ def main(args=sys.argv[1:]):
 
 
     # CCMpredPy options
-    #parser.add_argument('--pc-count', help="CCMpred : Specify number of pseudocounts (default : 1000)", default=1000)
-    #parser.add_argument('--pc-pair-count', help="CCMpred : Specify number of pair pseudocounts (default : 1000)", default=1000)
-    parser.add_argument('--reg-lambda-pair-factor', help="CCMpred : Regularization parameter for pair potentials (L2 regularization with lambda_pair = lambda_pair-factor * scaling) [default: 0.2]", default=0.2)
+    parser.add_argument('--pc_count', help="CCMpred : Specify number of pseudocounts (default : 1000)", default=1000)
+    parser.add_argument('--reg_lambda_pair_factor', help="CCMpred : Regularization parameter for pair potentials (L2 regularization with lambda_pair = lambda_pair-factor * scaling) [CCMpred default: 0.2, our default : 30]", default=30)
 
     # options related to CCMpredPy
-    parser.add_argument('--pc_count_factor', help="Number of pseudocounts for CCMpredPy will be (pc_count_factor)*(nb_sequences). Default : pc_count_factor=1", type=int, default=1)
+    #parser.add_argument('--pc_count_factor', help="Number of pseudocounts for CCMpredPy will be (pc_count_factor)*(nb_sequences). Default : pc_count_factor=1", type=int, default=1)
 
 
     args = vars(parser.parse_args(args))

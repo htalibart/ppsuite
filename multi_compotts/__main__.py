@@ -48,7 +48,7 @@ def multiple_alignment(protein_folders=[], output_folder=pathlib.Path("output_mu
         seq_file = fm.get_sequence_file_from_folder(pf)
         a3m_file = fm.get_a3m_file_from_folder(pf)
         mrf_file = fm.get_potts_model_file_from_folder(pf)
-        obj = ComPotts_Object.from_hhblits_output(seq_file, a3m_file, output_folder, input_folder=pf, mrf_file=mrf_file, **kwargs)
+        obj = ComPotts_Object(sequence_file=seq_file, a3m_file=a3m_file, output_folder=output_folder, input_folder=pf, potts_model_file=mrf_file, **kwargs)
         objs_dict[obj.name] = obj
     first_node = cluster_compotts_objects(objs_dict, distance_metric=distance_metric)
     get_subalignment(first_node, objs_dict, output_folder, **kwargs)
