@@ -39,6 +39,8 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-o', '--output_folder', help="Output folder", type=pathlib.Path)
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like', 'shifted_relu'))
     parser.add_argument('-n', '--nb_sequences', help="Number of sequences in the MRF training alignment", default=1000, type=int)
+    parser.add_argument('-m1', '--mrf_type_1', help="Mode 1", choices=('standard', 'one_hot', 'one_submat'), default='standard')
+    parser.add_argument('-m2', '--mrf_type_2', help="Mode 2", choices=('standard', 'one_hot', 'one_submat'), default='standard')
 
     # trimal
     parser.add_argument('-trimgt', '--trimal_gt', help="trimal gt", default=0.8, type=float)
@@ -50,7 +52,6 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     parser.add_argument('-vwc', '--vw_coeff_method', help="vw coeff method", default="arbitrary_1_1") # TODO doc
     parser.add_argument('-gc', '--gap_cost_method', help="gap costs method", default="arbitrary_8_0") # TODO doc
-    parser.add_argument('-m', '--mrf_type', help="Mode", choices=('standard', 'one_hot', 'one_submat'), default='standard')
 
     # solver options
     parser.add_argument('-t', '--t_limit', help="solver : time limit", type=float, default=36000)

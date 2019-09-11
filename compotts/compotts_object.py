@@ -15,7 +15,11 @@ class ComPotts_Object:
     def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=60, pc_count=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, hhblits_database=None, **kwargs):
 
         self.folder = input_folder
-        self.potts_model_file = None
+
+        # MRF
+        self.potts_model_file = potts_model_file
+        if (self.potts_model_file is None) and (input_folder is not None):
+            self.potts_model_file = fm.get_potts_model_file_from_folder(input_folder)
 
         # SEQ_FILE
         if sequence_file is not None:
@@ -53,8 +57,9 @@ class ComPotts_Object:
             self.name = "Billy_"+time.strftime("%Y%m%d-%H%M%S")
 
 
+
         # IF WE DON'T HAVE AN A3M FILE AND WE WANT ONE
-        if (self.a3m_file is None) and mrf_type=="standard":
+        if (self.a3m_file is None) and (self.aln_fasta is None) and (mrf_type=="standard") and (self.potts_model_file is None):
             self.a3m_file = self.get_folder()/(self.name+".a3m")
             if hhblits_database is None:
                 print("Must specify a database for hhblits (option -d)")
@@ -65,9 +70,39 @@ class ComPotts_Object:
         # REFORMAT A3M_FILE
         if (self.aln_fasta is None) and (self.a3m_file is not None):
             self.a3m_reformat = self.get_folder()/(self.name+"_reformat.fasta")
-            if not self.a3m_reformat.is_file():
+            if (not self.a3m_reformat.is_file()) and (self.potts_model_file is None):
                 call_reformat(self.a3m_file, self.a3m_reformat)
             self.aln_fasta = self.a3m_reformat
+
+
+        # FILTER
+        if (self.aln_fasta is not None) and (perform_filter) and (self.potts_model_file is None):
+            old_aln_fasta = self.aln_fasta
+            self.aln_fasta = self.get_folder()/(self.name+"_filtered_"+str(hhfilter_threshold)+".fasta")
+            if (not self.aln_fasta.is_file()):
+                call_hhfilter(old_aln_fasta, self.aln_fasta, hhfilter_threshold)
+
+
+        # USE LESS SEQUENCES
+        if (self.aln_fasta is not None) and (use_less_sequences) and (self.potts_model_file is None):
+            old_aln_fasta = self.aln_fasta
+            self.aln_fasta = self.get_folder()/(self.name+"_less.fasta")
+            if (not self.aln_fasta.is_file()):
+                fm.create_fasta_file_with_less_sequences(old_aln_fasta, self.aln_fasta, nb_sequences)
+
+
+        # TRIM ALIGNMENT
+        if (self.aln_fasta is not None) and (trim_alignment) and (self.potts_model_file is None):
+            old_aln_fasta = self.aln_fasta
+            self.aln_fasta = self.get_folder()/(self.name+"_trim_"+str(int(trimal_gt*100))+".fasta")
+            colnumbering_file = self.get_folder()/(self.name+"_colnumbering.csv")
+            if (not self.aln_fasta.is_file()):
+                call_trimal(old_aln_fasta, self.aln_fasta, trimal_gt, trimal_cons, colnumbering_file)
+            self.real_aln_pos = fm.get_trimal_ncol(colnumbering_file)
+        elif (self.aln_fasta is not None):
+            nb_pos = fm.get_nb_columns_in_alignment(self.aln_fasta) 
+            self.real_aln_pos = [pos for pos in range(nb_pos)]
+
 
         # SEQUENCE
         if self.sequence_file is not None:
@@ -77,34 +112,6 @@ class ComPotts_Object:
         else:
             self.sequence = None
 
-
-        # FILTER
-        if (self.aln_fasta is not None) and (perform_filter):
-            old_aln_fasta = self.aln_fasta
-            self.aln_fasta = self.get_folder()/(self.name+"_filtered_"+str(hhfilter_threshold)+".fasta")
-            if not self.aln_fasta.is_file():
-                call_hhfilter(old_aln_fasta, self.aln_fasta, hhfilter_threshold)
-
-
-        # USE LESS SEQUENCES
-        if (self.aln_fasta is not None) and (use_less_sequences):
-            old_aln_fasta = self.aln_fasta
-            self.aln_fasta = self.get_folder()/(self.name+"_less.fasta")
-            if not self.aln_fasta.is_file():
-                fm.create_fasta_file_with_less_sequences(old_aln_fasta, self.aln_fasta, nb_sequences)
-
-
-        # TRIM ALIGNMENT
-        if (self.aln_fasta is not None) and (trim_alignment):
-            old_aln_fasta = self.aln_fasta
-            self.aln_fasta = self.get_folder()/(self.name+"_trim_"+str(int(trimal_gt*100))+".fasta")
-            colnumbering_file = self.get_folder()/(self.name+"_colnumbering.csv")
-            if not self.aln_fasta.is_file():
-                call_trimal(old_aln_fasta, self.aln_fasta, trimal_gt, trimal_cons, colnumbering_file)
-            self.real_aln_pos = fm.get_trimal_ncol(colnumbering_file)
-        elif (self.aln_fasta is not None):
-            nb_pos = fm.get_nb_columns_in_alignment(self.aln_fasta) 
-            self.real_aln_pos = [pos for pos in range(nb_pos)]
 
 
         # ALIGNMENT POSITIONS -> SEQUENCE POSITIONS
@@ -142,18 +149,13 @@ class ComPotts_Object:
             if self.sequence_file is not None:
                 self.training_set = self.sequence_file
             elif self.sequence is not None:
-                self.sequence_file = output_folder/(self.name+".fasta")
-                create_seq_fasta(self.sequence, self.sequence_file, seq_name=self.name)
+                self.sequence_file = self.folder/(self.name+".fasta")
+                fm.create_seq_fasta(self.sequence, self.sequence_file, seq_name=self.name)
                 self.training_set = self.sequence_file
             else:
                 print("Missing sequence file !")
 
-        # MRF
-        if potts_model_file is not None:
-            self.potts_model_file = potts_model_file
-        elif input_folder is not None:
-            self.potts_model_file = fm.get_potts_model_file_from_folder(input_folder)
-
+        # MRF 
         if mrf is not None:
             self.mrf = mrf
         else:
