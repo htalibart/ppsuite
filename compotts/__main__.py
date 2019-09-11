@@ -41,6 +41,8 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-n', '--nb_sequences', help="Number of sequences in the MRF training alignment", default=1000, type=int)
     parser.add_argument('-m1', '--mrf_type_1', help="Mode 1", choices=('standard', 'one_hot', 'one_submat'), default='standard')
     parser.add_argument('-m2', '--mrf_type_2', help="Mode 2", choices=('standard', 'one_hot', 'one_submat'), default='standard')
+    parser.add_argument('-nm1', '--name_1', help="Name for alignee 1")
+    parser.add_argument('-nm2', '--name_2', help="Name for alignee 2")
 
     # trimal
     parser.add_argument('-trimgt', '--trimal_gt', help="trimal gt", default=0.8, type=float)
