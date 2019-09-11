@@ -11,7 +11,12 @@ def call_hhfilter(input_file, output_file, hhid):
     os.system("hhfilter -i "+str(input_file)+" -o "+str(output_file)+" -id "+str(hhid))
 
 
-# mieux gérer trimal -> cf Q12404
+def call_hhblits(input_file, output_file, database, maxfilt=100000, realign_max=100000, B=100000, Z=100000, n=3, e=0.001, **kwargs):
+    print("calling hhblits on "+str(input_file)+" using "+str(database)+", output will be available at "+str(output_file))
+    hhblits_call = "hhblits -maxfilt "+str(maxfilt)+" -realign_max "+str(realign_max)+" -d "+str(database)+" -all -B "+str(B)+" -Z "+str(Z)+" -n "+str(n)+" -e "+str(e)+" -i "+str(input_file)+" -oa3m "+str(output_file)
+    print(hhblits_call)
+    os.system(hhblits_call)
+
 def call_trimal(input_file, output_file, trimal_gt, cons, colnumbering_file):
     print("calling trimal gt "+str(trimal_gt)+" cons "+str(cons)+" on "+str(input_file))
     os.system("trimal -in "+str(input_file)+" -out "+str(output_file)+" -gt "+str(trimal_gt)+" -cons "+str(cons)+" -colnumbering > "+str(colnumbering_file))

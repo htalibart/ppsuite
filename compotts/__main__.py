@@ -40,6 +40,10 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like', 'shifted_relu'))
     parser.add_argument('-n', '--nb_sequences', help="Number of sequences in the MRF training alignment", default=1000, type=int)
 
+    # trimal
+    parser.add_argument('-trimgt', '--trimal_gt', help="trimal gt", default=0.8, type=float)
+    parser.add_argument('-trimcons', '--trimal_cons', help="trimal cons", default=60, type=float)
+
     # options alignement
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-nv', '--no_v', help="Don't use v scores", action='store_true')
@@ -69,6 +73,10 @@ def main(args=sys.argv[1:]):
 
     # options related to CCMpredPy
     #parser.add_argument('--pc_count_factor', help="Number of pseudocounts for CCMpredPy will be (pc_count_factor)*(nb_sequences). Default : pc_count_factor=1", type=int, default=1)
+
+
+    # options related to HHblits
+    parser.add_argument('-d', '--hhblits_database', help="Database for HHblits", type=pathlib.Path)
 
 
     args = vars(parser.parse_args(args))
