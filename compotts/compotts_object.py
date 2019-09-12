@@ -62,7 +62,7 @@ class ComPotts_Object:
         if (self.a3m_file is None) and (self.aln_fasta is None) and (mrf_type=="standard") and (self.potts_model_file is None):
             self.a3m_file = self.get_folder()/(self.name+".a3m")
             if hhblits_database is None:
-                print("Must specify a database for hhblits (option -d)")
+                raise Exception("Must specify a database for hhblits (option -d)")
             else:
                 call_hhblits(self.sequence_file, self.a3m_file, hhblits_database, **kwargs)
 
