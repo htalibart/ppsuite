@@ -162,14 +162,17 @@ class ComPotts_Object:
             if self.potts_model_file is not None:
                 self.mrf = Potts_Model.from_msgpack(self.potts_model_file, **kwargs)
             else:
-                self.potts_model_file = (self.get_folder())/(self.name+"_"+self.mrf_type+".mrf")
-                if (self.mrf_type=="standard"):
-                    self.mrf = Potts_Model.from_training_set(self.training_set, self.potts_model_file, pc_count=pc_count, reg_lambda_pair_factor=reg_lambda_pair_factor, **kwargs)
-                elif (self.mrf_type=="one_hot"):
-                    self.mrf = Potts_Model.from_sequence_file_to_one_hot(self.training_set, **kwargs)
-                elif (self.mrf_type=="one_submat"):
-                    self.mrf = Potts_Model.from_sequence_file_with_submat(self.training_set, **kwargs)
-        self.original_mrf = self.mrf
+                if (self.training_set is not None):
+                    self.potts_model_file = (self.get_folder())/(self.name+"_"+self.mrf_type+".mrf")
+                    if (self.mrf_type=="standard"):
+                        self.mrf = Potts_Model.from_training_set(self.training_set, self.potts_model_file, pc_count=pc_count, reg_lambda_pair_factor=reg_lambda_pair_factor, **kwargs)
+                    elif (self.mrf_type=="one_hot"):
+                        self.mrf = Potts_Model.from_sequence_file_to_one_hot(self.training_set, **kwargs)
+                    elif (self.mrf_type=="one_submat"):
+                        self.mrf = Potts_Model.from_sequence_file_with_submat(self.training_set, **kwargs)
+                else:
+                    raise Exception("Need a training set")
+            self.original_mrf = self.mrf
         if (rescaling_function!="identity"):
             print("rescaling MRF")
             self.mrf = get_rescaled_mrf(self.mrf, rescaling_function, use_w=use_w)
