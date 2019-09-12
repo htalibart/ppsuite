@@ -17,8 +17,7 @@ def call_hhblits(input_file, output_file, database, maxfilt=100000, realign_max=
     print(hhblits_call)
     os.system(hhblits_call)
     if not output_file.exists():
-        print("HH-blits failed, trying again")
-        call_hhblits(input_file, output_file, database, maxfilt=maxfilt, realign_max=realign_max, B=B, Z=Z, n=n, e=e, **kwargs)
+        raise Exception("HH-blits failed for some reason")
 
 
 def call_trimal(input_file, output_file, trimal_gt, cons, colnumbering_file):
