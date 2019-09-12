@@ -200,6 +200,8 @@ class ComPotts_Object:
             self.folder = fm.create_folder(self.name)
         elif self.folder is None:
             self.folder = fm.create_folder(self.name)
+        if (not self.folder.is_dir()):
+            self.folder = fm.create_folder(self.folder)
         return self.folder
         
 
