@@ -12,14 +12,17 @@ def call_hhfilter(input_file, output_file, hhid):
 
 
 def call_hhblits(input_file, output_file, database, maxfilt=100000, realign_max=100000, B=100000, Z=100000, n=3, e=0.001, **kwargs):
+    """ calls HH-blits with arguments recommended for CCMpred : https://github.com/soedinglab/CCMpred/wiki/FAQ """
     print("calling hhblits on "+str(input_file)+" using "+str(database)+", output will be available at "+str(output_file))
     hhblits_call = "hhblits -maxfilt "+str(maxfilt)+" -realign_max "+str(realign_max)+" -d "+str(database)+" -all -B "+str(B)+" -Z "+str(Z)+" -n "+str(n)+" -e "+str(e)+" -i "+str(input_file)+" -oa3m "+str(output_file)
     print(hhblits_call)
     os.system(hhblits_call)
     if not output_file.exists():
         print("HH-blits failed for some reason, trying with a memory limit")
-        memory_frienldy_call = hhblits_call+" -cpu 1 -maxmem 1"
+        memory_friendly_call = hhblits_call+" -cpu 1 -maxmem 1"
         os.system(memory_friendly_call)
+        if not output_file.exists():
+            raise Exception("HH-blits failed. Protein is probably too long ?")
 
 
 def call_trimal(input_file, output_file, trimal_gt, cons, colnumbering_file):
