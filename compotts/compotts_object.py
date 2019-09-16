@@ -157,7 +157,6 @@ class ComPotts_Object:
                 self.training_set = self.sequence_file
             else:
                 print("Missing sequence file !")
-        os.system("cp "+str(self.training_set)+" "+str(self.get_folder()/(self.name+"_training_set.fasta")))
 
 
         # MRF 
@@ -175,6 +174,7 @@ class ComPotts_Object:
                         self.mrf = Potts_Model.from_sequence_file_to_one_hot(self.training_set, **kwargs)
                     elif (self.mrf_type=="one_submat"):
                         self.mrf = Potts_Model.from_sequence_file_with_submat(self.training_set, **kwargs)
+                    os.system("cp "+str(self.training_set)+" "+str(self.get_folder()/(self.name+"_training_set.fasta")))
                 else:
                     raise Exception("Need a training set")
             self.original_mrf = self.mrf
