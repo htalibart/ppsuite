@@ -97,6 +97,13 @@ def get_a3m_file_from_folder(folder):
    return get_file_from_folder_ending_with_extension(folder, ".a3m")
 
 
+def get_existing_training_set(folder, trimal_gt):
+    trainf = get_file_from_folder_ending_with_extension(folder, "_training_set.fasta")
+    if trainf is None:
+        return get_file_from_folder_ending_with_extension(folder, "trim_"+str(int(trimal_gt*100))+".fasta")
+    else:
+        return trainf
+
 def write_readme(folder, **kwargs):
     p = folder/'README.txt'
     with p.open(mode='w') as f:

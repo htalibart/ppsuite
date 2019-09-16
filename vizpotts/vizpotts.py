@@ -89,6 +89,12 @@ def visualize_one_sequence(mrf, sequence, show_figure=True):
 
 
 
+def visualize_v_alignment_from_files(mrf_files, aln_res_file, **kwargs):
+    aligned_mrfs = [Potts_Model.from_msgpack(mrf_file) for mrf_file in mrf_files]
+    dict_aligned_pos = fm.get_aligned_positions_dict_from_compotts_output_file(aln_res_file)
+    visualize_v_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)
+
+
 def visualize_v_alignment(aligned_mrfs, dict_aligned_pos, alphabet=ALPHABET, start_at_1=True, show_figure=True, tick_space=3):
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1]})
     aligned_pos = list(dict_aligned_pos.values())

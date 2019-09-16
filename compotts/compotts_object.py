@@ -31,6 +31,8 @@ class ComPotts_Object:
 
         # EXISTING ALIGNMENT FASTA FORMAT
         self.aln_fasta = aln_fasta
+        if self.aln_fasta is None:
+            self.aln_fasta = fm.get_existing_training_set(input_folder, trimal_gt)
 
         # EXISTING A3M FILE
         if a3m_file is not None:
@@ -92,12 +94,13 @@ class ComPotts_Object:
 
 
         # TRIM ALIGNMENT
-        if (self.aln_fasta is not None) and (trim_alignment) and (self.potts_model_file is None):
-            old_aln_fasta = self.aln_fasta
-            self.aln_fasta = self.get_folder()/(self.name+"_trim_"+str(int(trimal_gt*100))+".fasta")
+        if (self.aln_fasta is not None) and (trim_alignment):
             colnumbering_file = self.get_folder()/(self.name+"_colnumbering.csv")
-            if (not self.aln_fasta.is_file()):
-                call_trimal(old_aln_fasta, self.aln_fasta, trimal_gt, trimal_cons, colnumbering_file)
+            if (self.potts_model_file is None):
+                old_aln_fasta = self.aln_fasta
+                self.aln_fasta = self.get_folder()/(self.name+"_trim_"+str(int(trimal_gt*100))+".fasta")
+                if (not self.aln_fasta.is_file()):
+                    call_trimal(old_aln_fasta, self.aln_fasta, trimal_gt, trimal_cons, colnumbering_file)
             self.real_aln_pos = fm.get_trimal_ncol(colnumbering_file)
         elif (self.aln_fasta is not None):
             nb_pos = fm.get_nb_columns_in_alignment(self.aln_fasta) 
@@ -154,6 +157,8 @@ class ComPotts_Object:
                 self.training_set = self.sequence_file
             else:
                 print("Missing sequence file !")
+        os.system("cp "+str(self.training_set)+" "+str(self.get_folder()/(self.name+"_training_set.fasta")))
+
 
         # MRF 
         if mrf is not None:

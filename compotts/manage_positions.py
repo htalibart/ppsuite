@@ -61,7 +61,6 @@ def get_seqs_aligned(aligned_positions, compotts_objects):
     return seqs_aligned
 
             
-# TODO AlignIO ?
 def get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_file):
     """ (positions aligned by solver + compotts objects) -> sequences aligned -> in output_file """
     seqs_aligned = get_seqs_aligned(aligned_positions, compotts_objects)
