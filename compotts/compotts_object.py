@@ -167,7 +167,7 @@ class ComPotts_Object:
                 self.mrf = Potts_Model.from_msgpack(self.potts_model_file, **kwargs)
             else:
                 if (self.training_set is not None):
-                    if (fm.get_nb_sequences(self.training_set)<min_sequences):
+                    if (fm.get_nb_sequences_in_fasta_file(self.training_set)<min_sequences):
                         raise Exception("Training set has less than "+str(min_sequences)+" sequences")
                     else:
                         self.potts_model_file = (self.get_folder())/(self.name+"_"+self.mrf_type+".mrf")
