@@ -12,7 +12,7 @@ from compotts.manage_positions import *
 
 class ComPotts_Object:
 
-    def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=60, pc_count=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, hhblits_database=None, **kwargs):
+    def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=60, pc_count=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, hhblits_database=None, min_sequences=1, **kwargs):
 
         self.folder = input_folder
 
@@ -167,14 +167,17 @@ class ComPotts_Object:
                 self.mrf = Potts_Model.from_msgpack(self.potts_model_file, **kwargs)
             else:
                 if (self.training_set is not None):
-                    self.potts_model_file = (self.get_folder())/(self.name+"_"+self.mrf_type+".mrf")
-                    if (self.mrf_type=="standard"):
-                        self.mrf = Potts_Model.from_training_set(self.training_set, self.potts_model_file, pc_count=pc_count, reg_lambda_pair_factor=reg_lambda_pair_factor, **kwargs)
-                    elif (self.mrf_type=="one_hot"):
-                        self.mrf = Potts_Model.from_sequence_file_to_one_hot(self.training_set, **kwargs)
-                    elif (self.mrf_type=="one_submat"):
-                        self.mrf = Potts_Model.from_sequence_file_with_submat(self.training_set, **kwargs)
-                    os.system("cp "+str(self.training_set)+" "+str(self.get_folder()/(self.name+"_training_set.fasta")))
+                    if (fm.get_nb_sequences(self.training_set)<min_sequences):
+                        raise Exception("Training set has less than "+str(min_sequences)+" sequences")
+                    else:
+                        self.potts_model_file = (self.get_folder())/(self.name+"_"+self.mrf_type+".mrf")
+                        if (self.mrf_type=="standard"):
+                            self.mrf = Potts_Model.from_training_set(self.training_set, self.potts_model_file, pc_count=pc_count, reg_lambda_pair_factor=reg_lambda_pair_factor, **kwargs)
+                        elif (self.mrf_type=="one_hot"):
+                            self.mrf = Potts_Model.from_sequence_file_to_one_hot(self.training_set, **kwargs)
+                        elif (self.mrf_type=="one_submat"):
+                            self.mrf = Potts_Model.from_sequence_file_with_submat(self.training_set, **kwargs)
+                        os.system("cp "+str(self.training_set)+" "+str(self.get_folder()/(self.name+"_training_set.fasta")))
                 else:
                     raise Exception("Need a training set")
             self.original_mrf = self.mrf
