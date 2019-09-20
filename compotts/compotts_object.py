@@ -12,7 +12,7 @@ from compotts.manage_positions import *
 
 class ComPotts_Object:
 
-    def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=60, pc_count=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, hhblits_database=None, min_sequences=1, **kwargs):
+    def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=60, pc_count=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, hhblits_database=None, min_sequences=1, retry_hhblits_with_memory_limit_if_fail=False, **kwargs):
 
         self.folder = input_folder
 
@@ -66,7 +66,7 @@ class ComPotts_Object:
             if hhblits_database is None:
                 raise Exception("Must specify a database for hhblits (option -d)")
             else:
-                call_hhblits(self.sequence_file, self.a3m_file, hhblits_database, **kwargs)
+                call_hhblits(self.sequence_file, self.a3m_file, hhblits_database, retry_hhblits_with_memory_limit_if_fail=False, **kwargs)
 
  
         # REFORMAT A3M_FILE

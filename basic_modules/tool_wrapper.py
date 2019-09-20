@@ -11,13 +11,13 @@ def call_hhfilter(input_file, output_file, hhid):
     os.system("hhfilter -i "+str(input_file)+" -o "+str(output_file)+" -id "+str(hhid))
 
 
-def call_hhblits(input_file, output_file, database, maxfilt=100000, realign_max=100000, B=100000, Z=100000, n=3, e=0.001, **kwargs):
+def call_hhblits(input_file, output_file, database, maxfilt=100000, realign_max=100000, B=100000, Z=100000, n=3, e=0.001, retry_hhblits_with_memory_limit_if_fail=False,**kwargs):
     """ calls HH-blits with arguments recommended for CCMpred : https://github.com/soedinglab/CCMpred/wiki/FAQ """
     print("calling hhblits on "+str(input_file)+" using "+str(database)+", output will be available at "+str(output_file))
     hhblits_call = "hhblits -maxfilt "+str(maxfilt)+" -realign_max "+str(realign_max)+" -d "+str(database)+" -all -B "+str(B)+" -Z "+str(Z)+" -n "+str(n)+" -e "+str(e)+" -i "+str(input_file)+" -oa3m "+str(output_file)
     print(hhblits_call)
     os.system(hhblits_call)
-    if not output_file.exists():
+    if not output_file.exists() and retry_hhblits_with_memory_limit_if_fail:
         print("HH-blits failed for some reason, trying with a memory limit")
         memory_friendly_call = hhblits_call+" -cpu 1 -maxmem 1"
         os.system(memory_friendly_call)

@@ -81,6 +81,7 @@ def main(args=sys.argv[1:]):
 
     # options related to HHblits
     parser.add_argument('-d', '--hhblits_database', help="Database for HHblits", type=pathlib.Path)
+    parser.add_argument('-hhmem', '--retry_hhblits_with_memory_limit_if_fail', help="If HHblits fails, try again with less memory", action='store_true', default=False)
 
 
     args = vars(parser.parse_args(args))
