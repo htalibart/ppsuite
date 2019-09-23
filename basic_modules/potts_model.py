@@ -78,7 +78,7 @@ class Potts_Model:
             with readme_file.open(mode='w') as f:
                 json.dump(call, f, default=str)
         os.system(call)
-        if not os.path.exists(binary_file):
+        if not os.path.exists(str(binary_file)):
             raise Exception("CCMpredPy wasn't able to infer the MRF. Protein is probably too long ?")
         mrf = cls.from_msgpack(binary_file)
         mrf.training_set = pathlib.Path(aln_file)
