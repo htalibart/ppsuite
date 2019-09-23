@@ -57,7 +57,7 @@ def get_nb_columns_in_alignment(aln_file):
 
 
 def get_nb_sequences_in_fasta_file(fasta_file):
-    records = list(SeqIO.parse(fasta_file, "fasta"))
+    records = list(SeqIO.parse(str(fasta_file), "fasta"))
     return len(records)
 
 
