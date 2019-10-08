@@ -55,6 +55,10 @@ class parameters
 	int nb_non_increasing_steps_max;
 
 
+	/**
+	 * Minimum acceptable score (solver stops if UB < score_min)
+	 */
+	double score_min;
 
         /**
         * Default Constructor, usualy for root problem

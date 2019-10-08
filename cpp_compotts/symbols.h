@@ -17,6 +17,7 @@ using namespace std;
 #define EPSILON         101
 #define APPROXIMATE     102
 #define MAX_ITER        103
+#define NOT_SIMILAR     104
 
 //Reason of an approximation
 #define TIME_LIMIT      200

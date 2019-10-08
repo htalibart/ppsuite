@@ -65,7 +65,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-th', '--theta', help="solver : theta", type=float, default=0.9)
     parser.add_argument('-stpz', '--stepsize_min', help="solver : stepsize_min", type=float, default=0.000000005)
     parser.add_argument('-stpm', '--nb_non_increasing_steps_max', help="solver : nb_non_increasing_steps_max", type=int, default=500)
-    
+    parser.add_argument('-sim_min', '--sim_min', help='if score is below sim_min, solver considers that the Potts models are not similar and stops.', type=float, default=0.1)
 
     # autres options
     parser.add_argument('-ali', '--call_aliview', help="Call aliview at the end", action='store_true')
@@ -126,20 +126,20 @@ def main(args=sys.argv[1:]):
     print("Total time : "+str(infos_solver["total_compotts_time"]))
 
 
-
     # MAYBE DO SOMETHING WITH THE ALIGNMENT
 
-    # ALIGN TRAINING MSAS
-    if all((o.training_set is not None) for o in compotts_objects):
-        output_msa = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_training_sets.fasta")
-        get_msas_aligned(aligned_positions, [o.training_set for o in compotts_objects], output_msa)
-        if args["call_aliview"]:
-            os.system("aliview "+str(output_msa))
-        
-    # ALIGN SEQUENCES
-    if all((o.sequence is not None) for o in compotts_objects):
-        output_fasta_file = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
-        get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
+    if len(aligned_positions)>0:
+        # ALIGN TRAINING MSAS
+        if all((o.training_set is not None) for o in compotts_objects):
+            output_msa = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_training_sets.fasta")
+            get_msas_aligned(aligned_positions, [o.training_set for o in compotts_objects], output_msa)
+            if args["call_aliview"]:
+                os.system("aliview "+str(output_msa))
+            
+        # ALIGN SEQUENCES
+        if all((o.sequence is not None) for o in compotts_objects):
+            output_fasta_file = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
+            get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 
 
         return {"compotts_objects": compotts_objects, "aligned_positions":aligned_positions, "infos_solver":infos_solver}

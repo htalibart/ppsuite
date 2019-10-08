@@ -902,107 +902,111 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
     	solve_time += ((double)tic2 - (double)tic1) / (double)tic_per_sec;
     	tic1 = times(&start);
 
-        if(lb != ub && ub_score <= bound_ub_score)
+
+        if(lb != ub && -lb <= params.score_min)
         {
-            cout <<"For FIP: Stop now.\n";
-            status = APPROXIMATE;
+	    cout << -lb << " < " << params.score_min << endl;
+            cout <<"Not similar: Stop now.\n";
+	    status = NOT_SIMILAR;
         }
-        if (current_lb > lb)    // if current_lb > lb then increase the number of improving iteration, and number of non-improving iteration = 0.
-        {
-            lb = current_lb;
-            cnt_non_increas = 0;
-            cnt_break = 0;
-            cnt_increas++;
-        }
-        if (current_ub < ub)    // if current_ub < ub then increase the number of improving iteration, and number of non-improving iteration = 0.
-        {
-            ub = current_ub;
-            cnt_non_increas = 0;
-            cnt_break = 0;
-            cnt_increas++;
-            for(int ii(0); ii < size ;ii++)
-            {
-                 best_solution[ii] = solution[ii];
-            }
-        }
-        if (current_lb != lb && current_ub != ub)   // else, number of improving iteration = 0, and increase number of non-improving iteration
-        {
-            cnt_non_increas++;
-            cnt_break++;
-            cnt_increas = 0;
-        }
-        if (cnt_non_increas > 5)   // after 20 non-improving iteration, reduce gamma
-        {
-            gamma *= theta;
-            cnt_non_increas = 0;
-        }
-        if (cnt_increas > 5)       // after 20 improving iteration, increase gamma
-        {
-            gamma /= theta;
-            cnt_increas = 0;
-        }
-        if (lb >= ub || ((int)lb >= ub && obj_is_int))
-        {
-        	cout <<"Optimal. Stop now.\n";
-            status = OPTIMAL;
-        }
-        else if (ub-lb <= params.epsilon)
-        {
-        	cout <<"Less than " << params.epsilon << " difference between upper and lower bound. Stop now.\n";
-            status = EPSILON;
-        }
-        else if(sub_gr_norm == 0)
-        {
-            cout <<"Subgradient = 0. Stop now.\n";
-            status = APPROXIMATE;
-        }
-        else if (iter >= params.max_iteration)
-        {
-        	cout <<"Maximum itrations reached. Stop now.\n";
-            status = MAX_ITER;
-        }
-        else if (lb >= params.limit_lb)
-        {
-        	cout <<"Useless node. Stop now.\n";
-            status = APPROXIMATE;
-        }
-        else if(gamma <= stepsize_min)
-        {
-        	cout <<"Stepsize less than " << stepsize_min << ". Stop now.\n";
-            status = APPROXIMATE;
-        }
-        else if(cnt_break > nb_non_increasing_steps_max)
-        {
-            cout << "More than " << nb_non_increasing_steps_max <<" non increasing steps. Stop now.\n";
-            status = APPROXIMATE;
-        }
-        else if(solve_time >= params.my_time_limit)
-        {
-        	cout <<"Time limit reached. Stop now.\n";
-            status = TIME_LIMIT;
-        }
-        else
-        {
-            step = gamma * (current_ub - lb) / sub_gr_norm;
-	    //cout << "current UB-LB="<< current_ub-lb << endl;
-	    //cout << "sub_gr_norm=" << sub_gr_norm << endl;
-	    //cout << "step=" << step << endl;
-            if(step <= 0.)
-            {
-                cout << "Error in step value (negative step are not allowed)\n";
-                status = APPROXIMATE;
-            }
-            //int tic1_tmp = times(&start);
-            update_lambda(step);
-        	//int tic2_tmp = times(&end);
-        	//cout << "Update lambda: " << ((double)tic2_tmp - (double)tic1_tmp) / (double)tic_per_sec << endl;
-        }
+	else
+	{
+		if (current_lb > lb)    // if current_lb > lb then increase the number of improving iteration, and number of non-improving iteration = 0.
+		{
+		    lb = current_lb;
+		    cnt_non_increas = 0;
+		    cnt_break = 0;
+		    cnt_increas++;
+		}
+		if (current_ub < ub)    // if current_ub < ub then increase the number of improving iteration, and number of non-improving iteration = 0.
+		{
+		    ub = current_ub;
+		    cnt_non_increas = 0;
+		    cnt_break = 0;
+		    cnt_increas++;
+		    for(int ii(0); ii < size ;ii++)
+		    {
+			 best_solution[ii] = solution[ii];
+		    }
+		}
+		if (current_lb != lb && current_ub != ub)   // else, number of improving iteration = 0, and increase number of non-improving iteration
+		{
+		    cnt_non_increas++;
+		    cnt_break++;
+		    cnt_increas = 0;
+		}
+		if (cnt_non_increas > 5)   // after 20 non-improving iteration, reduce gamma
+		{
+		    gamma *= theta;
+		    cnt_non_increas = 0;
+		}
+		if (cnt_increas > 5)       // after 20 improving iteration, increase gamma
+		{
+		    gamma /= theta;
+		    cnt_increas = 0;
+		}
+		if (lb >= ub || ((int)lb >= ub && obj_is_int))
+		{
+			cout <<"Optimal. Stop now.\n";
+		    status = OPTIMAL;
+		}
+		else if (ub-lb <= params.epsilon)
+		{
+			cout <<"Less than " << params.epsilon << " difference between upper and lower bound. Stop now.\n";
+		    status = EPSILON;
+		}
+		else if(sub_gr_norm == 0)
+		{
+		    cout <<"Subgradient = 0. Stop now.\n";
+		    status = APPROXIMATE;
+		}
+		else if (iter >= params.max_iteration)
+		{
+			cout <<"Maximum itrations reached. Stop now.\n";
+		    status = MAX_ITER;
+		}
+		else if (lb >= params.limit_lb)
+		{
+			cout <<"Useless node. Stop now.\n";
+		    status = APPROXIMATE;
+		}
+		else if(gamma <= stepsize_min)
+		{
+			cout <<"Stepsize less than " << stepsize_min << ". Stop now.\n";
+		    status = APPROXIMATE;
+		}
+		else if(cnt_break > nb_non_increasing_steps_max)
+		{
+		    cout << "More than " << nb_non_increasing_steps_max <<" non increasing steps. Stop now.\n";
+		    status = APPROXIMATE;
+		}
+		else if(solve_time >= params.my_time_limit)
+		{
+			cout <<"Time limit reached. Stop now.\n";
+		    status = TIME_LIMIT;
+		}
+		else
+		{
+		    step = gamma * (current_ub - lb) / sub_gr_norm;
+		    //cout << "current UB-LB="<< current_ub-lb << endl;
+		    //cout << "sub_gr_norm=" << sub_gr_norm << endl;
+		    //cout << "step=" << step << endl;
+		    if(step <= 0.)
+		    {
+			cout << "Error in step value (negative step are not allowed)\n";
+			status = APPROXIMATE;
+		    }
+		    //int tic1_tmp = times(&start);
+		    update_lambda(step);
+			//int tic2_tmp = times(&end);
+			//cout << "Update lambda: " << ((double)tic2_tmp - (double)tic1_tmp) / (double)tic_per_sec << endl;
+		}
+	}
 	cout << "UB-LB=" << ub - lb << endl;
     	tic2 = times(&end);
     	solve_time += ((double)tic2 - (double)tic1) / (double)tic_per_sec;
 
     }
-
     //Prohibited edges are reallowed
     lb_mat.allow(g, lo, up);
 

@@ -205,6 +205,11 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
         solution_status = status;
         return;
     }
+    if (root.get_status() == NOT_SIMILAR)
+    {
+	    solution_status = NOT_SIMILAR;
+	    return;
+    }
 
     /**************************************
     * Step 2 : Branch and Bound           *
@@ -277,7 +282,7 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
         * Step 2.2 : Divide into subproblem   *
         *            (if needed)              *
         **************************************/
-        if( (ub-lb) > my_param.epsilon && (current_problem->get_lb() < ub) && (current_problem->get_status() != OPTIMAL)  )
+        if( (ub-lb) > my_param.epsilon && (current_problem->get_lb() < ub) && (current_problem->get_status() != OPTIMAL)  && (current_problem->get_status() != NOT_SIMILAR))
         {
             //cout << "BB -- Split  --> local ub = " << current_problem->get_ub() << ", local lb = " << current_problem->get_lb() << ", in " << current_problem->get_solve_time() << " (s), " << current_problem->get_iter() << "(iter)\n";
             current_problem->split(lo1, up1, lo2, up2);
@@ -314,6 +319,7 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
                  exit(0);
              }
              subpC = subp2->create_subproblem(lo1, up1);
+	     
              subpD = subp2->create_subproblem(lo2, up2);
 
 
@@ -363,6 +369,12 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
             cout << "Node-limit : Solve process ended\n";
             solution_status = APPROXIMATE;
         }
+	else if (-lb < my_param.score_min)
+	{
+		std::cout << "NOT SIMILAR : " << -lb << " < " << my_param.score_min << std::endl;
+		solution_status = NOT_SIMILAR;
+	}
+	
     }
 
     delete[] up1;
