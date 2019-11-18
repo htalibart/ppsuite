@@ -47,6 +47,8 @@ class ComPotts_Object:
         # NAME
         if name is not None:
             self.name = name
+        elif input_folder is not None:
+            self.name = input_folder.stem
         elif self.sequence_file is not None:
             self.name = fm.get_first_sequence_clean_name(self.sequence_file)
         elif self.aln_fasta is not None:
@@ -55,8 +57,6 @@ class ComPotts_Object:
             self.name = fm.get_first_sequence_clean_name(self.a3m_file)
         elif mrf is not None:
             self.name = mrf.name
-        elif input_folder is not None:
-            self.name = input_folder.stem
         else:
             self.name = "Billy_"+time.strftime("%Y%m%d-%H%M%S")
 
