@@ -146,6 +146,7 @@ def visualize_v_w_scores_at_positions(aligned_mrfs, dict_aligned_pos, show_figur
     sns.heatmap([w_scores_sums], yticklabels=['w'], xticklabels=xticklabels, cmap="RdBu", ax=ax[1], center=0)
 
     plt.tight_layout()
+    plt.subplots_adjust(wspace=0, hspace=0)
     plt.draw()
     if show_figure:
         plt.show()

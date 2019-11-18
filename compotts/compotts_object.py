@@ -2,6 +2,8 @@
 
 import os
 import time
+import argparse
+import sys
 import basic_modules.files_management as fm
 from basic_modules.util import *
 from basic_modules.tool_wrapper import *
@@ -218,3 +220,32 @@ class ComPotts_Object:
 
     def get_seq_positions(self, positions):
         return [self.real_seq_pos[pos] for pos in positions]
+
+def main(args=sys.argv[1:]):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-p', '--potts_model_file', help="Potts model", type=pathlib.Path)
+    parser.add_argument('-s', '--sequence_file', help="Sequence file", type=pathlib.Path)
+    parser.add_argument('-a3m', '--a3m_file', help="HH-blits output file", type=pathlib.Path)
+    parser.add_argument('-f', '--input_folder', help="Folder containing files for sequence", type=pathlib.Path)
+    parser.add_argument('-aln', '--aln_fasta', help="Alignment file in fasta format", type=pathlib.Path)
+    parser.add_argument('-n', '--nb_sequences', help="Max number of sequences in the MRF training alignment", default=1000, type=int)
+    parser.add_argument('-nmin', '--min_sequences', help="Min number of sequences in the MRF training alignment", default=1, type=int)
+    parser.add_argument('-m', '--mrf_type', help="Mode", choices=('standard', 'one_hot', 'one_submat'), default='standard')
+    parser.add_argument('-nm', '--name', help="Name")
+
+    # trimal
+    parser.add_argument('-trimgt', '--trimal_gt', help="trimal gt", default=0.8, type=float)
+    parser.add_argument('-trimcons', '--trimal_cons', help="trimal cons", default=60, type=float)
+
+
+    # CCMpredPy options
+    parser.add_argument('--pc_count', help="CCMpred : Specify number of pseudocounts (default : 1000)", default=1000)
+    parser.add_argument('--reg_lambda_pair_factor', help="CCMpred : Regularization parameter for pair potentials (L2 regularization with lambda_pair = lambda_pair-factor * scaling) [CCMpred default: 0.2, our default : 30]", default=30)
+
+    args = vars(parser.parse_args(args))
+
+    obj = ComPotts_Object(**args)
+
+
+if __name__=="__main__":
+    main()
