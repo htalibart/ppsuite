@@ -291,8 +291,9 @@ def plot_one_vi(vi, alphabet=ALPHABET, **kwargs):
 
 
 def plot_one_wij(wij, alphabet=ALPHABET, center=0, show_figure=True, **kwargs):
+    wij = get_reordered_wij(wij, alphabet)
     plt.figure()
-    sns.heatmap(wij, cmap="RdBu", center=center, **kwargs)
+    sns.heatmap(wij, cmap="RdBu", center=center, xticklabels=alphabet, yticklabels=alphabet, **kwargs)
     plt.tick_params(labelsize='xx-small')
     if show_figure:
         plt.show()
