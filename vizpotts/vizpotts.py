@@ -288,3 +288,13 @@ def plot_one_vi(vi, alphabet=ALPHABET, **kwargs):
     sns.heatmap(vi.reshape(vi.shape[0], 1), square=True, cmap="RdBu", center=0, yticklabels=alphabet, xticklabels=[], **kwargs)
     plt.margins(0,0)
     plt.show()
+
+
+def plot_one_wij(wij, alphabet=ALPHABET, center=0, show_figure=True, **kwargs):
+    plt.figure()
+    sns.heatmap(wij, cmap="RdBu", center=center, **kwargs)
+    plt.tick_params(labelsize='xx-small')
+    if show_figure:
+        plt.show()
+
+
