@@ -69,6 +69,8 @@ def main(args=sys.argv[1:]):
 
     # autres options
     parser.add_argument('-ali', '--call_aliview', help="Call aliview at the end", action='store_true')
+    parser.add_argument('-oaln', '--get_training_sets_fasta_aln', help="Get training sets alignment in a fasta file", action='store_true')
+    parser.add_argument('-osaln', '--get_sequences_fasta_aln', help="Get sequences alignment in a fasta file", action='store_true')
 
 
     # CCMpredPy options
@@ -130,14 +132,14 @@ def main(args=sys.argv[1:]):
 
     if len(aligned_positions)>0:
         # ALIGN TRAINING MSAS
-        if all((o.training_set is not None) for o in compotts_objects):
+        if all((o.training_set is not None) for o in compotts_objects) and args["get_training_sets_fasta_aln"]:
             output_msa = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_training_sets.fasta")
             get_msas_aligned(aligned_positions, [o.training_set for o in compotts_objects], output_msa)
             if args["call_aliview"]:
                 os.system("aliview "+str(output_msa))
             
         # ALIGN SEQUENCES
-        if all((o.sequence is not None) for o in compotts_objects):
+        if all((o.sequence is not None) for o in compotts_objects) and args["get_sequences_fasta_aln"]:
             output_fasta_file = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
             get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 
