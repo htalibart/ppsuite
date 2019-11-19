@@ -85,9 +85,9 @@ def get_file_from_folder_ending_with_extension(folder, extension):
     files = [str(f) for f in pathlib.Path(folder).glob('*'+extension)]
     if len(files)>0:
         files.sort(key = len)
-        shortest = files[0]
+        shortest = pathlib.Path(files[0])
         if len(files)>1:
-            print("more than 1 file ending with "+extension+", using the one with the shortest name : "+shortest)
+            print("more than 1 file ending with "+extension+", using the one with the shortest name : "+files[0])
         return shortest
     else:
         return None

@@ -97,12 +97,14 @@ class ComPotts_Object:
 
         # TRIM ALIGNMENT
         if (self.aln_fasta is not None) and (trim_alignment):
-            colnumbering_file = self.get_folder()/(self.name+"_colnumbering.csv")
-            if (self.potts_model_file is None):
-                old_aln_fasta = self.aln_fasta
-                self.aln_fasta = self.get_folder()/(self.name+"_trim_"+str(int(trimal_gt*100))+".fasta")
-                if (not self.aln_fasta.is_file()):
-                    call_trimal(old_aln_fasta, self.aln_fasta, trimal_gt, trimal_cons, colnumbering_file)
+            colnumbering_file = fm.get_file_from_folder_ending_with_extension(self.get_folder(), "_colnumbering.csv")
+            if colnumbering_file is None:
+                colnumbering_file = self.get_folder()/(self.name+"_colnumbering.csv")
+                if (self.potts_model_file is None):
+                    old_aln_fasta = self.aln_fasta
+                    self.aln_fasta = self.get_folder()/(self.name+"_trim_"+str(int(trimal_gt*100))+".fasta")
+                    if (not self.aln_fasta.is_file()):
+                        call_trimal(old_aln_fasta, self.aln_fasta, trimal_gt, trimal_cons, colnumbering_file)
             self.real_aln_pos = fm.get_trimal_ncol(colnumbering_file)
         elif (self.aln_fasta is not None):
             nb_pos = fm.get_nb_columns_in_alignment(self.aln_fasta) 
