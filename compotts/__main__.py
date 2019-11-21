@@ -47,7 +47,7 @@ def main(args=sys.argv[1:]):
 
     # trimal
     parser.add_argument('-trimgt', '--trimal_gt', help="trimal gt", default=0.8, type=float)
-    parser.add_argument('-trimcons', '--trimal_cons', help="trimal cons", default=60, type=float)
+    parser.add_argument('-trimcons', '--trimal_cons', help="trimal cons", default=0, type=float)
 
     # options alignement
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')

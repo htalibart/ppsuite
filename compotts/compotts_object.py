@@ -14,7 +14,7 @@ from compotts.manage_positions import *
 
 class ComPotts_Object:
 
-    def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=60, pc_count=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, hhblits_database=None, min_sequences=1, retry_hhblits_with_memory_limit_if_fail=False, **kwargs):
+    def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=0, pc_count=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, hhblits_database=None, min_sequences=1, retry_hhblits_with_memory_limit_if_fail=False, **kwargs):
 
         self.folder = input_folder
 
@@ -277,7 +277,7 @@ def main(args=sys.argv[1:]):
 
     # trimal
     parser.add_argument('-trimgt', '--trimal_gt', help="trimal gt", default=0.8, type=float)
-    parser.add_argument('-trimcons', '--trimal_cons', help="trimal cons", default=60, type=float)
+    parser.add_argument('-trimcons', '--trimal_cons', help="trimal cons", default=0, type=float)
 
 
     # CCMpredPy options
