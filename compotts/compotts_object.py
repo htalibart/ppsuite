@@ -109,10 +109,9 @@ class ComPotts_Object:
             self.mrf_type=mrf_type
 
 
-
         # IF WE NEED TO INFER A POTTS MODEL IN A STANDARD WAY (FROM AN ALIGNMENT)
 
-        if (self.potts_model_file is None) and (mrf_type=="standard"):
+        if (self.potts_model_file is None) and (self.mrf_type=="standard"):
 
             # IF WE DON'T HAVE AN A3M FILE AND WE WANT ONE
             if (self.a3m_file is None) and (self.aln_fasta is None):
