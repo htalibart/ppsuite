@@ -40,7 +40,6 @@ class ComPotts_Object:
         # EXISTING ALIGNMENT FASTA FORMAT
         self.aln_fasta = aln_fasta
 
-
         # EXISTING A3M FILE
         self.a3m_file = a3m_file
 
@@ -65,11 +64,6 @@ class ComPotts_Object:
                 elif self.a3m_reformat is not None:
                     self.aln_fasta = self.a3m_reformat
 
-
-        # EXISTING ALIGNMENT FASTA FORMAT
-        self.aln_fasta = aln_fasta
-#        if self.aln_fasta is None:
-#            self.aln_fasta = fm.get_existing_training_set(input_folder, trimal_gt)
 
         # NAME
         if name is not None:
