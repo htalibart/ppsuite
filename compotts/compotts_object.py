@@ -103,6 +103,8 @@ class ComPotts_Object:
             self.mrf_type=mrf_type
         elif self.aln_fasta is not None: # if aln_fasta exists, MRF is trained in a standard way
             self.mrf_type="standard"
+        elif self.a3m_file is not None:
+            self.mrf_type="standard"
         elif self.sequence_file is not None: # if aln_fasta doesn't exist but we have a sequence file, it is used to train the MRF
            self.mrf_type="one_submat"
         else:
