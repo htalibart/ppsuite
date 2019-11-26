@@ -24,11 +24,18 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
         v_scores = np.ascontiguousarray(compute_v_scores(*mrfs, v_score_function).flatten())
     else:
         v_scores = np.ascontiguousarray(np.zeros(tuple([mrf.v.shape[0] for mrf in mrfs])).flatten())
-    c_v_scores = ctypes.c_void_p(v_scores.ctypes.data)
 
     v_scores, w_scores, edges_maps, selfcomps, gap_open, gap_extend, epsilon = compute_scores_etc(mrfs, v_score_function, w_score_function, use_v, use_w, vw_coeff_method, w_threshold_method, gap_cost_method, epsilon_method, **kwargs)
-    c_v_scores = ctypes.c_void_p(np.ascontiguousarray(v_scores.flatten()).ctypes.data)
-    c_w_scores = ctypes.c_void_p(w_scores.ctypes.data)
+
+    #c_v_scores = ctypes.c_void_p(np.ascontiguousarray(v_scores.flatten()).ctypes.data)
+    c_double_p = ctypes.POINTER(ctypes.c_double)
+    v_scores_flat = np.ascontiguousarray(v_scores.flatten())
+    c_v_scores = v_scores_flat.ctypes.data_as(c_double_p)
+
+    #c_w_scores = ctypes.c_void_p(w_scores.ctypes.data)
+    c_float_p = ctypes.POINTER(ctypes.c_float)
+    w_scores_flat = np.ascontiguousarray(w_scores)
+    c_w_scores = w_scores_flat.ctypes.data_as(c_float_p)
 
     print("gap open=",gap_open)
 
@@ -36,6 +43,8 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     c_edges_maps = [np.ascontiguousarray(edges_map.flatten(), dtype=np.int32).ctypes.data_as(c_int_p) for edges_map in edges_maps]
 
     score_min = (1/2)*sim_min*sum(selfcomps); 
+
+    COMPOTTS_SOLVER.call_from_python.argtypes=[c_double_p, c_float_p, ctypes.c_int, ctypes.c_int, c_int_p, c_int_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_double]
 
     COMPOTTS_SOLVER.call_from_python(c_v_scores, c_w_scores, *[ctypes.c_int(mrf.ncol) for mrf in mrfs], *c_edges_maps, *[ctypes.c_double(selfcomp) for selfcomp in selfcomps], ctypes.c_double(gap_open), ctypes.c_double(gap_extend), ctypes.c_char_p(str(aln_res_file).encode('utf-8')), ctypes.c_char_p(str(info_res_file).encode('utf-8')), ctypes.c_int(n_limit_param), ctypes.c_int(iter_limit_param), ctypes.c_double(t_limit), ctypes.c_int(disp_level), ctypes.c_double(epsilon), ctypes.c_double(gamma), ctypes.c_double(theta), ctypes.c_double(stepsize_min), ctypes.c_int(nb_non_increasing_steps_max), ctypes.c_double(score_min))
 
