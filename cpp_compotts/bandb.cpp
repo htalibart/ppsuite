@@ -75,10 +75,6 @@ void branch_and_bound :: update_ub(problem * local_problem)
         for(int s(0); s != solution_size; ++s)
             best_solution[s] = local_solution[s];
 
-        //cout << "New UB = " << ub <<"\n";
-
-        //removing uninteresting problems from the list
-        //sparse_list();
     }
 }
 
@@ -119,25 +115,10 @@ void branch_and_bound :: update_lb(problem * local_problem)
     	}
     }
 
-    /*// Original code
-    if(problem_list.empty())
-    {
-        if(local_lb > ub)         //fix : when the ub is not found on the last node
-            stack_lb = ub;
-        else
-            stack_lb = local_lb;
-    }
-    else
-    {
-        problem * best_problem = problem_list.front();
-        stack_lb = best_problem->get_lb_father();
-    }
-    */
-
+   
     if(MIN(stack_lb, local_lb) > lb)
     {
         lb = MIN(stack_lb, local_lb);
-        //cout << "New LB = " << lb <<"\n";
     }
 }
 
@@ -189,19 +170,16 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
 
     if(root.get_status() == OPTIMAL || root.get_status() == EPSILON)
     {
-        //cout << "Solution found in Root : v(CMO) = " << -lb << ", found in " << root.get_solve_time() << "(sec), " << root.get_iter() << "(iter).\n";
         solution_status = status;
         return;
     }
     if(solve_time > my_param.time_limit)
     {
-        //cout << "RP ub = " << ub << ", lb = " << lb << ", in " << root.get_solve_time() << " (s), " << root.get_iter() << "(iter)\n";
         solution_status = status;
         return;
     }
     if(my_param.max_node == 0)
     {
-        //cout << "RP ub = " << ub << ", lb = " << lb << ", in " << root.get_solve_time() << " (s), " << root.get_iter() << "(iter)\n";
         solution_status = status;
         return;
     }
@@ -221,7 +199,6 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
     int * up2 = new int [solution_size];
     int * lo2 = new int [solution_size];
 
-    //cout << "RP ub = " << ub << ", lb = " << lb << ", in " << root.get_solve_time() << " (s), " << root.get_iter() << "(iter)\n";
 
     root.split(lo1, up1, lo2, up2);
     if(!root.is_splitted())
@@ -284,7 +261,6 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
         **************************************/
         if( (ub-lb) > my_param.epsilon && (current_problem->get_lb() < ub) && (current_problem->get_status() != OPTIMAL)  && (current_problem->get_status() != NOT_SIMILAR))
         {
-            //cout << "BB -- Split  --> local ub = " << current_problem->get_ub() << ", local lb = " << current_problem->get_lb() << ", in " << current_problem->get_solve_time() << " (s), " << current_problem->get_iter() << "(iter)\n";
             current_problem->split(lo1, up1, lo2, up2);
             if(!current_problem->is_splitted())
             {
@@ -332,10 +308,7 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
              delete subp2;
             }
         }
-        else
-        {
-            //cout << "BB -- fathom --> local ub = " << current_problem->get_ub() << ", local lb = " << current_problem->get_lb() << ", in " << current_problem->get_solve_time() << " (s), " << current_problem->get_iter() << "(iter)\n";
-        }
+        
 
         delete current_problem;
 

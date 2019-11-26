@@ -450,7 +450,6 @@ double problem_apurva :: get_correct_value(int * sol)
 		gap_cost +=  (nb_row-last_row-2)*dp.get_gap_extend();
     }
 
-    //cout << "score=" << score << " edge_score=" << edge_score << " vertex_score=" << vertex_score << endl;
     return(score);
 }
 
@@ -739,11 +738,7 @@ int problem_apurva :: get_nz_sub_gr(int * sol)
     lb_mat.set_nz_r(nz_r);
     lb_mat.set_nz_r_act(nz_r_act);
 
-    /*
-    cout << "**************\n";
-    cout << "*  |S|� = " << sub_grad_norm << "   *\n";
-    cout << "**************\n";
-    */
+    
     return(nz_c + nz_r + nz_r_act);
 }
 
@@ -761,12 +756,9 @@ void problem_apurva :: update_lambda(double step)
     int nz_r = lb_mat.get_nz_r();
     int nz_r_act = lb_mat.get_nz_r_act();
 
-    //printf("nz_c to update : %i, nz_r to update : %i, nz_r_act to update : %i\n", nz_c, nz_r, nz_r_act);
     
     //Updating lambda_node_col
     int i;
-    //int time = 0;
-    //long tic_per_sec = sysconf(_SC_CLK_TCK);
     #pragma omp parallel for schedule(dynamic), default(shared), num_threads(NUM_THREADS), private(col0, col1, row1, sens)
     for(i = 0; i< nz_c; ++i)
     {
@@ -777,18 +769,13 @@ void problem_apurva :: update_lambda(double step)
 
         if(sens == 1)
         {
-            //struct tms start, end;
-        	//int tic1_tmp = times(&start);
             lb_mat.add_node_col(col0, col1, row1, step);
-            //int tic2_tmp = times(&end);
-            //time += (tic2_tmp - (double)tic1_tmp);
         }
         else
         {
             lb_mat.sub_node_col(col0, col1, row1, step);
         }
     }
-    //cout << "Add node col: " << time / (double)tic_per_sec << endl;
     //Updating lambda_node_row
     #pragma omp parallel for schedule(dynamic), default(shared), num_threads(NUM_THREADS), private(row0, col1, row1, sens)
     for(i = 0; i< nz_r; ++i)
@@ -860,43 +847,18 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
     	tic1 = times(&start);
 
         ++iter;
-        //int tic1_tmp = times(&start);
         dp.fill(g,lb_mat,lo,up);
-    	//int tic2_tmp = times(&end);
-    	//cout << "Fill: " << ((double)tic2_tmp - (double)tic1_tmp) / (double)tic_per_sec << endl;
 
-    	//tic1_tmp = times(&start);
         double current_lb(dp.solve_w_gapcosts(g,solution,lb_mat,lo,up));
-    	//tic2_tmp = times(&end);
-    	//cout << "Global: " << ((double)tic2_tmp - (double)tic1_tmp) / (double)tic_per_sec << endl;
 
-    	//tic1_tmp = times(&start);
         double current_ub(get_correct_value(solution));
-    	//tic2_tmp = times(&end);
-    	//cout << "Get feasible: " << ((double)tic2_tmp - (double)tic1_tmp) / (double)tic_per_sec << endl;
 
-    	//tic1_tmp = times(&start);
         int sub_gr_norm(get_nz_sub_gr(solution));
-    	//int tic2_tmp = times(&end);
-    	//cout << "Here: " << ((double)tic2_tmp - (double)tic1_tmp) / (double)tic_per_sec << endl;
 
 
 		double ub_score = -2*current_lb/(self1+self2);
 		double lb_score = 2*max(0.0,-current_ub)/(self1+self2);
-		//double L = sqrt(g.get_nb_col()*g.get_nb_row());
-		//double m_L = 7.9494 + 0.70852*L + 2.5895*0.0001*L*L - 1.9156*0.000001*L*L*L;
-		//double z_ub = (-current_lb - m_L)/(0.5*m_L);
-		//double z_lb = (max(0.0,-current_ub) - m_L)/(0.5*m_L);
-    	if(ub > current_ub)
-    	{
-       		//printf ("Iteration %2i: lower / upper: %10f / %10f  |  %1.3f / %1.3f  |  %1.3f / %1.3f  %1.6f [%i, %i, %i](*)\n", iter, -current_ub, -current_lb, z_lb, z_ub, lb_score, ub_score, ub_score-lb_score, lb_mat.get_nz_c(), lb_mat.get_nz_r(), lb_mat.get_nz_r_act());
-       		//printf ("Iteration %2i: lower / upper: %10f / %10f  |  %1.3f / %1.3f  %1.6f [%i, %i, %i](*)\n", iter, -current_ub, -current_lb, lb_score, ub_score, ub_score-lb_score, lb_mat.get_nz_c(), lb_mat.get_nz_r(), lb_mat.get_nz_r_act());
-    	}
-    	else
-    	{
-    		//printf ("Iteration %2i: lower / upper: %10f / %10f  |  %1.3f / %1.3f  |  %1.3f / %1.3f  %1.6f [%i, %i, %i]\n", iter, -current_ub, -current_lb, z_lb, z_ub, lb_score, ub_score, ub_score-lb_score, lb_mat.get_nz_c(), lb_mat.get_nz_r(), lb_mat.get_nz_r_act());
-    		//printf ("Iteration %2i: lower / upper: %10f / %10f  |  %1.3f / %1.3f  %1.6f [%i, %i, %i]\n", iter, -current_ub, -current_lb, lb_score, ub_score, ub_score-lb_score, lb_mat.get_nz_c(), lb_mat.get_nz_r(), lb_mat.get_nz_r_act());
-    	}
+    	
 
     	tic2 = times(&end);
     	solve_time += ((double)tic2 - (double)tic1) / (double)tic_per_sec;
@@ -988,18 +950,12 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 		else
 		{
 		    step = gamma * (current_ub - lb) / sub_gr_norm;
-		    //cout << "current UB-LB="<< current_ub-lb << endl;
-		    //cout << "sub_gr_norm=" << sub_gr_norm << endl;
-		    //cout << "step=" << step << endl;
 		    if(step <= 0.)
 		    {
 			cout << "Error in step value (negative step are not allowed)\n";
 			status = APPROXIMATE;
 		    }
-		    //int tic1_tmp = times(&start);
 		    update_lambda(step);
-			//int tic2_tmp = times(&end);
-			//cout << "Update lambda: " << ((double)tic2_tmp - (double)tic1_tmp) / (double)tic_per_sec << endl;
 		}
 	}
 	cout << "UB-LB=" << ub - lb << endl;
@@ -1116,17 +1072,7 @@ void problem_apurva :: split(int * lo1, int * up1, int * lo2, int * up2)
     int black[nb_col][nb_row];
     int white[nb_col][nb_row];
     
-    /*
-    for(int col(0); col != nb_col; ++col)
-    {
-        for(int row(0); row != nb_row; ++row)
-        {
-            black[col][row] = 0;
-            white[col][row] = 0;
-        }
-    }
-    */
-    
+   
     /*****************************************
     * Step 1 - find the best splitting point *
     *****************************************/
