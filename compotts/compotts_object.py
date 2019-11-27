@@ -14,7 +14,7 @@ from compotts.manage_positions import *
 
 class ComPotts_Object:
 
-    def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=0, pc_count=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, hhblits_database=None, min_sequences=1, retry_hhblits_with_memory_limit_if_fail=False, **kwargs):
+    def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, a3m_cutoff_index=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=0, pc_count=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, hhblits_database=None, min_sequences=1, retry_hhblits_with_memory_limit_if_fail=False, **kwargs):
 
         self.folder = input_folder
 
@@ -117,12 +117,18 @@ class ComPotts_Object:
                 else:
                     call_hhblits(self.sequence_file, self.a3m_file, hhblits_database, retry_hhblits_with_memory_limit_if_fail=False, **kwargs)
 
- 
+           
             # REFORMAT A3M_FILE
             if (self.a3m_file is not None) and (self.a3m_reformat is None) and (self.aln_fasta is None):
                 self.a3m_reformat = self.get_folder()/(self.name+"_reformat.fasta")
                 call_reformat(self.a3m_file, self.a3m_reformat)
                 self.aln_fasta = self.a3m_reformat
+
+
+            # IF WE HAVE A CUTOFF INDEX FOR THE A3M_FILE
+            self.a3m_cutoff_index = a3m_cutoff_index
+            if self.a3m_cutoff_index is not None:
+                fm.create_fasta_file_with_less_sequences(self.a3m_reformat, self.a3m_reformat, a3m_cutoff_index)
 
 
             # FILTER
