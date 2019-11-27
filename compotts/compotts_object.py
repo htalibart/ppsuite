@@ -11,7 +11,7 @@ from basic_modules.potts_model import *
 from compotts.rescaling import *
 from compotts.align_msas import *
 from compotts.manage_positions import *
-from compotts.find_a3m_cutoff_index import *
+from compotts.find_cutoff_index import *
 
 class ComPotts_Object:
 
