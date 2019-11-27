@@ -22,7 +22,7 @@ class ComPotts_Object:
         # MRF
         self.potts_model_file = potts_model_file
         if (self.potts_model_file is None) and (input_folder is not None):
-            self.potts_model_file = fm.get_potts_model_file_from_folder(input_folder)
+            self.potts_model_file = fm.get_potts_model_file_from_folder(input_folder, mrf_type=mrf_type)
         if mrf is not None:
             self.mrf = mrf
         else:

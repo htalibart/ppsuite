@@ -92,8 +92,13 @@ def get_file_from_folder_ending_with_extension(folder, extension):
     else:
         return None
 
-def get_potts_model_file_from_folder(folder):
-   return get_file_from_folder_ending_with_extension(folder, ".mrf")
+def get_potts_model_file_from_folder(folder, mrf_type="standard"):
+    if mrf_type is not None:
+        p = get_file_from_folder_ending_with_extension(folder, "_"+mrf_type+".mrf")
+        if p is not None:
+            return p
+    else:
+        return get_file_from_folder_ending_with_extension(folder, ".mrf")
 
 def get_sequence_file_from_folder(folder):
    return get_file_from_folder_ending_with_extension(folder, ".fasta")
