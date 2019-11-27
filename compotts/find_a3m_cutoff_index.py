@@ -2,12 +2,13 @@ import csv
 import numpy as np
 import pandas as pd
 from kneebow.rotor import Rotor
+import pathlib
 
-
-def find_a3m_cutoff_index(a3m_file, hhr_file, prettier_hhr_file_output=None):
+def find_a3m_cutoff_index(hhr_file, prettier_hhr_file_output=None):
 
     if prettier_hhr_file_output is None:
-        prettier_hhr_file_output = '.'.join(hhr_file.split('.')[:-1])+"_hhr.csv"
+        hhr_file_name = str(hhr_file)
+        prettier_hhr_file_output = pathlib.Path('.'.join(hhr_file_name.split('.')[:-1])+"_hhr.csv")
 
     # Reading .hhr file
     with open(hhr_file, 'r') as f:

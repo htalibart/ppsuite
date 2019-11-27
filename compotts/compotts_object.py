@@ -11,10 +11,11 @@ from basic_modules.potts_model import *
 from compotts.rescaling import *
 from compotts.align_msas import *
 from compotts.manage_positions import *
+from compotts.find_a3m_cutoff_index import *
 
 class ComPotts_Object:
 
-    def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, a3m_cutoff_index=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=0, pc_count=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, hhblits_database=None, min_sequences=1, retry_hhblits_with_memory_limit_if_fail=False, **kwargs):
+    def __init__(self, mrf=None, potts_model_file=None, name=None, sequence_file=None, aln_fasta=None, a3m_file=None, input_folder=None, compute_a3m_cutoff=False, a3m_cutoff_index=None, nb_sequences=1000, use_less_sequences=True, hhfilter_threshold=80, perform_filter=True, trimal_gt=0.8, trimal_cons=0, pc_count=1000, reg_lambda_pair_factor=30, trim_alignment=True, rescaling_function="identity", use_w=True, mrf_type=None, hhblits_database=None, min_sequences=1, retry_hhblits_with_memory_limit_if_fail=False, **kwargs):
 
         self.folder = input_folder
 
@@ -55,11 +56,11 @@ class ComPotts_Object:
             if trim_alignment:
                 self.trimmed_aln = fm.get_file_from_folder_ending_with_extension(self.get_folder(), "_trim_"+str(int(trimal_gt*100))+".fasta")
             if self.aln_fasta is None:
-                if self.trimmed_aln is not None:
+                if trim_alignment and (self.trimmed_aln is not None):
                     self.aln_fasta = self.trimmed_aln
-                elif self.less is not None:
+                elif use_less_sequences and (self.less is not None):
                     self.aln_fasta = self.less
-                elif self.filtered is not None:
+                elif perform_filter and (self.filtered is not None):
                     self.aln_fasta = self.filtered
                 elif self.a3m_reformat is not None:
                     self.aln_fasta = self.a3m_reformat
@@ -125,9 +126,17 @@ class ComPotts_Object:
                 self.aln_fasta = self.a3m_reformat
 
 
+            # IF WE WANT TO COMPUTE THE A3M CUTOFF INDEX
+            if compute_a3m_cutoff:
+                self.hhr_file = fm.get_file_from_folder_ending_with_extension(self.get_folder(), ".hhr")
+                if self.hhr_file is None:
+                    raise Exception("Need a .hhr file !")
+                else:
+                    a3m_cutoff_index = find_a3m_cutoff_index(self.hhr_file) 
+
+
             # IF WE HAVE A CUTOFF INDEX FOR THE A3M_FILE
-            self.a3m_cutoff_index = a3m_cutoff_index
-            if self.a3m_cutoff_index is not None:
+            if a3m_cutoff_index is not None:
                 fm.create_fasta_file_with_less_sequences(self.a3m_reformat, self.a3m_reformat, a3m_cutoff_index)
 
 
