@@ -12,7 +12,7 @@ from basic_modules.potts_model import *
 from compotts.rescaling import *
 from compotts.align_msas import *
 from compotts.manage_positions import *
-from compotts.find_cutoff_index import *
+from basic_modules.find_cutoff_index import *
 
 class ComPotts_Object:
 
@@ -21,11 +21,12 @@ class ComPotts_Object:
         self.folder = input_folder
         self.mrf = mrf
         self.colnumbering_file = None
+        self.a3m_file = None
 
         # POTTS MODEL
         self.potts_model_file = potts_model_file
         if (self.potts_model_file is None) and (input_folder is not None):
-            self.potts_model_file = fm.get_potts_model_file_from_folder(input_folder, mrf_type=mrf_type)
+            self.potts_model_file = fm.get_potts_model_file_from_folder(input_folder)
         if mrf is not None:
             self.mrf = mrf
         else:
@@ -40,7 +41,6 @@ class ComPotts_Object:
             self.sequence_file = fm.get_sequence_file_from_folder(input_folder)
         else:
             self.sequence_file = None
-        
 
         # EXISTING TRAINING SET ?
         self.training_set = None
@@ -98,7 +98,7 @@ class ComPotts_Object:
             if aln_fasta is not None:
                 self.training_set = aln_fasta
 
-            elif (mrf is None): # AND WE NEED ONE
+            elif (self.mrf is None): # AND WE NEED ONE
 
                 if (self.mrf_type=="standard"):
 
@@ -171,7 +171,8 @@ class ComPotts_Object:
                 else:
                     raise Exception("Unknown MRF training type")
 
-            shutil.copy(str(self.training_set), str(self.get_folder()/(self.name+"_training_set.fasta")))
+            if self.training_set is not None:
+                shutil.copy(str(self.training_set), str(self.get_folder()/(self.name+"_training_set.fasta")))
 
 
         if (self.mrf is None): # WE NEED TO TRAIN AN MRF
@@ -273,7 +274,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-p', '--potts_model_file', help="Potts model", type=pathlib.Path)
     parser.add_argument('-s', '--sequence_file', help="Sequence file", type=pathlib.Path)
     parser.add_argument('-f', '--input_folder', help="Folder containing files for sequence", type=pathlib.Path)
-    parser.add_argument('-m', '--mrf_type', help="Mode", choices=('standard', 'one_hot', 'one_submat'), default='standard')
+    parser.add_argument('-m', '--mrf_type', help="Mode", choices=('standard', 'one_hot', 'one_submat'), default=None)
     parser.add_argument('-aln', '--aln_fasta', help="Alignment file in fasta format", type=pathlib.Path)
     parser.add_argument('-a3m', '--a3m_file', help="HH-blits .a3m output file", type=pathlib.Path)
     parser.add_argument('-blastf', '--blast_fasta', help="BLAST fasta alignment output file", type=pathlib.Path) # TODO BLAST FASTA -> MUSCLE

@@ -22,6 +22,15 @@ def get_elbow_no(df, column_name='E-value'):
     return elbow_no
 
 
+def list_can_be_cast_to_float(l):
+    can = True
+    for x in l:
+        try:
+            float(x)
+        except ValueError:
+            can = False
+    return can
+
 
 def find_hhblits_cutoff_index(hhr_file, prettier_hhr_file_output=None):
 
@@ -46,9 +55,7 @@ def find_hhblits_cutoff_index(hhr_file, prettier_hhr_file_output=None):
     for line in interesting_lines:
         splitrow = line.split(' ')
         splitrow = list(filter(None, splitrow))
-        try:
-            float(splitrow[2])
-        except ValueError:
+        while not list_can_be_cast_to_float(splitrow[2:-3]):
             splitrow[1]+=splitrow[2]
             del splitrow[2]
         row = splitrow[:6]
