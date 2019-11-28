@@ -1,7 +1,11 @@
+import tempfile
+import shutil
 import numpy as np
 
-from Bio import pairwise2
+from Bio import pairwise2, AlignIO
 
+from basic_modules.tool_wrapper import *
+from basic_modules import files_management as fm
 from basic_modules.global_variables import ALPHABET
 q = len(ALPHABET)
 
@@ -53,20 +57,19 @@ def is_gap_column(i, msa):
 
 def get_trimmed_sequence_for_msa(msa_file, seq):
     """ retourne la séquence @seq taillée pour qu'elle rentre dans le MSA @msa_file : on enlève toutes les positions insérées """
-    temp_folder = create_folder("temp_trimming_folder_"+seq)
-    ungapped_seq = re.sub('-','',seq) # la séquence sert de nom pour les fichiers, pour éviter les conflits
-    tempseq_file = temp_folder+ungapped_seq+".fasta"
-    seq_name = create_seq_fasta(seq, tempseq_file)
-    combined_aln_file = temp_folder+ungapped_seq+"_aln.fasta"
-    os.system("muscle -profile -in1 "+msa_file+" -in2 "+tempseq_file+" -out "+combined_aln_file+" -gapopen -0.1")
-    comb_msa = AlignIO.read(combined_aln_file, "fasta")
+    temp_folder = pathlib.Path(tempfile.mkdtemp())
+    tempseq_file = temp_folder/("seq.fasta")
+    seq_name = fm.create_seq_fasta(seq, tempseq_file)
+    combined_aln_file = temp_folder/"aln.fasta"
+    call_muscle_profile(msa_file,tempseq_file,combined_aln_file)
+    comb_msa = AlignIO.read(str(combined_aln_file), "fasta")
     new = comb_msa[len(comb_msa)-1].seq
     trimmed=""
     n = len(comb_msa[0].seq)
     for i in range(n):
         if not is_gap_column(i, comb_msa[0:len(comb_msa)-1]): # si pas insertion
             trimmed+=new[i]
-    os.system("rm -r "+temp_folder)
+    shutil.rmtree(temp_folder)
     return trimmed
 
 

@@ -2,6 +2,7 @@ import argparse
 import sys
 import time
 import pathlib
+import subprocess
 
 from compotts.call_compotts import *
 from compotts.manage_positions import *
@@ -136,7 +137,9 @@ def main(args=sys.argv[1:]):
             output_msa = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_training_sets.fasta")
             get_msas_aligned(aligned_positions, [o.training_set for o in compotts_objects], output_msa)
             if args["call_aliview"]:
-                os.system("aliview "+str(output_msa))
+                cmd = "aliview "+str(output_msa)
+                subprocess.Popen(cmd, shell=True).wait()
+
             
         # ALIGN SEQUENCES
         if all((o.sequence is not None) for o in compotts_objects) and args["get_sequences_fasta_aln"]:
