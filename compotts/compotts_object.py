@@ -16,12 +16,19 @@ from basic_modules.find_cutoff_index import *
 
 class ComPotts_Object:
 
-    def __init__(self, mrf=None, potts_model_file=None, input_folder=None, mrf_type=None, sequence_file=None, aln_fasta=None, sequences_fetcher='hhblits', a3m_file=None, name=None, hhblits_database=None, blast_fasta=None, use_evalue_cutoff = False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, pc_count=None, reg_lambda_pair_factor=30, rescaling_function="identity", **kwargs):
+    def __init__(self, mrf=None, potts_model_file=None, input_folder=None, mrf_type=None, sequence_file=None, aln_fasta=None, sequences_fetcher='hhblits', a3m_file=None, name=None, hhblits_database=None, blast_fasta=None, use_evalue_cutoff = False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=None, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, pc_count=None, reg_lambda_pair_factor=30, rescaling_function="identity", **kwargs):
 
         self.folder = input_folder
         self.mrf = mrf
         self.colnumbering_file = None
         self.a3m_file = None
+
+        # USE LESS SEQUENCES ?
+        if use_less_sequences is None:
+            if use_evalue_cutoff:
+                use_less_sequences=False
+            else:
+                use_less_sequences=True
 
         # POTTS MODEL
         self.potts_model_file = potts_model_file
@@ -294,7 +301,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-hht', '--hhfilter_threshold', help="hhfilter_threshold", default=80, type=float)
     
     # use less sequences
-    parser.add_argument('--dont_use_less_sequences', help="Don't limit the number of sequences in the training set (default = limit to 1000)", default=False, action='store_true')
+    parser.add_argument('--use_less_sequences', help="Limit the number of sequences in the training set (default = limit to 1000, except if we use E-value cutoff)", default=None, action='store_true')
     parser.add_argument('-nmax', '--max_nb_sequences', help="Max number of sequences in the MRF training alignment", default=1000, type=int)
     parser.add_argument('-nmin', '--min_nb_sequences', help="Min number of sequences in the MRF training alignment (raises an Exception if nb sequences in the training set < nmin)", default=1, type=int)
 
@@ -312,7 +319,6 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--rescaling_function', help="Rescaling function for the inferred Potts model (default : none (identity))", default="identity")
 
     args = vars(parser.parse_args(args))
-    args["use_less_sequences"] = not args["dont_use_less_sequences"]
     args["trim_alignment"] = not args["dont_trim_alignment"]
     args["filter_alignment"] = not args["dont_filter_alignment"]
 
