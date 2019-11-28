@@ -1,31 +1,37 @@
 import unittest
 import shutil, tempfile
 import pathlib
+import pkg_resources
+
+from tests.resources_manager import *
+
 from compotts.compotts_object import *
 
-import pkg_resources
-EXAMPLES_FOLDER = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/test_compotts_object/'))
 
 class Test_ComPotts_Object(unittest.TestCase):
 
-    def setUp(self):
-        FOLDER = EXAMPLES_FOLDER
-        PROTEIN_NAME = "1cc8"
-        self.a3m_file = FOLDER/(PROTEIN_NAME+".a3m")
-        self.seq_file = FOLDER/(PROTEIN_NAME+".fasta")
-        self.output_folder = pathlib.Path(tempfile.mkdtemp())
+    def test_from_mrf(self):
+        co = ComPotts_Object(potts_model_file=MRF_1CC8)
 
-    def tearDown(self):
-        shutil.rmtree(self.output_folder)
+    def test_from_folder_with_everything(self):
+        input_folder_name = '/tmp/'+next(tempfile._get_candidate_names())
+        input_folder = pathlib.Path(input_folder_name)
+        shutil.copytree(RESOURCES_1CC8_EVERYTHING_FOLDER, input_folder)
+        co = ComPotts_Object(input_folder=input_folder)
+        shutil.rmtree(input_folder)
 
-    def test_import_hhblits(self):
-        obj = ComPotts_Object(sequence_file=self.seq_file, a3m_file=self.a3m_file, input_folder=self.output_folder, nb_sequences=100)
+    def test_from_nothing_with_seq_and_a3m(self):
+        input_folder = pathlib.Path(tempfile.mkdtemp())
+        co = ComPotts_Object(seq_file=SEQ_1CC8, a3m_file=A3M_1CC8, input_folder=input_folder)
+        shutil.rmtree(co.folder)
 
-    def test_to_one_hot(self):
-        obj = ComPotts_Object(sequence_file=self.seq_file, input_folder=self.output_folder)
+    def test_from_folder_with_seq_and_a3m(self):
+        input_folder = pathlib.Path(tempfile.mkdtemp())
+        shutil.copy(SEQ_1CC8, input_folder)
+        shutil.copy(A3M_1CC8, input_folder)
+        co = ComPotts_Object(input_folder=input_folder)
+        shutil.rmtree(input_folder)
 
-    def test_rescale_compotts_object(self):
-        obj = ComPotts_Object(sequence_file=self.seq_file, a3m_file=self.a3m_file, input_folder=self.output_folder, nb_sequences=100, rescaling_function="original_rescaling")
 
 
 if __name__=='__main__':

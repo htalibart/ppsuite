@@ -1,0 +1,6 @@
+tests_output/
+__pycache__/
+output_compotts/
+VAPotts.egg-info/
+build/
+dist/

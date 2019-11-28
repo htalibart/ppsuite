@@ -62,7 +62,8 @@ def get_nb_sequences_in_fasta_file(fasta_file):
 
 
 def create_fasta_file_with_less_sequences(aln_file, aln_1000, nb_sequences=1000):
-    AlignIO.write(AlignIO.read(str(aln_file), "fasta")[:nb_sequences], open(str(aln_1000), 'w'), "fasta")
+    with open(str(aln_1000), 'w') as f:
+        AlignIO.write(AlignIO.read(str(aln_file), "fasta")[:nb_sequences], f, "fasta")
 
 
 def get_seq_names_from_seq_folder(seq_folder):

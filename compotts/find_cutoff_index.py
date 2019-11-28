@@ -23,7 +23,7 @@ def get_elbow_no(df, column_name='E-value'):
 
 
 
-def find_a3m_cutoff_index(hhr_file, prettier_hhr_file_output=None):
+def find_hhblits_cutoff_index(hhr_file, prettier_hhr_file_output=None):
 
     if prettier_hhr_file_output is None:
         hhr_file_name = str(hhr_file)

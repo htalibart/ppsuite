@@ -53,6 +53,8 @@ class Potts_Model:
             w[j, i, :, :] = mat.T
         if 'name' not in kwargs:
             kwargs['name'] = str(binary_file).replace('/','-')
+            if kwargs['name'].startswith('-'):
+                kwargs['name'] = kwargs['name'][1:]
         mrf = cls(v, w, **kwargs)
         mrf.binary_file = binary_file
         return mrf
@@ -136,6 +138,9 @@ class Potts_Model:
         mrf = cls(v, w, **kwargs)
         if 'seq_file' in kwargs:
             mrf.training_set = kwargs['seq_file']
+        if 'filename' in kwargs:
+            if kwargs['filename'] is not None:
+                mrf.to_msgpack(kwargs['filename'])
         return mrf
 
 
