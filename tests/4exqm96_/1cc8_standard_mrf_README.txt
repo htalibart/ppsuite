@@ -1,1 +1,0 @@
-"ccmpred /home/jtalibar/Documents/vapotts/tests/1cc8/1cc8_trim_80.fasta -b /home/jtalibar/Documents/vapotts/tests/1cc8/1cc8_standard.mrf --pc-count 1000 --reg-lambda-pair-factor 30"

@@ -12,6 +12,7 @@ class Test_ComPotts_Object(unittest.TestCase):
 
     def test_from_mrf(self):
         co = ComPotts_Object(potts_model_file=MRF_1CC8)
+        shutil.rmtree(co.folder)
 
     def test_from_folder_with_everything(self):
         input_folder_name = '/tmp/'+next(tempfile._get_candidate_names())
