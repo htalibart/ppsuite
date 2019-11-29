@@ -6,12 +6,15 @@ from basic_modules.global_variables import ALPHABET
 from basic_modules.util import *
 from basic_modules.potts_model import *
 
+
 def get_reordered_v(v, alphabet):
+    """ reorders all vi for a given alphabet """
     idx = [ALPHABET.find(a) for a in alphabet]
     return v[:,idx]
 
 
 def get_reordered_wij(wij, alphabet):
+    """ reorders all wij for a given alphabet """
     idx = [ALPHABET.find(a) for a in alphabet]
     new_wij = np.zeros_like(wij)
     for i in range(len(alphabet)):
@@ -20,16 +23,17 @@ def get_reordered_wij(wij, alphabet):
     return new_wij
 
 
-def plot_heatmap(v_scores, center=0, show_figure=True, **kwargs):
+def plot_heatmap(matrix, center=0, show_figure=True, **kwargs):
+    """ plots a heatmap with seaborn """
     plt.figure()
-    sns.heatmap(np.transpose(v_scores), cmap="RdBu", center=center, **kwargs)
+    sns.heatmap(matrix, cmap="RdBu", center=center, **kwargs)
     plt.tick_params(labelsize='xx-small')
     if show_figure:
         plt.show()
 
 
 def visualize_parameters(v, v_norm, w_norm, name, alphabet=ALPHABET, start_at_1=True, show_figure=True):
-    """ affiche les paramètres v, ||v|| et ||w|| """
+    """ displays v, ||v|| and ||w|| """
     tick_space = 3
     xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
 
@@ -53,7 +57,8 @@ def visualize_parameters(v, v_norm, w_norm, name, alphabet=ALPHABET, start_at_1=
 
 
 def visualize_mrf(mrf, alphabet=ALPHABET, start_at_1=True, show_figure=True):
-    visualize_parameters(mrf.v, mrf.get_v_norms(), mrf.get_w_norms(), mrf.name, alphabet, start_at_1, show_figure)
+    """ displays MRF parameters """
+    visualize_parameters(mrf.v, mrf.get_v_norms(), mrf.get_w_norms(), mrf.name, alphabet=alphabet, start_at_1=start_at_1, show_figure=show_figure)
 
 
 def visualize_mrf_from_msgpack(msgpack_file, alphabet=ALPHABET, start_at_1=True, show_figure=True):
@@ -62,7 +67,6 @@ def visualize_mrf_from_msgpack(msgpack_file, alphabet=ALPHABET, start_at_1=True,
 
 
 def visualize_mrf_difference(mrf1, mrf2, alphabet=ALPHABET, start_at_1=True, show_figure=True):
-    """ visualiser la différence entre deux MRFs """
     v_diff = mrf1.v-mrf2.v
     v_norm_diff = [euclidean_norm(mrf1.v[i])-euclidean_norm(mrf2.v[i]) for i in range(mrf1.ncol)]
     w_norm = mrf1.get_w_norms()-mrf2.get_w_norms()
@@ -75,7 +79,7 @@ def visualize_mrf_difference(mrf1, mrf2, alphabet=ALPHABET, start_at_1=True, sho
 
 
 def visualize_one_sequence(mrf, sequence, show_figure=True):
-    """ afficher les paramètres v_i_a et w_ij_ab du mrf pour les a et b correspondant à la séquence """
+    """ visualization of parameters v_i_a and w_ij_ab of Potts model @mrf for a and b in sequence @sequence """
     xticklabels = [s for s in sequence]
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,6]})
     v_seq = [mrf.v[i,code(sequence[i])] for i in range(len(sequence))]
@@ -90,7 +94,6 @@ def visualize_one_sequence(mrf, sequence, show_figure=True):
     plt.draw()
     if show_figure:
         plt.show()
-
 
 
 def visualize_v_alignment_from_files(mrf_files, aln_res_file, **kwargs):
