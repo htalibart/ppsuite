@@ -132,7 +132,7 @@ class ComPotts_Object:
                             if hhr_file is not None:
                                 self.hhr_file = hhr_file
                             else:
-                                self.hhr_file = fm.get_file_from_folder_ending_with_extension(self.folder(), ".hhr")
+                                self.hhr_file = fm.get_file_from_folder_ending_with_extension(self.get_folder(), ".hhr")
                             if self.hhr_file is None:
                                 raise Exception("Need a .hhr file !")
                             else:
@@ -141,7 +141,7 @@ class ComPotts_Object:
                             if blast_xml is not None:
                                 self.blast_xml = blast_xml
                             else:
-                                self.blast_xml = fm.get_file_from_folder_ending_with_extension(self.folder(), "_blast.xml")
+                                self.blast_xml = fm.get_file_from_folder_ending_with_extension(self.get_folder(), "_blast.xml")
                             if self.blast_xml is None:
                                 raise Exception("Need a BLAST XML output file !")
                             else:
