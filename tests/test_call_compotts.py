@@ -4,13 +4,13 @@ import os
 import pathlib
 import numpy as np
 
-from compotts.compotts_object import *
+from comfeature.comfeature import *
 from compotts.call_compotts import *
 
 import pkg_resources
 from tests.resources_manager import *
 
-import basic_modules.create_fake_data as crfake
+import comutils.create_fake_data as crfake
 
 
 def are_templates_aligned(template2, aligned_positions):
@@ -30,14 +30,14 @@ class Test_Call_ComPotts(unittest.TestCase):
 
     def setUp(self):
         self.output_folder = pathlib.Path(tempfile.mkdtemp())
-        self.input_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
-        shutil.copytree(RESOURCES_1CC8_EVERYTHING_FOLDER, self.input_folder)
-        self.object = ComPotts_Object(input_folder=self.input_folder)
-        self.mrf = self.object.mrf
+        self.feature_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
+        shutil.copytree(FEATURE_FOLDER, self.feature_folder)
+        self.object = ComFeature.from_folder(feature_folder=self.feature_folder)
+        self.potts_model = self.object.potts_model
 
     def tearDown(self):
         shutil.rmtree(self.output_folder)
-        shutil.rmtree(self.input_folder)
+        shutil.rmtree(self.feature_folder)
 
     def test_align_compotts_object_to_itself(self):
         aligned_positions, infos_solver = align_two_objects([self.object, self.object], self.output_folder)
@@ -71,9 +71,9 @@ class Test_Call_ComPotts(unittest.TestCase):
             self.assertTrue(np.array_equal(identity(x), x))
 
     def test_get_edges_map(self):
-        edges_map = get_edges_map(self.mrf, "none")
-        self.assertEqual(edges_map.shape, self.mrf.w.shape[0:2])
-        self.assertEqual(sum([abs(edges_map[i][i]) for i in range(self.mrf.ncol)]), 0)
+        edges_map = get_edges_map(self.potts_model, "none")
+        self.assertEqual(edges_map.shape, self.potts_model.w.shape[0:2])
+        self.assertEqual(sum([abs(edges_map[i][i]) for i in range(self.potts_model.ncol)]), 0)
 
     def test_count_edges(self):
         self.assertEqual(count_edges(np.ones((3,3))),9)
@@ -81,14 +81,14 @@ class Test_Call_ComPotts(unittest.TestCase):
 
 
     def test_rescale_mrf(self):
-        resc_mrf = get_rescaled_mrf(self.mrf, "original_rescaling")
-        self.assertEqual(self.mrf.v.shape,resc_mrf.v.shape)
-        self.assertEqual(self.mrf.w.shape,resc_mrf.w.shape)
-        self.assertEqual(self.mrf.ncol, resc_mrf.ncol)
+        resc_mrf = get_rescaled_potts_model(self.potts_model, "original_rescaling")
+        self.assertEqual(self.potts_model.v.shape,resc_mrf.v.shape)
+        self.assertEqual(self.potts_model.w.shape,resc_mrf.w.shape)
+        self.assertEqual(self.potts_model.ncol, resc_mrf.ncol)
 
 
     def test_align_rescaled_mrf_to_itself(self):
-        resc_mrf = get_rescaled_mrf(self.mrf, "original_rescaling")
+        resc_mrf = get_rescaled_potts_model(self.potts_model, "original_rescaling")
         aligned_positions, infos_solver = align_two_potts_models([resc_mrf, resc_mrf], self.output_folder)
         similarity_global = infos_solver["similarity_global"]
 

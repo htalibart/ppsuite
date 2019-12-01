@@ -136,6 +136,258 @@
     </Hsp>
   </Hit_hsps>
 </Hit>
+<Hit>
+  <Hit_num>5</Hit_num>
+  <Hit_id>tr|D8TTR0|D8TTR0_VOLCA</Hit_id>
+  <Hit_def>Thioredoxin OS=Volvox carteri f. nagariensis OX=3068 GN=VOLCADRAFT_120809 PE=3 SV=1</Hit_def>
+  <Hit_accession>D8TTR0</Hit_accession>
+  <Hit_len>126</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>225.713</Hsp_bit-score>
+      <Hsp_score>574</Hsp_score>
+      <Hsp_evalue>5.06812e-74</Hsp_evalue>
+      <Hsp_query-from>19</Hsp_query-from>
+      <Hsp_query-to>140</Hsp_query-to>
+      <Hsp_hit-from>5</Hsp_hit-from>
+      <Hsp_hit-to>126</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>108</Hsp_identity>
+      <Hsp_positive>115</Hsp_positive>
+      <Hsp_gaps>0</Hsp_gaps>
+      <Hsp_align-len>122</Hsp_align-len>
+      <Hsp_qseq>PAFARAAPRRSVVVRAEAGAVNDDTFKNVVLESSVPVLVDFWAPWCGPCRIIAPVVDEIAGEYKDKLKCVKLNTDESPNVASEYGIRSIPTIMVFKGGKKCETIIGAVPKATIVQTVEKYLN</Hsp_qseq>
+      <Hsp_hseq>PTFSRAAPRRAVLVRAEAGAANDDTFKSVVLESKVPVLVDFWAPWCGPCRIIAPVVDEIAKEFTGKLKCVKINTDESPNVASEFGIRSIPTIMVFKGGKKCETIIGAVPKATIVQTVEKYLG</Hsp_hseq>
+      <Hsp_midline>P F+RAAPRR+V+VRAEAGA NDDTFK+VVLES VPVLVDFWAPWCGPCRIIAPVVDEIA E+  KLKCVK+NTDESPNVASE+GIRSIPTIMVFKGGKKCETIIGAVPKATIVQTVEKYL </Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>6</Hit_num>
+  <Hit_id>tr|A0A383VPF8|A0A383VPF8_TETOB</Hit_id>
+  <Hit_def>Uncharacterized protein OS=Tetradesmus obliquus OX=3088 GN=BQ4739_LOCUS7117 PE=4 SV=1</Hit_def>
+  <Hit_accession>A0A383VPF8</Hit_accession>
+  <Hit_len>146</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>191.045</Hsp_bit-score>
+      <Hsp_score>484</Hsp_score>
+      <Hsp_evalue>4.86432e-60</Hsp_evalue>
+      <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>139</Hsp_query-to>
+      <Hsp_hit-from>1</Hsp_hit-from>
+      <Hsp_hit-to>146</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>95</Hsp_identity>
+      <Hsp_positive>116</Hsp_positive>
+      <Hsp_gaps>9</Hsp_gaps>
+      <Hsp_align-len>147</Hsp_align-len>
+      <Hsp_qseq>MALVARRAAVPSARSSARPAFARAAPR-----RSVVVRA---EAGAVNDDTFKNVVLESSVPVLVDFWAPWCGPCRIIAPVVDEIAGEYKDKLKCVKLNTDESPNVASEYGIRSIPTIMVFKGGKKCETIIGAVPKATIVQTVEKYL</Hsp_qseq>
+      <Hsp_hseq>MAL-AQRTLRSSCASTGRPAAFSAAPRPVVQRRALLCRSAGVTAGPVTDDTFKELVLDSSVPVMVDFWAPWCGPCRMIAPLIDELASEYSGKMVCFKLNTDESPGVATEYGIRSIPTVMIFKGGKKMETIIGAVPKASLVQSLEKYL</Hsp_hseq>
+      <Hsp_midline>MAL A+R    S  S+ RPA   AAPR     R+++ R+    AG V DDTFK +VL+SSVPV+VDFWAPWCGPCR+IAP++DE+A EY  K+ C KLNTDESP VA+EYGIRSIPT+M+FKGGKK ETIIGAVPKA++VQ++EKYL</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>7</Hit_num>
+  <Hit_id>tr|A0A2V0NXN0|A0A2V0NXN0_9CHLO</Hit_id>
+  <Hit_def>Uncharacterized protein OS=Raphidocelis subcapitata OX=307507 GN=Rsub_05586 PE=4 SV=1</Hit_def>
+  <Hit_accession>A0A2V0NXN0</Hit_accession>
+  <Hit_len>150</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>181.03</Hsp_bit-score>
+      <Hsp_score>458</Hsp_score>
+      <Hsp_evalue>4.59286e-56</Hsp_evalue>
+      <Hsp_query-from>10</Hsp_query-from>
+      <Hsp_query-to>139</Hsp_query-to>
+      <Hsp_hit-from>29</Hsp_hit-from>
+      <Hsp_hit-to>150</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>86</Hsp_identity>
+      <Hsp_positive>101</Hsp_positive>
+      <Hsp_gaps>8</Hsp_gaps>
+      <Hsp_align-len>130</Hsp_align-len>
+      <Hsp_qseq>VPSARSSARPAFARAAPRRSVVVRAEAGAVNDDTFKNVVLESSVPVLVDFWAPWCGPCRIIAPVVDEIAGEYKDKLKCVKLNTDESPNVASEYGIRSIPTIMVFKGGKKCETIIGAVPKATIVQTVEKYL</Hsp_qseq>
+      <Hsp_hseq>VQHQRRSSSSTVARAA--------VTAGAVNDDTFDEVVLKSKAPVLVDFWAPWCGPCRMIAPMVDEIAGEYAGRVTCVKVNTDESPQVATEYGIRSIPTVMIFKNGSKMDTIIGAVPKSTLVQSLEKYL</Hsp_hseq>
+      <Hsp_midline>V   R S+    ARAA          AGAVNDDTF  VVL+S  PVLVDFWAPWCGPCR+IAP+VDEIAGEY  ++ CVK+NTDESP VA+EYGIRSIPT+M+FK G K +TIIGAVPK+T+VQ++EKYL</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>8</Hit_num>
+  <Hit_id>tr|A0A2P6VM14|A0A2P6VM14_9CHLO</Hit_id>
+  <Hit_def>Thioredoxin m OS=Micractinium conductrix OX=554055 GN=C2E20_2076 PE=4 SV=1</Hit_def>
+  <Hit_accession>A0A2P6VM14</Hit_accession>
+  <Hit_len>152</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>179.489</Hsp_bit-score>
+      <Hsp_score>454</Hsp_score>
+      <Hsp_evalue>1.90291e-55</Hsp_evalue>
+      <Hsp_query-from>8</Hsp_query-from>
+      <Hsp_query-to>140</Hsp_query-to>
+      <Hsp_hit-from>24</Hsp_hit-from>
+      <Hsp_hit-to>152</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>88</Hsp_identity>
+      <Hsp_positive>106</Hsp_positive>
+      <Hsp_gaps>4</Hsp_gaps>
+      <Hsp_align-len>133</Hsp_align-len>
+      <Hsp_qseq>AAVPSARSSARPAFARAAPRRSVVVRAEAGAVNDDTFKNVVLESSVPVLVDFWAPWCGPCRIIAPVVDEIAGEYKDKLKCVKLNTDESPNVASEYGIRSIPTIMVFKGGKKCETIIGAVPKATIVQTVEKYLN</Hsp_qseq>
+      <Hsp_hseq>AAVRPQRSAARAVRVYA----DASVKAGAGPVTDSTWDDLVLKSPVPVLVDFWAPWCGPCRMIAPLVDEIAAEYGDKLRTLKLNTDESPNVATEYGIRSIPTVMVFKNGQKMDAVIGAVPKATLVQTVEKYMD</Hsp_hseq>
+      <Hsp_midline>AAV   RS+AR     A       V+A AG V D T+ ++VL+S VPVLVDFWAPWCGPCR+IAP+VDEIA EY DKL+ +KLNTDESPNVA+EYGIRSIPT+MVFK G+K + +IGAVPKAT+VQTVEKY++</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>9</Hit_num>
+  <Hit_id>tr|A0A250X8H0|A0A250X8H0_9CHLO</Hit_id>
+  <Hit_def>Uncharacterized protein OS=Chlamydomonas eustigma OX=1157962 GN=CEUSTIGMA_g6815.t1 PE=4 SV=1</Hit_def>
+  <Hit_accession>A0A250X8H0</Hit_accession>
+  <Hit_len>141</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>177.178</Hsp_bit-score>
+      <Hsp_score>448</Hsp_score>
+      <Hsp_evalue>1.50579e-54</Hsp_evalue>
+      <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>139</Hsp_query-to>
+      <Hsp_hit-from>1</Hsp_hit-from>
+      <Hsp_hit-to>141</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>88</Hsp_identity>
+      <Hsp_positive>107</Hsp_positive>
+      <Hsp_gaps>4</Hsp_gaps>
+      <Hsp_align-len>142</Hsp_align-len>
+      <Hsp_qseq>MALVARRAAVPSARSSARPAFARAAPR---RSVVVRAEAGAVNDDTFKNVVLESSVPVLVDFWAPWCGPCRIIAPVVDEIAGEYKDKLKCVKLNTDESPNVASEYGIRSIPTIMVFKGGKKCETIIGAVPKATIVQTVEKYL</Hsp_qseq>
+      <Hsp_hseq>MALAQRTVAQRSCLPRPQIAITRVALRQQARHVAVRAVTD-VNDSSFGPEVLQNAQPVLVDFWAPWCGPCRMIAPLIDELSNEYSGKLKCVKINTDESPNVATDYGIRSIPTVMIFKGGKKMDTIIGAVPKATLAQTIEKYI</Hsp_hseq>
+      <Hsp_midline>MAL  R  A  S     + A  R A R   R V VRA    VND +F   VL+++ PVLVDFWAPWCGPCR+IAP++DE++ EY  KLKCVK+NTDESPNVA++YGIRSIPT+M+FKGGKK +TIIGAVPKAT+ QT+EKY+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>10</Hit_num>
+  <Hit_id>tr|A0A2J8A7F6|A0A2J8A7F6_9CHLO</Hit_id>
+  <Hit_def>Thioredoxin OS=Tetrabaena socialis OX=47790 GN=TSOC_005048 PE=3 SV=1</Hit_def>
+  <Hit_accession>A0A2J8A7F6</Hit_accession>
+  <Hit_len>140</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>176.407</Hsp_bit-score>
+      <Hsp_score>446</Hsp_score>
+      <Hsp_evalue>2.33563e-54</Hsp_evalue>
+      <Hsp_query-from>21</Hsp_query-from>
+      <Hsp_query-to>139</Hsp_query-to>
+      <Hsp_hit-from>22</Hsp_hit-from>
+      <Hsp_hit-to>140</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>84</Hsp_identity>
+      <Hsp_positive>95</Hsp_positive>
+      <Hsp_gaps>0</Hsp_gaps>
+      <Hsp_align-len>119</Hsp_align-len>
+      <Hsp_qseq>FARAAPRRSVVVRAEAGAVNDDTFKNVVLESSVPVLVDFWAPWCGPCRIIAPVVDEIAGEYKDKLKCVKLNTDESPNVASEYGIRSIPTIMVFKGGKKCETIIGAVPKATIVQTVEKYL</Hsp_qseq>
+      <Hsp_hseq>FTRAAPRRSVLVRAGAEAVNDDSFQNMVLESKVPVLVSFWAPWSDSCRNALRMVDEIAEEYAGKLKCFKLDTDESPNVSGEYGLRSIPSIMIFKAGTKCATITGDVPKGTIQQTVEKYV</Hsp_hseq>
+      <Hsp_midline>F RAAPRRSV+VRA A AVNDD+F+N+VLES VPVLV FWAPW   CR    +VDEIA EY  KLKC KL+TDESPNV+ EYG+RSIP+IM+FK G KC TI G VPK TI QTVEKY+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>11</Hit_num>
+  <Hit_id>tr|E1ZS12|E1ZS12_CHLVA</Hit_id>
+  <Hit_def>Uncharacterized protein OS=Chlorella variabilis OX=554065 GN=CHLNCDRAFT_33111 PE=4 SV=1</Hit_def>
+  <Hit_accession>E1ZS12</Hit_accession>
+  <Hit_len>164</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>176.792</Hsp_bit-score>
+      <Hsp_score>447</Hsp_score>
+      <Hsp_evalue>3.45404e-54</Hsp_evalue>
+      <Hsp_query-from>6</Hsp_query-from>
+      <Hsp_query-to>140</Hsp_query-to>
+      <Hsp_hit-from>39</Hsp_hit-from>
+      <Hsp_hit-to>164</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>88</Hsp_identity>
+      <Hsp_positive>105</Hsp_positive>
+      <Hsp_gaps>9</Hsp_gaps>
+      <Hsp_align-len>135</Hsp_align-len>
+      <Hsp_qseq>RRAAVPSARSSARPAFARAAPRRSVVVRAEAGAVNDDTFKNVVLESSVPVLVDFWAPWCGPCRIIAPVVDEIAGEYKDKLKCVKLNTDESPNVASEYGIRSIPTIMVFKGGKKCETIIGAVPKATIVQTVEKYLN</Hsp_qseq>
+      <Hsp_hseq>RRPAVRSARVYAADANVKAA---------GAGPVTDSTWEELVLKSPVPVLVDFWAPWCGPCRMIAPLVDEIAAEYGDKLRTLKLNTDESPNVATEYGIRSIPTVMVFKNGQKMDAVIGAVPKGTLVQTVEKYMD</Hsp_hseq>
+      <Hsp_midline>RR AV SAR  A  A  +AA          AG V D T++ +VL+S VPVLVDFWAPWCGPCR+IAP+VDEIA EY DKL+ +KLNTDESPNVA+EYGIRSIPT+MVFK G+K + +IGAVPK T+VQTVEKY++</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>12</Hit_num>
+  <Hit_id>tr|I0Z739|I0Z739_COCSC</Hit_id>
+  <Hit_def>Thioredoxin OS=Coccomyxa subellipsoidea (strain C-169) OX=574566 GN=COCSUDRAFT_11832 PE=3 SV=1</Hit_def>
+  <Hit_accession>I0Z739</Hit_accession>
+  <Hit_len>110</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>173.326</Hsp_bit-score>
+      <Hsp_score>438</Hsp_score>
+      <Hsp_evalue>1.83271e-53</Hsp_evalue>
+      <Hsp_query-from>34</Hsp_query-from>
+      <Hsp_query-to>140</Hsp_query-to>
+      <Hsp_hit-from>4</Hsp_hit-from>
+      <Hsp_hit-to>110</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>78</Hsp_identity>
+      <Hsp_positive>94</Hsp_positive>
+      <Hsp_gaps>0</Hsp_gaps>
+      <Hsp_align-len>107</Hsp_align-len>
+      <Hsp_qseq>AEAGAVNDDTFKNVVLESSVPVLVDFWAPWCGPCRIIAPVVDEIAGEYKDKLKCVKLNTDESPNVASEYGIRSIPTIMVFKGGKKCETIIGAVPKATIVQTVEKYLN</Hsp_qseq>
+      <Hsp_hseq>AAAGPVTDSTFKDLVLSSTVPVLVDFWAPWCGPCRMIAPLIDEIAVEYGDKVKAFKLNTDESPGVATEYGIRSIPTVMIFKNGEKMDTVIGAVPKTTLVQTLEKYLD</Hsp_hseq>
+      <Hsp_midline>A AG V D TFK++VL S+VPVLVDFWAPWCGPCR+IAP++DEIA EY DK+K  KLNTDESP VA+EYGIRSIPT+M+FK G+K +T+IGAVPK T+VQT+EKYL+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>13</Hit_num>
+  <Hit_id>tr|A0A2R6W3H9|A0A2R6W3H9_MARPO</Hit_id>
+  <Hit_def>Uncharacterized protein OS=Marchantia polymorpha OX=3197 GN=MARPO_0164s0015 PE=4 SV=1</Hit_def>
+  <Hit_accession>A0A2R6W3H9</Hit_accession>
+  <Hit_len>196</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>176.022</Hsp_bit-score>
+      <Hsp_score>445</Hsp_score>
+      <Hsp_evalue>2.16042e-53</Hsp_evalue>
+      <Hsp_query-from>7</Hsp_query-from>
+      <Hsp_query-to>140</Hsp_query-to>
+      <Hsp_hit-from>48</Hsp_hit-from>
+      <Hsp_hit-to>196</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>85</Hsp_identity>
+      <Hsp_positive>112</Hsp_positive>
+      <Hsp_gaps>15</Hsp_gaps>
+      <Hsp_align-len>149</Hsp_align-len>
+      <Hsp_qseq>RAAVP---------SARSSARPAFARAAP-RRSVVVRAE-----AGAVNDDTFKNVVLESSVPVLVDFWAPWCGPCRIIAPVVDEIAGEYKDKLKCVKLNTDESPNVASEYGIRSIPTIMVFKGGKKCETIIGAVPKATIVQTVEKYLN</Hsp_qseq>
+      <Hsp_hseq>RAALPVCRGLRVSVSGRTSRSAAVVRSAPASRGIVCEAQETVTGAGVVSDQTFQKLVLESDVPVLVDFWAPWCGPCRMIAPIIDELARQYAGKIRCLKLNTDESPYIATEYGIRSIPTVMIFKRGEKKDTVIGAVPKSTLTATIEKYLD</Hsp_hseq>
+      <Hsp_midline>RAA+P         S R+S   A  R+AP  R +V  A+     AG V+D TF+ +VLES VPVLVDFWAPWCGPCR+IAP++DE+A +Y  K++C+KLNTDESP +A+EYGIRSIPT+M+FK G+K +T+IGAVPK+T+  T+EKYL+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
 </Iteration_hits>
   <Iteration_stat>
     <Statistics>

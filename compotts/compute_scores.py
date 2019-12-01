@@ -1,4 +1,4 @@
-from basic_modules.util import *
+from comutils.util import *
 import numpy as np
 import math
 from numpy import linalg as LA

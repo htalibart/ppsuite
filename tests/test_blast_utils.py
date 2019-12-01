@@ -1,3 +1,4 @@
+# TODO CHANGER LES FICHIERS DE TEST
 import unittest
 import shutil, tempfile
 import pathlib
@@ -5,7 +6,7 @@ import pkg_resources
 
 from tests.resources_manager import *
 
-from basic_modules.blast_utils import *
+from comutils.blast_utils import *
 
 
 class Test_BLAST_Utils(unittest.TestCase):

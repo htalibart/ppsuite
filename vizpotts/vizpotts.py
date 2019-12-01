@@ -2,9 +2,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import inspect
 
-from basic_modules.global_variables import ALPHABET
-from basic_modules.util import *
-from basic_modules.potts_model import *
+from comutils.global_variables import ALPHABET
+from comutils.util import *
+from comutils.potts_model import *
 
 
 def get_reordered_v(v, alphabet):

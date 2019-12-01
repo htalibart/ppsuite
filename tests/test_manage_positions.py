@@ -4,7 +4,7 @@ import pathlib
 
 import numpy as np
 
-from compotts.compotts_object import *
+from comfeature.comfeature import *
 from compotts.manage_positions import *
 
 import pkg_resources
@@ -46,7 +46,8 @@ class Test_ManagePositions(unittest.TestCase):
         objs = []
         for k in range(2):
             seq_file = FAKE_SEQS_FOLDER/("fake_seq_"+str(k)+".fasta")
-            objs.append(ComPotts_Object(sequence_file=seq_file, input_folder=self.output_folder, mrf_type="one_hot"))
+            feature_folder = pathlib.Path(tempfile.mkdtemp())
+            objs.append(ComFeature.from_files(feature_folder=feature_folder, sequence_file=seq_file, inference_type="one_hot"))
         aligned_positions = {"pos_ref":[4,5,7,8,9,10], "pos_2":[0,1,2,3,4,5]}
         seqs_aligned = get_seqs_aligned(aligned_positions, objs)
         self.assertEqual(seqs_aligned[0], 'YFYFMAEIKEH')

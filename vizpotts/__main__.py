@@ -2,7 +2,7 @@ import argparse
 import pathlib
 
 from vizpotts.vizpotts import *
-from basic_modules.potts_model import *
+from comutils.potts_model import *
 
 
 def main():

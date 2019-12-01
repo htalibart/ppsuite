@@ -3,9 +3,9 @@ import time
 import pandas as pd
 
 from compotts.compute_scores import *
-from compotts.compotts_object import *
-from basic_modules.potts_model import *
-import basic_modules.files_management as fm
+from comfeature.comfeature import *
+from comutils.potts_model import *
+import comutils.files_management as fm
 
 import pkg_resources
 COMPOTTS_CPP_LIBRARY = pkg_resources.resource_filename('compotts', 'compotts_solver.so')
@@ -64,5 +64,5 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
 
 
 def align_two_objects(objects, output_folder, **kwargs):
-    return align_two_potts_models([o.mrf for o in objects], output_folder, **kwargs)
+    return align_two_potts_models([o.potts_model for o in objects], output_folder, **kwargs)
 

@@ -8,52 +8,24 @@ from compotts.call_compotts import *
 from compotts.manage_positions import *
 from compotts.align_msas import *
 from vizpotts.vizpotts import *
-import basic_modules.files_management as fm
-
-
-def handle_args_for_obj(args, k):
-    """ Returns a dictionary containing arguments @args except only those that are relevant for object @k and cleaning the names """
-    new_args = {}
-    for key in args:
-        if str(key).endswith(str(k+1)):
-            new_key = key[:-len("_"+str(k))]
-            new_args[new_key] = args[key]
-        elif not key.endswith(str((k+1)%2+1)):
-            new_args[key] = args[key]
-    return new_args
-
-
+import comutils.files_management as fm
 
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument('-p1', '--potts_model_file_1', help="Potts model 1", type=pathlib.Path)
     parser.add_argument('-p2', '--potts_model_file_2', help="Potts model 2", type=pathlib.Path)
-    parser.add_argument('-s1', '--sequence_file_1', help="Sequence file 1", type=pathlib.Path)
-    parser.add_argument('-s2', '--sequence_file_2', help="Sequence file 2", type=pathlib.Path)
-    parser.add_argument('-h1', '--a3m_file_1', help="HH-blits output file 1", type=pathlib.Path)
-    parser.add_argument('-h2', '--a3m_file_2', help="HH-blits output file 2", type=pathlib.Path)
-    parser.add_argument('-f1', '--input_folder_1', help="Folder containing files for sequence 1", type=pathlib.Path)
-    parser.add_argument('-f2', '--input_folder_2', help="Folder containing files for sequence 2", type=pathlib.Path)
-    parser.add_argument('-aln1', '--aln_fasta_1', help="Alignment file in fasta format 1", type=pathlib.Path)
-    parser.add_argument('-aln2', '--aln_fasta_2', help="Alignment file in fasta format 2", type=pathlib.Path)
+    parser.add_argument('-f1', '--feature_folder_1', help="Folder containing files for sequence 1", type=pathlib.Path)
+    parser.add_argument('-f2', '--feature_folder_2', help="Folder containing files for sequence 2", type=pathlib.Path)
+    parser.add_argument('-gf1', '--guess_folder_1', help="Guess features from folder 1 (NOT RECOMMENDED)", type=pathlib.Path)
+    parser.add_argument('-gf2', '--guess_folder_2', help="Guess features from folder 2 (NOT RECOMMENDED)", type=pathlib.Path)
     parser.add_argument('-o', '--output_folder', help="Output folder", type=pathlib.Path)
-    parser.add_argument('-r', '--rescaling_function', help="Rescaling function for Potts model parameters.", default="identity", choices=('identity', 'original_rescaling', 'symmetric_relu_like', 'shifted_relu'))
-    parser.add_argument('-n', '--nb_sequences', help="Max number of sequences in the MRF training alignment", default=1000, type=int)
-    parser.add_argument('-nmin', '--min_sequences', help="Min number of sequences in the MRF training alignment", default=1, type=int)
-    parser.add_argument('-m1', '--mrf_type_1', help="Mode 1", choices=('standard', 'one_hot', 'one_submat'), default='standard')
-    parser.add_argument('-m2', '--mrf_type_2', help="Mode 2", choices=('standard', 'one_hot', 'one_submat'), default='standard')
-    parser.add_argument('-nm1', '--name_1', help="Name for alignee 1")
-    parser.add_argument('-nm2', '--name_2', help="Name for alignee 2")
-
-    # trimal
-    parser.add_argument('-trimgt', '--trimal_gt', help="trimal gt", default=0.8, type=float)
-    parser.add_argument('-trimcons', '--trimal_cons', help="trimal cons", default=0, type=float)
 
     # options alignement
     parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
     parser.add_argument('-nv', '--no_v', help="Don't use v scores", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
+    parser.add_argument('--rescaling_function', help="Rescaling function for the Potts model. (default : no rescaling (identity))", default="identity")
     parser.add_argument('-vwc', '--vw_coeff_method', help="vw coeff method", default="arbitrary_1_1") # TODO doc
     parser.add_argument('-gc', '--gap_cost_method', help="gap costs method", default="arbitrary_8_0") # TODO doc
 
@@ -66,26 +38,12 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-th', '--theta', help="solver : theta", type=float, default=0.9)
     parser.add_argument('-stpz', '--stepsize_min', help="solver : stepsize_min", type=float, default=0.000000005)
     parser.add_argument('-stpm', '--nb_non_increasing_steps_max', help="solver : nb_non_increasing_steps_max", type=int, default=500)
-    parser.add_argument('-sim_min', '--sim_min', help='if score is below sim_min, solver considers that the Potts models are not similar and stops.', type=float, default=0.1)
+    parser.add_argument('-sim_min', '--sim_min', help='if score is below sim_min, solver considers that the Potts models are not similar and stops.', type=float, default=0)
 
     # autres options
     parser.add_argument('-ali', '--call_aliview', help="Call aliview at the end", action='store_true')
     parser.add_argument('-oaln', '--get_training_sets_fasta_aln', help="Get training sets alignment in a fasta file", action='store_true')
     parser.add_argument('-osaln', '--get_sequences_fasta_aln', help="Get sequences alignment in a fasta file", action='store_true')
-
-
-    # CCMpredPy options
-    parser.add_argument('--pc_count', help="CCMpred : Specify number of pseudocounts (default : 1000)", default=1000)
-    parser.add_argument('--reg_lambda_pair_factor', help="CCMpred : Regularization parameter for pair potentials (L2 regularization with lambda_pair = lambda_pair-factor * scaling) [CCMpred default: 0.2, our default : 30]", default=30)
-
-    # options related to CCMpredPy
-    #parser.add_argument('--pc_count_factor', help="Number of pseudocounts for CCMpredPy will be (pc_count_factor)*(nb_sequences). Default : pc_count_factor=1", type=int, default=1)
-
-
-    # options related to HHblits
-    parser.add_argument('-d', '--hhblits_database', help="Database for HHblits", type=pathlib.Path)
-    parser.add_argument('-hhmem', '--retry_hhblits_with_memory_limit_if_fail', help="If HHblits fails, try again with less memory", action='store_true', default=False)
-
 
     args = vars(parser.parse_args(args))
 
@@ -112,14 +70,23 @@ def main(args=sys.argv[1:]):
     del args["no_v"]
 
 
-    # CREATING COMPOTTS OBJECTS
-    compotts_objects = [] 
-    for k in range(2):
-        new_args = handle_args_for_obj(args, k)
-        obj = ComPotts_Object(**new_args)
-        compotts_objects.append(obj) 
+    # INSTANCIATING OBJECTS
+    compotts_objects = []
+    for k in range(1,3):
+        if args["potts_model_file_"+str(k)] is not None:
+            feature_folder = pathlib.Path(tempfile.mkdtemp())
+            obj = ComFeature.from_files(feature_folder, potts_model_file=args["potts_model_file_"+str(k)], **args)
+            compotts_objects.append(obj)
+        elif args["feature_folder_"+str(k)] is not None:
+            obj = ComFeature.from_folder(args["feature_folder_"+str(k)], **args)
+            compotts_objects.append(obj)
+        elif args["guess_folder_"+str(k)] is not None:
+            obj = ComFeature.guess_from_folder(args["guess_folder_"+str(k)], **args)
+            compotts_objects.append(obj)
+        else:
+            raise Exception("Need input "+str(k))
 
-
+    
     # WRITE README
     fm.write_readme(output_folder, **args)
 
@@ -133,9 +100,9 @@ def main(args=sys.argv[1:]):
 
     if len(aligned_positions)>0:
         # ALIGN TRAINING MSAS
-        if all((o.training_set is not None) for o in compotts_objects) and args["get_training_sets_fasta_aln"]:
-            output_msa = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_training_sets.fasta")
-            get_msas_aligned(aligned_positions, [o.training_set for o in compotts_objects], output_msa)
+        if all((o.aln_train is not None) for o in compotts_objects) and args["get_training_sets_fasta_aln"]:
+            output_msa = output_folder/("aligned_training_sets.fasta")
+            get_msas_aligned(aligned_positions, [o.aln_train for o in compotts_objects], output_msa)
             if args["call_aliview"]:
                 cmd = "aliview "+str(output_msa)
                 subprocess.Popen(cmd, shell=True).wait()
@@ -143,7 +110,7 @@ def main(args=sys.argv[1:]):
             
         # ALIGN SEQUENCES
         if all((o.sequence is not None) for o in compotts_objects) and args["get_sequences_fasta_aln"]:
-            output_fasta_file = output_folder/('_'.join(o.name for o in compotts_objects)+"_aligned_sequences.fasta")
+            output_fasta_file = output_folder/("aligned_sequences.fasta")
             get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
 
 

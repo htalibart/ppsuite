@@ -5,8 +5,8 @@ import pkg_resources
 
 from tests.resources_manager import *
 
-from basic_modules.util import *
-from basic_modules import files_management as fm
+from comutils.util import *
+from comutils import files_management as fm
 
 
 class Test_Util(unittest.TestCase):

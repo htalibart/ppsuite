@@ -5,7 +5,7 @@ from Bio import SeqIO, AlignIO
 from Bio.Seq import Seq
 from Bio.Align import MultipleSeqAlignment
 
-import basic_modules.files_management as fm
+import comutils.files_management as fm
 
 def get_msas_aligned(aligned_positions, train_msa_files, output_msa_file):
     """ align MSAs @train_msa_files according to @aligned_positions -> @output_msa_file """
