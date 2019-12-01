@@ -20,13 +20,13 @@ class ComFeature:
         sequence_file = fm.get_sequence_file_from_folder(guess_folder)
         potts_model_file = fm.get_potts_model_file_from_folder(guess_folder)
         if potts_model_file is not None:
-            infer_potts_model = False
+            kwargs["infer_potts_model"] = False
         else:
-            infer_potts_model = True
+            kwargs["infer_potts_model"] = True
         aln_file = fm.get_file_from_folder_ending_with_extension(guess_folder, "_reformat.fasta")
         if aln_file is None:
             aln_file = fm.get_file_from_folder_ending_with_extension(guess_folder, ".a3m")
-        return cls.from_files(feature_folder=feature_folder, aln_file=aln_file, sequence_file=sequence_file, potts_model_file=potts_model_file, infer_potts_model=infer_potts_model, **kwargs)
+        return cls.from_files(feature_folder=feature_folder, aln_file=aln_file, sequence_file=sequence_file, potts_model_file=potts_model_file, **kwargs)
 
 
     @classmethod
@@ -63,12 +63,12 @@ class ComFeature:
             feature.potts_model = None
 
         try:
-            feature.mrf_pos_to_seq_pos = fm.get_list_from_csv(feature_folder/"mrf_pos_to_seq_pos.csv")
+            feature.mrf_pos_to_seq_pos = fm.get_list_from_csv(feature_folder/"mrf_pos_to_seq_pos.csv") # mrf_pos_to_aln_pos[i] = position in sequence corresponding to position i in Potts model
         except Exception as e:
             feature.mrf_pos_to_seq_pos = None
 
         try:
-            feature.mrf_pos_to_aln_pos = fm.get_list_from_csv(feature_folder/"mrf_pos_to_aln_pos.csv")
+            feature.mrf_pos_to_aln_pos = fm.get_list_from_csv(feature_folder/"mrf_pos_to_aln_pos.csv") # mrf_pos_to_aln_pos[i] = position in original_aln corresponding to position i in Potts model
         except Exception as e:
             feature.mrf_pos_to_seq_pos = None
 
@@ -168,7 +168,7 @@ class ComFeature:
                     trimmed_aln = feature_folder/("trim_"+str(int(trimal_gt*100))+".fasta")
                     call_trimal(aln_train, trimmed_aln, trimal_gt, trimal_cons, colnumbering_file)
                     aln_train = trimmed_aln
-                    mrf_pos_to_aln_pos = fm.get_trimal_ncol(colnumbering_file)
+                    mrf_pos_to_aln_pos = fm.get_trimal_ncol(colnumbering_file) 
                 else:
                     nb_pos = fm.get_nb_columns_in_alignment(aln_train)
                     mrf_pos_to_aln_pos = [pos for pos in range(nb_pos)]
@@ -265,6 +265,7 @@ def main(args=sys.argv[1:]):
 
     # files
     parser.add_argument('-f', '--feature_folder', help="Output feature folder", type=pathlib.Path)
+    parser.add_argument('-gf', '--guess_folder', help="Guess from files in folder (NOT RECOMMENDED)", type=pathlib.Path, default=None)
     parser.add_argument('-aln', '--aln_file', help="Alignment file", type=pathlib.Path)
     parser.add_argument('-ualn', '--unaligned_fasta', help="Unaligned sequences in fasta format", type=pathlib.Path)
     parser.add_argument('-s', '--sequence_file', help="Sequence file", type=pathlib.Path)
@@ -281,8 +282,8 @@ def main(args=sys.argv[1:]):
 
     # Alignment transformation
     parser.add_argument('-nofilter', '--dont_filter_alignment', help="Don't filter alignment using HHfilter (default = do)", action='store_true', default=False)
-    parser.add_argument('--hhfilter_threshold', help="HHfilter threshold", type=float)
-    parser.add_argument('-whole', '--use_whose_alignment', help="Use the whole alignment (default : arbitrarily take the first @max_nb_sequences after HHfilter and before trimal)", action='store_true', default=False)
+    parser.add_argument('--hhfilter_threshold', help="HHfilter threshold", type=float, default=80)
+    parser.add_argument('-whole', '--use_whole_alignment', help="Use the whole alignment (default : arbitrarily take the first @max_nb_sequences after HHfilter and before trimal)", action='store_true', default=False)
     parser.add_argument('-maxnb', '--max_nb_sequences', help="Max. nb sequences in the alignment (if alignment has more sequences that @max_nb_sequences after filtering and before trimming, all sequences after n° @max_nb_sequences will be deleted from the alignment. Default : 1000)", type=int, default=1000)
     parser.add_argument('-minnb', '--min_nb_sequences', help="Min. nb sequences in the alignment (if alignment has less than @min_nb_sequences, an exception will be raised and Potts model won't be inferred. Default : 1)", type=int, default=1)
     parser.add_argument('-notrim', '--dont_trim_alignment', help="Don't trim alignment using trimal (default = do)", action='store_true', default=False)
@@ -301,10 +302,17 @@ def main(args=sys.argv[1:]):
 
 
 
+    args = vars(parser.parse_args(args))
     args["filter_alignment"] = not args["dont_filter_alignment"]
     args["use_less_sequences"] = not args["use_whole_alignment"]
     args["trim_alignment"] = not args["dont_trim_alignment"]
     args["infer_potts_model"] = not args["dont_infer_potts_model"]
     args["use_w"] = not args["dont_use_w"]
-    args = vars(parser.parse_args(args))
-    cf = ComFeature.from_files(**args)
+    if args["guess_folder"] is not None:
+        del args["feature_folder"]
+        del args["aln_file"]
+        del args["sequence_file"]
+        del args["potts_model_file"]
+        cf = ComFeature.guess_from_folder(**args)
+    else:
+        cf = ComFeature.from_files(**args)
