@@ -1,3 +1,4 @@
+import uuid
 import sys
 import argparse
 
@@ -82,9 +83,14 @@ class ComFeature:
 
 
     @classmethod
-    def from_files(cls, feature_folder, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', hhblits_database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_count=None, reg_lambda_pair_factor=30, rescaling_function="identity", use_w=True, **kwargs):
+    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', hhblits_database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_count=None, reg_lambda_pair_factor=30, rescaling_function="identity", use_w=True, **kwargs):
 
         # ALIGNMENT FOLDER
+        if feature_folder is None:
+            folder_name = str(uuid.uuid4())
+            feature_folder = pathlib.Path(folder_name)
+            print("No folder name specified, feature folder will be created at "+str(feature_folder)) 
+
         if not feature_folder.is_dir():
             feature_folder.mkdir()
 
@@ -264,7 +270,7 @@ def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
 
     # files
-    parser.add_argument('-f', '--feature_folder', help="Output feature folder", type=pathlib.Path)
+    parser.add_argument('-f', '--feature_folder', help="Output feature folder", type=pathlib.Path, default=None)
     parser.add_argument('-gf', '--guess_folder', help="Guess from files in folder (NOT RECOMMENDED)", type=pathlib.Path, default=None)
     parser.add_argument('-aln', '--aln_file', help="Alignment file", type=pathlib.Path)
     parser.add_argument('-ualn', '--unaligned_fasta', help="Unaligned sequences in fasta format", type=pathlib.Path)
