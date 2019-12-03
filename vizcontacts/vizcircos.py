@@ -162,6 +162,9 @@ def main(args=sys.argv[1:]):
     args = vars(parser.parse_args(args))
 
     comfeature = ComFeature.from_folder(args['feature_folder'])
+    if args['pdb_file'] is None:
+        name = str(comfeature.folder)+'/'+args['pdb_id']
+        args['pdb_file'] = fm.fetch_pdb_file(args['pdb_id'], name)
     pdb_chain = fm.get_pdb_chain(args['pdb_id'], args['pdb_file'], chain_id=args['chain_id'])
     create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, **args)
 

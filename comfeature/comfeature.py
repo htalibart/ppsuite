@@ -94,7 +94,7 @@ class ComFeature:
         if not feature_folder.is_dir():
             feature_folder.mkdir()
 
-        # FETCH SEQUENCES IF ASKED (UNTESTED)
+        # FETCH SEQUENCES IF ASKED
         if fetch_sequences:
             if sequence_file is None:
                 raise Exception("Sequence file missing !")
