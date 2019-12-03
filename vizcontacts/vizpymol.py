@@ -45,7 +45,8 @@ def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, cha
 def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', pdb_file=None, nb_couplings=20, coupling_sep_min=2, **kwargs):
     comfeature = ComFeature.from_folder(feature_folder)
     if pdb_file is None:
-        pdb_file = fm.get_pdb_file_from_folder(feature_folder)
+        name = str(comfeature.folder)+'/'+pdb_id
+        pdb_file = fm.fetch_pdb_file(pdb_id, name)
     pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
     couplings_dict = get_contact_scores_for_sequence(comfeature)
     pdb_couplings_dict = translate_dict_to_pdb_pos(couplings_dict, pdb_chain, comfeature.sequence)
@@ -58,8 +59,8 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-f', '--feature_folder', help="Feature folder", type=pathlib.Path)
     parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
     parser.add_argument('-id', '--pdb_id', help="PDB id")
-    parser.add_argument('-cid', '--chain_id', help="PDB chain id")
-    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling")
+    parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
+    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling", default=3)
     args = vars(parser.parse_args(args))
 
     show_predicted_contacts_with_pymol(**args)

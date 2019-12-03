@@ -28,7 +28,6 @@ class Test_BLAST_Utils(unittest.TestCase):
         nb_seq = 10
         call_blast(SEQ_1CC8, "nr", n=nb_seq, blastresultsfile=blast_xml, evalue=0.1, remote=True)
         records = get_hits_from_blast_xml(blast_xml)
-        print(len(records))
         assert(len(records)==nb_seq)
 
 if __name__=='__main__':

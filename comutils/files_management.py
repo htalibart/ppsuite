@@ -1,4 +1,5 @@
 import os
+from urllib.request import urlopen
 import re
 import json
 import pandas as pd
@@ -143,8 +144,27 @@ def write_list_to_csv(l, csv_file):
         csvwriter = csv.writer(f)
         csvwriter.writerow(l)
 
+def fetch_pdb_file(pdb_id, outputfname):
+    try:
+        url = "https://files.rcsb.org/download/"+pdb_id+".pdb"
+        pdbfile = urlopen(url)
+        with open(outputfname+".pdb",'wb') as output:
+            output.write(pdbfile.read())
+        return outputfname+".pdb"
+    except Exception as e:
+        url = "https://files.rcsb.org/download/"+pdb_id+".cif"
+        ciffile = urlopen(url)
+        with open(outputfname+".cif", 'wb') as output:
+            output.write(ciffile.read())
+        return outputfname+".cif"
+
 def get_pdb_chain(pdbid, pdbfile, chain_id='A'):
-    structure = Bio.PDB.PDBParser().get_structure(pdbid, pdbfile)
+    if pdbfile.endswith(".pdb"):
+        structure = Bio.PDB.PDBParser().get_structure(pdbid, pdbfile)
+    elif pdbfile.endswith(".cif"):
+        structure = Bio.PDB.MMCIFParser().get_structure(pdbid, pdbfile)
+    else:
+        raise Exception("Unknown PDB file format")
     model = structure[0]
     chain = model[chain_id]
     return chain
