@@ -27,7 +27,7 @@ def get_contact_scores_for_aln_train(comfeature):
     interesting_contact_scores = OrderedDict()
     for c in contact_scores:
         if len(c)==2:
-            interesting_contact_scores[c] = contact_scores[c]
+            interesting_contact_scores[tuple(c)] = contact_scores[c]
 
     return interesting_contact_scores
 
@@ -35,10 +35,9 @@ def get_contact_scores_for_aln_train(comfeature):
 def get_contact_scores_for_sequence(comfeature):
     aln_scores = get_contact_scores_for_aln_train(comfeature)
     seq_contact_scores = OrderedDict()
-    for c_set in aln_scores:
-        c = tuple(c_set)
-        c_seq = frozenset((comfeature.mrf_pos_to_seq_pos[c[0]], comfeature.mrf_pos_to_seq_pos[c[1]]))
-        seq_contact_scores[c_seq] = aln_scores[c_set]
+    for c in aln_scores:
+        c_seq = (comfeature.mrf_pos_to_seq_pos[c[0]], comfeature.mrf_pos_to_seq_pos[c[1]])
+        seq_contact_scores[c_seq] = aln_scores[c]
     return seq_contact_scores
 
 
@@ -46,11 +45,10 @@ def translate_dict_to_pdb_pos(couplings_dict, pdb_chain, real_sequence):
     pdb_sequence = fm.get_sequence_from_pdb_chain(pdb_chain) 
     d = fm.get_pos_dict_first_seq_to_second_seq(real_sequence, pdb_sequence)
     pdb_couplings_dict = {}
-    for c_set in couplings_dict:
-        c = tuple(c_set)
-        new_c = frozenset((d[c[0]], d[c[1]]))
+    for c in couplings_dict:
+        new_c = (d[c[0]], d[c[1]])
         if not None in new_c:
-            pdb_couplings_dict[new_c] = couplings_dict[c_set]
+            pdb_couplings_dict[new_c] = couplings_dict[c]
     return pdb_couplings_dict
 
 
@@ -63,3 +61,11 @@ def aa_distance(pos1, pos2, pdb_chain):
     r2 = pdb_chain[pos2]
     diff_vector = r1['CA'].coord - r2['CA'].coord
     return np.sqrt(np.sum(diff_vector*diff_vector))
+
+
+def get_colored_true_false_dicts(couplings_dict, pdb_chain, real_sequence, colors={True:'blue', False:'red'}, contact_distance=8):
+    pdb_d = translate_dict_to_pdb_pos(couplings_dict, pdb_chain, real_sequence)
+    tf_d = {colors[c]:{} for c in colors}
+    for c in pdb_d:
+        tf_d[colors[is_true_contact(c, pdb_chain, contact_distance=contact_distance)]][c] = pdb_d[c]
+    return tf_d

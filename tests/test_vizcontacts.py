@@ -18,7 +18,8 @@ class Test_VizContacts(unittest.TestCase):
         self.comfeature = ComFeature.from_folder(self.feature_folder)
 
     def tearDown(self):
-        shutil.rmtree(self.feature_folder)
+        #shutil.rmtree(self.feature_folder)
+        pass
 
     def test_get_contact_scores(self):
         contact_scores = get_contact_scores_for_sequence(self.comfeature)
@@ -44,11 +45,16 @@ class Test_VizContacts(unittest.TestCase):
 #        shutil.copy(PDB_1CC8, self.feature_folder)
 #        show_predicted_contacts_with_pymol(self.feature_folder, "1cc8", chain_id='A', coupling_sep_min=3)
 
-    def test_create_circos(self):
-        circos_output_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
-        coupling_dicts_for_sequence_indexed_by_colors = {"red":{(1,50):0.6}, "blue":{(5,7):0.9}}
-        sequence = self.comfeature.sequence
-        create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, sequence)
+#    def test_create_circos(self):
+#        circos_output_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
+#        coupling_dicts_for_sequence_indexed_by_colors = {"red":{(1,50):0.6}, "blue":{(5,7):0.9}}
+#        sequence = self.comfeature.sequence
+#        create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, sequence)
+
+
+    def test_create_circos_from_comfeature_and_pdb_chain(self):
+        pdb_chain = fm.get_pdb_chain("1cc8", PDB_1CC8)
+        create_circos_from_comfeature_and_pdb_chain(self.comfeature, pdb_chain)
 
 if __name__=='__main__':
     unittest.main()

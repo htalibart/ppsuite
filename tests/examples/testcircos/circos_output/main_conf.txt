@@ -1,0 +1,85 @@
+
+
+        karyotype = /home/jtalibar/Documents/vapotts/tests/examples/testcircos/circos_output/karyotype.txt
+
+       # <plots>
+       # <plot>
+       # type = histogram
+       # file = histogram_filename
+       # r1 = 0.99r
+       # r0 = 0.80r
+       # thickness = 5
+       # color = grey
+       # extend_bin = no
+       # orientation = in
+       # </plot>
+       # </plots>
+
+        <ideogram>
+
+        <spacing>
+        default = 0.005r
+        </spacing>
+
+        # ideogram position, thickness and fill
+        radius           = 0.90r
+        thickness        = 10p
+        fill             = yes
+
+
+        #stroke_thickness = 1
+        #stroke_color     = black
+
+        # ideogram labels
+        show_label     = yes
+        label_with_tag = yes
+        label_font     = light
+        label_radius   = dims(ideogram,radius_outer) + 0.05r
+        label_center   = yes
+        label_size     = 20p
+        label_color    = black
+        label_parallel = no
+        label_case     = upper 
+
+
+        # ideogram cytogenetic bands, if defined in the karyotype file
+        show_bands            = yes
+        fill_bands            = yes
+        band_stroke_thickness = 2
+        band_stroke_color     = grey
+        band_transparency     = 1
+
+        </ideogram>
+
+        <image>
+        <<include etc/image.conf>>
+        file* = 6a6aff00-5711-4bd6-9d76-aa0205b6c331.png
+        </image>
+
+        <links>
+            <link>
+            file          = /home/jtalibar/Documents/vapotts/tests/examples/testcircos/circos_output/links/blue.links
+            color         = blue
+            radius        = 0.99r
+            bezier_radius = 0.1r
+            thickness     = 5
+            </link>
+            
+            <link>
+            file          = /home/jtalibar/Documents/vapotts/tests/examples/testcircos/circos_output/links/red.links
+            color         = red
+            radius        = 0.99r
+            bezier_radius = 0.1r
+            thickness     = 5
+            </link>
+            
+        </links>
+
+        # RGB/HSV color definitions, color lists, location of fonts,
+        # fill patterns
+        <<include etc/colors_fonts_patterns.conf>> # included from Circos distribution
+
+        # debugging, I/O an dother system parameters
+        <<include etc/housekeeping.conf>> # included from Circos distribution
+
+        

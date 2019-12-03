@@ -3,6 +3,9 @@ import os
 import shutil
 import math
 
+from comutils import files_management as fm
+from vizcontacts.contacts_management import *
+
 # write links in main circos conf file
 def write_links(conf_file, coupling_dicts_for_sequence_indexed_by_colors, links_folder):
 
@@ -128,10 +131,37 @@ def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_c
     if not os.path.isdir(links_folder):
         os.mkdir(links_folder)
     tmp_name = str(uuid.uuid4())
-    output_circos_image_tmp = tmp_name+".png"
     write_karyotype(karyotype_filename, sequence)
-    write_conf(circos_conf_filename, karyotype_filename, links_folder, output_circos_image_tmp, coupling_dicts_for_sequence_indexed_by_colors)
-    os.system("circos -silent -conf "+circos_conf_filename)
+    write_conf(circos_conf_filename, karyotype_filename, links_folder, tmp_name+".png", coupling_dicts_for_sequence_indexed_by_colors)
+    #os.system("circos -silent -conf "+circos_conf_filename)
+    os.system("circos -conf "+circos_conf_filename)
+    for extension in [".svg", ".png"]:
+        shutil.move(tmp_name+extension, of+"circos"+extension)
     output_circos_image = of+"circos.png"
-    shutil.move(output_circos_image_tmp, output_circos_image)
     os.system("xdg-open "+output_circos_image)
+
+
+def create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, **args):
+    couplings_dict = get_contact_scores_for_sequence(comfeature)
+    coupling_dicts_for_sequence_indexed_by_colors = get_colored_true_false_dicts(couplings_dict, pdb_chain, real_sequence=comfeature.sequence, colors={True:'blue', False:'red'})
+    circos_output_folder = str(comfeature.folder.absolute())+"/circos_output"
+    create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, comfeature.sequence)
+
+
+
+def main(args=sys.argv[1:]):
+    parser = argparse.ArgumentParser()
+    parser.add_argument('-f', '--feature_folder', help="Feature folder", type=pathlib.Path)
+    parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
+    parser.add_argument('-i', '--pdb_id', help="PDB file")
+    parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
+    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling")
+    args = vars(parser.parse_args(args))
+
+    comfeature = ComFeature.from_folder(args['feature_folder'])
+    pdb_chain = fm.get_pdb_chain(args['pdb_id'], args['pdb_file'], chain_id=args['chain_id'])
+    create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, **args)
+
+if __name__=="__main__":
+    main()
+
