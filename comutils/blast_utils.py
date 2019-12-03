@@ -4,13 +4,15 @@ import pathlib
 
 from comutils.db_utils import *
 
-def call_blast(fastafilename, dbpath, n=100000, blastresultsfile=None, evalue=1000000000):
+
+
+def call_blast(fastafilename, dbpath, n=100000, blastresultsfile=None, evalue=100, remote=True):
     # TODO test
     if blastresultsfile is None:
         blastresultsfilename = '.'.join(str(fastafilename).split('.')[:-1])+"_blast.xml"
         blastresultsfile = pathlib.Path(blastresultsfilename)
 
-    cline = NcbiblastpCommandline(query=fastafilename, db=dbpath, remote=False, out=blastresultsfilename, outfmt="5", evalue=evalue, max_target_seqs=n)
+    cline = NcbiblastpCommandline(query=str(fastafilename), db=dbpath, remote=remote, out=str(blastresultsfile), outfmt="5", evalue=evalue, max_target_seqs=n)
     print('Running:', cline)
     stdout, stderr = cline()
     if stdout:

@@ -2,8 +2,10 @@ import os
 import re
 import json
 import pandas as pd
-from Bio import SeqIO, AlignIO
+from Bio import SeqIO, AlignIO, pairwise2
 import Bio.PDB
+from Bio.PDB.Polypeptide import PPBuilder
+from Bio.SubsMat import MatrixInfo as matlist
 import ctypes
 import pathlib
 import shutil
@@ -109,6 +111,13 @@ def get_sequence_file_from_folder(folder):
 def get_a3m_file_from_folder(folder):
    return get_file_from_folder_ending_with_extension(folder, ".a3m")
 
+def get_pdb_file_from_folder(folder):
+    pdb_file = get_file_from_folder_ending_with_extension(folder, ".pdb")
+    if pdb_file is None:
+        pdb_file = get_file_from_folder_ending_with_extension(folder, ".cif")
+    return pdb_file
+
+
 def write_readme(folder, **kwargs):
     p = folder/'README.txt'
     with p.open(mode='w') as f:
@@ -139,3 +148,31 @@ def get_pdb_chain(pdbid, pdbfile, chain_id='A'):
     model = structure[0]
     chain = model[chain_id]
     return chain
+
+def get_sequence_from_pdb_chain(pdb_chain):
+    ppb = PPBuilder()
+    return ppb.build_peptides(pdb_chain)[0].get_sequence()
+
+
+def get_pos_dict_first_seq_to_second_seq(first_seq, second_seq):
+        gap_open = -10
+        gap_extend = -0.5
+        matrix = matlist.blosum62
+        alns = pairwise2.align.globalds(first_seq, second_seq, matrix, gap_open, gap_extend)
+        top_aln = alns[0]
+        aln_first, aln_second, score, begin, end = top_aln
+
+        first_pos = 0
+        second_pos = 0
+        pos_dict_first_seq_to_second_seq = {}
+        for i in range(len(aln_first)):
+            if (aln_first[i]=='-') and (aln_second[i]!='-'):
+                pos_dict_first_seq_to_second_seq[first_pos] = None
+                first_pos+=1
+            elif (aln_first[i]!='-') and (aln_second[i]=='-'):
+                second_pos+=1
+            elif (aln_first[i]!='-') and (aln_second[i]!='-'):
+                pos_dict_first_seq_to_second_seq[first_pos] = second_pos
+                first_pos+=1
+                second_pos+=1
+        return pos_dict_first_seq_to_second_seq

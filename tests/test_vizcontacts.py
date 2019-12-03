@@ -26,10 +26,22 @@ class Test_VizContacts(unittest.TestCase):
         pdb_chain = fm.get_pdb_chain("1cc8", PDB_1CC8)
         assert(is_true_contact((9,67), pdb_chain))
 
-    def test_show_n_couplings_pymol(self):
-        contact_scores = get_contact_scores_for_sequence(self.comfeature)
-        launch_pymol('1cc8', PDB_1CC8)
-        show_n_couplings(50, contact_scores, PDB_1CC8, '1cc8')
+    def test_get_sequence_from_pdb_chain(self):
+        pdb_chain = fm.get_pdb_chain("1cc8", PDB_1CC8)
+        pdb_sequence = fm.get_sequence_from_pdb_chain(pdb_chain)
+        assert(pdb_sequence=="AEIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVRSGKQL") 
+
+#    def test_show_n_couplings_pymol(self):
+#        contact_scores = get_contact_scores_for_sequence(self.comfeature)
+#        pdb_chain = fm.get_pdb_chain("1cc8", PDB_1CC8)
+#        real_sequence = fm.get_first_sequence_in_fasta_file(SEQ_1CC8)
+#        pdb_contact_scores = translate_dict_to_pdb_pos(contact_scores, pdb_chain, real_sequence)
+#        launch_pymol('1cc8', PDB_1CC8)
+#        show_n_couplings(50, pdb_contact_scores, PDB_1CC8, '1cc8')
+
+    def test_show_pymol(self):
+        shutil.copy(PDB_1CC8, self.feature_folder)
+        show_predicted_contacts_with_pymol(self.feature_folder, "1cc8", chain_id='A')
 
 if __name__=='__main__':
     unittest.main()

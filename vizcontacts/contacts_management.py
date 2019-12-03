@@ -42,13 +42,25 @@ def get_contact_scores_for_sequence(comfeature):
     return seq_contact_scores
 
 
+def translate_dict_to_pdb_pos(couplings_dict, pdb_chain, real_sequence):
+    pdb_sequence = fm.get_sequence_from_pdb_chain(pdb_chain) 
+    d = fm.get_pos_dict_first_seq_to_second_seq(real_sequence, pdb_sequence)
+    print(d)
+    pdb_couplings_dict = {}
+    for c_set in couplings_dict:
+        c = tuple(c_set)
+        new_c = frozenset((d[c[0]], d[c[1]]))
+        if not None in new_c:
+            pdb_couplings_dict[new_c] = couplings_dict[c_set]
+    return pdb_couplings_dict
 
-def is_true_contact(coupling, pdb_chain, contact_distance=8):
-    return aa_distance(coupling[0], coupling[1], pdb_chain) <= contact_distance
+
+def is_true_contact(pdb_sequence_coupling, pdb_chain, contact_distance=8):
+    return aa_distance(pdb_sequence_coupling[0], pdb_sequence_coupling[1], pdb_chain) <= contact_distance
 
 
 def aa_distance(pos1, pos2, pdb_chain):
-    r1 = pdb_chain[pos1+1]
-    r2 = pdb_chain[pos2+1]
+    r1 = pdb_chain[pos1]
+    r2 = pdb_chain[pos2]
     diff_vector = r1['CA'].coord - r2['CA'].coord
     return np.sqrt(np.sum(diff_vector*diff_vector))
