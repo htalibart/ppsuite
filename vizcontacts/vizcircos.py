@@ -16,7 +16,7 @@ def write_links(conf_file, coupling_dicts_for_sequence_indexed_by_colors, links_
             thick_coeff = 20
             d = coupling_dicts_for_sequence_indexed_by_colors[color]
             for c in d:
-                t = 10*d[c]
+                t = 20*d[c]
                 if (t>=1):
                     f.write(str(c[0]+1)+" 0 1 "+str(c[1]+1)+" 0 1 thickness="+str(t)+"\n")
 
@@ -141,9 +141,11 @@ def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_c
     os.system("xdg-open "+output_circos_image)
 
 
-def create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, **args):
+def create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, coupling_sep_min=3, top=20, **args):
     couplings_dict = get_contact_scores_for_sequence(comfeature)
-    coupling_dicts_for_sequence_indexed_by_colors = get_colored_true_false_dicts(couplings_dict, pdb_chain, real_sequence=comfeature.sequence, colors={True:'blue', False:'red'})
+    couplings_dict_with_coupling_sep_min = remove_couplings_too_close(couplings_dict, coupling_sep_min)
+    smaller_couplings_dict = OrderedDict({c:couplings_dict_with_coupling_sep_min[c] for c in list(couplings_dict_with_coupling_sep_min)[:top]})
+    coupling_dicts_for_sequence_indexed_by_colors = get_colored_true_false_dicts(smaller_couplings_dict, pdb_chain, real_sequence=comfeature.sequence, colors={True:'blue', False:'red'})
     circos_output_folder = str(comfeature.folder.absolute())+"/circos_output"
     create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, comfeature.sequence)
 
@@ -155,7 +157,8 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
     parser.add_argument('-i', '--pdb_id', help="PDB file")
     parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
-    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling")
+    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling", type=int, default=3)
+    parser.add_argument('-n', '--top', help="Nb of couplings displayed", type=int, default=20)
     args = vars(parser.parse_args(args))
 
     comfeature = ComFeature.from_folder(args['feature_folder'])
