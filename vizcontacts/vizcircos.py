@@ -18,7 +18,7 @@ def write_links(conf_file, coupling_dicts_for_sequence_indexed_by_colors, links_
             for c in d:
                 t = 20*d[c]
                 if (t>=1):
-                    f.write(str(c[0]+1)+" 0 1 "+str(c[1]+1)+" 0 1 thickness="+str(t)+"\n")
+                    f.write(str(c[0])+" 0 1 "+str(c[1])+" 0 1 thickness="+str(t)+"\n")
 
             # write link in conf_file
             conf_file.write("""

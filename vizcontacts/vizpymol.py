@@ -60,7 +60,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
     parser.add_argument('-id', '--pdb_id', help="PDB id")
     parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
-    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling", default=3)
+    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling", default=3, type=int)
     parser.add_argument('-n', '--top', help="Nb of couplings displayed", type=int, default=20)
     args = vars(parser.parse_args(args))
 

@@ -53,7 +53,7 @@
 
         <image>
         <<include etc/image.conf>>
-        file* = 15ade6a2-f417-4f5d-b4f0-f4adb7bbf1b0.png
+        file* = 71d16ee3-7095-4940-b658-cad116d09e4f.png
         </image>
 
         <links>
