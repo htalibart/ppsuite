@@ -30,17 +30,20 @@ def show_coupling(coupling, strength, color, chain_id='A'):
     pymol.cmd.label("coupling", 'resi')
 
 
-def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, chain_id='A'):
+def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, chain_id='A', coupling_sep_min=2):
     pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
     colors = {True : 'blue', False : 'red'}
+    n=0
     for i, (c_set, score) in enumerate(pdb_seq_couplings_dict.items()):
-        if i<nb_couplings:
+        if n<nb_couplings:
             c = tuple(c_set)
-            strength = score
-            show_coupling(c, strength, colors[is_true_contact(c, pdb_chain)], chain_id)
+            if abs(c[0]-c[1])>coupling_sep_min:
+                strength = score
+                show_coupling(c, strength, colors[is_true_contact(c, pdb_chain)], chain_id)
+                n+=1
 
 
-def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', nb_couplings=50, pdb_file=None, **kwargs):
+def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', pdb_file=None, nb_couplings=20, coupling_sep_min=2, **kwargs):
     comfeature = ComFeature.from_folder(feature_folder)
     if pdb_file is None:
         pdb_file = fm.get_pdb_file_from_folder(feature_folder)
@@ -48,7 +51,7 @@ def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', nb_
     couplings_dict = get_contact_scores_for_sequence(comfeature)
     pdb_couplings_dict = translate_dict_to_pdb_pos(couplings_dict, pdb_chain, comfeature.sequence)
     launch_pymol(pdb_id, pdb_file)
-    show_n_couplings(nb_couplings, pdb_couplings_dict, pdb_file, pdb_id, chain_id=chain_id)
+    show_n_couplings(nb_couplings, pdb_couplings_dict, pdb_file, pdb_id, chain_id=chain_id, coupling_sep_min=coupling_sep_min)
 
 
 def main(args=sys.argv[1:]):
@@ -56,6 +59,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-f', '--feature_folder', help="Feature folder", type=pathlib.Path)
     parser.add_argument('-id', '--pdb_id', help="PDB id")
     parser.add_argument('--pdb_file', help="PDB file")
+    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling")
     args = vars(parser.parse_args(args))
 
     show_predicted_contacts_with_pymol(**args)

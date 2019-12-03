@@ -41,7 +41,7 @@ class Test_VizContacts(unittest.TestCase):
 
     def test_show_pymol(self):
         shutil.copy(PDB_1CC8, self.feature_folder)
-        show_predicted_contacts_with_pymol(self.feature_folder, "1cc8", chain_id='A')
+        show_predicted_contacts_with_pymol(self.feature_folder, "1cc8", chain_id='A', coupling_sep_min=3)
 
 if __name__=='__main__':
     unittest.main()
