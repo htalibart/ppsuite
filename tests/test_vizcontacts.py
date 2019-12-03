@@ -8,6 +8,7 @@ from tests.resources_manager import *
 from comfeature.comfeature import *
 from vizcontacts.contacts_management import *
 from vizcontacts.vizpymol import *
+from vizcontacts.vizcircos import *
 
 class Test_VizContacts(unittest.TestCase):
 
@@ -39,9 +40,15 @@ class Test_VizContacts(unittest.TestCase):
 #        launch_pymol('1cc8', PDB_1CC8)
 #        show_n_couplings(50, pdb_contact_scores, PDB_1CC8, '1cc8')
 
-    def test_show_pymol(self):
-        shutil.copy(PDB_1CC8, self.feature_folder)
-        show_predicted_contacts_with_pymol(self.feature_folder, "1cc8", chain_id='A', coupling_sep_min=3)
+#    def test_show_pymol(self):
+#        shutil.copy(PDB_1CC8, self.feature_folder)
+#        show_predicted_contacts_with_pymol(self.feature_folder, "1cc8", chain_id='A', coupling_sep_min=3)
+
+    def test_create_circos(self):
+        circos_output_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
+        coupling_dicts_for_sequence_indexed_by_colors = {"red":{(1,50):0.6}, "blue":{(5,7):0.9}}
+        sequence = self.comfeature.sequence
+        create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, sequence)
 
 if __name__=='__main__':
     unittest.main()

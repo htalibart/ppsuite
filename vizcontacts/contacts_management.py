@@ -45,7 +45,6 @@ def get_contact_scores_for_sequence(comfeature):
 def translate_dict_to_pdb_pos(couplings_dict, pdb_chain, real_sequence):
     pdb_sequence = fm.get_sequence_from_pdb_chain(pdb_chain) 
     d = fm.get_pos_dict_first_seq_to_second_seq(real_sequence, pdb_sequence)
-    print(d)
     pdb_couplings_dict = {}
     for c_set in couplings_dict:
         c = tuple(c_set)
