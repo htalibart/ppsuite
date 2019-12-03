@@ -322,3 +322,4 @@ def main(args=sys.argv[1:]):
         cf = ComFeature.guess_from_folder(**args)
     else:
         cf = ComFeature.from_files(**args)
+        fm.write_readme(cf.folder, **args)
