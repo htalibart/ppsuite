@@ -9,6 +9,7 @@ SMALL_ALN_1CC8 = RESOURCES_1CC8_EVERYTHING_FOLDER/"1cc8_small_aln.fasta"
 LARGER_SMALL_ALN_1CC8 = RESOURCES_1CC8_EVERYTHING_FOLDER/"1cc8_larger_small_aln.fasta"
 LARGER_SMALL_ALN_1CC8_TRIM_80 = RESOURCES_1CC8_EVERYTHING_FOLDER/"1cc8_larger_small_aln_trim_80.fasta"
 MRF_1CC8 = RESOURCES_1CC8_EVERYTHING_FOLDER/"1cc8_standard.mrf"
+PDB_1CC8 = RESOURCES_1CC8_EVERYTHING_FOLDER/"1cc8.pdb"
 
 FEATURE_FOLDER = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/feature_folder/'))
 

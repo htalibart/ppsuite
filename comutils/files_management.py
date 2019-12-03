@@ -3,6 +3,7 @@ import re
 import json
 import pandas as pd
 from Bio import SeqIO, AlignIO
+import Bio.PDB
 import ctypes
 import pathlib
 import shutil
@@ -113,7 +114,6 @@ def write_readme(folder, **kwargs):
     with p.open(mode='w') as f:
         json.dump(kwargs, f, default=str)
 
-
 def copy(old_location, new_location):
     if not new_location.is_file():
         shutil.copy(old_location, new_location)
@@ -133,3 +133,9 @@ def write_list_to_csv(l, csv_file):
     with open(csv_file, 'w') as f:
         csvwriter = csv.writer(f)
         csvwriter.writerow(l)
+
+def get_pdb_chain(pdbid, pdbfile, chain_id='A'):
+    structure = Bio.PDB.PDBParser().get_structure(pdbid, pdbfile)
+    model = structure[0]
+    chain = model[chain_id]
+    return chain
