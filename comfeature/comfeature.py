@@ -266,6 +266,28 @@ class ComFeature:
         return self.name
 
 
+    def get_seq_pos_to_mrf_pos(self):
+        seq_pos_to_mrf_pos = []
+        for pos in range(len(self.sequence)):
+            try:
+                mrf_pos = self.mrf_pos_to_seq_pos.index(pos)
+            except Exception as e:
+                mrf_pos = None
+            seq_pos_to_mrf_pos.append(mrf_pos)
+        return seq_pos_to_mrf_pos
+
+
+    def get_positions_in_sequence_that_are_not_in_train_alignment(self):
+        seq_pos_to_mrf_pos = self.get_seq_pos_to_mrf_pos()
+        in_seq_not_in_aln = []
+        for pos in range(len(self.sequence)):
+            if seq_pos_to_mrf_pos is None:
+                in_seq_not_in_aln.append(seq_pos_to_mrf_pos)
+        return in_seq_not_in_aln
+
+
+
+
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
 

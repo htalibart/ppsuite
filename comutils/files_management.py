@@ -158,7 +158,8 @@ def fetch_pdb_file(pdb_id, outputfname):
             output.write(ciffile.read())
         return outputfname+".cif"
 
-def get_pdb_chain(pdbid, pdbfile, chain_id='A'):
+def get_pdb_chain(pdbid, pdb_file, chain_id='A'):
+    pdbfile = str(pdb_file)
     if pdbfile.endswith(".pdb"):
         structure = Bio.PDB.PDBParser().get_structure(pdbid, pdbfile)
     elif pdbfile.endswith(".cif"):

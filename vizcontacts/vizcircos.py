@@ -18,7 +18,7 @@ def write_links(conf_file, coupling_dicts_for_sequence_indexed_by_colors, links_
             for c in d:
                 t = 20*d[c]
                 if (t>=1):
-                    f.write(str(c[0])+" 0 1 "+str(c[1])+" 0 1 thickness="+str(t)+"\n")
+                    f.write(str(c[0]+1)+" 0 1 "+str(c[1]+1)+" 0 1 thickness="+str(t)+"\n")
 
             # write link in conf_file
             conf_file.write("""
@@ -114,14 +114,17 @@ def write_conf(circos_conf_filename, karyotype_filename, links_folder, output_ci
 
 # KARYOTYPE
 # chr - id label start end color
-def write_karyotype(karyotype_filename, sequence):
+def write_karyotype(karyotype_filename, sequence, seq_pos_to_mrf_pos):
     with open(karyotype_filename,"w") as f:
         for pos in range(len(sequence)):
-            color = "dgrey"
+            if seq_pos_to_mrf_pos[pos] is None:
+                color = "black"
+            else:
+                color = "dgrey"
             f.write("chr - "+str(pos+1)+" "+str(pos+1)+"-"+sequence[pos]+" 0 1 "+color+"\n")
 
 
-def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, sequence):
+def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, sequence, seq_pos_to_mrf_pos):
     of = str(circos_output_folder)+'/'
     if not os.path.isdir(of):
         os.mkdir(of)
@@ -131,7 +134,7 @@ def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_c
     if not os.path.isdir(links_folder):
         os.mkdir(links_folder)
     tmp_name = str(uuid.uuid4())
-    write_karyotype(karyotype_filename, sequence)
+    write_karyotype(karyotype_filename, sequence, seq_pos_to_mrf_pos)
     write_conf(circos_conf_filename, karyotype_filename, links_folder, tmp_name+".png", coupling_dicts_for_sequence_indexed_by_colors)
     #os.system("circos -silent -conf "+circos_conf_filename)
     os.system("circos -conf "+circos_conf_filename)
@@ -143,11 +146,12 @@ def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_c
 
 def create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, coupling_sep_min=3, top=20, **args):
     couplings_dict = get_contact_scores_for_sequence(comfeature)
+    seq_pos_to_mrf_pos = comfeature.get_seq_pos_to_mrf_pos()
     couplings_dict_with_coupling_sep_min = remove_couplings_too_close(couplings_dict, coupling_sep_min)
     smaller_couplings_dict = OrderedDict({c:couplings_dict_with_coupling_sep_min[c] for c in list(couplings_dict_with_coupling_sep_min)[:top]})
     coupling_dicts_for_sequence_indexed_by_colors = get_colored_true_false_dicts(smaller_couplings_dict, pdb_chain, real_sequence=comfeature.sequence, colors={True:'blue', False:'red'})
     circos_output_folder = str(comfeature.folder.absolute())+"/circos_output"
-    create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, comfeature.sequence)
+    create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, comfeature.sequence, seq_pos_to_mrf_pos)
 
 
 

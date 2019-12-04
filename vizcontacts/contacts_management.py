@@ -64,10 +64,12 @@ def aa_distance(pos1, pos2, pdb_chain):
 
 
 def get_colored_true_false_dicts(couplings_dict, pdb_chain, real_sequence, colors={True:'blue', False:'red'}, contact_distance=8):
-    pdb_d = translate_dict_to_pdb_pos(couplings_dict, pdb_chain, real_sequence)
-    tf_d = {colors[c]:{} for c in colors}
-    for c in pdb_d:
-        tf_d[colors[is_true_contact(c, pdb_chain, contact_distance=contact_distance)]][c] = pdb_d[c]
+    pdb_sequence = fm.get_sequence_from_pdb_chain(pdb_chain) 
+    d = fm.get_pos_dict_first_seq_to_second_seq(real_sequence, pdb_sequence)
+    tf_d = {colors[val]:{} for val in colors}
+    for c in couplings_dict:
+        pdb_c = (d[c[0]], d[c[1]])
+        tf_d[colors[is_true_contact(pdb_c, pdb_chain, contact_distance=contact_distance)]][c] = couplings_dict[c]
     return tf_d
 
 def remove_couplings_too_close(couplings_dict, coupling_sep_min):
