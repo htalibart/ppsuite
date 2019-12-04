@@ -98,6 +98,13 @@ comfeature -f output_feature_folder/ -s path/to/your/sequence.fasta --inference_
 comfeature -f output_feature_folder/ -s path/to/your/sequence.fasta -ualn path/to/your/unaligned_sequences.fasta --use_evalue_cutoff --blast_xml path/to/blast_output.xml
 ```
 
+* You have an alignment - and no imagination for the name of your output folder
+ComFeature will use the first sequence of your alignment as the reference sequence.
+```
+comfeature -aln path/to/your/alignment.fasta
+```
+The feature folder will be created in the current folder, and will be named using the uuuid generator.
+
 
 ### ComPotts
 
