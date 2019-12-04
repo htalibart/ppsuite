@@ -30,21 +30,20 @@ which will automatically download them, install them and put them into your home
 
 
 ### If you want to use VizContacts
-To visualize predicted contacts using VizContacts, you need to install :
+To visualize predicted contacts using VizContacts, you also need to install :
 * PyMOL : https://pymol.org/
 * Circos : http://www.circos.ca/
 
 ## Installation
 
 ### Compile the C++ solver library
-Go to apurva_compotts and run
 
 ```
+cd apurva_compotts/
 bash compile.bash
 ```
 
 ### Install Python modules
-run
 
 ```
 python3 setup.py install
@@ -53,7 +52,6 @@ python3 setup.py install
 ## Running the tests
 
 ```
-cd vapotts
 python3 tests
 ```
 
@@ -61,7 +59,7 @@ python3 tests
 ## Getting started
 
 ### ComFeature
-ComPotts inputs two folders which both have to contain the following files (with the corresponding file name) :
+ComPotts inputs two folders which both have to contain the following files (with the corresponding file names) :
 * sequence.fasta : the sequence in fasta format
 * original_aln.fasta : the alignment (a priori) derived from the sequence 
 * train_aln.fasta : the alignment which was used to train the Potts model, which may be different from the original alignment due to filters and trimmings
@@ -71,7 +69,38 @@ ComPotts inputs two folders which both have to contain the following files (with
 
 This folder is created by invoking ComFeature with the desired arguments.
 
+
+#### Review of the main use cases
+
+* You have a sequence file, and a big alignment that you retrieved with HHblits for example. You want to filter it to remove redundancies, to trim it to remove positions with too many gaps, and you want to use only the first 1000 sequences to train the Potts model.
+```
+comfeature -f output_feature_folder/ -s path/to/your/sequence.fasta -aln path/to/your/alignment.fasta --hhfilter_threshold 80 --trimal_gt 0.8 -maxnb 1000
+```
+By default, comfeature filters the alignment with a 80% threshold using HHfilter, trims it with trimal using options -gt 0.8 -cons 0 and takes the first 1000 sequences but you can change these parameters or choose not to do any of this with options such as --dont_trim_alignment.
+
+* You have a sequence file and you want ComFeature to call HHblits to get more sequences:
+```
+comfeature -f output_feature_folder/ -s path/to/your/sequence.fasta -fetch -d path/to/the/database
+```
+
+* You have a sequence file and you want to infer a Potts model only from the sequence
+```
+comfeature -f output_feature_folder/ -s path/to/your/sequence.fasta --inference_type one_submat
+```
+
+or
+```
+comfeature -f output_feature_folder/ -s path/to/your/sequence.fasta --inference_type one_hot
+```
+
+* You have a sequence file, you used BLAST to retrieve sequences (in an unaligned fasta file) and you want to use as many sequences as there are before the E-value elbow :
+```
+comfeature -f output_feature_folder/ -s path/to/your/sequence.fasta -ualn path/to/your/unaligned_sequences.fasta --use_evalue_cutoff --blast_xml path/to/blast_output.xml
+```
+
+
 ### ComPotts
+
 Use :
 ```
 compotts -f1 feature_folder_1/ -f2 feature_folder_2/ -o output_folder/
@@ -82,7 +111,7 @@ or, if you are only interested in the aligned positions of Potts models :
 compotts -p1 potts_model_1.mrf -p2 potts_model_2.mrf -o output_folder/
 ```
 
-output_folder/ contains at least two files:
+output_folder/ will contain at least two files:
 * aln.csv which contains the resulting aligned positions
 * info.csv which contains information about the alignment (especially the similarity score)
 
