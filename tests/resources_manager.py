@@ -21,6 +21,8 @@ BLAST_FASTA = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/ex
 FOLDER_5JZR = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/5jzr/'))
 A3M_5JZR = FOLDER_5JZR/"Q9AZ42.a3m"
 HHR_5JZR = FOLDER_5JZR/"Q9AZ42.hhr"
+SEQ_5JZR = FOLDER_5JZR/"Q9AZ42.fasta"
+PDB_5JZR = FOLDER_5JZR/"5jzr.pdb"
 
 TEST_TS_MSA = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/ts_msa.fasta'))
 TEST_TS_SEQ = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/ts_seq.fasta'))

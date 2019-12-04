@@ -3,6 +3,7 @@ import shutil
 import numpy as np
 
 from Bio import pairwise2, AlignIO
+from Bio.SubsMat import MatrixInfo as matlist
 
 from comutils.tool_wrapper import *
 from comutils import files_management as fm
@@ -83,3 +84,27 @@ def remove_sequences_with_too_many_gaps(input_file, output_file, gap_threshold):
             acceptable_records.append(record)
     with open(output_file, 'w') as f:
         SeqIO.write(acceptable_records, f, "fasta")
+
+
+def get_pos_first_seq_to_second_seq(first_seq, second_seq):
+    """ d[pos_in_first_seq] = pos_in_second_seq """
+    gap_open = -10
+    gap_extend = -0.5
+    matrix = matlist.blosum62
+    alns = pairwise2.align.globalds(first_seq, second_seq, matrix, gap_open, gap_extend)
+    top_aln = alns[0]
+    aln_first, aln_second, score, begin, end = top_aln
+    first_pos = 0
+    second_pos = 0
+    pos_dict_first_seq_to_second_seq = [None for k in range(len(first_seq))]
+    for i in range(len(aln_first)):
+        if (aln_first[i]=='-') and (aln_second[i]!='-'):
+            second_pos+=1
+        elif (aln_first[i]!='-') and (aln_second[i]=='-'):
+            pos_dict_first_seq_to_second_seq[first_pos] = None
+            first_pos+=1
+        elif (aln_first[i]!='-') and (aln_second[i]!='-'):
+            pos_dict_first_seq_to_second_seq[first_pos] = second_pos
+            first_pos+=1
+            second_pos+=1
+    return pos_dict_first_seq_to_second_seq

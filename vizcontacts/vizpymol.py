@@ -19,9 +19,9 @@ def launch_pymol(pdb_id, pdbfile=None):
     pymol.cmd.set('cartoon_transparency', 0.2)
 
 
-def show_coupling(coupling, strength, color, chain_id='A'):
-    pos1 = coupling[0]
-    pos2 = coupling[1]
+def show_coupling(pdb_coupling, strength, color, chain_id='A'):
+    pos1 = pdb_coupling[0]
+    pos2 = pdb_coupling[1]
     pymol.cmd.select("coupling", "resi "+str(pos1)+" and name CA and chain "+chain_id+" + resi "+str(pos2)+" and name CA and chain "+chain_id)
     pymol.cmd.bond("resi "+str(pos1)+" and name CA and chain "+chain_id, "resi "+str(pos2)+" and name CA and chain "+chain_id)
     pymol.cmd.set_bond("stick_color", color, "coupling")
@@ -42,7 +42,7 @@ def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, cha
                 n+=1
 
 
-def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=2, **kwargs):
+def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, **kwargs):
     comfeature = ComFeature.from_folder(feature_folder)
     if pdb_file is None:
         name = str(comfeature.folder)+'/'+pdb_id

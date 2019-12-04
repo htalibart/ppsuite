@@ -5,6 +5,7 @@ import numpy as np
 from collections import OrderedDict
 
 from comfeature.comfeature import *
+from comutils.util import *
 from vizcontacts import top_couplings
 
 def get_contact_scores_for_aln_train(comfeature):
@@ -41,10 +42,28 @@ def get_contact_scores_for_sequence(comfeature):
     return seq_contact_scores
 
 
-def translate_dict_to_pdb_pos(couplings_dict, pdb_chain, real_sequence):
+def get_pdb_offset(pdb_chain, real_sequence):
+    r = next(pdb_chain.get_residues())
+    offset = r.get_full_id()[3][1]-1
+    return offset
+
+
+def get_real_pos_to_pdb_pos(pdb_chain, real_sequence):
     pdb_sequence = fm.get_sequence_from_pdb_chain(pdb_chain) 
-    d = fm.get_pos_dict_first_seq_to_second_seq(real_sequence, pdb_sequence)
-    pdb_couplings_dict = {}
+    d = get_pos_first_seq_to_second_seq(real_sequence, pdb_sequence) # d[pos_in_real_seq] = pos_in_pdb_seq
+    pdb_offset = get_pdb_offset(pdb_chain, real_sequence)
+    rtpdb = []
+    for pos in range(len(real_sequence)):
+        if d[pos] is None:
+            rtpdb.append(None)
+        else:
+            rtpdb.append(d[pos]+1+pdb_offset)
+    return rtpdb
+
+
+def translate_dict_to_pdb_pos(couplings_dict, pdb_chain, real_sequence):
+    d = get_real_pos_to_pdb_pos(pdb_chain, real_sequence)
+    pdb_couplings_dict = OrderedDict()
     for c in couplings_dict:
         new_c = (d[c[0]], d[c[1]])
         if not None in new_c:
@@ -64,16 +83,15 @@ def aa_distance(pos1, pos2, pdb_chain):
 
 
 def get_colored_true_false_dicts(couplings_dict, pdb_chain, real_sequence, colors={True:'blue', False:'red'}, contact_distance=8):
-    pdb_sequence = fm.get_sequence_from_pdb_chain(pdb_chain) 
-    d = fm.get_pos_dict_first_seq_to_second_seq(real_sequence, pdb_sequence)
-    tf_d = {colors[val]:{} for val in colors}
+    d = get_real_pos_to_pdb_pos(pdb_chain, real_sequence)
+    tf_d = {colors[val]:OrderedDict() for val in colors}
     for c in couplings_dict:
         pdb_c = (d[c[0]], d[c[1]])
         tf_d[colors[is_true_contact(pdb_c, pdb_chain, contact_distance=contact_distance)]][c] = couplings_dict[c]
     return tf_d
 
 def remove_couplings_too_close(couplings_dict, coupling_sep_min):
-    ok_dict = {}
+    ok_dict = OrderedDict()
     for c in couplings_dict:
         if None not in c:
             if abs(c[0]-c[1])>=coupling_sep_min:

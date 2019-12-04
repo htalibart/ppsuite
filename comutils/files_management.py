@@ -6,11 +6,11 @@ import pandas as pd
 from Bio import SeqIO, AlignIO, pairwise2
 import Bio.PDB
 from Bio.PDB.Polypeptide import PPBuilder
-from Bio.SubsMat import MatrixInfo as matlist
 import ctypes
 import pathlib
 import shutil
 import csv
+
 
 def create_folder(name):
     p = pathlib.Path(name) 
@@ -173,27 +173,3 @@ def get_pdb_chain(pdbid, pdb_file, chain_id='A'):
 def get_sequence_from_pdb_chain(pdb_chain):
     ppb = PPBuilder()
     return ppb.build_peptides(pdb_chain)[0].get_sequence()
-
-
-def get_pos_dict_first_seq_to_second_seq(first_seq, second_seq):
-        gap_open = -10
-        gap_extend = -0.5
-        matrix = matlist.blosum62
-        alns = pairwise2.align.globalds(first_seq, second_seq, matrix, gap_open, gap_extend)
-        top_aln = alns[0]
-        aln_first, aln_second, score, begin, end = top_aln
-
-        first_pos = 0
-        second_pos = 0
-        pos_dict_first_seq_to_second_seq = {}
-        for i in range(len(aln_first)):
-            if (aln_first[i]=='-') and (aln_second[i]!='-'):
-                pos_dict_first_seq_to_second_seq[first_pos] = None
-                first_pos+=1
-            elif (aln_first[i]!='-') and (aln_second[i]=='-'):
-                second_pos+=1
-            elif (aln_first[i]!='-') and (aln_second[i]!='-'):
-                pos_dict_first_seq_to_second_seq[first_pos] = second_pos
-                first_pos+=1
-                second_pos+=1
-        return pos_dict_first_seq_to_second_seq
