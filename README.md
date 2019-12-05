@@ -2,9 +2,9 @@
 
 This package contains :
 * ComPotts, a tool to align potts models and corresponding sequences / alignments
-* ComFeature [TODO expliquer]
-* VizPotts [TODO expliquer]
-* VizContacts [TODO expliquer]
+* ComFeature inputs your sequence / alignments, processes them (filtering, trimming...), infers a Potts model, and outputs a folder with all the features that ComPotts needs to align the models and the corresponding sequences / alignments
+* VizPotts allows you to visualize inferred Potts models
+* VizContacts allows you to visualize the top N couplings of the inferred Potts model and whether the couplings are contacts in the 3D structure or not. You can visualize them around a circle thanks to Circos, or on a PDB structure using PyMOL.
 
 
 ## Requirements
@@ -30,7 +30,7 @@ or you can run install_required_tools.sh :
 bash install_required_tools.sh
 ```
 
-which will automatically download them, install them and put them into your home.
+which will automatically download them into your home ~/, install them and add them to your path.
 
 
 ### If you want to use VizContacts
