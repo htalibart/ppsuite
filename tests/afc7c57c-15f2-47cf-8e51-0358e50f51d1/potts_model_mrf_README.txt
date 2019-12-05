@@ -1,1 +1,0 @@
-"ccmpred afc7c57c-15f2-47cf-8e51-0358e50f51d1/trim_80.fasta -b afc7c57c-15f2-47cf-8e51-0358e50f51d1/potts_model.mrf --pc-count 1377 --reg-lambda-pair-factor 30"
