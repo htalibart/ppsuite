@@ -21,17 +21,36 @@ ComPotts was developped with Python3.6 and requires the following packages (whic
 * kneebow
 
 and the following tools which you have to install and add to your path:
+
 * CCMpredPy : https://github.com/susannvorberg/CCmpredPy
+```
+git clone https://github.com/susannvorberg/CCmpredPy
+cd CCmpredPy
+python3 setup.py install
+```
+
 * HH-suite : https://github.com/soedinglab/hh-suite
+```
+git clone https://github.com/soedinglab/hh-suite.git
+mkdir -p hh-suite/build && cd hh-suite/build
+cmake -DCMAKE_INSTALL_PREFIX=. ..
+make -j 4 && make install
+```
+and export to your path :
+```
+export PATH="$(pwd)/bin:$(pwd)/scripts:$PATH"
+```
+
 * trimal : https://github.com/scapella/trimal
-
-or you can run install_required_tools.sh :
 ```
-bash install_required_tools.sh
+git clone https://github.com/scapella/trimal
+cd trimal/source
+make
 ```
-
-which will automatically download them into your home ~/, install them and add them to your path.
-
+and add trimal/source to your path 
+```
+export PATH="$(pwd):$PATH"
+```
 
 ### If you want to use VizContacts
 To visualize predicted contacts using VizContacts, you also need to install :
