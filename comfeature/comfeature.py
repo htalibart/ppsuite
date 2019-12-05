@@ -4,8 +4,11 @@ import argparse
 
 from comutils.potts_model import *
 from comutils.tool_wrapper import *
-from compotts.manage_positions import *
 from comutils.find_cutoff_index import *
+from comutils.blast_utils import *
+
+from compotts.manage_positions import *
+
 from comfeature.rescaling import *
 
 class ComFeature:
@@ -83,7 +86,7 @@ class ComFeature:
 
 
     @classmethod
-    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', hhblits_database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_count=None, reg_lambda_pair_factor=30, rescaling_function="identity", use_w=True, **kwargs):
+    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_count=None, reg_lambda_pair_factor=30, rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, **kwargs):
 
         # ALIGNMENT FOLDER
         if feature_folder is None:
@@ -96,14 +99,17 @@ class ComFeature:
 
         # FETCH SEQUENCES IF ASKED
         if fetch_sequences:
+            if database is None:
+                raise Exception("You need to specify a database path (-d option)")
             if sequence_file is None:
                 raise Exception("Sequence file missing !")
             if sequences_fetcher=='hhblits':
-                if hhblits_database is None:
-                    raise Exception("You need to specify the HHblits database path")
-                else:
-                    aln_file = feature_folder/"aln_original.a3m"
-                    hhr_file = call_hhblits(sequence_file, aln_file, hhblits_database, **kwargs)
+                aln_file = feature_folder/"aln_original.a3m"
+                hhr_file = call_hhblits(sequence_file, aln_file, database, **kwargs)
+            elif sequences_fetcher=='blast':
+                blast_fasta = feature_folder/"blast.fasta"
+                blast_xml = feature_folder/"blast.xml"
+                blast_xml, unaligned_fasta = get_blast_xml_and_fasta_output_from_sequence_file(sequence_file, database, blast_fasta=blast_fasta, blast_xml=blast_xml, n=nb_sequences_blast, evalue=blast_evalue)
             else:
                 raise Exception(str(sequences_fetcher)+" call not implemented yet.")
 
@@ -301,8 +307,9 @@ def main(args=sys.argv[1:]):
 
     # fetch sequences ?
     parser.add_argument('-fetch', '--fetch_sequences', help="Fetch sequences in database ? (requires a sequence file)", action='store_true', default=False)
-    parser.add_argument('-d', '--hhblits_database', help="HHblits database path", default=None)
-
+    parser.add_argument('-d', '--database', help="Database path for HHblits or BLAST call", default=None)
+    parser.add_argument('--nb_sequences_blast', help="Nb sequences fetched by BLAST", type=int, default=100000)
+    parser.add_argument('--blast_evalue', help="BLAST E-value parameter", type=float, default=1)
     # E-value cutoff
     parser.add_argument('-evcut', '--use_evalue_cutoff', help="Stop taking sequences in the alignment when we reach the elbow of the E-value curve", action='store_true', default=False)
     parser.add_argument('-hhr', '--hhr_file', help="HHblits .hhr output file (needed to find the E-value cutoff)", type=pathlib.Path)

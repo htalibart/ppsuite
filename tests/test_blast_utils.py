@@ -5,6 +5,7 @@ import pkg_resources
 
 from tests.resources_manager import *
 
+from comfeature.comfeature import *
 from comutils.blast_utils import *
 from comutils import files_management as fm
 
@@ -24,6 +25,9 @@ class Test_BLAST_Utils(unittest.TestCase):
         assert(blast_xml.exists())
         assert(blast_fasta.exists())
         assert(fm.get_nb_sequences_in_fasta_file(blast_fasta)==nb_sequences)
+
+    def test_get_comfeature_blast_call(self):
+        cf = ComFeature.from_files(sequence_file=SEQ_1CC8, fetch_sequences=True, sequences_fetcher='blast', database=self.db_path, feature_folder=pathlib.Path('/tmp/'+next(tempfile._get_candidate_names())))
 
 
 if __name__=='__main__':
