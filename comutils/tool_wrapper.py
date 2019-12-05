@@ -17,10 +17,12 @@ def call_hhfilter(input_file, output_file, hhid):
     subprocess.Popen(cmd, shell=True).wait()
 
 
-def call_hhblits(input_file, output_file, database, maxfilt=100000, realign_max=100000, B=100000, Z=100000, n=3, e=0.001, retry_hhblits_with_memory_limit_if_fail=False,**kwargs):
+def call_hhblits(input_file, output_file, database, maxfilt=100000, realign_max=100000, B=100000, Z=100000, n=3, e=0.001, retry_hhblits_with_memory_limit_if_fail=False, hhr_file=None, **kwargs):
     """ calls HH-blits with arguments recommended for CCMpred : https://github.com/soedinglab/CCMpred/wiki/FAQ """
+    if hhr_file is None:
+        hhr_file = pathlib.Path('.'.join(str(output_file).split('.')[:-1])+".hhr")
     print("calling hhblits on "+str(input_file)+" using "+str(database)+", output will be available at "+str(output_file))
-    hhblits_call = "hhblits -maxfilt "+str(maxfilt)+" -realign_max "+str(realign_max)+" -d "+str(database)+" -all -B "+str(B)+" -Z "+str(Z)+" -n "+str(n)+" -e "+str(e)+" -i "+str(input_file)+" -oa3m "+str(output_file)
+    hhblits_call = "hhblits -maxfilt "+str(maxfilt)+" -realign_max "+str(realign_max)+" -d "+str(database)+" -all -B "+str(B)+" -Z "+str(Z)+" -n "+str(n)+" -e "+str(e)+" -i "+str(input_file)+" -oa3m "+str(output_file)+" -o "+str(hhr_file)
     print(hhblits_call)
     subprocess.Popen(hhblits_call, shell=True).wait()
     if not output_file.exists() and retry_hhblits_with_memory_limit_if_fail:
@@ -29,6 +31,7 @@ def call_hhblits(input_file, output_file, database, maxfilt=100000, realign_max=
         subprocess.Popen(memory_friendly_call, shell=True).wait()
         if not output_file.exists():
             raise Exception("HH-blits failed. Protein is probably too long ?")
+    return hhr_file
 
 
 def call_trimal(input_file, output_file, trimal_gt, cons, colnumbering_file):

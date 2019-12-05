@@ -103,7 +103,7 @@ class ComFeature:
                     raise Exception("You need to specify the HHblits database path")
                 else:
                     aln_file = feature_folder/"aln_original.a3m"
-                    call_hhblits(sequence_file, aln_file, hhblits_database, **kwargs)
+                    hhr_file = call_hhblits(sequence_file, aln_file, hhblits_database, **kwargs)
             else:
                 raise Exception(str(sequences_fetcher)+" call not implemented yet.")
 

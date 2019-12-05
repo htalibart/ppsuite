@@ -80,8 +80,8 @@ class Test_ComFeature(unittest.TestCase):
         assert(cf.sequence=="MAEIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVRSGKQL")
         assert(cf.potts_model.ncol==62)
 
-    def test_from_file_calling_hhblits(self):
-        cf = ComFeature.from_files(sequence_file=SEQ_1CC8, hhblits_database='/home/jtalibar/data/uniclust30_2018_08/uniclust30_2018_08', fetch_sequences=True, sequences_fetcher='hhblits') 
+    def test_from_file_calling_hhblits_and_evalue_cutoff(self):
+        cf = ComFeature.from_files(sequence_file=SEQ_1CC8, hhblits_database='/home/jtalibar/data/uniclust30_2018_08/uniclust30_2018_08', fetch_sequences=True, sequences_fetcher='hhblits', use_evalue_cutoff=True) 
 
 if __name__=='__main__':
     unittest.main()
