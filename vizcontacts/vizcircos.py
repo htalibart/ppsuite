@@ -143,7 +143,7 @@ def write_karyotype(karyotype_filename, sequence, seq_pos_to_mrf_pos, numbering_
             f.write("chr - "+str(pos+1)+" "+str(displayed_position)+"-"+sequence[pos]+" 0 1 "+color+"\n")
 
 
-def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, sequence, seq_pos_to_mrf_pos, numbering_type, pdb_chain=None):
+def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, sequence, seq_pos_to_mrf_pos, numbering_type, pdb_chain=None, output_circos_image=None):
     of = str(circos_output_folder)+'/'
     if not os.path.isdir(of):
         os.mkdir(of)
@@ -157,20 +157,22 @@ def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_c
     write_conf(circos_conf_filename, karyotype_filename, links_folder, tmp_name+".png", coupling_dicts_for_sequence_indexed_by_colors)
     #os.system("circos -silent -conf "+circos_conf_filename)
     os.system("circos -conf "+circos_conf_filename)
+    if output_circos_image is None:
+        output_circos_image = pathlib.Path(of+"circos.png")
+    output_circos_image_without_extension = '.'.join(str(output_circos_image).split('.')[:-1])
     for extension in [".svg", ".png"]:
-        shutil.move(tmp_name+extension, of+"circos"+extension)
-    output_circos_image = of+"circos.png"
-    os.system("xdg-open "+output_circos_image)
+        shutil.move(tmp_name+extension, output_circos_image_without_extension+extension)
+    os.system("xdg-open "+str(output_circos_image))
 
 
-def create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, coupling_sep_min=3, top=20, numbering_type='sequence', **args):
+def create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, coupling_sep_min=3, top=20, numbering_type='sequence', output_circos_image=None, **args):
     couplings_dict = get_contact_scores_for_sequence(comfeature)
     seq_pos_to_mrf_pos = comfeature.get_seq_pos_to_mrf_pos()
     couplings_dict_with_coupling_sep_min = remove_couplings_too_close(couplings_dict, coupling_sep_min)
     smaller_couplings_dict = OrderedDict({c:couplings_dict_with_coupling_sep_min[c] for c in list(couplings_dict_with_coupling_sep_min)[:top]})
     coupling_dicts_for_sequence_indexed_by_colors = get_colored_true_false_dicts(smaller_couplings_dict, pdb_chain, real_sequence=comfeature.sequence, colors={True:'blue', False:'red'})
     circos_output_folder = str(comfeature.folder.absolute())+"/circos_output"
-    create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, comfeature.sequence, seq_pos_to_mrf_pos, numbering_type, pdb_chain=pdb_chain)
+    create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, comfeature.sequence, seq_pos_to_mrf_pos, numbering_type, pdb_chain=pdb_chain, output_circos_image=output_circos_image)
 
 
 
@@ -183,6 +185,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling", type=int, default=3)
     parser.add_argument('-n', '--top', help="Nb of couplings displayed", type=int, default=20)
     parser.add_argument('-num', '--numbering_type', help="Use the same numbering type around the circle as sequence (sequence) or PDB structure (pdb)", default='sequence')
+    parser.add_argument('-o', '--output_circos_image', help="Output circos image", type=pathlib.Path, default=None)
 
     args = vars(parser.parse_args(args))
 
