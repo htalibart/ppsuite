@@ -52,6 +52,9 @@ and add trimal/source to your path
 export PATH="$(pwd):$PATH"
 ```
 
+### If you want to use BLAST instead of HHblits to retrieve sequences
+You need to have BLAST installed on your machine. Instructions are available at https://www.ncbi.nlm.nih.gov/books/NBK279671/
+
 ### If you want to use VizContacts
 To visualize predicted contacts using VizContacts, you also need to install :
 * PyMOL : https://pymol.org/
