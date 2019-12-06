@@ -173,5 +173,4 @@ def get_pdb_chain(pdbid, pdb_file, chain_id='A'):
 def get_sequence_from_pdb_chain(pdb_chain):
     ppb = PPBuilder()
     pdb_sequence = ppb.build_peptides(pdb_chain)[0].get_sequence()
-    print(pdb_sequence)
     return pdb_sequence

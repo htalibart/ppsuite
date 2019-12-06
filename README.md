@@ -18,6 +18,7 @@ ComPotts was developped with Python3.6 and requires the following packages (whic
 * scipy
 * matplotlib
 * seaborn
+* scikit-learn
 * kneebow
 
 and the following tools which you have to install and add to your path:
