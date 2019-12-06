@@ -87,7 +87,8 @@ def get_colored_true_false_dicts(couplings_dict, pdb_chain, real_sequence, color
     tf_d = {colors[val]:OrderedDict() for val in colors}
     for c in couplings_dict:
         pdb_c = (d[c[0]], d[c[1]])
-        tf_d[colors[is_true_contact(pdb_c, pdb_chain, contact_distance=contact_distance)]][c] = couplings_dict[c]
+        if not None in pdb_c:
+            tf_d[colors[is_true_contact(pdb_c, pdb_chain, contact_distance=contact_distance)]][c] = couplings_dict[c]
     return tf_d
 
 def remove_couplings_too_close(couplings_dict, coupling_sep_min):
