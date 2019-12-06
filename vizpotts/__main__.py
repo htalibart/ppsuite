@@ -19,14 +19,15 @@ def main():
     start_at_1 = args["start_at_1"] and not args["start_at_0"]
 
     if (args["i_index"] is not None) and (args["j_index"] is not None):
-        msgpack = args["potts_models"][0]
-        mrf = Potts_Model.from_msgpack(msgpack)
-        i = args["i_index"]
-        j = args["j_index"]
-        if start_at_1:
-            i-=1
-            j-=1
-        plot_one_wij(mrf.w[i][j])
+        for msgpack in args["potts_models"]:
+            mrf = Potts_Model.from_msgpack(msgpack)
+            i = args["i_index"]
+            j = args["j_index"]
+            if start_at_1:
+                i-=1
+                j-=1
+            plot_one_wij(mrf.w[i][j], show_figure=False)
+        plt.show()
     else:
         for msgpack in args["potts_models"]:
             mrf = Potts_Model.from_msgpack(msgpack)
