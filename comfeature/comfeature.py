@@ -35,7 +35,7 @@ class ComFeature:
 
 
     @classmethod
-    def from_folder(cls, feature_folder, rescaling_function="identity"):
+    def from_folder(cls, feature_folder, rescaling_function="identity", **kwargs):
 
         feature = cls()
 
