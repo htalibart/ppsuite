@@ -18,9 +18,10 @@ class ComFeature:
 
 
     @classmethod
-    def guess_from_folder(cls, guess_folder, **kwargs):
+    def guess_from_folder(cls, guess_folder, feature_folder=None, **kwargs):
         # NOT RECOMMENDED
-        feature_folder = guess_folder
+        if feature_folder is None:
+            feature_folder = guess_folder
         sequence_file = fm.get_sequence_file_from_folder(guess_folder)
         potts_model_file = fm.get_potts_model_file_from_folder(guess_folder)
         if potts_model_file is not None:
@@ -345,7 +346,6 @@ def main(args=sys.argv[1:]):
     args["infer_potts_model"] = not args["dont_infer_potts_model"]
     args["use_w"] = not args["dont_use_w"]
     if args["guess_folder"] is not None:
-        del args["feature_folder"]
         del args["aln_file"]
         del args["sequence_file"]
         del args["potts_model_file"]
