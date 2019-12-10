@@ -23,10 +23,10 @@ ComPotts was developped with Python3.6 and requires the following packages (whic
 
 and the following tools which you have to install and add to your path:
 
-* CCMpredPy : https://github.com/susannvorberg/CCmpredPy
+* CCMpredPy : https://github.com/soedinglab/ccmgen
 ```
-git clone https://github.com/susannvorberg/CCmpredPy
-cd CCmpredPy
+git clone https://github.com/soedinglab/ccmgen
+cd CCMgen
 python3 setup.py install
 ```
 

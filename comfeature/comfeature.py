@@ -87,7 +87,7 @@ class ComFeature:
 
 
     @classmethod
-    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_count=None, reg_lambda_pair_factor=30, rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, **kwargs):
+    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_single_count=None, reg_lambda_pair_factor=30, rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, **kwargs):
 
         # ALIGNMENT FOLDER
         if feature_folder is None:
@@ -201,9 +201,9 @@ class ComFeature:
                 potts_model_file = feature_folder/"potts_model.mrf"
 
                 if inference_type=="standard":
-                    if pc_count is None:
-                        pc_count = fm.get_nb_sequences_in_fasta_file(aln_train)
-                    potts_model = Potts_Model.from_training_set(aln_train, potts_model_file, pc_count=pc_count, reg_lambda_pair_factor=reg_lambda_pair_factor, **kwargs)
+                    if pc_single_count is None:
+                        pc_single_count = fm.get_nb_sequences_in_fasta_file(aln_train)
+                    potts_model = Potts_Model.from_training_set(aln_train, potts_model_file, pc_single_count=pc_single_count, reg_lambda_pair_factor=reg_lambda_pair_factor, **kwargs)
 
                 elif inference_type=="one_submat":
                     potts_model = Potts_Model.from_sequence_file_with_submat(aln_train, filename=potts_model_file, **kwargs)
@@ -334,7 +334,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-nw', '--dont_use_w', help="Speed up computations if we are not interested in w parameters (not recommended)", action='store_true', default=False)
 
     # CCMpredPy options
-    parser.add_argument('--pc_count', help="CCMpred : Specify number of pseudocounts (default : 1000)", default=1000)
+    parser.add_argument('--pc_single_count', help="CCMpred : Specify number of pseudocounts (default : 1000)", default=1000)
     parser.add_argument('--reg_lambda_pair_factor', help="CCMpred : Regularization parameter for pair potentials (L2 regularization with lambda_pair = lambda_pair-factor * scaling) [CCMpred default: 0.2, our default : 30]", default=30)
 
 
