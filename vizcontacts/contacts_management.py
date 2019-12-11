@@ -95,6 +95,13 @@ def remove_couplings_too_close(couplings_dict, coupling_sep_min):
     ok_dict = OrderedDict()
     for c in couplings_dict:
         if None not in c:
-            if abs(c[0]-c[1])>=coupling_sep_min:
+            if abs(c[0]-c[1])>coupling_sep_min:
                 ok_dict[c] = couplings_dict[c]
     return ok_dict
+
+def get_smaller_dict(couplings_dict, nb_couplings):
+    new_dict = OrderedDict()
+    for c in couplings_dict:
+        if len(new_dict)<nb_couplings:
+            new_dict[c] = couplings_dict[c]
+    return new_dict
