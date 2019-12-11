@@ -30,19 +30,19 @@ def show_coupling(pdb_coupling, strength, color, chain_id='A'):
     pymol.cmd.label("coupling", 'resi')
 
 
-def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, chain_id='A', coupling_sep_min=2):
+def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, chain_id='A', coupling_sep_min=2, thickness=1):
     pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
     colors = {True : 'blue', False : 'red'}
     n=0
     for i, (c, score) in enumerate(pdb_seq_couplings_dict.items()):
         if n<nb_couplings:
             if abs(c[0]-c[1])>coupling_sep_min:
-                strength = score
+                strength = score*thickness
                 show_coupling(c, strength, colors[is_true_contact(c, pdb_chain)], chain_id)
                 n+=1
 
 
-def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, **kwargs):
+def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, **kwargs):
     comfeature = ComFeature.from_folder(feature_folder)
     if pdb_file is None:
         name = str(comfeature.folder)+'/'+pdb_id
@@ -51,7 +51,7 @@ def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', pdb
     couplings_dict = get_contact_scores_for_sequence(comfeature)
     pdb_couplings_dict = translate_dict_to_pdb_pos(couplings_dict, pdb_chain, comfeature.sequence)
     launch_pymol(pdb_id, pdb_file)
-    show_n_couplings(top, pdb_couplings_dict, pdb_file, pdb_id, chain_id=chain_id, coupling_sep_min=coupling_sep_min)
+    show_n_couplings(top, pdb_couplings_dict, pdb_file, pdb_id, chain_id=chain_id, coupling_sep_min=coupling_sep_min, thickness=thickness)
 
 
 def main(args=sys.argv[1:]):
@@ -62,6 +62,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
     parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling", default=3, type=int)
     parser.add_argument('-n', '--top', help="Nb of couplings displayed", type=int, default=20)
+    parser.add_argument('-t', '--thickness', help="Couplings thickness factor", type=float, default=1)
     args = vars(parser.parse_args(args))
 
     show_predicted_contacts_with_pymol(**args)
