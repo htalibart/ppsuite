@@ -184,12 +184,16 @@ def visualize_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=Tru
                 scores[ind_i,ind_j] = w_score_function(aligned_mrfs[0].w[aligned_pos[0][ind_i],aligned_pos[0][ind_j]], aligned_mrfs[1].w[aligned_pos[1][ind_i],aligned_pos[1][ind_j]])
     if label_with_ref:
         xticklabels = aligned_pos[0]
+        yticklabels = aligned_pos[1]
     elif label_with_2:
         xticklabels = aligned_pos[1]
+        yticklabels = aligned_pos[0]
     else:
-        insp = inspect.getargspec(sns.heatmap)
-        xticklabels = insp.defaults[insp.args.index('xticklabels')]
-    sns.heatmap(scores, yticklabels=["v"], xticklabels=xticklabels, cmap="RdBu", center=0)
+        #insp = inspect.getargspec(sns.heatmap)
+        #xticklabels = insp.defaults[insp.args.index('xticklabels')]
+        xticklabels = []
+        yticklabels = []
+    sns.heatmap(scores, yticklabels=yticklabels, xticklabels=xticklabels, cmap="RdBu", center=0)
     plt.tight_layout()
     plt.draw()
     if show_figure:
