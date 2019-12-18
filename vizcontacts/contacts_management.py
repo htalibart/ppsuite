@@ -1,9 +1,9 @@
 import tempfile
 import pathlib
 import numpy as np
-
 from collections import OrderedDict
-
+from kneebow.rotor import Rotor
+import matplotlib.pyplot as plt
 from comfeature.comfeature import *
 from comutils.util import *
 from vizcontacts import top_couplings
@@ -105,3 +105,14 @@ def get_smaller_dict(couplings_dict, nb_couplings):
         if len(new_dict)<nb_couplings:
             new_dict[c] = couplings_dict[c]
     return new_dict
+
+
+def get_elbow_index(couplings_dict):
+    y = list(couplings_dict.values())
+    y.reverse()
+    x = list(range(len(y)))
+    data = np.array([[xi,yi] for xi,yi in zip(x,y)])
+    rotor = Rotor()
+    rotor.fit_rotate(data)
+    elbow_idx = rotor.get_elbow_index()
+    return len(y)-elbow_idx

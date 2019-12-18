@@ -164,10 +164,12 @@ def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_c
     os.system("xdg-open "+str(output_circos_image))
 
 
-def create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, coupling_sep_min=3, top=20, numbering_type='sequence', output_circos_image=None, thickness=1, **args):
+def create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, coupling_sep_min=3, top=20, numbering_type='sequence', output_circos_image=None, thickness=1, auto_top=False, **args):
     couplings_dict = get_contact_scores_for_sequence(comfeature)
     seq_pos_to_mrf_pos = comfeature.get_seq_pos_to_mrf_pos()
     couplings_dict_with_coupling_sep_min = remove_couplings_too_close(couplings_dict, coupling_sep_min)
+    if auto_top:
+        top = get_elbow_index(couplings_dict_with_coupling_sep_min) 
     smaller_couplings_dict = get_smaller_dict(couplings_dict_with_coupling_sep_min, top)
     coupling_dicts_for_sequence_indexed_by_colors = get_colored_true_false_dicts(smaller_couplings_dict, pdb_chain, real_sequence=comfeature.sequence, colors={True:'blue', False:'red'})
     circos_output_folder = str(comfeature.folder.absolute())+"/circos_output"
@@ -183,6 +185,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
     parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling", type=int, default=3)
     parser.add_argument('-n', '--top', help="Nb of couplings displayed", type=int, default=20)
+    parser.add_argument('--auto_top', help="Nb couplings displayed = elbow of the score curve", default=False, action='store_true')
     parser.add_argument('-num', '--numbering_type', help="Use the same numbering type around the circle as sequence (sequence) or PDB structure (pdb)", default='sequence')
     parser.add_argument('-o', '--output_circos_image', help="Output circos image", type=pathlib.Path, default=None)
     parser.add_argument('-t', '--thickness', help="Couplings thickness factor", type=float, default=1)
