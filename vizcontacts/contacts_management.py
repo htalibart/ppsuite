@@ -106,7 +106,6 @@ def get_smaller_dict(couplings_dict, nb_couplings):
             new_dict[c] = couplings_dict[c]
     return new_dict
 
-
 def get_elbow_index(couplings_dict):
     y = list(couplings_dict.values())
     y.reverse()
@@ -116,3 +115,13 @@ def get_elbow_index(couplings_dict):
     rotor.fit_rotate(data)
     elbow_idx = rotor.get_elbow_index()
     return len(y)-elbow_idx
+
+def get_cutoff_smaller_than(couplings_dict, score_cutoff):
+    y = list(couplings_dict.values())
+    if y[0]<score_cutoff:
+        return None
+    else:
+        ind=0
+        while (y[ind]>=score_cutoff):
+            ind+=1
+        return ind

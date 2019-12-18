@@ -42,7 +42,7 @@ def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, cha
                 n+=1
 
 
-def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, **kwargs):
+def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, **kwargs):
     comfeature = ComFeature.from_folder(feature_folder)
     if pdb_file is None:
         name = str(comfeature.folder)+'/'+pdb_id
@@ -53,6 +53,8 @@ def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', pdb
     launch_pymol(pdb_id, pdb_file)
     if auto_top:
         top = get_elbow_index(pdb_couplings_dict)
+    if wij_cutoff:
+        top = get_cutoff_smaller_than(pdb_couplings_dict, wij_cutoff)
     show_n_couplings(top, pdb_couplings_dict, pdb_file, pdb_id, chain_id=chain_id, coupling_sep_min=coupling_sep_min, thickness=thickness)
 
 
@@ -64,6 +66,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
     parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling", default=3, type=int)
     parser.add_argument('-n', '--top', help="Nb of couplings displayed", type=int, default=20)
+    parser.add_argument('--wij_cutoff', help="||wij|| <= wij_cutoff", default=None, type=float)
     parser.add_argument('--auto_top', help="Nb couplings displayed = elbow of the score curve", default=False, action='store_true')
     parser.add_argument('-t', '--thickness', help="Couplings thickness factor", type=float, default=1)
 
