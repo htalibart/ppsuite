@@ -30,9 +30,8 @@ def show_coupling(pdb_coupling, strength, color, chain_id='A'):
     pymol.cmd.label("coupling", 'resi')
 
 
-def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, chain_id='A', coupling_sep_min=2, thickness=1):
+def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, chain_id='A', coupling_sep_min=2, thickness=1, colors={True:'blue', False:'red'}):
     pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
-    colors = {True : 'blue', False : 'red'}
     n=0
     for i, (c, score) in enumerate(pdb_seq_couplings_dict.items()):
         if n<nb_couplings:
@@ -42,31 +41,46 @@ def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, cha
                 n+=1
 
 
-def show_predicted_contacts_with_pymol(feature_folder, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, **kwargs):
-    comfeature = ComFeature.from_folder(feature_folder)
+def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, **kwargs):
+
+    comfeatures = []
+    for feature_folder in feature_folders:
+        comfeatures.append(ComFeature.from_folder(feature_folder))
+
     if pdb_file is None:
-        name = str(comfeature.folder)+'/'+pdb_id
+        name = str(comfeatures[0].folder)+'/'+pdb_id
         pdb_file = fm.fetch_pdb_file(pdb_id, name)
     pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
-    couplings_dict = get_contact_scores_for_sequence(comfeature)
-    pdb_couplings_dict = translate_dict_to_pdb_pos(couplings_dict, pdb_chain, comfeature.sequence)
+
+    pdb_couplings_dicts = []
+    tops = []
+    for comfeature in comfeatures:
+        couplings_dict = get_contact_scores_for_sequence(comfeature)
+        pdb_couplings_dict = translate_dict_to_pdb_pos(couplings_dict, pdb_chain, comfeature.sequence)
+        pdb_couplings_dicts.append(pdb_couplings_dict)
+        top_comf = top
+        if auto_top:
+            top_comf = get_elbow_index(pdb_couplings_dict)
+        if wij_cutoff:
+            top_comf = get_cutoff_smaller_than(pdb_couplings_dict, wij_cutoff)
+        tops.append(top_comf)
+
     launch_pymol(pdb_id, pdb_file)
-    if auto_top:
-        top = get_elbow_index(pdb_couplings_dict)
-    if wij_cutoff:
-        top = get_cutoff_smaller_than(pdb_couplings_dict, wij_cutoff)
-    show_n_couplings(top, pdb_couplings_dict, pdb_file, pdb_id, chain_id=chain_id, coupling_sep_min=coupling_sep_min, thickness=thickness)
+
+    exclus_overlap = get_exclus_overlaps(pdb_couplings_dicts, tops)
+    for d, colors in zip(exclus_overlap, [{True:'blue', False:'red'}, {True:'green', False:'yellow'}, {True:'teal', False:'orange'}]):
+        show_n_couplings(len(d), d, pdb_file, pdb_id, chain_id=chain_id, coupling_sep_min=coupling_sep_min, thickness=thickness, colors=colors)
 
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--feature_folder', help="Feature folder", type=pathlib.Path)
+    parser.add_argument('-f', '--feature_folders', help="Feature folder(s)", type=pathlib.Path, nargs='+')
     parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
     parser.add_argument('-id', '--pdb_id', help="PDB id")
     parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
     parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling", default=3, type=int)
     parser.add_argument('-n', '--top', help="Nb of couplings displayed", type=int, default=20)
-    parser.add_argument('--wij_cutoff', help="||wij|| <= wij_cutoff", default=None, type=float)
+    parser.add_argument('--wij_cutoff', help="||wij|| <= wij_cutoff", default=None, type=float) 
     parser.add_argument('--auto_top', help="Nb couplings displayed = elbow of the score curve", default=False, action='store_true')
     parser.add_argument('-t', '--thickness', help="Couplings thickness factor", type=float, default=1)
 

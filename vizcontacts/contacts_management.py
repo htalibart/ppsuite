@@ -2,6 +2,7 @@ import tempfile
 import pathlib
 import numpy as np
 from collections import OrderedDict
+from itertools import islice
 from kneebow.rotor import Rotor
 import matplotlib.pyplot as plt
 from comfeature.comfeature import *
@@ -125,3 +126,23 @@ def get_cutoff_smaller_than(couplings_dict, score_cutoff):
         while (y[ind]>=score_cutoff):
             ind+=1
         return ind
+
+def get_exclus_overlaps(couplings_dict_, tops):
+    """ returns a list of 3 dicts : [couplings_dict[0]\couplings_dict[1], couplings_dict[0] inter couplings_dict[1], couplings_dict[1]\couplings_dict[0]. Overlap -> mean score """
+    if len(couplings_dict_)==1:
+        return [OrderedDict(islice(couplings_dict_[0].items(), 0, tops[0]))]
+    else:
+        couplings_dict = [OrderedDict(islice(couplings_dict_[k].items(), 0, tops[k])) for k in range(2)]
+        exclus = []
+        overlaps = {}
+        for k in range(2):
+            exclus.append(OrderedDict())
+            for c in couplings_dict[k]:
+                if not ( (c in couplings_dict[(k+1)%2]) or ((c[1],c[0]) in couplings_dict[(k+1)%2]) ):
+                    exclus[k][c] = couplings_dict[k][c]
+                elif c in couplings_dict[(k+1)%2]:
+                    overlaps[frozenset(c)] =  (couplings_dict[k][c]+couplings_dict[(k+1)%2][c])/2
+                elif (c[1],c[0]) in couplings_dict[(k+1)%2]:
+                    overlaps[frozenset(c)] = (couplings_dict[k][c]+couplings_dict[(k+1)%2][(c[1],c[0])])/2
+        overlaps_ordered = OrderedDict({tuple(k): v for k, v in sorted(overlaps.items(), key=lambda item: item)}) # order by mean score
+    return exclus+[overlaps_ordered]
