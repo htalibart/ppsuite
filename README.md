@@ -172,7 +172,7 @@ You can specify whether for you positions start at 0 or at 1 with option --start
 VizContacts allows you to visualize contacts predicted by CCMpredPy :
 * around a circle thanks to Circos, using VizCircos
 * on a PDB structure thanks to PyMOL
-Both input a feature folder (provided by ComFeature). Blue indicates that the coupling is a "true contact" and red indicates that the positions in the coupling are not in contact in the PDB structure.
+Both input a feature folder (provided by ComFeature). Green indicates that the coupling is a "true contact" and red indicates that the positions in the coupling are not in contact in the PDB structure.
 
 #### VizPyMOL
 

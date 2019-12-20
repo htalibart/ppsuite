@@ -176,7 +176,7 @@ def create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, coupling_
         smaller_couplings_dict = get_smaller_dict(couplings_dict_with_coupling_sep_min, top)
     else:
         smaller_couplings_dict = OrderedDict()
-    coupling_dicts_for_sequence_indexed_by_colors = get_colored_true_false_dicts(smaller_couplings_dict, pdb_chain, real_sequence=comfeature.sequence, colors={True:'blue', False:'red'})
+    coupling_dicts_for_sequence_indexed_by_colors = get_colored_true_false_dicts(smaller_couplings_dict, pdb_chain, real_sequence=comfeature.sequence, colors={True:'green', False:'red'})
     circos_output_folder = str(comfeature.folder.absolute())+"/circos_output"
     create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, comfeature.sequence, seq_pos_to_mrf_pos, numbering_type, pdb_chain=pdb_chain, output_circos_image=output_circos_image, thickness=thickness)
 

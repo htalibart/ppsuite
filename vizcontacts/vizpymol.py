@@ -30,7 +30,7 @@ def show_coupling(pdb_coupling, strength, color, chain_id='A'):
     pymol.cmd.label("coupling", 'resi')
 
 
-def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, chain_id='A', coupling_sep_min=2, thickness=1, colors={True:'blue', False:'red'}):
+def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, chain_id='A', coupling_sep_min=2, thickness=1, colors={True:'green', False:'red'}):
     pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
     n=0
     for i, (c, score) in enumerate(pdb_seq_couplings_dict.items()):
@@ -68,7 +68,7 @@ def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pd
     launch_pymol(pdb_id, pdb_file)
 
     exclus_overlap = get_exclus_overlaps(pdb_couplings_dicts, tops)
-    for d, colors in zip(exclus_overlap, [{True:'blue', False:'red'}, {True:'green', False:'yellow'}, {True:'teal', False:'orange'}]):
+    for d, colors in zip(exclus_overlap, [{True:'green', False:'red'}, {True:'blue', False:'yellow'}, {True:'teal', False:'orange'}]):
         show_n_couplings(len(d), d, pdb_file, pdb_id, chain_id=chain_id, coupling_sep_min=coupling_sep_min, thickness=thickness, colors=colors)
 
 
