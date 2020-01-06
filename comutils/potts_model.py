@@ -70,7 +70,7 @@ class Potts_Model:
         for key_arg in kwargs:
             arg_ccm = key_arg.replace('_', '-')
             if arg_ccm in POSSIBLE_CCMPRED_OPTIONS:
-                if kwargs[key_arg] is bool:
+                if isinstance(kwargs[key_arg], bool):
                     arg_value=""
                 else:
                     arg_value=str(kwargs[key_arg])
