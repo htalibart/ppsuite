@@ -337,7 +337,10 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-nw', '--dont_use_w', help="Speed up computations if we are not interested in w parameters (not recommended)", action='store_true', default=False)
 
     # CCMpredPy options
-    parser.add_argument('--pc_single_count', help="CCMpred : Specify number of pseudocounts (default : 1000)", default=1000)
+    parser.add_argument('--pc_single_count', help="CCMpred : Specify number of single pseudocounts (default : 1000)", default=1000)
+    parser.add_argument('--pc_pair_count', help="CCMpred : Specify number of pair pseudocounts (default : 1)", default=1)
+    parser.add_argument('--ofn_pll', help="CCMpred : Pseudo-likelihood inference", default=True)
+    parser.add_argument('--ofn_cd', help="CCMpred : Contrastive Divergence inference", default=False)
     parser.add_argument('--reg_lambda_pair_factor', help="CCMpred : Regularization parameter for pair potentials (L2 regularization with lambda_pair = lambda_pair-factor * scaling) [CCMpred default: 0.2, our default : 30]", default=None)
 
 

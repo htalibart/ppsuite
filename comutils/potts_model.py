@@ -71,10 +71,12 @@ class Potts_Model:
             arg_ccm = key_arg.replace('_', '-')
             if arg_ccm in POSSIBLE_CCMPRED_OPTIONS:
                 if isinstance(kwargs[key_arg], bool):
-                    arg_value=""
+                    if kwargs[key_arg] is True:
+                        arg_value=""
+                        call+=" --"+arg_ccm+" "+arg_value
                 else:
                     arg_value=str(kwargs[key_arg])
-                call+=" --"+arg_ccm+" "+arg_value
+                    call+=" --"+arg_ccm+" "+arg_value
         if write_readme:
             if readme_file is None:
                 readme_file = pathlib.Path(str(binary_file)[:-len(".mrf")]+"_mrf_README.txt")
