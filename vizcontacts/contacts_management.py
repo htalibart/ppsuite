@@ -153,3 +153,11 @@ def get_exclus_overlaps(couplings_dict_, tops):
                     overlaps[frozenset(c)] = (couplings_dict[k][c]+couplings_dict[(k+1)%2][(c[1],c[0])])/2
         overlaps_ordered = OrderedDict({tuple(k): v for k, v in sorted(overlaps.items(), key=lambda item: item)}) # order by mean score
     return exclus+[overlaps_ordered]
+
+
+def get_normalized_ordered_dict(od):
+    fact=1/sum(od.values())
+    new_od = OrderedDict()
+    for key in od:
+        new_od[key] = od[key]*fact
+    return new_od

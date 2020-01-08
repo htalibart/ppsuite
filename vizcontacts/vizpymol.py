@@ -41,7 +41,7 @@ def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, cha
                 n+=1
 
 
-def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, debug_mode=False, **kwargs):
+def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, normalize=False, debug_mode=False, **kwargs):
 
     comfeatures = []
     for feature_folder in feature_folders:
@@ -68,6 +68,11 @@ def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pd
     launch_pymol(pdb_id, pdb_file)
 
     exclus_overlap = get_exclus_overlaps(pdb_couplings_dicts, tops)
+
+    if normalize:
+        for k in range(len(exclus_overlap)):
+            exclus_overlap[k] = get_normalized_ordered_dict(exclus_overlap[k])
+
     for d, colors in zip(exclus_overlap, [{True:'green', False:'red'}, {True:'blue', False:'yellow'}, {True:'teal', False:'orange'}]):
         show_n_couplings(len(d), d, pdb_file, pdb_id, chain_id=chain_id, coupling_sep_min=coupling_sep_min, thickness=thickness, colors=colors)
 
@@ -83,6 +88,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--wij_cutoff', help="||wij|| <= wij_cutoff", default=None, type=float) 
     parser.add_argument('--auto_top', help="Nb couplings displayed = elbow of the score curve", default=False, action='store_true')
     parser.add_argument('-t', '--thickness', help="Couplings thickness factor", type=float, default=1)
+    parser.add_argument('--normalize', help="Normalize coupling values", default=False, action='store_true')
     parser.add_argument('--debug_mode', help="Debug mode", default=False, action='store_true')
 
     args = vars(parser.parse_args(args))
