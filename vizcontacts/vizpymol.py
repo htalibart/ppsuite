@@ -41,7 +41,7 @@ def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, cha
                 n+=1
 
 
-def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, **kwargs):
+def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, debug_mode=False, **kwargs):
 
     comfeatures = []
     for feature_folder in feature_folders:
@@ -60,7 +60,7 @@ def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pd
         pdb_couplings_dicts.append(pdb_couplings_dict)
         top_comf = top
         if auto_top:
-            top_comf = get_elbow_index(pdb_couplings_dict)
+            top_comf = get_elbow_index(pdb_couplings_dict, plot_elbow=debug_mode)
         if wij_cutoff:
             top_comf = get_cutoff_smaller_than(pdb_couplings_dict, wij_cutoff)
         tops.append(top_comf)
@@ -83,6 +83,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--wij_cutoff', help="||wij|| <= wij_cutoff", default=None, type=float) 
     parser.add_argument('--auto_top', help="Nb couplings displayed = elbow of the score curve", default=False, action='store_true')
     parser.add_argument('-t', '--thickness', help="Couplings thickness factor", type=float, default=1)
+    parser.add_argument('--debug_mode', help="Debug mode", default=False, action='store_true')
 
     args = vars(parser.parse_args(args))
 
