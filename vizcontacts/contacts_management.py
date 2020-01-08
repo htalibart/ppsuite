@@ -132,7 +132,7 @@ def get_exclus_overlaps(couplings_dict_, tops):
     if len(couplings_dict_)==1:
         return [OrderedDict(islice(couplings_dict_[0].items(), 0, tops[0]))]
     else:
-        couplings_dict = [OrderedDict(islice(couplings_dict_[k].items(), 0, tops[k])) for k in range(2)]
+        couplings_dict = [OrderedDict(islice(couplings_dict_[k].items(), 0, int(tops[k]))) for k in range(2)]
         exclus = []
         overlaps = {}
         for k in range(2):
