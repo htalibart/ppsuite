@@ -13,6 +13,7 @@ def main():
     parser.add_argument('-j', '--j_index', help="j index", type=int, default=None)
     parser.add_argument('-1', '--start_at_1', help="Start numbering at 1", action='store_true', default=True), 
     parser.add_argument('-0', '--start_at_0', help="Start numbering at 0", action='store_true', default=False), 
+    parser.add_argument('-aln', '--aln_compotts', help="ComPotts output file", type=pathlib.Path, default=None)
     args = vars(parser.parse_args())
 
 
@@ -29,9 +30,12 @@ def main():
             plot_one_wij(mrf.w[i][j], show_figure=False)
         plt.show()
     else:
-        for msgpack in args["potts_models"]:
-            mrf = Potts_Model.from_msgpack(msgpack)
-            visualize_mrf(mrf, start_at_1=start_at_1, show_figure=False)
+        if args["aln_compotts"] is not None:
+            visualize_v_alignment_from_files(args["potts_models"], args["aln_compotts"], start_at_1=start_at_1, show_figure=False)
+        else:
+            for msgpack in args["potts_models"]:
+                mrf = Potts_Model.from_msgpack(msgpack)
+                visualize_mrf(mrf, start_at_1=start_at_1, show_figure=False)
         plt.show()
 
 
