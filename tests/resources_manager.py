@@ -15,8 +15,8 @@ FEATURE_FOLDER = pathlib.Path(pkg_resources.resource_filename(__name__,'examples
 
 FAKE_SEQS_FOLDER = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/fake_sequences/'))
 
-BLAST_XML = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/example_blast.xml'))
-BLAST_FASTA = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/example_blast.fasta'))
+BLAST_XML = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/blast.xml'))
+BLAST_FASTA = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/blast.fasta'))
 
 FOLDER_5JZR = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/5jzr/'))
 A3M_5JZR = FOLDER_5JZR/"Q9AZ42.a3m"

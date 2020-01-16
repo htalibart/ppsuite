@@ -14,7 +14,8 @@ class Test_ComFeature(unittest.TestCase):
         self.feature_folder = pathlib.Path(tempfile.mkdtemp())
 
     def tearDown(self):
-        shutil.rmtree(self.feature_folder)
+        #shutil.rmtree(self.feature_folder)
+        pass
 
     def test_comfeature_with_potts_model_only(self):
         potts_model_file = pathlib.Path(MRF_1CC8)
@@ -53,7 +54,7 @@ class Test_ComFeature(unittest.TestCase):
     def test_cutoff_blast(self):
         cf = ComFeature.from_files(self.feature_folder, unaligned_fasta=BLAST_FASTA, blast_xml=BLAST_XML, use_evalue_cutoff=True, infer_potts_model=False, filter_alignment=False)
         nb_sequences = fm.get_nb_sequences_in_fasta_file(cf.aln_train)
-        assert(nb_sequences==11)
+        assert(nb_sequences==18)
 
     def test_less_sequences(self):
         cf = ComFeature.from_files(self.feature_folder, aln_file=ALN_1CC8, trim_alignment=False, use_less_sequences=True, max_nb_sequences=1000, infer_potts_model=False, filter_alignment=False)
@@ -80,8 +81,8 @@ class Test_ComFeature(unittest.TestCase):
         assert(cf.sequence=="MAEIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVRSGKQL")
         assert(cf.potts_model.ncol==62)
 
-    def test_from_file_calling_hhblits_and_evalue_cutoff(self):
-        cf = ComFeature.from_files(sequence_file=SEQ_1CC8, database='/home/jtalibar/data/uniclust30_2018_08/uniclust30_2018_08', fetch_sequences=True, sequences_fetcher='hhblits', use_evalue_cutoff=True) 
+    #def test_from_file_calling_hhblits_and_evalue_cutoff(self):
+    #    cf = ComFeature.from_files(sequence_file=SEQ_1CC8, database='~/data/uniclust30_2018_08/uniclust30_2018_08', fetch_sequences=True, sequences_fetcher='hhblits', use_evalue_cutoff=True) 
 
 if __name__=='__main__':
     unittest.main()

@@ -52,6 +52,7 @@ def call_muscle(input_file, output_file=None):
         output_file_name = '.'.join(str(input_file).split('.')[:-1])+"_muscle.fasta"
         output_file = pathlib.Path(output_file_name)
     muscle_cline = MuscleCommandline(input=str(input_file), out=str(output_file))
+    print(muscle_cline)
     stdout, stderr = muscle_cline()
     return output_file
 

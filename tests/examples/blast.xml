@@ -1,0 +1,1050 @@
+<?xml version="1.0"?>
+<!DOCTYPE BlastOutput PUBLIC "-//NCBI//NCBI BlastOutput/EN" "http://www.ncbi.nlm.nih.gov/dtd/NCBI_BlastOutput.dtd">
+<BlastOutput>
+  <BlastOutput_program>blastp</BlastOutput_program>
+  <BlastOutput_version>BLASTP 2.9.0+</BlastOutput_version>
+  <BlastOutput_reference>Stephen F. Altschul, Thomas L. Madden, Alejandro A. Sch&amp;auml;ffer, Jinghui Zhang, Zheng Zhang, Webb Miller, and David J. Lipman (1997), &quot;Gapped BLAST and PSI-BLAST: a new generation of protein database search programs&quot;, Nucleic Acids Res. 25:3389-3402.</BlastOutput_reference>
+  <BlastOutput_db>/home/jtalibar/data/blastdb/swissprot</BlastOutput_db>
+  <BlastOutput_query-ID>Query_1</BlastOutput_query-ID>
+  <BlastOutput_query-def>1</BlastOutput_query-def>
+  <BlastOutput_query-len>73</BlastOutput_query-len>
+  <BlastOutput_param>
+    <Parameters>
+      <Parameters_matrix>BLOSUM62</Parameters_matrix>
+      <Parameters_expect>1</Parameters_expect>
+      <Parameters_gap-open>11</Parameters_gap-open>
+      <Parameters_gap-extend>1</Parameters_gap-extend>
+      <Parameters_filter>F</Parameters_filter>
+    </Parameters>
+  </BlastOutput_param>
+<BlastOutput_iterations>
+<Iteration>
+  <Iteration_iter-num>1</Iteration_iter-num>
+  <Iteration_query-ID>Query_1</Iteration_query-ID>
+  <Iteration_query-def>1</Iteration_query-def>
+  <Iteration_query-len>73</Iteration_query-len>
+<Iteration_hits>
+<Hit>
+  <Hit_num>1</Hit_num>
+  <Hit_id>gi|584821|sp|P38636.1|ATX1_YEAST</Hit_id>
+  <Hit_def>RecName: Full=Metal homeostasis factor ATX1</Hit_def>
+  <Hit_accession>P38636</Hit_accession>
+  <Hit_len>73</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>150.214</Hsp_bit-score>
+      <Hsp_score>378</Hsp_score>
+      <Hsp_evalue>1.78115e-48</Hsp_evalue>
+      <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>73</Hsp_query-to>
+      <Hsp_hit-from>1</Hsp_hit-from>
+      <Hsp_hit-to>73</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>73</Hsp_identity>
+      <Hsp_positive>73</Hsp_positive>
+      <Hsp_gaps>0</Hsp_gaps>
+      <Hsp_align-len>73</Hsp_align-len>
+      <Hsp_qseq>MAEIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVRSGKQL</Hsp_qseq>
+      <Hsp_hseq>MAEIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVRSGKQL</Hsp_hseq>
+      <Hsp_midline>MAEIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVRSGKQL</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>2</Hit_num>
+  <Hit_id>gi|74626908|sp|O74735.1|ATX1_SCHPO</Hit_id>
+  <Hit_def>RecName: Full=Metal homeostasis factor atx1</Hit_def>
+  <Hit_accession>O74735</Hit_accession>
+  <Hit_len>68</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>72.4034</Hsp_bit-score>
+      <Hsp_score>176</Hsp_score>
+      <Hsp_evalue>9.07051e-18</Hsp_evalue>
+      <Hsp_query-from>7</Hsp_query-from>
+      <Hsp_query-to>73</Hsp_query-to>
+      <Hsp_hit-from>3</Hsp_hit-from>
+      <Hsp_hit-to>67</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>38</Hsp_identity>
+      <Hsp_positive>46</Hsp_positive>
+      <Hsp_gaps>2</Hsp_gaps>
+      <Hsp_align-len>67</Hsp_align-len>
+      <Hsp_qseq>YQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVRSGKQL</Hsp_qseq>
+      <Hsp_hseq>YQFNVAMACDGCKNAIDRVLTRL--GVEDKSISVEKQEVIVTTDKPYELVEQTIKKTGKEVRSGKVL</Hsp_hseq>
+      <Hsp_midline>YQFNV M C GC  A+++VLT+L   V    IS+EKQ V V T  PY+ + + IKKTGKEVRSGK L</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>3</Hit_num>
+  <Hit_id>gi|206725672|sp|Q54PZ2.2|ATOX1_DICDI</Hit_id>
+  <Hit_def>RecName: Full=Copper transport protein ATOX1 homolog</Hit_def>
+  <Hit_accession>Q54PZ2</Hit_accession>
+  <Hit_len>67</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>48.1358</Hsp_bit-score>
+      <Hsp_score>113</Hsp_score>
+      <Hsp_evalue>3.58234e-08</Hsp_evalue>
+      <Hsp_query-from>7</Hsp_query-from>
+      <Hsp_query-to>66</Hsp_query-to>
+      <Hsp_hit-from>3</Hsp_hit-from>
+      <Hsp_hit-to>62</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>28</Hsp_identity>
+      <Hsp_positive>40</Hsp_positive>
+      <Hsp_gaps>2</Hsp_gaps>
+      <Hsp_align-len>61</Hsp_align-len>
+      <Hsp_qseq>YQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTT-LPYDFILEKIKKTGKE</Hsp_qseq>
+      <Hsp_hseq>YSFFVDMTCGGCSKAVNAILSKIDG-VSNIQIDLENKKVSCESSKMGADELLKNIQKTGKK</Hsp_hseq>
+      <Hsp_midline>Y F V MTC GCS AVN +L+K++  VS I I LE + V   ++ +  D +L+ I+KTGK+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>4</Hit_num>
+  <Hit_id>gi|939108022|sp|Q94BT9.2|ATOX1_ARATH</Hit_id>
+  <Hit_def>RecName: Full=Copper transport protein ATX1; AltName: Full=Copper chaperone ATX1</Hit_def>
+  <Hit_accession>Q94BT9</Hit_accession>
+  <Hit_len>76</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>46.9802</Hsp_bit-score>
+      <Hsp_score>110</Hsp_score>
+      <Hsp_evalue>1.18315e-07</Hsp_evalue>
+      <Hsp_query-from>9</Hsp_query-from>
+      <Hsp_query-to>65</Hsp_query-to>
+      <Hsp_hit-from>7</Hsp_hit-from>
+      <Hsp_hit-to>62</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>24</Hsp_identity>
+      <Hsp_positive>34</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>57</Hsp_align-len>
+      <Hsp_qseq>FNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGK</Hsp_qseq>
+      <Hsp_hseq>LRVAMTCEGCVGAVKRVLGKME-GVESFDVDIKEQKVTVKGNVQPDAVLQTVTKTGK</Hsp_hseq>
+      <Hsp_midline>  V MTC GC GAV +VL K+E  V   D+ +++Q V V   +  D +L+ + KTGK</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>5</Hit_num>
+  <Hit_id>gi|62899895|sp|Q9TT99.1|ATOX1_CANFA</Hit_id>
+  <Hit_def>RecName: Full=Copper transport protein ATOX1; AltName: Full=Metal transport protein ATX1</Hit_def>
+  <Hit_accession>Q9TT99</Hit_accession>
+  <Hit_len>68</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>46.595</Hsp_bit-score>
+      <Hsp_score>109</Hsp_score>
+      <Hsp_evalue>1.63236e-07</Hsp_evalue>
+      <Hsp_query-from>7</Hsp_query-from>
+      <Hsp_query-to>67</Hsp_query-to>
+      <Hsp_hit-from>4</Hsp_hit-from>
+      <Hsp_hit-to>62</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>26</Hsp_identity>
+      <Hsp_positive>38</Hsp_positive>
+      <Hsp_gaps>2</Hsp_gaps>
+      <Hsp_align-len>61</Hsp_align-len>
+      <Hsp_qseq>YQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEV</Hsp_qseq>
+      <Hsp_hseq>HEFSVDMTCEGCSNAVSRVLNKL--GGVEFDIDLPNKKVCINSEHSVDILLETLEKTGKAV</Hsp_hseq>
+      <Hsp_midline>++F+V MTC GCS AV++VL KL     + DI L  + V + +    D +LE ++KTGK V</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>6</Hit_num>
+  <Hit_id>gi|7531050|sp|Q9XT28.1|ATOX1_SHEEP</Hit_id>
+  <Hit_def>RecName: Full=Copper transport protein ATOX1; AltName: Full=Copper chaperone SAH; AltName: Full=Metal transport protein ATX1 &gt;gi|122140366|sp|Q3T0E0.1|ATOX1_BOVIN RecName: Full=Copper transport protein ATOX1; AltName: Full=Metal transport protein ATX1</Hit_def>
+  <Hit_accession>Q9XT28</Hit_accession>
+  <Hit_len>68</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>44.669</Hsp_bit-score>
+      <Hsp_score>104</Hsp_score>
+      <Hsp_evalue>7.66952e-07</Hsp_evalue>
+      <Hsp_query-from>7</Hsp_query-from>
+      <Hsp_query-to>67</Hsp_query-to>
+      <Hsp_hit-from>4</Hsp_hit-from>
+      <Hsp_hit-to>62</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>26</Hsp_identity>
+      <Hsp_positive>36</Hsp_positive>
+      <Hsp_gaps>2</Hsp_gaps>
+      <Hsp_align-len>61</Hsp_align-len>
+      <Hsp_qseq>YQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEV</Hsp_qseq>
+      <Hsp_hseq>HEFSVDMTCEGCSNAVTRVLNKL--GGVQFDIDLPNKKVCINSEHSVDTLLETLGKTGKAV</Hsp_hseq>
+      <Hsp_midline>++F+V MTC GCS AV +VL KL     + DI L  + V + +    D +LE + KTGK V</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>7</Hit_num>
+  <Hit_id>gi|7531045|sp|O00244.1|ATOX1_HUMAN</Hit_id>
+  <Hit_def>RecName: Full=Copper transport protein ATOX1; AltName: Full=Metal transport protein ATX1</Hit_def>
+  <Hit_accession>O00244</Hit_accession>
+  <Hit_len>68</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>43.8986</Hsp_bit-score>
+      <Hsp_score>102</Hsp_score>
+      <Hsp_evalue>1.85274e-06</Hsp_evalue>
+      <Hsp_query-from>7</Hsp_query-from>
+      <Hsp_query-to>67</Hsp_query-to>
+      <Hsp_hit-from>4</Hsp_hit-from>
+      <Hsp_hit-to>62</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>26</Hsp_identity>
+      <Hsp_positive>37</Hsp_positive>
+      <Hsp_gaps>2</Hsp_gaps>
+      <Hsp_align-len>61</Hsp_align-len>
+      <Hsp_qseq>YQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEV</Hsp_qseq>
+      <Hsp_hseq>HEFSVDMTCGGCAEAVSRVLNKLGG--VKYDIDLPNKKVCIESEHSMDTLLATLKKTGKTV</Hsp_hseq>
+      <Hsp_midline>++F+V MTC GC+ AV++VL KL     K DI L  + V + +    D +L  +KKTGK V</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>8</Hit_num>
+  <Hit_id>gi|75220197|sp|O82089.1|CCH_ARATH</Hit_id>
+  <Hit_def>RecName: Full=Copper transport protein CCH; AltName: Full=Copper chaperone CCH</Hit_def>
+  <Hit_accession>O82089</Hit_accession>
+  <Hit_len>121</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>44.669</Hsp_bit-score>
+      <Hsp_score>104</Hsp_score>
+      <Hsp_evalue>2.71432e-06</Hsp_evalue>
+      <Hsp_query-from>9</Hsp_query-from>
+      <Hsp_query-to>65</Hsp_query-to>
+      <Hsp_hit-from>7</Hsp_hit-from>
+      <Hsp_hit-to>62</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>23</Hsp_identity>
+      <Hsp_positive>34</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>57</Hsp_align-len>
+      <Hsp_qseq>FNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGK</Hsp_qseq>
+      <Hsp_hseq>LKVGMSCQGCVGAVNRVLGKME-GVESFDIDIKEQKVTVKGNVEPEAVFQTVSKTGK</Hsp_hseq>
+      <Hsp_midline>  V M+C GC GAVN+VL K+E  V   DI +++Q V V   +  + + + + KTGK</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>9</Hit_num>
+  <Hit_id>gi|20137672|sp|Q9WU84.1|CCS_MOUSE</Hit_id>
+  <Hit_def>RecName: Full=Copper chaperone for superoxide dismutase; AltName: Full=Superoxide dismutase copper chaperone</Hit_def>
+  <Hit_accession>Q9WU84</Hit_accession>
+  <Hit_len>274</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>43.1282</Hsp_bit-score>
+      <Hsp_score>100</Hsp_score>
+      <Hsp_evalue>2.43443e-05</Hsp_evalue>
+      <Hsp_query-from>8</Hsp_query-from>
+      <Hsp_query-to>66</Hsp_query-to>
+      <Hsp_hit-from>15</Hsp_hit-from>
+      <Hsp_hit-to>72</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>22</Hsp_identity>
+      <Hsp_positive>34</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>59</Hsp_align-len>
+      <Hsp_qseq>QFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKE</Hsp_qseq>
+      <Hsp_hseq>EFAVQMSCQSCVDAVHKTLKGV-AGVQNVDVQLENQMVLVQTTLPSQEVQALLESTGRQ</Hsp_hseq>
+      <Hsp_midline>+F V M+C  C  AV+K L  +   V  +D+ LE Q+V V TTLP   +   ++ TG++</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>10</Hit_num>
+  <Hit_id>gi|7531044|sp|Q9WUC4.1|ATOX1_RAT</Hit_id>
+  <Hit_def>RecName: Full=Copper transport protein ATOX1; AltName: Full=ATX1 homolog protein Rah1; AltName: Full=Metal transport protein ATX1</Hit_def>
+  <Hit_accession>Q9WUC4</Hit_accession>
+  <Hit_len>68</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>40.817</Hsp_bit-score>
+      <Hsp_score>94</Hsp_score>
+      <Hsp_evalue>3.13249e-05</Hsp_evalue>
+      <Hsp_query-from>7</Hsp_query-from>
+      <Hsp_query-to>67</Hsp_query-to>
+      <Hsp_hit-from>4</Hsp_hit-from>
+      <Hsp_hit-to>62</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>23</Hsp_identity>
+      <Hsp_positive>36</Hsp_positive>
+      <Hsp_gaps>2</Hsp_gaps>
+      <Hsp_align-len>61</Hsp_align-len>
+      <Hsp_qseq>YQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEV</Hsp_qseq>
+      <Hsp_hseq>HEFSVDMTCGGCAEAVSRVLNKL--GGVEFNIDLPNKKVCIESEHSSDILLATLNKTGKAV</Hsp_hseq>
+      <Hsp_midline>++F+V MTC GC+ AV++VL KL     + +I L  + V + +    D +L  + KTGK V</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>11</Hit_num>
+  <Hit_id>gi|7531046|sp|O08997.1|ATOX1_MOUSE</Hit_id>
+  <Hit_def>RecName: Full=Copper transport protein ATOX1; AltName: Full=Metal transport protein ATX1</Hit_def>
+  <Hit_accession>O08997</Hit_accession>
+  <Hit_len>68</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>40.4318</Hsp_bit-score>
+      <Hsp_score>93</Hsp_score>
+      <Hsp_evalue>3.85067e-05</Hsp_evalue>
+      <Hsp_query-from>7</Hsp_query-from>
+      <Hsp_query-to>67</Hsp_query-to>
+      <Hsp_hit-from>4</Hsp_hit-from>
+      <Hsp_hit-to>62</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>24</Hsp_identity>
+      <Hsp_positive>36</Hsp_positive>
+      <Hsp_gaps>2</Hsp_gaps>
+      <Hsp_align-len>61</Hsp_align-len>
+      <Hsp_qseq>YQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEV</Hsp_qseq>
+      <Hsp_hseq>HEFSVDMTCEGCAEAVSRVLNKLGGVEFNIDLPNKKVCIDSEHS--SDTLLATLNKTGKAV</Hsp_hseq>
+      <Hsp_midline>++F+V MTC GC+ AV++VL KL      ID+  +K  +D   +   D +L  + KTGK V</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>12</Hit_num>
+  <Hit_id>gi|20137596|sp|Q9JK72.1|CCS_RAT</Hit_id>
+  <Hit_def>RecName: Full=Copper chaperone for superoxide dismutase; AltName: Full=Superoxide dismutase copper chaperone</Hit_def>
+  <Hit_accession>Q9JK72</Hit_accession>
+  <Hit_len>274</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>42.3578</Hsp_bit-score>
+      <Hsp_score>98</Hsp_score>
+      <Hsp_evalue>3.98385e-05</Hsp_evalue>
+      <Hsp_query-from>8</Hsp_query-from>
+      <Hsp_query-to>66</Hsp_query-to>
+      <Hsp_hit-from>15</Hsp_hit-from>
+      <Hsp_hit-to>72</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>22</Hsp_identity>
+      <Hsp_positive>34</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>59</Hsp_align-len>
+      <Hsp_qseq>QFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKE</Hsp_qseq>
+      <Hsp_hseq>EFTVQMSCQSCVDAVHKTL-KGAAGVQNVEVQLENQMVLVQTTLPSQEVQALLESTGRQ</Hsp_hseq>
+      <Hsp_midline>+F V M+C  C  AV+K L K    V  +++ LE Q+V V TTLP   +   ++ TG++</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>13</Hit_num>
+  <Hit_id>gi|75233101|sp|Q7XTY9.1|CCS_ORYSJ</Hit_id>
+  <Hit_def>RecName: Full=Copper chaperone for superoxide dismutase, chloroplastic; AltName: Full=Superoxide dismutase copper chaperone; Flags: Precursor</Hit_def>
+  <Hit_accession>Q7XTY9</Hit_accession>
+  <Hit_len>312</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>42.3578</Hsp_bit-score>
+      <Hsp_score>98</Hsp_score>
+      <Hsp_evalue>4.40392e-05</Hsp_evalue>
+      <Hsp_query-from>8</Hsp_query-from>
+      <Hsp_query-to>68</Hsp_query-to>
+      <Hsp_hit-from>93</Hsp_hit-from>
+      <Hsp_hit-to>152</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>21</Hsp_identity>
+      <Hsp_positive>34</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>61</Hsp_align-len>
+      <Hsp_qseq>QFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVR</Hsp_qseq>
+      <Hsp_hseq>EFMVDMKCDGCVTAVKNKFQTLE-GIKNIEVDLNNQVVRVLGSLPVNTMLDTLHQTGRDAR</Hsp_hseq>
+      <Hsp_midline>+F V M C GC  AV      LE  +  I++ L  Q+V V  +LP + +L+ + +TG++ R</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>14</Hit_num>
+  <Hit_id>gi|20137612|sp|O14618.1|CCS_HUMAN</Hit_id>
+  <Hit_def>RecName: Full=Copper chaperone for superoxide dismutase; AltName: Full=Superoxide dismutase copper chaperone</Hit_def>
+  <Hit_accession>O14618</Hit_accession>
+  <Hit_len>274</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>41.5874</Hsp_bit-score>
+      <Hsp_score>96</Hsp_score>
+      <Hsp_evalue>8.84407e-05</Hsp_evalue>
+      <Hsp_query-from>8</Hsp_query-from>
+      <Hsp_query-to>66</Hsp_query-to>
+      <Hsp_hit-from>15</Hsp_hit-from>
+      <Hsp_hit-to>72</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>22</Hsp_identity>
+      <Hsp_positive>34</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>59</Hsp_align-len>
+      <Hsp_qseq>QFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKE</Hsp_qseq>
+      <Hsp_hseq>EFAVQMTCQSCVDAVRKSLQGV-AGVQDVEVHLEDQMVLVHTTLPSQEVQALLEGTGRQ</Hsp_hseq>
+      <Hsp_midline>+F V MTC  C  AV K L  +   V  +++ LE Q+V V+TTLP   +   ++ TG++</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>15</Hit_num>
+  <Hit_id>gi|56404320|sp|Q6PWT7.1|CCS_PIG</Hit_id>
+  <Hit_def>RecName: Full=Copper chaperone for superoxide dismutase; AltName: Full=Superoxide dismutase copper chaperone</Hit_def>
+  <Hit_accession>Q6PWT7</Hit_accession>
+  <Hit_len>274</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>41.2022</Hsp_bit-score>
+      <Hsp_score>95</Hsp_score>
+      <Hsp_evalue>0.000114232</Hsp_evalue>
+      <Hsp_query-from>8</Hsp_query-from>
+      <Hsp_query-to>66</Hsp_query-to>
+      <Hsp_hit-from>15</Hsp_hit-from>
+      <Hsp_hit-to>72</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>20</Hsp_identity>
+      <Hsp_positive>34</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>59</Hsp_align-len>
+      <Hsp_qseq>QFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKE</Hsp_qseq>
+      <Hsp_hseq>EFAVQMTCQSCVDAVSRSLQGV-AGIQSVEVQLENQMVLVQTTLPSQVVQALLEDTGRQ</Hsp_hseq>
+      <Hsp_midline>+F V MTC  C  AV++ L  +   +  +++ LE Q+V V TTLP   +   ++ TG++</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>16</Hit_num>
+  <Hit_id>gi|75263761|sp|Q9LD47.1|CCS_ARATH</Hit_id>
+  <Hit_def>RecName: Full=Copper chaperone for superoxide dismutase, chloroplastic/cytosolic; Short=AtCCS; AltName: Full=Superoxide dismutase copper chaperone; Flags: Precursor</Hit_def>
+  <Hit_accession>Q9LD47</Hit_accession>
+  <Hit_len>320</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>41.2022</Hsp_bit-score>
+      <Hsp_score>95</Hsp_score>
+      <Hsp_evalue>0.00011669</Hsp_evalue>
+      <Hsp_query-from>8</Hsp_query-from>
+      <Hsp_query-to>68</Hsp_query-to>
+      <Hsp_hit-from>90</Hsp_hit-from>
+      <Hsp_hit-to>149</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>19</Hsp_identity>
+      <Hsp_positive>35</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>61</Hsp_align-len>
+      <Hsp_qseq>QFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVR</Hsp_qseq>
+      <Hsp_hseq>EFMVDMTCEGCVNAVKNKLETIE-GIEKVEVDLSNQVVRILGSSPVKAMTQALEQTGRKAR</Hsp_hseq>
+      <Hsp_midline>+F V MTC GC  AV   L  +E  + K+++ L  Q+V +  + P   + + +++TG++ R</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>17</Hit_num>
+  <Hit_id>gi|74695351|sp|Q75DD6.1|CCS1_ASHGO</Hit_id>
+  <Hit_def>RecName: Full=Superoxide dismutase 1 copper chaperone</Hit_def>
+  <Hit_accession>Q75DD6</Hit_accession>
+  <Hit_len>238</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>36.5798</Hsp_bit-score>
+      <Hsp_score>83</Hsp_score>
+      <Hsp_evalue>0.00538366</Hsp_evalue>
+      <Hsp_query-from>9</Hsp_query-from>
+      <Hsp_query-to>66</Hsp_query-to>
+      <Hsp_hit-from>12</Hsp_hit-from>
+      <Hsp_hit-to>68</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>18</Hsp_identity>
+      <Hsp_positive>32</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>58</Hsp_align-len>
+      <Hsp_qseq>FNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKE</Hsp_qseq>
+      <Hsp_hseq>YAVPMHCGDCTGEISRALRAV-PGVQEVTPDLERQLVAVRGIAPPSSIVQALAATGRD</Hsp_hseq>
+      <Hsp_midline>+ V M C  C+G +++ L  + P V ++   LE+QLV V    P   I++ +  TG++</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>18</Hit_num>
+  <Hit_id>gi|218511981|sp|Q6BK66.2|CCS1_DEBHA</Hit_id>
+  <Hit_def>RecName: Full=Superoxide dismutase 1 copper chaperone</Hit_def>
+  <Hit_accession>Q6BK66</Hit_accession>
+  <Hit_len>250</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>35.8094</Hsp_bit-score>
+      <Hsp_score>81</Hsp_score>
+      <Hsp_evalue>0.00854902</Hsp_evalue>
+      <Hsp_query-from>9</Hsp_query-from>
+      <Hsp_query-to>67</Hsp_query-to>
+      <Hsp_hit-from>9</Hsp_hit-from>
+      <Hsp_hit-to>66</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>21</Hsp_identity>
+      <Hsp_positive>31</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>59</Hsp_align-len>
+      <Hsp_qseq>FNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEV</Hsp_qseq>
+      <Hsp_hseq>FAVPMECQSCVDSVSSSLKSLN-GISKYDIDLKSNLVTTEGSVPPSEIVKAIQSTGKDA</Hsp_hseq>
+      <Hsp_midline>F V M C  C  +V+  L  L   +SK DI L+  LV    ++P   I++ I+ TGK+ </Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>19</Hit_num>
+  <Hit_id>gi|75268245|sp|Q9C7J6.1|HIP35_ARATH</Hit_id>
+  <Hit_def>RecName: Full=Heavy metal-associated isoprenylated plant protein 35; Short=AtHIP35; Flags: Precursor</Hit_def>
+  <Hit_accession>Q9C7J6</Hit_accession>
+  <Hit_len>364</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>34.2686</Hsp_bit-score>
+      <Hsp_score>77</Hsp_score>
+      <Hsp_evalue>0.0412381</Hsp_evalue>
+      <Hsp_query-from>11</Hsp_query-from>
+      <Hsp_query-to>68</Hsp_query-to>
+      <Hsp_hit-from>46</Hsp_hit-from>
+      <Hsp_hit-to>102</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>20</Hsp_identity>
+      <Hsp_positive>32</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>58</Hsp_align-len>
+      <Hsp_qseq>VVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVR</Hsp_qseq>
+      <Hsp_hseq>VSIHCEGCKRKVKKILTSIE-GVFKVDIDVKQHKVTVIGIISPEILLKKLNKAGKNAE</Hsp_hseq>
+      <Hsp_midline>V + C GC   V K+LT +E  V K+DI +++  V V   +  + +L+K+ K GK   </Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>20</Hit_num>
+  <Hit_id>gi|1100059682|sp|B3H6D0.1|HIP45_ARATH</Hit_id>
+  <Hit_def>RecName: Full=Heavy metal-associated isoprenylated plant protein 45; Short=AtHIP45; Flags: Precursor</Hit_def>
+  <Hit_accession>B3H6D0</Hit_accession>
+  <Hit_len>166</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>33.113</Hsp_bit-score>
+      <Hsp_score>74</Hsp_score>
+      <Hsp_evalue>0.0905532</Hsp_evalue>
+      <Hsp_query-from>11</Hsp_query-from>
+      <Hsp_query-to>65</Hsp_query-to>
+      <Hsp_hit-from>22</Hsp_hit-from>
+      <Hsp_hit-to>75</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>17</Hsp_identity>
+      <Hsp_positive>33</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>55</Hsp_align-len>
+      <Hsp_qseq>VVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGK</Hsp_qseq>
+      <Hsp_hseq>VDMDCKGCEKKVRRAISKLDG-VDTVEIDVDRQKVTVTGYVDREEVLKMVKRTGR</Hsp_hseq>
+      <Hsp_midline>V M C GC   V + ++KL+  V  ++I +++Q V V   +  + +L+ +K+TG+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>21</Hit_num>
+  <Hit_id>gi|127010|sp|P04129.1|MERP_SHIFL</Hit_id>
+  <Hit_def>RecName: Full=Mercuric transport protein periplasmic component; AltName: Full=Mercury scavenger protein; AltName: Full=Periplasmic mercury ion-binding protein; Flags: Precursor</Hit_def>
+  <Hit_accession>P04129</Hit_accession>
+  <Hit_len>91</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>31.9574</Hsp_bit-score>
+      <Hsp_score>71</Hsp_score>
+      <Hsp_evalue>0.104802</Hsp_evalue>
+      <Hsp_query-from>13</Hsp_query-from>
+      <Hsp_query-to>43</Hsp_query-to>
+      <Hsp_hit-from>31</Hsp_hit-from>
+      <Hsp_hit-to>60</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>15</Hsp_identity>
+      <Hsp_positive>21</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>31</Hsp_align-len>
+      <Hsp_qseq>MTCSGCSGAVNKVLTKLEPDVSKIDISLEKQ</Hsp_qseq>
+      <Hsp_hseq>MTCAACPITVKKALSKVE-GVSKVDVGFEKR</Hsp_hseq>
+      <Hsp_midline>MTC+ C   V K L+K+E  VSK+D+  EK+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>22</Hit_num>
+  <Hit_id>gi|82592992|sp|Q4L9T4.1|NANA_STAHJ</Hit_id>
+  <Hit_def>RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase</Hit_def>
+  <Hit_accession>Q4L9T4</Hit_accession>
+  <Hit_len>293</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>31.9574</Hsp_bit-score>
+      <Hsp_score>71</Hsp_score>
+      <Hsp_evalue>0.222232</Hsp_evalue>
+      <Hsp_query-from>3</Hsp_query-from>
+      <Hsp_query-to>62</Hsp_query-to>
+      <Hsp_hit-from>118</Hsp_hit-from>
+      <Hsp_hit-to>179</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>20</Hsp_identity>
+      <Hsp_positive>36</Hsp_positive>
+      <Hsp_gaps>14</Hsp_gaps>
+      <Hsp_align-len>68</Hsp_align-len>
+      <Hsp_qseq>EIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEK--------QLVDVYTTLPYDFILEKIKK</Hsp_qseq>
+      <Hsp_hseq>EIKQYYFDII------EATQNNMIIYAIPDLTGVNISIEQFGELFNHEKVVGVKYTAPNFFLLERIRK</Hsp_hseq>
+      <Hsp_midline>EIK Y F+++          N ++    PD++ ++IS+E+        ++V V  T P  F+LE+I+K</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>23</Hit_num>
+  <Hit_id>gi|81673274|sp|Q5HL56.1|COPA_STAEQ</Hit_id>
+  <Hit_def>RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase &gt;gi|81842507|sp|Q8CN02.1|COPA_STAES RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase</Hit_def>
+  <Hit_accession>Q5HL56</Hit_accession>
+  <Hit_len>794</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>31.9574</Hsp_bit-score>
+      <Hsp_score>71</Hsp_score>
+      <Hsp_evalue>0.229221</Hsp_evalue>
+      <Hsp_query-from>13</Hsp_query-from>
+      <Hsp_query-to>67</Hsp_query-to>
+      <Hsp_hit-from>13</Hsp_hit-from>
+      <Hsp_hit-to>68</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>19</Hsp_identity>
+      <Hsp_positive>34</Hsp_positive>
+      <Hsp_gaps>5</Hsp_gaps>
+      <Hsp_align-len>58</Hsp_align-len>
+      <Hsp_qseq>MTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPY---DFILEKIKKTGKEV</Hsp_qseq>
+      <Hsp_hseq>MTCAACSNRIEKKLNRMNHVQAKVNLTTEKATID-YESDDYHLEDFV-EQIQSLGYDV</Hsp_hseq>
+      <Hsp_midline>MTC+ CS  + K L ++    +K++++ EK  +D Y +  Y   DF+ E+I+  G +V</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>24</Hit_num>
+  <Hit_id>gi|1100059545|sp|F4IQG4.1|HIP30_ARATH</Hit_id>
+  <Hit_def>RecName: Full=Heavy metal-associated isoprenylated plant protein 30; Short=AtHIP30; AltName: Full=Protein NPCC11; Flags: Precursor</Hit_def>
+  <Hit_accession>F4IQG4</Hit_accession>
+  <Hit_len>178</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>31.187</Hsp_bit-score>
+      <Hsp_score>69</Hsp_score>
+      <Hsp_evalue>0.394427</Hsp_evalue>
+      <Hsp_query-from>11</Hsp_query-from>
+      <Hsp_query-to>67</Hsp_query-to>
+      <Hsp_hit-from>52</Hsp_hit-from>
+      <Hsp_hit-to>107</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>17</Hsp_identity>
+      <Hsp_positive>29</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>57</Hsp_align-len>
+      <Hsp_qseq>VVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEV</Hsp_qseq>
+      <Hsp_hseq>VRMCCSGCERVVKHAIYKLR-GVDSVEVNLEMERVTVVGYVERKKVLKAVRRAGKRA</Hsp_hseq>
+      <Hsp_midline>V M CSGC   V   + KL   V  ++++LE + V V   +    +L+ +++ GK  </Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>25</Hit_num>
+  <Hit_id>gi|1100059544|sp|F4IC29.1|HIP28_ARATH</Hit_id>
+  <Hit_def>RecName: Full=Heavy metal-associated isoprenylated plant protein 28; Short=AtHIP28; Flags: Precursor</Hit_def>
+  <Hit_accession>F4IC29</Hit_accession>
+  <Hit_len>159</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>30.8018</Hsp_bit-score>
+      <Hsp_score>68</Hsp_score>
+      <Hsp_evalue>0.449463</Hsp_evalue>
+      <Hsp_query-from>8</Hsp_query-from>
+      <Hsp_query-to>67</Hsp_query-to>
+      <Hsp_hit-from>14</Hsp_hit-from>
+      <Hsp_hit-to>72</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>18</Hsp_identity>
+      <Hsp_positive>29</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>60</Hsp_align-len>
+      <Hsp_qseq>QFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEV</Hsp_qseq>
+      <Hsp_hseq>EMRVHMDCVGCESRVKNALQKMR-GVDAVEIDMVQQKVTVTGYADQKKVLKKVRKTGRRA</Hsp_hseq>
+      <Hsp_midline>+  V M C GC   V   L K+   V  ++I + +Q V V        +L+K++KTG+  </Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>26</Hit_num>
+  <Hit_id>gi|29336784|sp|Q8NYC7.1|NANA_STAAW</Hit_id>
+  <Hit_def>RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase &gt;gi|81650051|sp|Q6GCF6.1|NANA_STAAS RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase &gt;gi|81651856|sp|Q6GK01.1|NANA_STAAR RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase &gt;gi|81695381|sp|Q5HJ53.1|NANA_STAAC RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase &gt;gi|122540266|sp|Q2G160.1|NANA_STAA8 RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase &gt;gi|123487371|sp|Q2FJU9.1|NANA_STAA3 RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase &gt;gi|172048760|sp|A6QDU7.1|NANA_STAAE RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase &gt;gi|189030791|sp|A8YZD9.1|NANA_STAAT RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase</Hit_def>
+  <Hit_accession>Q8NYC7</Hit_accession>
+  <Hit_len>293</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>31.187</Hsp_bit-score>
+      <Hsp_score>69</Hsp_score>
+      <Hsp_evalue>0.503507</Hsp_evalue>
+      <Hsp_query-from>3</Hsp_query-from>
+      <Hsp_query-to>62</Hsp_query-to>
+      <Hsp_hit-from>118</Hsp_hit-from>
+      <Hsp_hit-to>179</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>19</Hsp_identity>
+      <Hsp_positive>36</Hsp_positive>
+      <Hsp_gaps>14</Hsp_gaps>
+      <Hsp_align-len>68</Hsp_align-len>
+      <Hsp_qseq>EIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEK--------QLVDVYTTLPYDFILEKIKK</Hsp_qseq>
+      <Hsp_hseq>EIRDYYFDII------EATQNNMIIYAIPDLTGVNISIEQFSELFNHEKIVGVKYTAPNFFLLERIRK</Hsp_hseq>
+      <Hsp_midline>EI+ Y F+++          N ++    PD++ ++IS+E+        ++V V  T P  F+LE+I+K</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>27</Hit_num>
+  <Hit_id>gi|54037902|sp|P99123.1|NANA_STAAN</Hit_id>
+  <Hit_def>RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase &gt;gi|54041646|sp|P63949.1|NANA_STAAM RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase &gt;gi|167012466|sp|A7WXZ2.1|NANA_STAA1 RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase &gt;gi|189030789|sp|A6TY99.1|NANA_STAA2 RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase &gt;gi|189030790|sp|A5IPI2.1|NANA_STAA9 RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase</Hit_def>
+  <Hit_accession>P99123</Hit_accession>
+  <Hit_len>293</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>30.8018</Hsp_bit-score>
+      <Hsp_score>68</Hsp_score>
+      <Hsp_evalue>0.523755</Hsp_evalue>
+      <Hsp_query-from>3</Hsp_query-from>
+      <Hsp_query-to>62</Hsp_query-to>
+      <Hsp_hit-from>118</Hsp_hit-from>
+      <Hsp_hit-to>179</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>19</Hsp_identity>
+      <Hsp_positive>36</Hsp_positive>
+      <Hsp_gaps>14</Hsp_gaps>
+      <Hsp_align-len>68</Hsp_align-len>
+      <Hsp_qseq>EIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEK--------QLVDVYTTLPYDFILEKIKK</Hsp_qseq>
+      <Hsp_hseq>EIRDYYFDII------EATQNNMIIYAIPDLTGVNISIEQFSELFNHEKIVGVKYTAPNFFLLERIRK</Hsp_hseq>
+      <Hsp_midline>EI+ Y F+++          N ++    PD++ ++IS+E+        ++V V  T P  F+LE+I+K</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>28</Hit_num>
+  <Hit_id>gi|123548431|sp|Q2YVB1.1|NANA_STAAB</Hit_id>
+  <Hit_def>RecName: Full=N-acetylneuraminate lyase; Short=NAL; Short=Neu5Ac lyase; AltName: Full=N-acetylneuraminate pyruvate-lyase; AltName: Full=N-acetylneuraminic acid aldolase; AltName: Full=Sialate lyase; AltName: Full=Sialic acid aldolase; AltName: Full=Sialic acid lyase</Hit_def>
+  <Hit_accession>Q2YVB1</Hit_accession>
+  <Hit_len>293</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>30.8018</Hsp_bit-score>
+      <Hsp_score>68</Hsp_score>
+      <Hsp_evalue>0.544818</Hsp_evalue>
+      <Hsp_query-from>3</Hsp_query-from>
+      <Hsp_query-to>62</Hsp_query-to>
+      <Hsp_hit-from>118</Hsp_hit-from>
+      <Hsp_hit-to>179</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>19</Hsp_identity>
+      <Hsp_positive>36</Hsp_positive>
+      <Hsp_gaps>14</Hsp_gaps>
+      <Hsp_align-len>68</Hsp_align-len>
+      <Hsp_qseq>EIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEK--------QLVDVYTTLPYDFILEKIKK</Hsp_qseq>
+      <Hsp_hseq>EIRDYYFDII------EATQNNMIIYAIPDLTGVNISIEQFSELFNHEKIVGVKYTAPNFFLLERIRK</Hsp_hseq>
+      <Hsp_midline>EI+ Y F+++          N ++    PD++ ++IS+E+        ++V V  T P  F+LE+I+K</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>29</Hit_num>
+  <Hit_id>gi|81648599|sp|Q6G6B7.1|COPA_STAAS</Hit_id>
+  <Hit_def>RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase &gt;gi|81761962|sp|Q8NUQ9.1|COPA_STAAW RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase</Hit_def>
+  <Hit_accession>Q6G6B7</Hit_accession>
+  <Hit_len>802</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>30.8018</Hsp_bit-score>
+      <Hsp_score>68</Hsp_score>
+      <Hsp_evalue>0.626589</Hsp_evalue>
+      <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>46</Hsp_query-to>
+      <Hsp_hit-from>1</Hsp_hit-from>
+      <Hsp_hit-to>47</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>15</Hsp_identity>
+      <Hsp_positive>27</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>47</Hsp_align-len>
+      <Hsp_qseq>MAEIKHYQFNVV-MTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVD</Hsp_qseq>
+      <Hsp_hseq>MANTKKTTLDITGMTCAACSNRIEKKLNKLDDVNAQVNLTTEKATVE</Hsp_hseq>
+      <Hsp_midline>MA  K    ++  MTC+ CS  + K L KL+   ++++++ EK  V+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>30</Hit_num>
+  <Hit_id>gi|81650366|sp|Q6GDP1.1|COPA_STAAR</Hit_id>
+  <Hit_def>RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase</Hit_def>
+  <Hit_accession>Q6GDP1</Hit_accession>
+  <Hit_len>802</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>30.8018</Hsp_bit-score>
+      <Hsp_score>68</Hsp_score>
+      <Hsp_evalue>0.626589</Hsp_evalue>
+      <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>46</Hsp_query-to>
+      <Hsp_hit-from>1</Hsp_hit-from>
+      <Hsp_hit-to>47</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>15</Hsp_identity>
+      <Hsp_positive>27</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>47</Hsp_align-len>
+      <Hsp_qseq>MAEIKHYQFNVV-MTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVD</Hsp_qseq>
+      <Hsp_hseq>MANTKKTTLDITGMTCAACSNRIEKKLNKLDDVNAQVNLTTEKATVE</Hsp_hseq>
+      <Hsp_midline>MA  K    ++  MTC+ CS  + K L KL+   ++++++ EK  V+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>31</Hit_num>
+  <Hit_id>gi|81693683|sp|Q5HCZ3.1|COPA_STAAC</Hit_id>
+  <Hit_def>RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase &gt;gi|122538628|sp|Q2FV64.1|COPA_STAA8 RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase; AltName: Full=Cu(I)-translocating P-type ATPase &gt;gi|206558259|sp|A6QK47.1|COPA_STAAE RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase</Hit_def>
+  <Hit_accession>Q5HCZ3</Hit_accession>
+  <Hit_len>802</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>30.8018</Hsp_bit-score>
+      <Hsp_score>68</Hsp_score>
+      <Hsp_evalue>0.626589</Hsp_evalue>
+      <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>46</Hsp_query-to>
+      <Hsp_hit-from>1</Hsp_hit-from>
+      <Hsp_hit-to>47</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>15</Hsp_identity>
+      <Hsp_positive>27</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>47</Hsp_align-len>
+      <Hsp_qseq>MAEIKHYQFNVV-MTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVD</Hsp_qseq>
+      <Hsp_hseq>MANTKKTTLDITGMTCAACSNRIEKKLNKLDDVNAQVNLTTEKATVE</Hsp_hseq>
+      <Hsp_midline>MA  K    ++  MTC+ CS  + K L KL+   ++++++ EK  V+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>32</Hit_num>
+  <Hit_id>gi|81705015|sp|Q7A3E6.1|COPA_STAAN</Hit_id>
+  <Hit_def>RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase &gt;gi|81780872|sp|Q99R80.1|COPA_STAAM RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase &gt;gi|206557742|sp|A7X6S1.1|COPA_STAA1 RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase &gt;gi|206558171|sp|A5IVY3.1|COPA_STAA9 RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase &gt;gi|206558274|sp|A6U4T8.1|COPA_STAA2 RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase</Hit_def>
+  <Hit_accession>Q7A3E6</Hit_accession>
+  <Hit_len>802</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>30.8018</Hsp_bit-score>
+      <Hsp_score>68</Hsp_score>
+      <Hsp_evalue>0.626589</Hsp_evalue>
+      <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>46</Hsp_query-to>
+      <Hsp_hit-from>1</Hsp_hit-from>
+      <Hsp_hit-to>47</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>15</Hsp_identity>
+      <Hsp_positive>27</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>47</Hsp_align-len>
+      <Hsp_qseq>MAEIKHYQFNVV-MTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVD</Hsp_qseq>
+      <Hsp_hseq>MANTKKTTLDITGMTCAACSNRIEKKLNKLDDVNAQVNLTTEKATVE</Hsp_hseq>
+      <Hsp_midline>MA  K    ++  MTC+ CS  + K L KL+   ++++++ EK  V+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>33</Hit_num>
+  <Hit_id>gi|123484392|sp|Q2FDV0.1|COPA_STAA3</Hit_id>
+  <Hit_def>RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase &gt;gi|206557777|sp|A8Z3F8.1|COPA_STAAT RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase</Hit_def>
+  <Hit_accession>Q2FDV0</Hit_accession>
+  <Hit_len>802</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>30.8018</Hsp_bit-score>
+      <Hsp_score>68</Hsp_score>
+      <Hsp_evalue>0.626589</Hsp_evalue>
+      <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>46</Hsp_query-to>
+      <Hsp_hit-from>1</Hsp_hit-from>
+      <Hsp_hit-to>47</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>15</Hsp_identity>
+      <Hsp_positive>27</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>47</Hsp_align-len>
+      <Hsp_qseq>MAEIKHYQFNVV-MTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVD</Hsp_qseq>
+      <Hsp_hseq>MANTKKTTLDITGMTCAACSNRIEKKLNKLDDVNAQVNLTTEKATVE</Hsp_hseq>
+      <Hsp_midline>MA  K    ++  MTC+ CS  + K L KL+   ++++++ EK  V+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>34</Hit_num>
+  <Hit_id>gi|123548711|sp|Q2YWA3.1|COPA_STAAB</Hit_id>
+  <Hit_def>RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase</Hit_def>
+  <Hit_accession>Q2YWA3</Hit_accession>
+  <Hit_len>802</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>30.8018</Hsp_bit-score>
+      <Hsp_score>68</Hsp_score>
+      <Hsp_evalue>0.639066</Hsp_evalue>
+      <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>46</Hsp_query-to>
+      <Hsp_hit-from>1</Hsp_hit-from>
+      <Hsp_hit-to>47</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>15</Hsp_identity>
+      <Hsp_positive>27</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>47</Hsp_align-len>
+      <Hsp_qseq>MAEIKHYQFNVV-MTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVD</Hsp_qseq>
+      <Hsp_hseq>MANTKKTTLDITGMTCAACSNRIEKKLNKLDDVNAQVNLTTEKATVE</Hsp_hseq>
+      <Hsp_midline>MA  K    ++  MTC+ CS  + K L KL+   ++++++ EK  V+</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>35</Hit_num>
+  <Hit_id>gi|2498542|sp|P94186.1|MERP_ALCSP</Hit_id>
+  <Hit_def>RecName: Full=Mercuric transport protein periplasmic component; AltName: Full=Mercury scavenger protein; AltName: Full=Periplasmic mercury ion-binding protein; Flags: Precursor</Hit_def>
+  <Hit_accession>P94186</Hit_accession>
+  <Hit_len>91</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>30.0314</Hsp_bit-score>
+      <Hsp_score>66</Hsp_score>
+      <Hsp_evalue>0.639625</Hsp_evalue>
+      <Hsp_query-from>13</Hsp_query-from>
+      <Hsp_query-to>43</Hsp_query-to>
+      <Hsp_hit-from>31</Hsp_hit-from>
+      <Hsp_hit-to>60</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>15</Hsp_identity>
+      <Hsp_positive>21</Hsp_positive>
+      <Hsp_gaps>1</Hsp_gaps>
+      <Hsp_align-len>31</Hsp_align-len>
+      <Hsp_qseq>MTCSGCSGAVNKVLTKLEPDVSKIDISLEKQ</Hsp_qseq>
+      <Hsp_hseq>MTCSTCPITVKKAISKVE-GVSKIDVTFETR</Hsp_hseq>
+      <Hsp_midline>MTCS C   V K ++K+E  VSKID++ E +</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+<Hit>
+  <Hit_num>36</Hit_num>
+  <Hit_id>gi|123661210|sp|Q4L970.1|COPA_STAHJ</Hit_id>
+  <Hit_def>RecName: Full=Copper-exporting P-type ATPase; AltName: Full=Copper-exporting P-type ATPase A; AltName: Full=Cu(+)-exporting ATPase</Hit_def>
+  <Hit_accession>Q4L970</Hit_accession>
+  <Hit_len>795</Hit_len>
+  <Hit_hsps>
+    <Hsp>
+      <Hsp_num>1</Hsp_num>
+      <Hsp_bit-score>30.4166</Hsp_bit-score>
+      <Hsp_score>67</Hsp_score>
+      <Hsp_evalue>0.858763</Hsp_evalue>
+      <Hsp_query-from>1</Hsp_query-from>
+      <Hsp_query-to>67</Hsp_query-to>
+      <Hsp_hit-from>1</Hsp_hit-from>
+      <Hsp_hit-to>69</Hsp_hit-to>
+      <Hsp_query-frame>0</Hsp_query-frame>
+      <Hsp_hit-frame>0</Hsp_hit-frame>
+      <Hsp_identity>20</Hsp_identity>
+      <Hsp_positive>40</Hsp_positive>
+      <Hsp_gaps>6</Hsp_gaps>
+      <Hsp_align-len>71</Hsp_align-len>
+      <Hsp_qseq>MAEIKHYQFNVV-MTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPY---DFILEKIKKTGKEV</Hsp_qseq>
+      <Hsp_hseq>MSNKQNATLNITGMTCAACSNRIEKRLNKMDNVKAQVNLTTEKATIE-YDTNDYAINDFV-TTVQKLGYDV</Hsp_hseq>
+      <Hsp_midline>M+  ++   N+  MTC+ CS  + K L K++   ++++++ EK  ++ Y T  Y   DF+   ++K G +V</Hsp_midline>
+    </Hsp>
+  </Hit_hsps>
+</Hit>
+</Iteration_hits>
+  <Iteration_stat>
+    <Statistics>
+      <Statistics_db-num>472756</Statistics_db-num>
+      <Statistics_db-len>178609905</Statistics_db-len>
+      <Statistics_hsp-len>45</Statistics_hsp-len>
+      <Statistics_eff-space>4405404780</Statistics_eff-space>
+      <Statistics_kappa>0.041</Statistics_kappa>
+      <Statistics_lambda>0.267</Statistics_lambda>
+      <Statistics_entropy>0.14</Statistics_entropy>
+    </Statistics>
+  </Iteration_stat>
+</Iteration>
+</BlastOutput_iterations>
+</BlastOutput>
+

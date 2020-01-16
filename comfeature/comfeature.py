@@ -64,7 +64,7 @@ class ComFeature:
             feature.potts_model_file = feature_folder/"potts_model.mrf"
             feature.potts_model = Potts_Model.from_msgpack(feature.potts_model_file)
         except Exception as e:
-            print(e)
+            print("Potts model was not found")
             feature.potts_model = None
 
         try:
@@ -113,7 +113,6 @@ class ComFeature:
                 blast_xml, unaligned_fasta = get_blast_xml_and_fasta_output_from_sequence_file(sequence_file, database, blast_fasta=blast_fasta, blast_xml=blast_xml, n=nb_sequences_blast, evalue=blast_evalue)
             else:
                 raise Exception(str(sequences_fetcher)+" call not implemented yet.")
-
 
         # IF EVALUE CUTOFF
         if use_evalue_cutoff:
@@ -197,7 +196,6 @@ class ComFeature:
 
             # POTTS MODEL
             if (potts_model_file is None) and (infer_potts_model):
-
                 potts_model_file = feature_folder/"potts_model.mrf"
 
                 if inference_type=="standard":
