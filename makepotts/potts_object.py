@@ -353,7 +353,7 @@ def main(args=sys.argv[1:]):
         del args["aln_file"]
         del args["sequence_file"]
         del args["potts_model_file"]
-        cf = ComFeature.guess_from_folder(**args)
+        cf = Potts_Object.guess_from_folder(**args)
     else:
-        cf = ComFeature.from_files(**args)
+        cf = Potts_Object.from_files(**args)
         fm.write_readme(cf.folder, **args)
