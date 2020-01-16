@@ -11,7 +11,7 @@ setup(
         'compotts':['compotts_solver.so'],
         },
     entry_points={
-        'console_scripts':['compotts = compotts.__main__:main', 'vizpotts = vizpotts.__main__:main', 'filepotts = compotts.align_msas:main', 'makepotts = makepotts.comfeature:main', 'vizpymol = vizcontacts.vizpymol:main', 'vizcircos = vizcontacts.vizcircos:main', 'vizmap = vizcontacts.vizmap:main']
+        'console_scripts':['compotts = compotts.__main__:main', 'vizpotts = vizpotts.__main__:main', 'filepotts = compotts.align_msas:main', 'makepotts = makepotts.potts_object:main', 'vizpymol = vizcontacts.vizpymol:main', 'vizcircos = vizcontacts.vizcircos:main', 'vizmap = vizcontacts.vizmap:main']
         },
     test_suite="tests",
 )
