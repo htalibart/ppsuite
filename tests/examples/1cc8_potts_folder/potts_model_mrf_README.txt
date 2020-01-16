@@ -1,0 +1,1 @@
+"ccmpred feature_folder/trim_80.fasta -b feature_folder/potts_model.mrf --pc-count 1000 --reg-lambda-pair-factor 30"

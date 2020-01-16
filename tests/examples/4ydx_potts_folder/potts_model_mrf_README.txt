@@ -1,0 +1,1 @@
+"ccmpred 4ydx_potts_folder/trim_80.fasta -b 4ydx_potts_folder/potts_model.mrf --pc-single-count 1000 --reg-lambda-pair-factor 0.5172413793103449 --pc-pair-count 1 --ofn-pll "
