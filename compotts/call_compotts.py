@@ -3,7 +3,7 @@ import time
 import pandas as pd
 
 from compotts.compute_scores import *
-from comfeature.comfeature import *
+from makepotts.potts_object import *
 from comutils.potts_model import *
 import comutils.files_management as fm
 

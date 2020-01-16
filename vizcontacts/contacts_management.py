@@ -5,16 +5,16 @@ from collections import OrderedDict
 from itertools import islice
 from kneebow.rotor import Rotor
 import matplotlib.pyplot as plt
-from comfeature.comfeature import *
+from makepotts.potts_object import *
 from comutils.util import *
 from vizcontacts import top_couplings
 
-def get_contact_scores_for_aln_train(comfeature):
+def get_contact_scores_for_aln_train(potts_object):
 
     # Get contact scores in a csv file
     mat_file = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
     apc_file = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
-    ccmpredpy_call = "ccmpred "+str(comfeature.aln_train)+" -i "+str(comfeature.potts_model_file)+" --do-not-optimize -m "+str(mat_file)+" --apc "+str(apc_file)
+    ccmpredpy_call = "ccmpred "+str(potts_object.aln_train)+" -i "+str(potts_object.potts_model_file)+" --do-not-optimize -m "+str(mat_file)+" --apc "+str(apc_file)
     subprocess.Popen(ccmpredpy_call, shell=True).wait()
     output_file = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
     top_couplings.main(apc_file, output_file)
@@ -34,11 +34,11 @@ def get_contact_scores_for_aln_train(comfeature):
     return interesting_contact_scores
 
 
-def get_contact_scores_for_sequence(comfeature):
-    aln_scores = get_contact_scores_for_aln_train(comfeature)
+def get_contact_scores_for_sequence(potts_object):
+    aln_scores = get_contact_scores_for_aln_train(potts_object)
     seq_contact_scores = OrderedDict()
     for c in aln_scores:
-        c_seq = (comfeature.mrf_pos_to_seq_pos[c[0]], comfeature.mrf_pos_to_seq_pos[c[1]])
+        c_seq = (potts_object.mrf_pos_to_seq_pos[c[0]], potts_object.mrf_pos_to_seq_pos[c[1]])
         seq_contact_scores[c_seq] = aln_scores[c]
     return seq_contact_scores
 

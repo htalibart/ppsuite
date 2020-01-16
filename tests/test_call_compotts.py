@@ -4,7 +4,7 @@ import os
 import pathlib
 import numpy as np
 
-from comfeature.comfeature import *
+from makepotts.potts_object import *
 from compotts.call_compotts import *
 
 import pkg_resources
@@ -32,7 +32,7 @@ class Test_Call_ComPotts(unittest.TestCase):
         self.output_folder = pathlib.Path(tempfile.mkdtemp())
         self.feature_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
         shutil.copytree(FEATURE_FOLDER, self.feature_folder)
-        self.object = ComFeature.from_folder(feature_folder=self.feature_folder)
+        self.object = Potts_Object.from_folder(feature_folder=self.feature_folder)
         self.potts_model = self.object.potts_model
 
     def tearDown(self):

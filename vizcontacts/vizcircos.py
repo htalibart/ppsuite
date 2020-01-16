@@ -164,9 +164,9 @@ def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_c
     os.system("xdg-open "+str(output_circos_image))
 
 
-def create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, coupling_sep_min=3, top=20, numbering_type='sequence', output_circos_image=None, thickness=1, auto_top=False, wij_cutoff=None, **args):
-    couplings_dict = get_contact_scores_for_sequence(comfeature)
-    seq_pos_to_mrf_pos = comfeature.get_seq_pos_to_mrf_pos()
+def create_circos_from_potts_object_and_pdb_chain(potts_object, pdb_chain, coupling_sep_min=3, top=20, numbering_type='sequence', output_circos_image=None, thickness=1, auto_top=False, wij_cutoff=None, **args):
+    couplings_dict = get_contact_scores_for_sequence(potts_object)
+    seq_pos_to_mrf_pos = potts_object.get_seq_pos_to_mrf_pos()
     couplings_dict_with_coupling_sep_min = remove_couplings_too_close(couplings_dict, coupling_sep_min)
     if auto_top:
         top = get_elbow_index(couplings_dict_with_coupling_sep_min)
@@ -176,9 +176,9 @@ def create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, coupling_
         smaller_couplings_dict = get_smaller_dict(couplings_dict_with_coupling_sep_min, top)
     else:
         smaller_couplings_dict = OrderedDict()
-    coupling_dicts_for_sequence_indexed_by_colors = get_colored_true_false_dicts(smaller_couplings_dict, pdb_chain, real_sequence=comfeature.sequence, colors={True:'green', False:'red'})
-    circos_output_folder = str(comfeature.folder.absolute())+"/circos_output"
-    create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, comfeature.sequence, seq_pos_to_mrf_pos, numbering_type, pdb_chain=pdb_chain, output_circos_image=output_circos_image, thickness=thickness)
+    coupling_dicts_for_sequence_indexed_by_colors = get_colored_true_false_dicts(smaller_couplings_dict, pdb_chain, real_sequence=potts_object.sequence, colors={True:'green', False:'red'})
+    circos_output_folder = str(potts_object.folder.absolute())+"/circos_output"
+    create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, potts_object.sequence, seq_pos_to_mrf_pos, numbering_type, pdb_chain=pdb_chain, output_circos_image=output_circos_image, thickness=thickness)
 
 
 
@@ -198,12 +198,12 @@ def main(args=sys.argv[1:]):
 
     args = vars(parser.parse_args(args))
 
-    comfeature = ComFeature.from_folder(args['feature_folder'])
+    potts_object = Potts_Object.from_folder(args['feature_folder'])
     if args['pdb_file'] is None:
-        name = str(comfeature.folder)+'/'+args['pdb_id']
+        name = str(potts_object.folder)+'/'+args['pdb_id']
         args['pdb_file'] = fm.fetch_pdb_file(args['pdb_id'], name)
     pdb_chain = fm.get_pdb_chain(args['pdb_id'], args['pdb_file'], chain_id=args['chain_id'])
-    create_circos_from_comfeature_and_pdb_chain(comfeature, pdb_chain, **args)
+    create_circos_from_potts_object_and_pdb_chain(potts_object, pdb_chain, **args)
 
 if __name__=="__main__":
     main()

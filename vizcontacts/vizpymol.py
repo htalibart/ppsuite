@@ -4,7 +4,7 @@ import sys
 
 from vizcontacts.contacts_management import *
 from comutils import files_management as fm
-from comfeature.comfeature import *
+from makepotts.potts_object import *
 
 def launch_pymol(pdb_id, pdbfile=None):
     pymol.finish_launching(['pymol'])
@@ -43,20 +43,20 @@ def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, cha
 
 def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, normalize=False, debug_mode=False, **kwargs):
 
-    comfeatures = []
+    potts_objects = []
     for feature_folder in feature_folders:
-        comfeatures.append(ComFeature.from_folder(feature_folder))
+        potts_objects.append(Potts_Object.from_folder(feature_folder))
 
     if pdb_file is None:
-        name = str(comfeatures[0].folder)+'/'+pdb_id
+        name = str(potts_objects[0].folder)+'/'+pdb_id
         pdb_file = fm.fetch_pdb_file(pdb_id, name)
     pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
 
     pdb_couplings_dicts = []
     tops = []
-    for comfeature in comfeatures:
-        couplings_dict = get_contact_scores_for_sequence(comfeature)
-        pdb_couplings_dict = translate_dict_to_pdb_pos(couplings_dict, pdb_chain, comfeature.sequence)
+    for potts_object in potts_objects:
+        couplings_dict = get_contact_scores_for_sequence(potts_object)
+        pdb_couplings_dict = translate_dict_to_pdb_pos(couplings_dict, pdb_chain, potts_object.sequence)
         pdb_couplings_dicts.append(pdb_couplings_dict)
         top_comf = top
         if auto_top:
