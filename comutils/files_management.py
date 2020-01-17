@@ -174,3 +174,7 @@ def get_sequence_from_pdb_chain(pdb_chain):
     ppb = PPBuilder()
     pdb_sequence = ppb.build_peptides(pdb_chain)[0].get_sequence()
     return pdb_sequence
+
+def check_if_file_ok(f):
+    if not os.path.exists(str(f)):
+        raise Exception("File not found :"+str(f))
