@@ -161,7 +161,7 @@ def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_c
     output_circos_image_without_extension = '.'.join(str(output_circos_image).split('.')[:-1])
     for extension in [".svg", ".png"]:
         shutil.move(tmp_name+extension, output_circos_image_without_extension+extension)
-    os.system("xdg-open "+str(output_circos_image))
+    print("Circos image can be found at "+str(output_circos_image))
 
 
 def create_circos_from_potts_object_and_pdb_chain(potts_object, pdb_chain, coupling_sep_min=3, top=20, numbering_type='sequence', output_circos_image=None, thickness=1, auto_top=False, wij_cutoff=None, **args):
