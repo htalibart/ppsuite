@@ -178,3 +178,11 @@ def get_sequence_from_pdb_chain(pdb_chain):
 def check_if_file_ok(f):
     if not os.path.exists(str(f)):
         raise Exception("File not found :"+str(f))
+
+def write_positions_to_csv(positions_dict, output_file):
+    with open(str(output_file), 'w') as f:
+        csvwriter = csv.writer(f)
+        csvwriter.writerow(list(positions_dict.keys()))
+        for ind in range(len(positions_dict[list(positions_dict.keys())[0]])):
+            row = [positions_dict[key][ind] for key in positions_dict]
+            csvwriter.writerow(row)

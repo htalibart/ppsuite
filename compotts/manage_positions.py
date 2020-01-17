@@ -102,3 +102,10 @@ def get_aligned_v_scores(aligned_positions_dict, v_scores):
         aligned_v_scores[pos] = v_scores[i][k]
         pos+=1
     return aligned_v_scores
+
+
+def get_initial_positions(aligned_positions, mrf_pos_to_initial_pos_dict):
+    initial_positions = {}
+    for key in aligned_positions:
+        initial_positions[key] = [mrf_pos_to_initial_pos_dict[key][pos] for pos in aligned_positions[key]]
+    return initial_positions

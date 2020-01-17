@@ -99,6 +99,22 @@ def main(args=sys.argv[1:]):
     # MAYBE DO SOMETHING WITH THE ALIGNMENT
 
     if len(aligned_positions)>0:
+
+        # GIVE ALIGNED POSITIONS FOR THE ORIGINAL ALIGNMENTS
+        if all((o.mrf_pos_to_aln_pos is not None) for o in compotts_objects):
+            original_positions = get_initial_positions(aligned_positions, {"pos_ref":compotts_objects[0].mrf_pos_to_aln_pos, "pos_2":compotts_objects[1].mrf_pos_to_aln_pos})
+            fm.write_positions_to_csv(original_positions, output_folder/("aln_original.csv"))
+
+        # GIVE ALIGNED POSITIONS FOR THE SEQUENCES
+        if all((o.mrf_pos_to_seq_pos is not None) for o in compotts_objects):
+            sequence_positions = get_initial_positions(aligned_positions, {"pos_ref":compotts_objects[0].mrf_pos_to_seq_pos, "pos_2":compotts_objects[1].mrf_pos_to_seq_pos})
+            fm.write_positions_to_csv(sequence_positions, output_folder/("aln_sequences.csv"))
+ 
+        if all((o.sequence is not None) for o in compotts_objects) and args["get_sequences_fasta_aln"]:
+            output_fasta_file = output_folder/("aligned_sequences.fasta")
+            get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
+
+
         # ALIGN TRAINING MSAS
         if all((o.aln_train is not None) for o in compotts_objects) and args["get_training_sets_fasta_aln"]:
             output_msa = output_folder/("aligned_training_sets.fasta")
@@ -107,13 +123,7 @@ def main(args=sys.argv[1:]):
                 cmd = "aliview "+str(output_msa)
                 subprocess.Popen(cmd, shell=True).wait()
 
-            
-        # ALIGN SEQUENCES
-        if all((o.sequence is not None) for o in compotts_objects) and args["get_sequences_fasta_aln"]:
-            output_fasta_file = output_folder/("aligned_sequences.fasta")
-            get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_fasta_file)
-
-
+           
         return {"compotts_objects": compotts_objects, "aligned_positions":aligned_positions, "infos_solver":infos_solver}
 
 

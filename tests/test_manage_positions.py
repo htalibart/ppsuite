@@ -53,6 +53,12 @@ class Test_ManagePositions(unittest.TestCase):
         self.assertEqual(seqs_aligned[0], 'YFYFMAEIKEH')
         self.assertEqual(seqs_aligned[1], '----MA-IKDH')
 
+    def test_initial_positions(self):
+        aligned_positions = {"pos_ref":[0,1,2,3], "pos_2":[0,1,2,3]}
+        initial_pos = {"pos_ref":[1,2,3,4,5], "pos_2":[0,1,2,10,11]}
+        original_positions = get_initial_positions(aligned_positions, initial_pos)
+        assert(original_positions=={"pos_ref":[1,2,3,4], "pos_2":[0,1,2,10]})
+
 
 
 if __name__=='__main__':
