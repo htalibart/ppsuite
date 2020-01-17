@@ -6,7 +6,7 @@ import subprocess
 
 from compotts.call_compotts import *
 from compotts.manage_positions import *
-from compotts.align_msas import *
+from makemsa.__main__ import *
 from vizpotts.vizpotts import *
 import comutils.files_management as fm
 
