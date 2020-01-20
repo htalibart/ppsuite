@@ -8,7 +8,7 @@ from makepotts.potts_object import *
 import pymol
 
 def launch_pymol(pdb_id, pdbfile=None):
-    pymol.finish_launching(['pymol'])
+    #pymol.finish_launching(['pymol'])
     if pdbfile is not None:
         pymol.cmd.load(pdbfile)
     else:
@@ -91,10 +91,13 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-t', '--thickness', help="Couplings thickness factor", type=float, default=1)
     parser.add_argument('--normalize', help="Normalize coupling values", default=False, action='store_true')
     parser.add_argument('--debug_mode', help="Debug mode", default=False, action='store_true')
+    parser.add_argument('--out_session_file', '-pse', help="PyMOL output session file (must end in .pse)", type=pathlib.Path, default=pathlib.Path('/tmp/tmp_pymol_session_file.pse'))
 
     args = vars(parser.parse_args(args))
 
     show_predicted_contacts_with_pymol(**args)
+    pymol.cmd.save(str(args["out_session_file"]))
+    print("PyMOL session saved at "+str(args["out_session_file"]))
 
 if __name__=="__main__":
     main()
