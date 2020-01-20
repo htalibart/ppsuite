@@ -127,7 +127,8 @@ def get_elbow_index(couplings_dict, plot_elbow=False):
 def get_cutoff_smaller_than(couplings_dict, score_cutoff):
     y = list(couplings_dict.values())
     if y[0]<score_cutoff:
-        return None
+        #return None
+        return 0
     else:
         ind=0
         while (y[ind]>=score_cutoff):

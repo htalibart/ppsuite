@@ -58,13 +58,19 @@ def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pd
     for potts_object in potts_objects:
         couplings_dict = get_contact_scores_for_sequence(potts_object)
         pdb_couplings_dict = translate_dict_to_pdb_pos(couplings_dict, pdb_chain, potts_object.sequence)
-        pdb_couplings_dicts.append(pdb_couplings_dict)
-        top_comf = top
         if auto_top:
-            top_comf = get_elbow_index(pdb_couplings_dict, plot_elbow=debug_mode)
+            cutindex = get_elbow_index(pdb_couplings_dict, plot_elbow=debug_mode)
+            pdb_couplings_dict = get_smaller_dict(pdb_couplings_dict, cutindex)
+            nb_couplings = len(pdb_couplings_dict)
         if wij_cutoff:
-            top_comf = get_cutoff_smaller_than(pdb_couplings_dict, wij_cutoff)
-        tops.append(top_comf)
+            cutindex = get_cutoff_smaller_than(pdb_couplings_dict, wij_cutoff)
+            pdb_couplings_dict = get_smaller_dict(pdb_couplings_dict, cutindex)
+            nb_couplings = len(pdb_couplings_dict)
+        else:
+            nb_couplings = top
+        pdb_couplings_dict = remove_couplings_too_close(pdb_couplings_dict, coupling_sep_min)
+        pdb_couplings_dicts.append(pdb_couplings_dict)
+        tops.append(nb_couplings)
 
     launch_pymol(pdb_id, pdb_file)
 
@@ -86,7 +92,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
     parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling", default=3, type=int)
     parser.add_argument('-n', '--top', help="Nb of couplings displayed", type=int, default=20)
-    parser.add_argument('--wij_cutoff', help="||wij|| <= wij_cutoff", default=None, type=float) 
+    parser.add_argument('--wij_cutoff', help="||wij|| <= wij_cutoff are removed", default=None, type=float) 
     parser.add_argument('--auto_top', help="Nb couplings displayed = elbow of the score curve", default=False, action='store_true')
     parser.add_argument('-t', '--thickness', help="Couplings thickness factor", type=float, default=1)
     parser.add_argument('--normalize', help="Normalize coupling values", default=False, action='store_true')
