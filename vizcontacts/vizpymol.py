@@ -12,7 +12,7 @@ def launch_pymol(pdb_id, pdbfile=None):
     if pdbfile is not None:
         pymol.cmd.load(pdbfile)
     else:
-        pymol.cmd.fetch(pdb_id, async=0, type="pdb")
+        pymol.cmd.fetch(pdb_id, async_=0, type="pdb")
     pymol.cmd.show('cartoon')
     pymol.cmd.hide('lines')
     pymol.cmd.hide('nonbonded')
