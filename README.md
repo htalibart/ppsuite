@@ -62,7 +62,7 @@ You need to have BLAST installed on your machine. Instructions are available at 
 ### If you want to use VizContacts
 To visualize predicted contacts using VizContacts, you also need to install :
 
-* PyMOL : https://pymol.org/
+* PyMOL : https://pymol.org/ (developped with Pymol 2.1.0)
 * Circos : http://www.circos.ca/
 
 ## Installation
@@ -91,13 +91,21 @@ python3 tests
 ## Getting started
 
 ### Use case : build a Potts model for 1CC8 (and visualize it)
-Let's build a Potts model for [1CC8](https://www.rcsb.org/structure/1cc8) based on an alignment of its close homologs. We provided an alignment in tests/examples/1cc8_everything/1cc8.a3m (see section [TODO] if you want to know how to get an alignment starting from a sequence). We call MakePotts and specify where to find the sequence (in fasta format) and the alignment (in fasta or a3m format).
+Let's build a Potts model for [1CC8](https://www.rcsb.org/structure/1cc8) based on an alignment of its close homologs.
+
+Go to the tests/ directory :
+```
+cd tests/
+```
+
+
+ We provided an alignment in examples/1cc8_everything/1cc8.a3m (see section [TODO] if you want to know how to get an alignment starting from a sequence). We call MakePotts and specify where to find the sequence (in fasta format) and the alignment (in fasta or a3m format).
 
 ```
-makepotts -f 1cc8_potts_folder/ -s tests/examples/1cc8_everything/1cc8.fasta -aln tests/examples/1cc8_everything/1cc8.a3m
+makepotts -f my_1cc8_potts_folder/ -s examples/1cc8_everything/1cc8.fasta -aln examples/1cc8_everything/1cc8.a3m
 ```
 
-This command creates a folder named 1cc8_potts_folder/ which contains the Potts model which was inferred by CCMpredPy - with carefully selected arguments - from the MSA after having processed it (i.e. trimmed it and reduced the number of sequences). The folder contains this training MSA and information on the matching between positions of the training MSA and the original MSA.
+This command creates a folder named my_1cc8_potts_folder/ which contains the Potts model which was inferred by CCMpredPy - with carefully selected arguments - from the MSA after having processed it (i.e. trimmed it and reduced the number of sequences). The folder contains this training MSA and information on the matching between positions of the training MSA and the original MSA.
 
 You can use it as a ComPotts input (see section [TODO lien]) to align it with another Potts model.
 
@@ -105,7 +113,7 @@ Optionally, you can also use the visualization tools to see what it looks like.
 
 You can visualize the Potts model with VizPotts
 ```
-vizpotts -f 1cc8_potts_folder/
+vizpotts -f my_1cc8_potts_folder/
 ```
 
 <img src="tests/examples/output_examples/1cc8_potts_model.png" width="800">
@@ -119,14 +127,15 @@ The third graph shows the Euclidean norms of the vectors vi. A higher norm sugge
 
 You can also, for example, visualize one specific coupling parameter
 ```
-vizpotts -f 1cc8_potts_folder/ -i 18 -j 22
+vizpotts -f my_1cc8_potts_folder/ -i 18 -j 22
 ```
 
 <img src="tests/examples/output_examples/1cc8_w_18_22.png" width="500">
 
-You can visualize the top 25 predicted contacts on a 3D structure using PyMOL
+You can visualize the top 25 predicted contacts on a 3D structure using vizpymol, which creates a .pse that you can open with PyMOL
 ```
-vizpymol -f 1cc8_potts_folder/ -i 1cc8 --chain_id A --top 25
+vizpymol -f my_1cc8_potts_folder/ -i 1cc8 --chain_id A --top 25 -pse my_pymol_session.pse
+pymol my_pymol_session.pse
 ```
 <img src="tests/examples/output_examples/1cc8_pymol.png" width="500">
 
@@ -134,8 +143,10 @@ This command displays the top 25 contacts predicted by CCMpredPy, that is to say
 
 You can visualize the same information on a Circos
 ```
-vizcircos -f 1cc8_potts_folder/ -i 1cc8 --chain_id A --top 25
+vizcircos -f my_1cc8_potts_folder/ -i 1cc8 --chain_id A --top 25 -o my_circos_output.png
 ```
+
+and open my_circos_output.png
 <img src="tests/examples/output_examples/1cc8_circos.png" width="500">
 
 
@@ -144,8 +155,14 @@ vizcircos -f 1cc8_potts_folder/ -i 1cc8 --chain_id A --top 25
 
 Let's align 1CC8 with one of its homologs, 4YDX. Potts models were built with MakePotts in folders tests/examples/1cc8_potts_folder and tests/examples/4ydx_potts_folder.
 
+Go to the tests/ directory (if you are not already in it)
 ```
-compotts -f1 tests/examples/1cc8_potts_folder -f2 tests/examples/4ydx_potts_folder -o 1cc8_4ydx_compotts_output/ -oaln -osaln
+cd tests/
+```
+
+
+```
+compotts -f1 examples/1cc8_potts_folder -f2 4ydx_potts_folder -o 1cc8_4ydx_compotts_output/ -oaln -osaln
 ```
 
 1cc8_4ydx_compotts_output/ now contains :
@@ -160,7 +177,7 @@ compotts -f1 tests/examples/1cc8_potts_folder -f2 tests/examples/4ydx_potts_fold
 
 You can visualize the vi parameters of the two Potts models at aligned positions using VizPotts :
 ```
-vizpotts -f tests/examples/1cc8_potts_folder tests/examples/4ydx_potts_folder -aln 1cc8_4ydx_compotts_output/aln.csv
+vizpotts -f examples/1cc8_potts_folder examples/4ydx_potts_folder -aln 1cc8_4ydx_compotts_output/aln.csv
 ```
 
 <img src="tests/examples/output_examples/1cc8_4ydx_v.png" width="500">
@@ -272,6 +289,7 @@ vizpotts -f potts_model_folder_1 potts_model_folder_2 -aln compotts_aln_output/a
 ### VizContacts
 
 VizContacts allows you to visualize contacts predicted by CCMpredPy :
+
 * around a circle thanks to Circos, using VizCircos
 * on a PDB structure thanks to PyMOL
 Both input a feature folder (provided by MakePotts). Green indicates that the coupling is a "true contact" and red indicates that the positions in the coupling are not in contact in the PDB structure.
@@ -279,13 +297,14 @@ Both input a feature folder (provided by MakePotts). Green indicates that the co
 #### VizPyMOL
 
 ```
-vizpymol -f 5lqp_feature_folder/ -i 5lqp --chain_id AB
+vizpymol -f 5lqp_feature_folder/ -i 5lqp --chain_id AB -pse 5lq_pymol_session.pse
+pymol 5lqp_pymol_session.pse
 ```
 
 
 #### VizCircos
 ```
-vizcircos -f 5lqp_feature_folder/ -i 5lqp --chain_id AB
+vizcircos -f 5lqp_feature_folder/ -i 5lqp --chain_id AB -o 5lqp_circos_image.png
 ```
 
 
