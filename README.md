@@ -1,5 +1,3 @@
-[TODO ajouter les versions]
-
 # ComPotts Suite
 
 This package contains the following tools :
@@ -12,17 +10,17 @@ This package contains the following tools :
 ## Requirements
 
 ### Necessary requirements
-ComPotts was developped with Python3.6 and requires the following packages (which will normally be automatically installed by setup.py):
+ComPotts was developped with Python3.6 and requires the following packages, which will normally be automatically installed by setup.py (with versions under which ComPotts was developped):
 
-* numpy
-* pandas
-* biopython
-* msgpack
-* scipy
-* matplotlib
-* seaborn
-* scikit-learn
-* kneebow
+* numpy (1.16.2)
+* pandas (0.23.4)
+* biopython (1.73)
+* msgpack (0.6.1)
+* scipy (1.2.1)
+* matplotlib (2.0.0)
+* seaborn (0.9.0)
+* scikit-learn (0.20.3)
+* kneebow (0.1.1)
 
 and the following tools which you have to install and add to your path:
 
@@ -62,7 +60,7 @@ You need to have BLAST installed on your machine. Instructions are available at 
 ### If you want to use VizContacts
 To visualize predicted contacts using VizContacts, you also need to install :
 
-* PyMOL : https://pymol.org/ (developped with Pymol 2.1.0)
+* PyMOL : https://pymol.org/ (this package was developped for Pymol 2.1.0)
 * Circos : http://www.circos.ca/
 
 ## Installation
@@ -99,7 +97,7 @@ cd tests/
 ```
 
 
- We provided an alignment in examples/1cc8_everything/1cc8.a3m (see section [TODO] if you want to know how to get an alignment starting from a sequence). We call MakePotts and specify where to find the sequence (in fasta format) and the alignment (in fasta or a3m format).
+ We provided an alignment in examples/1cc8_everything/1cc8.a3m (see section [MakePotts](#makepotts-presentation) if you want to know how to get an alignment starting from a sequence). We call MakePotts and specify where to find the sequence (in fasta format) and the alignment (in fasta or a3m format).
 
 ```
 makepotts -f my_1cc8_potts_folder/ -s examples/1cc8_everything/1cc8.fasta -aln examples/1cc8_everything/1cc8.a3m
@@ -107,7 +105,7 @@ makepotts -f my_1cc8_potts_folder/ -s examples/1cc8_everything/1cc8.fasta -aln e
 
 This command creates a folder named my_1cc8_potts_folder/ which contains the Potts model which was inferred by CCMpredPy - with carefully selected arguments - from the MSA after having processed it (i.e. trimmed it and reduced the number of sequences). The folder contains this training MSA and information on the matching between positions of the training MSA and the original MSA.
 
-You can use it as a ComPotts input (see section [TODO lien]) to align it with another Potts model.
+You can use it as a ComPotts input (see section [ComPotts](#compotts-presentation)) to align it with another Potts model.
 
 Optionally, you can also use the visualization tools to see what it looks like.
 
@@ -147,6 +145,7 @@ vizcircos -f my_1cc8_potts_folder/ -i 1cc8 --chain_id A --top 25 -o my_circos_ou
 ```
 
 and open my_circos_output.png
+
 <img src="tests/examples/output_examples/1cc8_circos.png" width="500">
 
 
@@ -194,7 +193,7 @@ ComPotts aligns two Potts models built using MakePotts. Its inputs are two folde
 
 This folder is created by invoking MakePotts with the desired arguments.
 
-
+<a id="makepotts-presentation"></a>
 ### MakePotts
 
 #### Some use cases
@@ -234,7 +233,9 @@ makepotts -aln path/to/your/alignment.fasta
 The feature folder will be created in the current folder, and will be named using the uuuid generator.
 
 
+<a id="compotts-presentation"></a>
 ### ComPotts
+
 
 Use :
 ```
