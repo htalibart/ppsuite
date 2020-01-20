@@ -1,10 +1,11 @@
-import pymol
 import argparse
 import sys
 
 from vizcontacts.contacts_management import *
 from comutils import files_management as fm
 from makepotts.potts_object import *
+
+import pymol
 
 def launch_pymol(pdb_id, pdbfile=None):
     pymol.finish_launching(['pymol'])
