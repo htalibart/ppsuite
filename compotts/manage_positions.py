@@ -4,8 +4,8 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import IUPAC
 
-def get_alignment_with_gaps(aligned_positions):
-    """ input : dict of lists of aligned positions, output : alignment with gaps and "unknown areas" """
+def get_alignment_with_gaps(aligned_positions, X='X'):
+    """ input : dict of lists of aligned positions, output : alignment with gaps and "unknown areas" (symbole @X) """
     c_names = ["pos_ref", "pos_2"]
     aligned_positions_with_gaps = {ck:[] for ck in c_names}
     # positions 0 and before
@@ -17,7 +17,7 @@ def get_alignment_with_gaps(aligned_positions):
         aligned_positions_with_gaps["pos_ref"]+=list(range(aligned_positions["pos_ref"][0]+1))
     else:
         for ck in c_names:
-            aligned_positions_with_gaps[ck]+=['X',aligned_positions[ck][0]]
+            aligned_positions_with_gaps[ck]+=[X,aligned_positions[ck][0]]
     # positions [1:]
     for pos_aln in range(1,len(aligned_positions["pos_ref"])):
         diffs={ck : aligned_positions[ck][pos_aln]-aligned_positions[ck][pos_aln-1] for ck in c_names}
@@ -32,7 +32,7 @@ def get_alignment_with_gaps(aligned_positions):
             aligned_positions_with_gaps["pos_ref"]+=list(range(aligned_positions["pos_ref"][pos_aln-1]+1,aligned_positions["pos_ref"][pos_aln]+1))
         else:
             for ck in c_names:
-                aligned_positions_with_gaps[ck]+=['X']+[aligned_positions[ck][pos_aln]]
+                aligned_positions_with_gaps[ck]+=[X]+[aligned_positions[ck][pos_aln]]
     return aligned_positions_with_gaps
 
 
