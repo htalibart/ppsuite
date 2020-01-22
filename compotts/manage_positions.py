@@ -4,6 +4,8 @@ from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import IUPAC
 
+import comutils.files_management as fm
+
 def get_alignment_with_gaps(aligned_positions, X='X'):
     """ input : dict of lists of aligned positions, output : alignment with gaps and "unknown areas" (symbole @X) """
     c_names = ["pos_ref", "pos_2"]
@@ -45,10 +47,10 @@ def get_seq_positions(aligned_positions, compotts_objects):
     return real_seq_positions
 
 
-def get_seqs_aligned(aligned_positions, compotts_objects):
+def get_seqs_aligned(aligned_positions, compotts_objects, X='X'):
     """ input : dict of lists of aligned positions + corresponding compotts objects, output : sequences aligned """
     c_names = ["pos_ref", "pos_2"]
-    seq_positions = get_alignment_with_gaps(get_seq_positions(aligned_positions, compotts_objects))
+    seq_positions = get_alignment_with_gaps(get_seq_positions(aligned_positions, compotts_objects), X=X)
     seqs_aligned = ["",""]
     for k in range(2):
         ck = c_names[k]
@@ -61,9 +63,9 @@ def get_seqs_aligned(aligned_positions, compotts_objects):
     return seqs_aligned
 
             
-def get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_file):
+def get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_file, X='X'):
     """ (positions aligned by solver + compotts objects) -> sequences aligned -> in output_file """
-    seqs_aligned = get_seqs_aligned(aligned_positions, compotts_objects)
+    seqs_aligned = get_seqs_aligned(aligned_positions, compotts_objects, X=X)
     seq_records = [SeqRecord(Seq(s, IUPAC.protein), id=o.get_name(), description='') for s,o in zip(seqs_aligned, compotts_objects)]
     with open(str(output_file), 'w') as f:
         SeqIO.write(seq_records, f, "fasta")
@@ -109,3 +111,9 @@ def get_initial_positions(aligned_positions, mrf_pos_to_initial_pos_dict):
     for key in aligned_positions:
         initial_positions[key] = [mrf_pos_to_initial_pos_dict[key][pos] for pos in aligned_positions[key]]
     return initial_positions
+
+
+def get_aln_sequences_from_aln_file(aln_file, compotts_objects, output_file):
+    aligned_positions = fm.get_aligned_positions_dict_from_compotts_output_file(aln_file)
+    sequence_positions = get_initial_positions(aligned_positions, {"pos_ref":compotts_objects[0].mrf_pos_to_seq_pos, "pos_2":compotts_objects[1].mrf_pos_to_seq_pos})
+    fm.write_positions_to_csv(sequence_positions, output_file)
