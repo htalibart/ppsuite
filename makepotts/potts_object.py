@@ -133,7 +133,7 @@ class Potts_Object:
                 call_reformat(aln_file, reformat)
                 aln_original = reformat
             else:
-                raise Exception("Unknown format : "+aln_file)
+                raise Exception("Unknown format : "+str(aln_file))
 
             if use_evalue_cutoff:
                 cutoff_fasta = feature_folder/("cutoff_"+str(cutoff_index)+".fasta")

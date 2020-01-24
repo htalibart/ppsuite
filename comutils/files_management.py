@@ -129,7 +129,11 @@ def copy(old_location, new_location):
         shutil.copy(old_location, new_location)
 
 def get_format(seq_file):
-    return seq_file.suffix[1:]
+    extension = seq_file.suffix[1:]
+    if extension=="fa":
+        return "fasta"
+    else:
+        return extension
 
 
 def get_list_from_csv(csv_file):
