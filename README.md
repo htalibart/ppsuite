@@ -137,7 +137,7 @@ pymol my_pymol_session.pse
 ```
 <img src="tests/examples/output_examples/1cc8_pymol.png" width="500">
 
-This command displays the top 25 contacts predicted by CCMpredPy, that is to say the couplings with the highest Frobenius norm (after APC correction). A green line indicates a "true" contact (i.e. the distance between the positions in the 3D strucutre is less than 8 Angström) while a red line indicates a "false" contact.
+This command displays the top 25 contacts predicted by CCMpredPy, that is to say the couplings with the highest Frobenius norm (after APC correction). A green line indicates a "true" contact (i.e. the distance between the positions in the 3D strucutre is less than 8 Angström) while a red line indicates a "false" contact. The bigger the line,  the greater the Frobenius norm.
 
 You can visualize the same information on a Circos
 ```
