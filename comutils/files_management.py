@@ -185,6 +185,13 @@ def check_if_file_ok(f):
     elif not os.path.exists(str(f)):
         raise Exception("File not found :"+str(f))
 
+def check_if_dir_ok(d):
+    if d is None:
+        raise Exception(str(d)+" is not defined")
+    elif not os.path.isdir(str(d)):
+        raise Exception(str(d)+" is not a directory")
+
+
 def write_positions_to_csv(positions_dict, output_file):
     with open(str(output_file), 'w') as f:
         csvwriter = csv.writer(f)

@@ -184,24 +184,27 @@ def create_circos_from_potts_object_and_pdb_chain(potts_object, pdb_chain, coupl
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--feature_folder', help="Feature folder", type=pathlib.Path)
+    parser.add_argument('-f', '--feature_folder', help="Feature folder", type=pathlib.Path, required=True)
     parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
-    parser.add_argument('-i', '--pdb_id', help="PDB file")
-    parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
-    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling", type=int, default=3)
-    parser.add_argument('-n', '--top', help="Nb of couplings displayed", type=int, default=20)
-    parser.add_argument('--auto_top', help="Nb couplings displayed = elbow of the score curve", default=False, action='store_true')
-    parser.add_argument('--wij_cutoff', help="||wij|| <= wij_cutoff", default=None, type=float)
-    parser.add_argument('-num', '--numbering_type', help="Use the same numbering type around the circle as sequence (sequence) or PDB structure (pdb)", default='sequence')
-    parser.add_argument('-o', '--output_circos_image', help="Output circos image", type=pathlib.Path, default=None)
-    parser.add_argument('-t', '--thickness', help="Couplings thickness factor", type=float, default=1)
+    parser.add_argument('-i', '--pdb_id', help="PDB id", required=True)
+    parser.add_argument('-cid', '--chain_id', help="PDB chain id (default : A)", default='A')
+    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling (default : 3)", type=int, default=3)
+    parser.add_argument('-n', '--top', help="Nb of couplings displayed (default : 20)", type=int, default=20)
+    parser.add_argument('--auto_top', help="Nb couplings displayed = elbow of the score curve (default : False)", default=False, action='store_true')
+    parser.add_argument('--wij_cutoff', help="||wij|| <= wij_cutoff (default : no cutoff)", default=None, type=float)
+    parser.add_argument('-num', '--numbering_type', help="Use the same numbering type around the circle as sequence (sequence) or PDB structure (pdb) (default : numbering as sequence)", default='sequence')
+    parser.add_argument('-o', '--output_circos_image', help="Output circos image (default : [potts_folder]/circos_output/circos.png)", type=pathlib.Path, default=None)
+    parser.add_argument('-t', '--thickness', help="Couplings thickness factor (default : 1)", type=float, default=1)
 
     args = vars(parser.parse_args(args))
+
+    fm.check_if_dir_ok(args["feature_folder"])
 
     potts_object = Potts_Object.from_folder(args['feature_folder'])
     if args['pdb_file'] is None:
         name = str(potts_object.folder)+'/'+args['pdb_id']
         args['pdb_file'] = fm.fetch_pdb_file(args['pdb_id'], name)
+    fm.check_if_file_ok(args["pdb_file"])
     pdb_chain = fm.get_pdb_chain(args['pdb_id'], args['pdb_file'], chain_id=args['chain_id'])
     create_circos_from_potts_object_and_pdb_chain(potts_object, pdb_chain, **args)
 

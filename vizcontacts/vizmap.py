@@ -2,6 +2,7 @@ import argparse
 import sys
 
 from comutils.global_variables import ALPHABET
+from comutils import files_management as fm
 from vizpotts.vizpotts import *
 from makepotts.potts_object import *
 from vizcontacts.contacts_management import *
@@ -25,9 +26,9 @@ def visualize_mrf_with_contact_map(potts_object, pdb_chain, alphabet=ALPHABET, s
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--feature_folder', help="Feature folder", type=pathlib.Path)
+    parser.add_argument('-f', '--feature_folder', help="Feature folder", type=pathlib.Path, required=True)
     parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
-    parser.add_argument('-i', '--pdb_id', help="PDB file")
+    parser.add_argument('-i', '--pdb_id', help="PDB file", required=True)
     parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
 
     args = vars(parser.parse_args(args))
@@ -36,6 +37,7 @@ def main(args=sys.argv[1:]):
     if args['pdb_file'] is None:
         name = str(potts_object.folder)+'/'+args['pdb_id']
         args['pdb_file'] = fm.fetch_pdb_file(args['pdb_id'], name)
+    fm.check_if_file_ok(args['pdb_file'])
     pdb_chain = fm.get_pdb_chain(args['pdb_id'], args['pdb_file'], chain_id=args['chain_id'])
 
     visualize_mrf_with_contact_map(potts_object, pdb_chain, **args)

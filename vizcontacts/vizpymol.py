@@ -1,6 +1,7 @@
 import argparse
 import sys
 
+from comutils import files_management as fm
 from vizcontacts.contacts_management import *
 from comutils import files_management as fm
 from makepotts.potts_object import *
@@ -86,20 +87,23 @@ def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pd
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--feature_folders', help="Feature folder(s)", type=pathlib.Path, nargs='+')
+    parser.add_argument('-f', '--feature_folders', help="Feature folder(s)", type=pathlib.Path, nargs='+', required=True)
     parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
-    parser.add_argument('-id', '--pdb_id', help="PDB id")
-    parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
-    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling", default=3, type=int)
-    parser.add_argument('-n', '--top', help="Nb of couplings displayed", type=int, default=20)
-    parser.add_argument('--wij_cutoff', help="||wij|| <= wij_cutoff are removed", default=None, type=float) 
-    parser.add_argument('--auto_top', help="Nb couplings displayed = elbow of the score curve", default=False, action='store_true')
-    parser.add_argument('-t', '--thickness', help="Couplings thickness factor", type=float, default=1)
-    parser.add_argument('--normalize', help="Normalize coupling values", default=False, action='store_true')
-    parser.add_argument('--debug_mode', help="Debug mode", default=False, action='store_true')
-    parser.add_argument('--out_session_file', '-pse', help="PyMOL output session file (must end in .pse)", type=pathlib.Path, default=pathlib.Path('/tmp/tmp_pymol_session_file.pse'))
+    parser.add_argument('-id', '--pdb_id', help="PDB id", required=True)
+    parser.add_argument('-cid', '--chain_id', help="PDB chain id (default : A)", default='A')
+    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling (default : 3)", default=3, type=int)
+    parser.add_argument('-n', '--top', help="Nb of couplings displayed (default : 20)", type=int, default=20)
+    parser.add_argument('--wij_cutoff', help="||wij|| <= wij_cutoff are removed (default : None)", default=None, type=float) 
+    parser.add_argument('--auto_top', help="Nb couplings displayed = elbow of the score curve (default : False)", default=False, action='store_true')
+    parser.add_argument('-t', '--thickness', help="Couplings thickness factor (default : 1)", type=float, default=1)
+    parser.add_argument('--normalize', help="Normalize coupling values (default : don't normalize)", default=False, action='store_true')
+    parser.add_argument('--debug_mode', help=argparse.SUPPRESS, default=False, action='store_true')
+    parser.add_argument('--out_session_file', '-pse', help="PyMOL output session file (must end in .pse) (default : /tmp/tmp_pymol_session_file.pse)", type=pathlib.Path, default=pathlib.Path('/tmp/tmp_pymol_session_file.pse'))
 
     args = vars(parser.parse_args(args))
+
+    for d in args["feature_folders"]:
+        fm.check_if_dir_ok(d)
 
     show_predicted_contacts_with_pymol(**args)
     pymol.cmd.save(str(args["out_session_file"]))
