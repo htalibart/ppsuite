@@ -208,6 +208,14 @@ By default, makepotts filters the alignment with a 80% threshold using HHfilter,
 ```
 makepotts -f output_feature_folder/ -s path/to/your/sequence.fasta -fetch -d path/to/the/database
 ```
+(see [HH-suite documentation](https://github.com/soedinglab/hh-suite/wiki#searching-databases-of-hmms-using-hhsearch-and-hhblits) for more information on the databases format)
+
+This command calls HH-blits with [recommended parameters for CCMpred](https://github.com/soedinglab/CCMpred/wiki/FAQ#what-is-the-recommended-workflow-of-generating-alignments-for-ccmpred). If you want to use different parameters, run hhblits with the desired arguments and then run makepotts with the output alignment :
+```
+hhblits [YOUR ARGUMENTS] -i your_sequence.fasta -oa3m hhblits_output.a3m
+makepotts -f output_feature_folder -s your_sequence.fasta -aln hhblits_output.a3m
+```
+
 
 * You have a sequence file and you want to infer a Potts model only from the sequence
 ```
