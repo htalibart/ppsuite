@@ -24,14 +24,14 @@ ComPotts was developped with Python3.6 and requires the following packages, whic
 
 and the following tools which you have to install and add to your path:
 
-* CCMpredPy : https://github.com/soedinglab/ccmgen
+* CCMpredPy : https://github.com/soedinglab/ccmgen (tested with version 1.0.0)
 ```
 git clone https://github.com/soedinglab/ccmgen
 cd CCMgen
 python3 setup.py install --user
 ```
 
-* HH-suite : https://github.com/soedinglab/hh-suite
+* HH-suite : https://github.com/soedinglab/hh-suite (tested with HHblits 3.0.3)
 ```
 git clone https://github.com/soedinglab/hh-suite.git
 mkdir -p hh-suite/build && cd hh-suite/build
@@ -43,7 +43,7 @@ and export to your path :
 export PATH="$(pwd)/bin:$(pwd)/scripts:$PATH"
 ```
 
-* trimal : https://github.com/scapella/trimal
+* trimal : https://github.com/scapella/trimal (tested with trimAl 1.2rev59)
 ```
 git clone https://github.com/scapella/trimal
 cd trimal/source
