@@ -180,7 +180,9 @@ def get_sequence_from_pdb_chain(pdb_chain):
     return pdb_sequence
 
 def check_if_file_ok(f):
-    if not os.path.exists(str(f)):
+    if f is None:
+        raise Exception(str(f)+" is not defined")
+    elif not os.path.exists(str(f)):
         raise Exception("File not found :"+str(f))
 
 def write_positions_to_csv(positions_dict, output_file):

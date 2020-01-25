@@ -41,6 +41,7 @@ class Potts_Model:
                 b'meta'
             """
         print("getting Potts model from "+str(binary_file))
+        fm.check_if_file_ok(binary_file)
         ncol = df[b'ncol']
         v_20 = np.array(df[b'x_single']).reshape((ncol,20))
         v = np.zeros((ncol,21))
@@ -66,6 +67,7 @@ class Potts_Model:
         """
             initialize MRF from training set
         """
+        fm.check_if_file_ok(aln_file)
         call = "ccmpred "+str(aln_file)+ " -b "+str(binary_file)
         for key_arg in kwargs:
             arg_ccm = key_arg.replace('_', '-')
@@ -94,6 +96,7 @@ class Potts_Model:
     @classmethod
     def from_sequence_file_to_one_hot(cls, seq_file, **kwargs):
         """ one hot encoding """
+        fm.check_if_file_ok(seq_file)
         seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         x = code_whole_seq(seq)
         v = np.zeros((len(x),q))
@@ -112,6 +115,7 @@ class Potts_Model:
     @classmethod
     def from_sequence_file_with_submat(cls, seq_file, npc=1, **kwargs):
         """ substitution matrix pseudocounts """
+        fm.check_if_file_ok(seq_file)
         seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         tau = npc/(1+npc)
         x = code_whole_seq(seq)

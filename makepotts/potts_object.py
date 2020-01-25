@@ -112,7 +112,7 @@ class Potts_Object:
                 blast_xml = feature_folder/"blast.xml"
                 blast_xml, unaligned_fasta = get_blast_xml_and_fasta_output_from_sequence_file(sequence_file, database, blast_fasta=blast_fasta, blast_xml=blast_xml, n=nb_sequences_blast, evalue=blast_evalue)
             else:
-                raise Exception(str(sequences_fetcher)+" call not implemented yet.")
+                raise Exception(str(sequences_fetcher)+" call not implemented yet. Available options are hhblits or blast")
 
         # IF EVALUE CUTOFF
         if use_evalue_cutoff:
@@ -126,6 +126,7 @@ class Potts_Object:
 
         # ORIGINAL ALIGNMENT, AFTER CUTOFF IF ANY
         if aln_file is not None:
+            fm.check_if_file_ok(aln_file)
             if fm.get_format(aln_file)=="fasta":
                 aln_original = aln_file
             elif fm.get_format(aln_file)=="a3m":
@@ -133,7 +134,7 @@ class Potts_Object:
                 call_reformat(aln_file, reformat)
                 aln_original = reformat
             else:
-                raise Exception("Unknown format : "+str(aln_file))
+                raise Exception("Unknown format : "+str(fm.get_format(aln_file))+" for "+str(aln_file))
 
             if use_evalue_cutoff:
                 cutoff_fasta = feature_folder/("cutoff_"+str(cutoff_index)+".fasta")
@@ -143,6 +144,7 @@ class Potts_Object:
             fm.copy(aln_original, feature_folder/"aln_original.fasta")
 
         elif unaligned_fasta is not None:
+            fm.check_if_file_ok(unaligned_fasta)
             if use_evalue_cutoff:
                 cutoff_fasta = feature_folder/("cutoff_"+str(cutoff_index)+".fasta")
                 fm.create_fasta_file_with_less_sequences(unaligned_fasta, cutoff_fasta, cutoff_index)
@@ -162,6 +164,7 @@ class Potts_Object:
         aln_train = aln_original
 
         if (aln_train is not None):
+            fm.check_if_file_ok(aln_train)
 
             if (inference_type=="standard"):
                 if filter_alignment:
