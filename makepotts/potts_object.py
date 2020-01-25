@@ -301,44 +301,44 @@ def main(args=sys.argv[1:]):
 
     # files
     parser.add_argument('-f', '--feature_folder', help="Output feature folder", type=pathlib.Path, default=None)
-    parser.add_argument('-gf', '--guess_folder', help="Guess from files in folder (NOT RECOMMENDED)", type=pathlib.Path, default=None)
+    parser.add_argument('-gf', '--guess_folder', help=argparse.SUPPRESS, type=pathlib.Path, default=None)
     parser.add_argument('-aln', '--aln_file', help="Alignment file", type=pathlib.Path)
     parser.add_argument('-ualn', '--unaligned_fasta', help="Unaligned sequences in fasta format", type=pathlib.Path)
     parser.add_argument('-s', '--sequence_file', help="Sequence file", type=pathlib.Path)
     parser.add_argument('-p', '--potts_model_file', help="Potts model file", type=pathlib.Path)
 
     # fetch sequences ?
-    parser.add_argument('-fetch', '--fetch_sequences', help="Fetch sequences in database ? (requires a sequence file)", action='store_true', default=False)
-    parser.add_argument('-fetcher', '--sequences_fetcher', help="Fetch sequences with...? (hhblits or blast)", default='hhblits')
-    parser.add_argument('-d', '--database', help="Database path for HHblits or BLAST call", default=None)
-    parser.add_argument('--nb_sequences_blast', help="Nb sequences fetched by BLAST", type=int, default=100000)
-    parser.add_argument('--blast_evalue', help="BLAST E-value parameter", type=float, default=1)
+    parser.add_argument('-fetch', '--fetch_sequences', help="Fetch sequences in database ? (requires a sequence file) (default : False)", action='store_true', default=False)
+    parser.add_argument('-fetcher', '--sequences_fetcher', help="Fetch sequences with...? (hhblits or blast) (default : hhblits)", default='hhblits')
+    parser.add_argument('-d', '--database', help="Database path for HHblits or BLAST call", default=None) # TODO expliquer
+    parser.add_argument('--nb_sequences_blast', help="Nb sequences fetched by BLAST (default : 100000)", type=int, default=100000)
+    parser.add_argument('--blast_evalue', help="BLAST E-value parameter (default : 1)", type=float, default=1)
     # E-value cutoff
-    parser.add_argument('-evcut', '--use_evalue_cutoff', help="Stop taking sequences in the alignment when we reach the elbow of the E-value curve", action='store_true', default=False)
+    parser.add_argument('-evcut', '--use_evalue_cutoff', help="Stop taking sequences in the alignment when we reach the elbow of the E-value curve (default : False)", action='store_true', default=False)
     parser.add_argument('-hhr', '--hhr_file', help="HHblits .hhr output file (needed to find the E-value cutoff)", type=pathlib.Path)
     parser.add_argument('-bxml', '--blast_xml', help="BLAST XML output file (needed to find the E-value cutoff)", type=pathlib.Path)
 
     # Alignment transformation
     parser.add_argument('-nofilter', '--dont_filter_alignment', help="Don't filter alignment using HHfilter (default = do)", action='store_true', default=False)
-    parser.add_argument('--hhfilter_threshold', help="HHfilter threshold", type=float, default=80)
-    parser.add_argument('-whole', '--use_whole_alignment', help="Use the whole alignment (default : arbitrarily take the first @max_nb_sequences after HHfilter and before trimal)", action='store_true', default=False)
+    parser.add_argument('--hhfilter_threshold', help="HHfilter threshold (default : 80)", type=float, default=80)
+    parser.add_argument('-whole', '--use_whole_alignment', help="Use the whole filtered alignment (default : don't : arbitrarily take the first @max_nb_sequences after HHfilter and before trimal)", action='store_true', default=False)
     parser.add_argument('-maxnb', '--max_nb_sequences', help="Max. nb sequences in the alignment (if alignment has more sequences that @max_nb_sequences after filtering and before trimming, all sequences after n° @max_nb_sequences will be deleted from the alignment. Default : 1000)", type=int, default=1000)
     parser.add_argument('-minnb', '--min_nb_sequences', help="Min. nb sequences in the alignment (if alignment has less than @min_nb_sequences, an exception will be raised and Potts model won't be inferred. Default : 1)", type=int, default=1)
     parser.add_argument('-notrim', '--dont_trim_alignment', help="Don't trim alignment using trimal (default = do)", action='store_true', default=False)
-    parser.add_argument('--trimal_gt', help="trimal -gt parameter", type=float, default=0.8)
-    parser.add_argument('--trimal_cons', help="trimal -cons parameter", type=float, default=0)
+    parser.add_argument('--trimal_gt', help="trimal -gt parameter (default : 0.8)", type=float, default=0.8)
+    parser.add_argument('--trimal_cons', help="trimal -cons parameter (default : 0)", type=float, default=0)
 
     # Potts model
     parser.add_argument('-noinfer', '--dont_infer_potts_model', help="Don't infer a Potts model (default = do)", action='store_true', default=False)
-    parser.add_argument('--inference_type', help="Inference type (standard : Potts model inferred from an alignment, one_submat : Potts model inferred from a sequence using submatrix pseudocounts, one_hot : one-hot encoding of a sequence -> Potts model", default="standard")
+    parser.add_argument('--inference_type', help="Inference type (standard : Potts model inferred from an alignment, one_submat : Potts model inferred from a sequence using submatrix pseudocounts, one_hot : one-hot encoding of a sequence -> Potts model) (default : standard)", default="standard")
     parser.add_argument('--rescaling_function', help="Rescaling function for the Potts model. (default : no rescaling (identity))", default="identity")
     parser.add_argument('-nw', '--dont_use_w', help="Speed up computations if we are not interested in w parameters (not recommended)", action='store_true', default=False)
 
     # CCMpredPy options
     parser.add_argument('--pc_single_count', help="CCMpred : Specify number of single pseudocounts (default : 1000)", default=1000)
     parser.add_argument('--pc_pair_count', help="CCMpred : Specify number of pair pseudocounts (default : 1)", default=1)
-    parser.add_argument('--ofn_pll', help="CCMpred : Pseudo-likelihood inference", default=True)
-    parser.add_argument('--ofn_cd', help="CCMpred : Contrastive Divergence inference", default=False)
+    parser.add_argument('--ofn_pll', help="CCMpred : Pseudo-likelihood inference (default : True)", default=True)
+    parser.add_argument('--ofn_cd', help="CCMpred : Contrastive Divergence inference (default : False)", default=False)
     parser.add_argument('--reg_lambda_pair_factor', help="CCMpred : Regularization parameter for pair potentials (L2 regularization with lambda_pair = lambda_pair-factor * scaling) [CCMpred default: 0.2, our default : 30]", default=None)
 
 

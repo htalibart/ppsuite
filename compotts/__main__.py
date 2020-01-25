@@ -17,31 +17,31 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-p2', '--potts_model_file_2', help="Potts model 2", type=pathlib.Path)
     parser.add_argument('-f1', '--feature_folder_1', help="Folder containing files for sequence 1", type=pathlib.Path)
     parser.add_argument('-f2', '--feature_folder_2', help="Folder containing files for sequence 2", type=pathlib.Path)
-    parser.add_argument('-gf1', '--guess_folder_1', help="Guess features from folder 1 (NOT RECOMMENDED)", type=pathlib.Path)
-    parser.add_argument('-gf2', '--guess_folder_2', help="Guess features from folder 2 (NOT RECOMMENDED)", type=pathlib.Path)
-    parser.add_argument('-o', '--output_folder', help="Output folder", type=pathlib.Path)
+    parser.add_argument('-gf1', '--guess_folder_1', help=argparse.SUPPRESS, type=pathlib.Path)
+    parser.add_argument('-gf2', '--guess_folder_2', help=argparse.SUPPRESS, type=pathlib.Path)
+    parser.add_argument('-o', '--output_folder', help="Output folder (if not specified : output_compotts/[DATE]/)", type=pathlib.Path)
 
     # options alignement
-    parser.add_argument('-nw', '--no_w', help="Don't use w scores", action='store_true')
-    parser.add_argument('-nv', '--no_v', help="Don't use v scores", action='store_true')
+    parser.add_argument('-nw', '--no_w', help="Don't use w scores (default : False)", action='store_true')
+    parser.add_argument('-nv', '--no_v', help="Don't use v scores (default : False)", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     parser.add_argument('--rescaling_function', help="Rescaling function for the Potts model. (default : no rescaling (identity))", default="identity")
-    parser.add_argument('-vwc', '--vw_coeff_method', help="vw coeff method", default="arbitrary_1_1") # TODO doc
-    parser.add_argument('-gc', '--gap_cost_method', help="gap costs method", default="arbitrary_8_0") # TODO doc
+    parser.add_argument('-vwc', '--vw_coeff_method', help=argparse.SUPPRESS, default="arbitrary_1_1") # v w coeff method
+    parser.add_argument('-gc', '--gap_cost_method', help=argparse.SUPPRESS, default="arbitrary_8_0") # gap costs method
 
     # solver options
-    parser.add_argument('-t', '--t_limit', help="solver : time limit", type=float, default=36000)
-    parser.add_argument('-lit', '--iter_limit_param', help="solver : nb Lagrangian iterations", type=int, default=1000000000)
+    parser.add_argument('-t', '--t_limit', help="solver : time limit in seconds (default : 36000)", type=float, default=36000)
+    parser.add_argument('-lit', '--iter_limit_param', help="solver : nb Lagrangian iterations (default : 1000000000)", type=int, default=1000000000)
     #parser.add_argument('-e', '--epsilon', help="solver : precision", type=float, default=1)
-    parser.add_argument('-e', '--epsilon_method', help="solver : precision method", default="arbitrary_1")
-    parser.add_argument('-ga', '--gamma', help="solver : gamma", type=float, default=1.0)
-    parser.add_argument('-th', '--theta', help="solver : theta", type=float, default=0.9)
-    parser.add_argument('-stpz', '--stepsize_min', help="solver : stepsize_min", type=float, default=0.000000005)
-    parser.add_argument('-stpm', '--nb_non_increasing_steps_max', help="solver : nb_non_increasing_steps_max", type=int, default=500)
-    parser.add_argument('-sim_min', '--sim_min', help='if score is below sim_min, solver considers that the Potts models are not similar and stops.', type=float, default=0)
+    parser.add_argument('-e', '--epsilon_method', help="solver : precision method (default : arbitrary_1)", default="arbitrary_1") # TODO documenter toutes les précisions
+    parser.add_argument('-ga', '--gamma', help="solver : gamma (default : 1.0)", type=float, default=1.0)
+    parser.add_argument('-th', '--theta', help="solver : theta (default : 0.9)", type=float, default=0.9)
+    parser.add_argument('-stpz', '--stepsize_min', help="solver : stepsize_min (default : 0.000000005)", type=float, default=0.000000005)
+    parser.add_argument('-stpm', '--nb_non_increasing_steps_max', help="solver : nb_non_increasing_steps_max (default : 500)", type=int, default=500)
+    parser.add_argument('-sim_min', '--sim_min', help='if score is below sim_min, solver considers that the Potts models are not similar and stops. (default : 0)', type=float, default=0)
 
     # autres options
-    parser.add_argument('-ali', '--call_aliview', help="Call aliview at the end", action='store_true')
+    parser.add_argument('-ali', '--call_aliview', help=argparse.SUPPRESS, action='store_true')
     parser.add_argument('-oaln', '--get_training_sets_fasta_aln', help="Get training sets alignment in a fasta file", action='store_true')
     parser.add_argument('-osaln', '--get_sequences_fasta_aln', help="Get sequences alignment in a fasta file", action='store_true')
 
