@@ -23,6 +23,7 @@ class Potts_Model:
             self.name = kwargs['name']
         else:
             self.name = "Billy"
+        print("w norm: ", self.get_w_norm(), "normalized w norm: ", self.get_normalized_w_norm())
 
 
     @classmethod
@@ -208,6 +209,14 @@ class Potts_Model:
 
     def get_w_norm(self):
         return LA.norm(self.w)
+
+
+    def get_normalized_w_norms(self):
+        w_norms = self.get_w_norms()
+        return w_norms/np.sum(w_norms)
+
+    def get_normalized_w_norm(self):
+        return LA.norm(self.get_normalized_w_norms())
 
 
     def Hamiltonian(self, a):
