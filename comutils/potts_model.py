@@ -213,7 +213,9 @@ class Potts_Model:
 
     def get_normalized_w_norms(self):
         w_norms = self.get_w_norms()
-        return w_norms/np.sum(w_norms)
+        m = np.mean(w_norms)
+        s = np.std(w_norms)
+        return (w_norms-m)/s
 
     def get_normalized_w_norm(self):
         return LA.norm(self.get_normalized_w_norms())
