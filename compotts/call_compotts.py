@@ -13,7 +13,7 @@ COMPOTTS_CPP_LIBRARY = pkg_resources.resource_filename('compotts', 'compotts_sol
 COMPOTTS_SOLVER = ctypes.CDLL(COMPOTTS_CPP_LIBRARY)
 INFINITY = 1000000000
 
-def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_method="arbitrary_1", v_score_function=scalar_product, w_score_function=scalar_product, w_threshold_method="none", use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, vw_coeff_method = "arbitrary_1_1", gap_cost_method="arbitrary_5_0", sim_min=0.1, **kwargs):
+def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, precision_method="arbitrary_1", v_score_function=scalar_product, w_score_function=scalar_product, w_threshold_method="none", use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, vw_coeff_method = "arbitrary_1_1", gap_cost_method="arbitrary_5_0", sim_min=0.1, **kwargs):
 
     aln_res_file = fm.get_aln_res_file_name(output_folder)
     info_res_file = fm.get_info_res_file_name(output_folder)
@@ -25,7 +25,7 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     else:
         v_scores = np.ascontiguousarray(np.zeros(tuple([mrf.v.shape[0] for mrf in mrfs])).flatten())
 
-    v_scores, w_scores, edges_maps, selfcomps, gap_open, gap_extend, epsilon = compute_scores_etc(mrfs, v_score_function, w_score_function, use_v, use_w, vw_coeff_method, w_threshold_method, gap_cost_method, epsilon_method, **kwargs)
+    v_scores, w_scores, edges_maps, selfcomps, gap_open, gap_extend, epsilon = compute_scores_etc(mrfs, v_score_function, w_score_function, use_v, use_w, vw_coeff_method, w_threshold_method, gap_cost_method, precision_method, **kwargs)
 
     #c_v_scores = ctypes.c_void_p(np.ascontiguousarray(v_scores.flatten()).ctypes.data)
     c_double_p = ctypes.POINTER(ctypes.c_double)

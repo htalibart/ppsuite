@@ -33,7 +33,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-t', '--t_limit', help="solver : time limit in seconds (default : 36000)", type=float, default=36000)
     parser.add_argument('-lit', '--iter_limit_param', help="solver : nb Lagrangian iterations (default : 1000000000)", type=int, default=1000000000)
     #parser.add_argument('-e', '--epsilon', help="solver : precision", type=float, default=1)
-    parser.add_argument('-e', '--epsilon_method', help="solver : precision method (default : arbitrary_1)", default="arbitrary_1") # TODO documenter toutes les précisions
+    parser.add_argument('-e', '--precision_method', help="solver : precision method (default : similarity_0.005)", default="similarity_0.005") # TODO documenter toutes les précisions
     parser.add_argument('-ga', '--gamma', help="solver : gamma (default : 1.0)", type=float, default=1.0)
     parser.add_argument('-th', '--theta', help="solver : theta (default : 0.9)", type=float, default=0.9)
     parser.add_argument('-stpz', '--stepsize_min', help="solver : stepsize_min (default : 0.000000005)", type=float, default=0.000000005)

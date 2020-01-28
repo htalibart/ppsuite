@@ -80,20 +80,23 @@ def get_gap_costs(gap_cost_method, v_scores, vw_coeff_method):
         return [5,0]
 
 
-def get_epsilon(epsilon_method, vw_coeff_method):
-    if epsilon_method.startswith("arbitrary_"):
-        return float(epsilon_method[len("arbitrary_"):])
-    elif (vw_coeff_method.startswith("scoremax_")) and (epsilon_method.startswith("p_scoremax_")):
+def get_epsilon(precision_method, vw_coeff_method, selfscores):
+    if precision_method.startswith("arbitrary_"):
+        return float(precision_method[len("arbitrary_"):])
+    elif (vw_coeff_method.startswith("scoremax_")) and (precision_method.startswith("p_scoremax_")):
         Hmax = float(vw_coeff_method[len("scoremax_"):])
-        p = float(epsilon_method[len("p_scoremax_"):])
+        p = float(precision_method[len("p_scoremax_"):])
         return p*Hmax
+    elif precision_method.startswith("similarity_"):
+        sim_diff = float(precision_method[len("similarity_"):])
+        return (sim_diff/2)*sum(selfscores)
     else:
         print("No precision method, returning 1")
         return 1
 
 
 
-def compute_scores_etc(mrfs, v_score_function=scalar_product, w_score_function=scalar_product, use_v=True, use_w=True, vw_coeff_method="arbitrary_1_1", w_threshold_method="percentile_0",gap_cost_method="arbitrary_5_0", epsilon_method="arbitrary_1", **kwargs):
+def compute_scores_etc(mrfs, v_score_function=scalar_product, w_score_function=scalar_product, use_v=True, use_w=True, vw_coeff_method="arbitrary_1_1", w_threshold_method="percentile_0",gap_cost_method="arbitrary_5_0", precision_method="arbitrary_1", **kwargs):
     if use_w:
         edges_maps = [get_edges_map(mrf, w_threshold_method) for mrf in mrfs]
     else:
@@ -109,7 +112,7 @@ def compute_scores_etc(mrfs, v_score_function=scalar_product, w_score_function=s
         w_scores = np.zeros(1)
     [gap_open, gap_extend] = get_gap_costs(gap_cost_method, v_scores, vw_coeff_method)
     selfscores = [compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v, use_w, vw_coeff_method, **kwargs) for mrf, edges_map in zip(mrfs, edges_maps)]
-    epsilon = get_epsilon(epsilon_method, vw_coeff_method)
+    epsilon = get_epsilon(precision_method, vw_coeff_method, selfscores)
     return v_scores, w_scores, edges_maps, selfscores, gap_open, gap_extend, epsilon
 
 
