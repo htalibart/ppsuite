@@ -194,7 +194,7 @@ class Potts_Object:
 
             fm.copy(aln_train, feature_folder/"aln_train.fasta")
             if fm.get_nb_sequences_in_fasta_file(aln_train)<min_nb_sequences:
-                raise Exception("Less than "+str(min_nb_sequences)+" in the training set : "+str(fm.get_nb_sequences_in_fasta_file))
+                raise Exception("Less than "+str(min_nb_sequences)+" in the training set : "+str(fm.get_nb_sequences_in_fasta_file(aln_train)))
 
 
             # POTTS MODEL
