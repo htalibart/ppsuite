@@ -137,14 +137,14 @@ def get_format(seq_file):
 
 
 def get_list_from_csv(csv_file):
-    with open(csv_file, 'r') as f:
+    with open(str(csv_file), 'r') as f:
         csvreader = csv.reader(f)
         row = next(csvreader)
         l = [int(s) for s in row]
     return l
 
 def write_list_to_csv(l, csv_file):
-    with open(csv_file, 'w') as f:
+    with open(str(csv_file), 'w') as f:
         csvwriter = csv.writer(f)
         csvwriter.writerow(l)
 
