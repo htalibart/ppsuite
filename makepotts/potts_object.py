@@ -87,7 +87,7 @@ class Potts_Object:
 
 
     @classmethod
-    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_single_count=None, reg_lambda_pair_factor=None, rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, **kwargs):
+    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_single_count=None, reg_lambda_pair_factor=None, rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, keep_tmp_files=False, **kwargs):
 
         # ALIGNMENT FOLDER
         if feature_folder is None:
@@ -252,6 +252,13 @@ class Potts_Object:
         if potts_model_file is not None:
             fm.copy(potts_model_file, feature_folder/"potts_model.mrf")
 
+
+
+        if not keep_tmp_files:
+            for name in ["aln_original.a3m", "reformat.fasta", "filtered.fasta", "less_"+str(max_nb_sequences)+".fasta", "trim_80.fasta"]:
+                if (feature_folder/name).is_file():
+                    (feature_folder/name).unlink()
+
         return cls.from_folder(feature_folder)
 
 
@@ -330,6 +337,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-notrim', '--dont_trim_alignment', help="Don't trim alignment using trimal (default = do)", action='store_true', default=False)
     parser.add_argument('--trimal_gt', help="trimal -gt parameter (default : 0.8)", type=float, default=0.8)
     parser.add_argument('--trimal_cons', help="trimal -cons parameter (default : 0)", type=float, default=0)
+    parser.add_argument('--keep_tmp_files', help="keep temporary files (filtered alignments etc.) (default : false)", action='store_true', default=False)
 
     # Potts model
     parser.add_argument('-noinfer', '--dont_infer_potts_model', help="Don't infer a Potts model (default = do)", action='store_true', default=False)
