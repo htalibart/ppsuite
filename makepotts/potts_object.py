@@ -347,7 +347,7 @@ def main(args=sys.argv[1:]):
 
     # CCMpredPy options
     parser.add_argument('--pc_submat', help="CCMpred : Use substitution matrix single pseudocounts instead of uniform (default : False)", default=False, action='store_true')
-    parser.add_argument('--pc_single_count', help="CCMpred : Specify number of single pseudocounts (default : 1000)", default=1000)
+    parser.add_argument('--pc_single_count', help="CCMpred : Specify number of single pseudocounts (default : nb sequences in the training alignment)", default=None)
     parser.add_argument('--pc_pair_count', help="CCMpred : Specify number of pair pseudocounts (default : 1)", default=1)
     parser.add_argument('--ofn_pll', help="CCMpred : Pseudo-likelihood inference (default : True)", default=True)
     parser.add_argument('--ofn_cd', help="CCMpred : Contrastive Divergence inference (default : False)", default=False)
