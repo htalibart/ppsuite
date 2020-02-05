@@ -9,6 +9,7 @@ def get_rescaled_potts_model(mrf, rescaling_function_name, use_w=True, **kwargs)
     t_v = np.zeros_like(mrf.v)
     for i in range(len(mrf.v)):
         t_v[i] = rescale_parameter(mrf.v[i], rescaling_function, parameter_type="v", **kwargs)
+        t_v[i][20] = 0 # keep gap parameter to 0
     t_w = np.zeros_like(mrf.w)
     if use_w:
         for i in range(len(mrf.w)):
