@@ -76,8 +76,8 @@ def main(args=sys.argv[1:]):
     for k in range(1,3):
         if args["potts_model_file_"+str(k)] is not None:
             feature_folder = pathlib.Path(tempfile.mkdtemp())
-            obj = Potts_Object.from_files(feature_folder, potts_model_file=args["potts_model_file_"+str(k)], **args)
-            print(obj.mrf_pos_to_aln_pos)
+            shutil.copy(args["potts_model_file_"+str(k)], feature_folder/"potts_model.mrf")
+            obj = Potts_Object.from_folder(feature_folder, **args)
             compotts_objects.append(obj)
         elif args["feature_folder_"+str(k)] is not None:
             obj = Potts_Object.from_folder(args["feature_folder_"+str(k)], **args)

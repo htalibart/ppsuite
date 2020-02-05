@@ -44,6 +44,12 @@ class Test_Call_ComPotts(unittest.TestCase):
         similarity_global = infos_solver["similarity_global"]
         self.assertEqual(similarity_global,1)
 
+    def test_v_score(self):
+        aligned_positions, infos_solver = align_two_objects([self.object, self.object], self.output_folder, use_w=False)
+        p = self.object.potts_model
+        v_score = sum([scalar_product(p.v[i],p.v[i]) for i in range(p.ncol)])
+        assert(infos_solver['UB'] - v_score < 1)
+
     def test_align_small_fake_mrfs(self):
         templates = [["1", "0", "3", "2"],["[0]", "y", "[1]", "[2]"]]
         alnfnames = [self.output_folder/("fake_"+str(i)+".aln") for i in range(2)]

@@ -35,8 +35,7 @@ class Potts_Object:
 
 
     @classmethod
-    def from_folder(cls, feature_folder, rescaling_function="identity", **kwargs):
-
+    def from_folder(cls, feature_folder, rescaling_function="identity", use_w=True, **kwargs):
         feature = cls()
 
         feature.folder = feature_folder
@@ -82,7 +81,7 @@ class Potts_Object:
 
         if (feature.potts_model is not None) and (rescaling_function!="identity"):
             print("rescaling Potts model")
-            feature.potts_model = get_rescaled_potts_model(potts_model, rescaling_function, use_w=use_w)
+            feature.potts_model = get_rescaled_potts_model(feature.potts_model, rescaling_function, use_w=use_w)
 
         return feature
 
@@ -226,6 +225,7 @@ class Potts_Object:
                 potts_model = Potts_Model.from_msgpack(potts_model_file)
             potts_model = get_rescaled_potts_model(potts_model, rescaling_function, use_w=use_w, **kwargs)
             potts_model.to_msgpack(potts_model_file)
+
 
 
         # IF NO ALN, NO MRF_POS_TO_ALN_POS
