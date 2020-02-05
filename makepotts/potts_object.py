@@ -77,9 +77,9 @@ class Potts_Object:
         except Exception as e:
             feature.mrf_pos_to_seq_pos = None
 
-        if (feature.potts_model is not None) and (rescaling_function!="identity"):
-            print("rescaling Potts model")
-            feature.potts_model = get_rescaled_potts_model(potts_model, rescaling_function, use_w=use_w)
+        #if (feature.potts_model is not None) and (rescaling_function!="identity"):
+        #    print("rescaling Potts model")
+        #    feature.potts_model = get_rescaled_potts_model(potts_model, rescaling_function, use_w=use_w)
 
         return feature
 
@@ -219,7 +219,8 @@ class Potts_Object:
 
         if (potts_model_file is not None) and (rescaling_function!="identity"):
             print("rescaling Potts model")
-            potts_model = get_rescaled_potts_model(potts_model, rescaling_function, use_w=use_w)
+            potts_model = get_rescaled_potts_model(potts_model, rescaling_function, use_w=use_w, **kwargs)
+            potts_model.to_msgpack(potts_model_file)
 
 
         # IF NO ALN, NO MRF_POS_TO_ALN_POS
@@ -343,6 +344,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-noinfer', '--dont_infer_potts_model', help="Don't infer a Potts model (default = do)", action='store_true', default=False)
     parser.add_argument('--inference_type', help="Inference type (standard : Potts model inferred from an alignment, one_submat : Potts model inferred from a sequence using submatrix pseudocounts, one_hot : one-hot encoding of a sequence -> Potts model) (default : standard)", default="standard")
     parser.add_argument('--rescaling_function', help="Rescaling function for the Potts model. (default : no rescaling (identity))", default="identity")
+    parser.add_argument('--shift', help="Number added to each vi(a) if using rescaling function add_number", type=float, default=3)
     parser.add_argument('-nw', '--dont_use_w', help="Speed up computations if we are not interested in w parameters (not recommended)", action='store_true', default=False)
 
     # CCMpredPy options

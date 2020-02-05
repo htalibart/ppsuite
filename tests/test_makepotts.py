@@ -81,6 +81,11 @@ class Test_MakePotts(unittest.TestCase):
         assert(cf.sequence=="MAEIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVRSGKQL")
         assert(cf.potts_model.ncol==62)
 
+    def test_rescale_shift(self):
+        po = Potts_Object.from_files(self.feature_folder, aln_file=ALN_1CC8, rescaling_function="add_number", shift=10)
+        assert(sum(po.potts_model.v[0])-200<0.0001)
+        
+
     #def test_from_file_calling_hhblits_and_evalue_cutoff(self):
     #    cf = Potts_Object.from_files(sequence_file=SEQ_1CC8, database='~/data/uniclust30_2018_08/uniclust30_2018_08', fetch_sequences=True, sequences_fetcher='hhblits', use_evalue_cutoff=True) 
 

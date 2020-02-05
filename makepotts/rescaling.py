@@ -8,12 +8,12 @@ def get_rescaled_potts_model(mrf, rescaling_function_name, use_w=True, **kwargs)
     rescaling_function = eval(rescaling_function_name)
     t_v = np.zeros_like(mrf.v)
     for i in range(len(mrf.v)):
-        t_v[i] = rescale_parameter(mrf.v[i], rescaling_function, parameter_type="v")
+        t_v[i] = rescale_parameter(mrf.v[i], rescaling_function, parameter_type="v", **kwargs)
     t_w = np.zeros_like(mrf.w)
     if use_w:
         for i in range(len(mrf.w)):
             for j in range(len(mrf.w)):
-                t_w[i][j] = rescale_parameter(mrf.w[i][j], rescaling_function, parameter_type="w")
+                t_w[i][j] = rescale_parameter(mrf.w[i][j], rescaling_function, parameter_type="w", **kwargs)
     return Potts_Model.from_parameters(t_v, t_w, name=mrf.name+"_"+rescaling_function_name)
 
 
@@ -49,3 +49,9 @@ def shifted_relu(x, v_threshold=1, w_threshold=0.01, **kwargs):
     else:
         threshold = w_threshold
     return x*(x>=threshold)
+
+def add_number(x, shift=3, **kwargs):
+    if kwargs["parameter_type"]=="v":
+        return x+shift
+    else:
+        return x
