@@ -43,23 +43,24 @@ class Potts_Object:
         if not feature.folder.is_dir():
             raise Exception("Feature folder does not exist")
 
-        try:
+        if (feature_folder/"aln_train.fasta").is_file():
             feature.aln_train = feature_folder/"aln_train.fasta"
-        except Exception as e:
+        else:
             feature.aln_train = None
 
-        try:
+        if (feature_folder/"aln_original.fasta").is_file():
             feature.aln_original = feature_folder/"aln_original.fasta"
-        except Exception as e:
+        else:
             feature.aln_original = None
         
 
-        try:
+        if (feature_folder/"sequence.fasta").is_file():
             feature.sequence_file = feature_folder/"sequence.fasta"
             feature.sequence = fm.get_first_sequence_in_fasta_file(feature.sequence_file)
-        except Exception as e:
+        else:
             feature.sequence = None
 
+        feature.potts_model = None
         try:
             feature.potts_model_file = feature_folder/"potts_model.mrf"
             feature.potts_model = Potts_Model.from_msgpack(feature.potts_model_file)
@@ -67,19 +68,21 @@ class Potts_Object:
             print("Potts model was not found")
             feature.potts_model = None
 
+        feature.mrf_pos_to_seq_pos=None
         try:
             feature.mrf_pos_to_seq_pos = fm.get_list_from_csv(feature_folder/"mrf_pos_to_seq_pos.csv") # mrf_pos_to_aln_pos[i] = position in sequence corresponding to position i in Potts model
         except Exception as e:
             feature.mrf_pos_to_seq_pos = None
 
+        feature.mrf_pos_to_aln_pos=None
         try:
             feature.mrf_pos_to_aln_pos = fm.get_list_from_csv(feature_folder/"mrf_pos_to_aln_pos.csv") # mrf_pos_to_aln_pos[i] = position in original_aln corresponding to position i in Potts model
         except Exception as e:
             feature.mrf_pos_to_seq_pos = None
 
-        #if (feature.potts_model is not None) and (rescaling_function!="identity"):
-        #    print("rescaling Potts model")
-        #    feature.potts_model = get_rescaled_potts_model(potts_model, rescaling_function, use_w=use_w)
+        if (feature.potts_model is not None) and (rescaling_function!="identity"):
+            print("rescaling Potts model")
+            feature.potts_model = get_rescaled_potts_model(potts_model, rescaling_function, use_w=use_w)
 
         return feature
 
@@ -219,6 +222,8 @@ class Potts_Object:
 
         if (potts_model_file is not None) and (rescaling_function!="identity"):
             print("rescaling Potts model")
+            if "potts_model" not in locals():
+                potts_model = Potts_Model.from_msgpack(potts_model_file)
             potts_model = get_rescaled_potts_model(potts_model, rescaling_function, use_w=use_w, **kwargs)
             potts_model.to_msgpack(potts_model_file)
 
@@ -260,7 +265,7 @@ class Potts_Object:
                 if (feature_folder/name).is_file():
                     (feature_folder/name).unlink()
 
-        return cls.from_folder(feature_folder)
+        return cls.from_folder(feature_folder, rescaling_function="identity")
 
 
 

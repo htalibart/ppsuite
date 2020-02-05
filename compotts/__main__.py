@@ -26,6 +26,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-nv', '--no_v', help="Don't use v scores (default : False)", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
     parser.add_argument('--rescaling_function', help="Rescaling function for the Potts model. (default : no rescaling (identity))", default="identity")
+    parser.add_argument('--shift', help="Number added to each vi(a) if using rescaling function add_number", type=float, default=3)
     parser.add_argument('-vwc', '--vw_coeff_method', help=argparse.SUPPRESS, default="arbitrary_1_1") # v w coeff method
     parser.add_argument('-gc', '--gap_cost_method', help=argparse.SUPPRESS, default="arbitrary_8_0") # gap costs method
 
@@ -76,6 +77,7 @@ def main(args=sys.argv[1:]):
         if args["potts_model_file_"+str(k)] is not None:
             feature_folder = pathlib.Path(tempfile.mkdtemp())
             obj = Potts_Object.from_files(feature_folder, potts_model_file=args["potts_model_file_"+str(k)], **args)
+            print(obj.mrf_pos_to_aln_pos)
             compotts_objects.append(obj)
         elif args["feature_folder_"+str(k)] is not None:
             obj = Potts_Object.from_folder(args["feature_folder_"+str(k)], **args)
