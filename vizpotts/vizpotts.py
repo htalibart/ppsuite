@@ -6,6 +6,7 @@ from comutils.global_variables import ALPHABET
 from comutils.util import *
 from comutils.potts_model import *
 
+from compotts.compute_scores import *
 
 def get_reordered_v(v, alphabet):
     """ reorders all vi for a given alphabet """
@@ -306,3 +307,17 @@ def plot_one_wij(wij, alphabet=ALPHABET, center=0, show_figure=True, **kwargs):
         plt.show()
 
 
+def plot_v_scores(mrfs, v_score_function=scalar_product, **kwargs):
+    v_scores = compute_v_scores(mrfs[0], mrfs[1], v_score_function, **kwargs)
+    plot_heatmap(v_scores, **kwargs)
+
+
+def plot_v_scores_path(mrfs, dict_aligned_positions, v_score_function=scalar_product, **kwargs):
+    v_scores = compute_v_scores(mrfs[0], mrfs[1], v_score_function, **kwargs)
+    v_scores_path = np.zeros_like(v_scores)
+    for pos in range(len(dict_aligned_positions['pos_ref'])):
+        i=dict_aligned_positions['pos_ref'][pos]
+        k=dict_aligned_positions['pos_2'][pos]
+        v_scores_path[i][k] = v_scores[i][k]
+    plot_heatmap(v_scores_path, **kwargs)
+    print("sum =",np.sum(v_scores_path))
