@@ -81,7 +81,7 @@ class Potts_Object:
 
         if (feature.potts_model is not None) and (rescaling_function!="identity"):
             print("rescaling Potts model")
-            feature.potts_model = get_rescaled_potts_model(feature.potts_model, rescaling_function, use_w=use_w)
+            feature.potts_model = get_rescaled_potts_model(feature.potts_model, rescaling_function, use_w=use_w, **kwargs)
 
         return feature
 
