@@ -252,6 +252,10 @@ int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_tim
 	std::cout << "iter_limit " << iter_limit_param << endl;
 	std::cout << "n_limit " << n_limit_param << endl;
 	std::cout << "epsilon " << epsilon << endl;
+	std::cout << "gamma " << gamma << endl;
+	std::cout << "theta  " << theta << endl;
+	std::cout << "stepsize_min  " << stepsize_min << endl;
+	std::cout << "nb_non_increasing_steps_max  " << nb_non_increasing_steps_max << endl;
     std::cout << "started solving problem" << std::endl;
     int status(0);
 
