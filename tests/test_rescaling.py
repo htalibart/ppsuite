@@ -1,0 +1,40 @@
+import unittest
+import shutil, tempfile
+import pathlib
+import pkg_resources
+
+from tests.resources_manager import *
+
+from comutils import files_management as fm
+from makepotts.potts_object import *
+from makepotts.rescaling import *
+from comutils.potts_model import *
+
+class Test_Rescaling(unittest.TestCase):
+
+    def setUp(self):
+        self.feature_folder = pathlib.Path(FEATURE_FOLDER)
+        self.potts_model = Potts_Model.from_msgpack(self.feature_folder/"potts_model.mrf")
+
+
+    def tearDown(self):
+        #shutil.rmtree(self.feature_folder)
+        pass
+
+    def test_rescaling(self):
+        cf = Potts_Object.from_files(self.feature_folder, aln_file=SMALL_ALN_1CC8, trim_alignment=False, max_nb_sequences=250, rescaling_function="original_rescaling") 
+
+    def test_rescale_shift(self):
+        shift=10
+        q = 20
+        resc = get_rescaled_potts_model(self.potts_model, "add_number", use_w=True, shift=shift)
+        assert(sum(resc.v[0])-q*shift<0.0001)
+        
+
+    def test_simulate_uniform_pc_on_v(self):
+        tau = 0.5
+        resc = get_rescaled_potts_model(self.potts_model, "simulate_uniform_pc_on_v", use_w=True, tau=tau)
+        
+
+if __name__=='__main__':
+    unittest.main()

@@ -5,27 +5,53 @@ from comutils.potts_model import *
 
 def get_rescaled_potts_model(mrf, rescaling_function_name, use_w=True, **kwargs):
     """ returns a copy of Potts Model @mrf rescaled using @rescaled_function_name rescaling function, and using or not w """
-    rescaling_function = eval(rescaling_function_name)
     t_v = np.zeros_like(mrf.v)
     for i in range(len(mrf.v)):
-        t_v[i] = rescale_parameter(mrf.v[i], rescaling_function, parameter_type="v", **kwargs)
+        t_v[i] = rescale_parameter(mrf.v[i], rescaling_function_name, parameter_type="v", **kwargs)
         t_v[i][20] = 0 # keep gap parameter to 0
     t_w = np.zeros_like(mrf.w)
     if use_w:
         for i in range(len(mrf.w)):
             for j in range(len(mrf.w)):
-                t_w[i][j] = rescale_parameter(mrf.w[i][j], rescaling_function, parameter_type="w", **kwargs)
+                t_w[i][j] = rescale_parameter(mrf.w[i][j], rescaling_function_name, parameter_type="w", **kwargs)
     return Potts_Model.from_parameters(t_v, t_w, name=mrf.name+"_"+rescaling_function_name)
 
 
-def rescale_parameter(x, rescaling_function, **kwargs):
+def rescale_parameter(x, rescaling_function_name, **kwargs):
     """ rescale one parameter with @rescaling_function """
-    vfunc = np.vectorize(rescaling_function)
-    return vfunc(x, **kwargs)
+    if rescaling_function_name=="simulate_uniform_pc_on_v":
+        return eval(rescaling_function_name)(x,**kwargs)
+    else:
+        vfunc = np.vectorize(eval(rescaling_function_name))
+        return vfunc(x, **kwargs)
 
 
 
 # AVAILABLE RESCALING FUNCTIONS
+
+# whole vector
+
+def simulate_uniform_pc_on_v(vi, tau=1/2, **kwargs):
+    if kwargs["parameter_type"]=="v":
+        q=20
+        S = 0
+        for b in range(q):
+            S+=exp(vi[b])
+
+        resc_tmp= np.zeros_like(vi)
+        for a in range(q):
+            resc_tmp[a] = log((1-tau)*exp(vi[a])/S + tau/q)
+
+        resc_vi = np.zeros_like(vi)
+        S_all = np.sum(resc_tmp)
+        for a in range(q):
+            resc_vi[a] = resc_tmp[a]-(1/q)*S_all
+        return resc_vi
+    else:
+        return vi
+
+
+# one parameter
 
 def identity(x, **kwargs):
     return x
