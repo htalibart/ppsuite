@@ -27,7 +27,7 @@ and the following tools which you have to install and add to your path:
 * CCMpredPy : https://github.com/soedinglab/ccmgen (tested with version 1.0.0)
 ```
 git clone https://github.com/soedinglab/ccmgen
-cd CCMgen
+cd ccmgen
 python3 setup.py install --user
 ```
 
