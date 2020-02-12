@@ -13,7 +13,8 @@ from comutils.potts_model import *
 class Test_Rescaling(unittest.TestCase):
 
     def setUp(self):
-        self.feature_folder = pathlib.Path(FEATURE_FOLDER)
+        self.feature_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
+        shutil.copytree(FEATURE_FOLDER, self.feature_folder)
         self.potts_model = Potts_Model.from_msgpack(self.feature_folder/"potts_model.mrf")
 
 
