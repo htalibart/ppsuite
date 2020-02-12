@@ -16,6 +16,8 @@ def call_hhfilter(input_file, output_file, hhid):
     fm.check_if_file_ok(input_file)
     cmd = "hhfilter -i "+str(input_file)+" -o "+str(output_file)+" -id "+str(hhid)
     subprocess.Popen(cmd, shell=True).wait()
+    if not output_file.is_file():
+        raise Exception("HHfilter failed")
 
 
 def call_hhblits(input_file, output_file, database, maxfilt=100000, realign_max=100000, B=100000, Z=100000, n=3, e=0.001, retry_hhblits_with_memory_limit_if_fail=False, hhr_file=None, **kwargs):
@@ -42,6 +44,8 @@ def call_trimal(input_file, output_file, trimal_gt, cons, colnumbering_file):
     fm.check_if_file_ok(input_file)
     cmd = "trimal -in "+str(input_file)+" -out "+str(output_file)+" -gt "+str(trimal_gt)+" -cons "+str(cons)+" -colnumbering > "+str(colnumbering_file)
     subprocess.Popen(cmd, shell=True).wait()
+    if not output_file.is_file():
+        raise Exception("Trimal failed")
 
 
 def call_reformat(input_file, output_file):
@@ -49,6 +53,8 @@ def call_reformat(input_file, output_file):
     fm.check_if_file_ok(input_file)
     call = "reformat.pl a3m fas "+str(input_file)+" "+str(output_file)+" -r"
     subprocess.Popen(call, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).wait()
+    if not output_file.is_file():
+        raise Exception("Reformat failed")
 
 
 def call_muscle(input_file, output_file=None):
@@ -60,6 +66,8 @@ def call_muscle(input_file, output_file=None):
     print(muscle_cline)
     fm.check_if_file_ok(input_file)
     stdout, stderr = muscle_cline()
+    if not output_file.is_file():
+        raise Exception("Muscle failed")
     return output_file
 
 
