@@ -6,7 +6,7 @@ setup(
     name='VAPotts',
     version='0.1dev',
     packages=find_packages(),
-    install_requires=['numpy', 'pandas', 'biopython', 'msgpack', 'scipy', 'matplotlib', 'seaborn', 'sklearn', 'kneebow'],
+    install_requires=['numpy', 'pandas', 'biopython', 'msgpack==0.6.1', 'msgpack-python==0.5.6', 'scipy', 'matplotlib', 'seaborn', 'sklearn', 'kneebow'],
     package_data={
         'compotts':['compotts_solver.so'],
         },
