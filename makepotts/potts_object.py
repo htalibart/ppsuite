@@ -350,6 +350,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--inference_type', help="Inference type (standard : Potts model inferred from an alignment, one_submat : Potts model inferred from a sequence using submatrix pseudocounts, one_hot : one-hot encoding of a sequence -> Potts model) (default : standard)", default="standard")
     parser.add_argument('--rescaling_function', help="Rescaling function for the Potts model. (default : no rescaling (identity))", default="identity")
     parser.add_argument('--shift', help="Number added to each vi(a) if using rescaling function add_number", type=float, default=3)
+    parser.add_argument('--rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
     parser.add_argument('-nw', '--dont_use_w', help="Speed up computations if we are not interested in w parameters (not recommended)", action='store_true', default=False)
 
     # CCMpredPy options

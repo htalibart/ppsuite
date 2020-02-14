@@ -31,7 +31,7 @@ def rescale_parameter(x, rescaling_function_name, **kwargs):
 
 # whole vector
 
-def simulate_uniform_pc_on_v(vi, tau=1/2, **kwargs):
+def simulate_uniform_pc_on_v(vi, rescaling_tau=1/2, **kwargs):
     if kwargs["parameter_type"]=="v":
         q=20
         S = 0
@@ -40,7 +40,7 @@ def simulate_uniform_pc_on_v(vi, tau=1/2, **kwargs):
 
         resc_tmp= np.zeros_like(vi)
         for a in range(q):
-            resc_tmp[a] = log((1-tau)*exp(vi[a])/S + tau/q)
+            resc_tmp[a] = log((1-rescaling_tau)*exp(vi[a])/S + rescaling_tau/q)
 
         resc_vi = np.zeros_like(vi)
         S_all = np.sum(resc_tmp)
