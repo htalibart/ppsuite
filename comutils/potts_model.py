@@ -201,7 +201,7 @@ class Potts_Model:
 
 
     def get_v_norms(self):
-        return [euclidean_norm(vi) for vi in self.v]
+        return np.asarray([euclidean_norm(vi) for vi in self.v])
 
 
     def get_v_norm(self):
