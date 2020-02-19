@@ -38,7 +38,7 @@ class Test_Call_ComPotts(unittest.TestCase):
         compotts_args = ["--potts_model_file_1", str(self.feature_folder_1/"potts_model.mrf"), "--potts_model_file_2", str(self.feature_folder_1/"potts_model.mrf"), "--output_folder", str(self.output_folder), "--no_w"]
         res_compotts = main(compotts_args)
         shift=10
-        compotts_args_shift = compotts_args+["--rescaling_function", "add_number", "--shift", str(shift)]
+        compotts_args_shift = compotts_args+["--v_rescaling_function", "add_number", "--v_shift", str(shift)]
         res_compotts_shift = main(compotts_args_shift)
         l = Potts_Model.from_msgpack(str(self.feature_folder_1/"potts_model.mrf")).ncol
         assert(res_compotts_shift['infos_solver']['UB']-res_compotts['infos_solver']['UB']-(20*l*shift*shift)<1)

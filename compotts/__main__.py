@@ -25,8 +25,10 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-nw', '--no_w', help="Don't use w scores (default : False)", action='store_true')
     parser.add_argument('-nv', '--no_v', help="Don't use v scores (default : False)", action='store_true')
     parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
-    parser.add_argument('--rescaling_function', help="Rescaling function for the Potts model. (default : no rescaling (identity))", default="identity")
-    parser.add_argument('--shift', help="Number added to each vi(a) if using rescaling function add_number", type=float, default=3)
+    parser.add_argument('--v_rescaling_function', help="Rescaling function for the v parameters of the Potts model. (default : no rescaling (identity))", default="identity")
+    parser.add_argument('--w_rescaling_function', help="Rescaling function for the w parameters of the Potts model. (default : no rescaling (identity))", default="identity")
+    parser.add_argument('--v_shift', help="Number added to each vi(a) if using rescaling function add_number", type=float, default=3)
+    parser.add_argument('--wijab_threshold', help="If |wijab|<wijab_threshold, wijab is set to 0 if using rescaling function threshold_on_wijab", type=float, default=0)
     parser.add_argument('--rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
     parser.add_argument('-vwc', '--vw_coeff_method', help=argparse.SUPPRESS, default="arbitrary_1_1") # v w coeff method
     parser.add_argument('-gc', '--gap_cost_method', help=argparse.SUPPRESS, default="arbitrary_8_0") # gap costs method

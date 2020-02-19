@@ -23,18 +23,18 @@ class Test_Rescaling(unittest.TestCase):
         pass
 
     def test_rescaling(self):
-        cf = Potts_Object.from_files(self.feature_folder, aln_file=SMALL_ALN_1CC8, trim_alignment=False, max_nb_sequences=250, rescaling_function="original_rescaling") 
+        cf = Potts_Object.from_files(self.feature_folder, aln_file=SMALL_ALN_1CC8, trim_alignment=False, max_nb_sequences=250, v_rescaling_function="original_rescaling", w_rescaling_function="original_rescaling") 
 
     def test_rescale_shift(self):
         shift=10
         q = 20
-        resc = get_rescaled_potts_model(self.potts_model, "add_number", use_w=True, shift=shift)
+        resc = get_rescaled_potts_model(self.potts_model, "add_number", "identity", use_w=True, v_shift=shift)
         assert(sum(resc.v[0])-q*shift<0.0001)
         
 
     def test_simulate_uniform_pc_on_v(self):
         tau = 0.2
-        resc = get_rescaled_potts_model(self.potts_model, "simulate_uniform_pc_on_v", use_w=True, rescaling_tau=tau)
+        resc = get_rescaled_potts_model(self.potts_model, "simulate_uniform_pc_on_v", "identity", use_w=True, rescaling_tau=tau)
         
 
 if __name__=='__main__':
