@@ -81,8 +81,28 @@ def submat_on_w(w, pair_matrix=P2P_PROBA, submat_tau=1, **kwargs):
             for c in range(20):
                 for d in range(20):
                     cd = c*20+d
-                    #if (ab!=cd):
                     w_pc[:,:,a,b]+=cond_prob[ab,cd]*w[:,:,c,d]
+    new_w = (1-submat_tau)*np.copy(w)+submat_tau*w_pc
+    for i in range(len(w)):
+        for j in range(len(w)):
+            if euclidean_norm(new_w[i][j])!=0:
+                new_w[i][j] = euclidean_norm(w[i][j])/euclidean_norm(new_w[i][j])*new_w[i][j]
+    return new_w
+
+
+def submat_on_w_no_ab_ab(w, pair_matrix=P2P_PROBA, submat_tau=0.8, **kwargs):
+    pb = np.sum(pair_matrix, axis=0)
+    cond_prob = pair_matrix / pb[np.newaxis, :]
+
+    w_pc = np.zeros_like(w)
+    for a in range(20):
+        for b in range(20):
+            ab = a*20+b
+            for c in range(20):
+                for d in range(20):
+                    cd = c*20+d
+                    if (ab!=cd):
+                        w_pc[:,:,a,b]+=cond_prob[ab,cd]*w[:,:,c,d]
     new_w = (1-submat_tau)*np.copy(w)+submat_tau*w_pc
     for i in range(len(w)):
         for j in range(len(w)):
