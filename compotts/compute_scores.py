@@ -64,7 +64,7 @@ def get_vw_coeffs(mrfs, vw_coeff_method, edges_maps, v_score_function=scalar_pro
 
 
 
-def get_gap_costs(gap_cost_method, v_scores, vw_coeff_method):
+def get_gap_costs(gap_cost_method, v_scores, w_scores, vw_coeff_method, gap_auto_coeff=2.5):
     if gap_cost_method.startswith("arbitrary_"):
         return [float(strcoeff) for strcoeff in gap_cost_method[len("arbitrary_"):].split('_')]
     elif gap_cost_method.startswith("one_scoremax_pos") and (vw_coeff_method.startswith("scoremax_")):
@@ -75,9 +75,12 @@ def get_gap_costs(gap_cost_method, v_scores, vw_coeff_method):
         fact = float(gap_cost_method[len("max_score_v_times_"):])
         gap_open = fact*np.max(v_scores.flatten())
         return[float(gap_open), 0]
+    elif gap_cost_method=="use_mean":
+        gap_unit = np.mean(v_scores)+(1/2)*min(v_scores.shape)**2*np.mean(w_scores)
+        gap_open = gap_auto_coeff*gap_unit
+        return [float(gap_open), 0] 
     else:
-        print("No gap cost method, returning [5,0]")
-        return [5,0]
+        raise Exception("Unknown gap cost strategy")
 
 
 def get_epsilon(precision_method, vw_coeff_method, selfscores):
@@ -96,7 +99,7 @@ def get_epsilon(precision_method, vw_coeff_method, selfscores):
 
 
 
-def compute_scores_etc(mrfs, v_score_function=scalar_product, w_score_function=scalar_product, use_v=True, use_w=True, vw_coeff_method="arbitrary_1_1", w_threshold_method="percentile_0",gap_cost_method="arbitrary_5_0", precision_method="arbitrary_1", **kwargs):
+def compute_scores_etc(mrfs, v_score_function=scalar_product, w_score_function=scalar_product, use_v=True, use_w=True, vw_coeff_method="arbitrary_1_1", w_threshold_method="percentile_0",gap_cost_method="arbitrary_5_0", precision_method="arbitrary_1", gap_auto_coeff=2.5, **kwargs):
     if use_w:
         edges_maps = [get_edges_map(mrf, w_threshold_method) for mrf in mrfs]
     else:
@@ -110,7 +113,7 @@ def compute_scores_etc(mrfs, v_score_function=scalar_product, w_score_function=s
         w_scores = compute_w_scores(*mrfs, *edges_maps, w_score_function, w_coeff=w_coeff)
     else:
         w_scores = np.zeros(1)
-    [gap_open, gap_extend] = get_gap_costs(gap_cost_method, v_scores, vw_coeff_method)
+    [gap_open, gap_extend] = get_gap_costs(gap_cost_method, v_scores, w_scores, vw_coeff_method, gap_auto_coeff=gap_auto_coeff)
     selfscores = [compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v, use_w, vw_coeff_method, **kwargs) for mrf, edges_map in zip(mrfs, edges_maps)]
     epsilon = get_epsilon(precision_method, vw_coeff_method, selfscores)
     return v_scores, w_scores, edges_maps, selfscores, gap_open, gap_extend, epsilon
