@@ -87,14 +87,14 @@ class Test_Call_ComPotts(unittest.TestCase):
 
 
     def test_rescale_mrf(self):
-        resc_mrf = get_rescaled_potts_model(self.potts_model, "original_rescaling")
+        resc_mrf = get_rescaled_potts_model(self.potts_model, "original_rescaling", "original_rescaling")
         self.assertEqual(self.potts_model.v.shape,resc_mrf.v.shape)
         self.assertEqual(self.potts_model.w.shape,resc_mrf.w.shape)
         self.assertEqual(self.potts_model.ncol, resc_mrf.ncol)
 
 
     def test_align_rescaled_mrf_to_itself(self):
-        resc_mrf = get_rescaled_potts_model(self.potts_model, "original_rescaling")
+        resc_mrf = get_rescaled_potts_model(self.potts_model, "original_rescaling", "original_rescaling")
         aligned_positions, infos_solver = align_two_potts_models([resc_mrf, resc_mrf], self.output_folder)
         similarity_global = infos_solver["similarity_global"]
 
