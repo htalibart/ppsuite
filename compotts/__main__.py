@@ -30,7 +30,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--v_shift', help="Number added to each vi(a) if using rescaling function add_number", type=float, default=3)
     parser.add_argument('--wijab_threshold', help="If |wijab|<wijab_threshold, wijab is set to 0 if using rescaling function threshold_on_wijab", type=float, default=0)
     parser.add_argument('--rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
-    parser.add_argument('--submat_tau', help="Tau parameter for rescaling function submat_on_w", type=float, default=1)
+    parser.add_argument('--w_submat_tau', help="Tau parameter for rescaling function submat_on_w", type=float, default=0.2)
     parser.add_argument('-vwc', '--vw_coeff_method', help=argparse.SUPPRESS, default="arbitrary_1_1") # v w coeff method
     parser.add_argument('-gc', '--gap_cost_method', help=argparse.SUPPRESS, default="arbitrary_8_0") # gap costs method
 
