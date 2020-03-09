@@ -43,9 +43,7 @@ def add_number(x, v_shift=3, **kwargs):
         return x+v_shift
 
 def threshold_on_wijab(x, wijab_threshold=0.05, **kwargs):
-    if kwargs["parameter_type"]=="w":
         return x*(abs(x)>=wijab_threshold)
-    return x
 
 
 def simulate_uniform_pc_on_v(v, rescaling_tau=1/2, **kwargs):
@@ -70,42 +68,58 @@ def simulate_uniform_pc_on_v(v, rescaling_tau=1/2, **kwargs):
     return resc_v
 
 
-def submat_on_w(w, pair_matrix=P2P_PROBA, submat_tau=1, **kwargs):
+def f_p2p(f, pair_matrix=P2P_PROBA):
     pb = np.sum(pair_matrix, axis=0)
     cond_prob = pair_matrix / pb[np.newaxis, :]
+    q = len(f[0][0])
+    f_pc = np.zeros_like(f)
+    for a in range(q):
+        for b in range(q):
+            ab = a*q+b
+            for c in range(q):
+                for d in range(q):
+                    cd = c*q+d
+                    f_pc[:,:,a,b]+=cond_prob[ab,cd]*f[:,:,c,d]
+    return f_pc
 
-    w_pc = np.zeros_like(w)
-    for a in range(20):
-        for b in range(20):
-            ab = a*20+b
-            for c in range(20):
-                for d in range(20):
-                    cd = c*20+d
-                    w_pc[:,:,a,b]+=cond_prob[ab,cd]*w[:,:,c,d]
-    new_w = (1-submat_tau)*np.copy(w)+submat_tau*w_pc
+
+def f_with_pc(f, submat_tau):
+    return (1-submat_tau)*np.copy(f)+submat_tau*f_p2p(f)
+
+
+def softmax_w(w):
+    p = np.zeros_like(w)
+    p[:,:,:,:] = np.exp(w[:,:,:,:])
+    for i in range(len(p)):
+        for j in range(len(p)):
+            p[i,j,:,:] = p[i,j,:,:]/np.sum([p[i,j,:,:]])
+    return p
+
+
+def almost_log(x):
+    if x==0:
+        return 0
+    else:
+        return np.log(x)
+
+def logify_probas(p):
+    return np.vectorize(almost_log)(p)
+
+
+def unsoftmax(p):
+    w = np.zeros_like(p)
+    l = logify_probas(p)
+    q = len(w[0][0])
     for i in range(len(w)):
         for j in range(len(w)):
-            if euclidean_norm(new_w[i][j])!=0:
-                new_w[i][j] = euclidean_norm(w[i][j])/euclidean_norm(new_w[i][j])*new_w[i][j]
-    return new_w
+            w[i,j,:,:] = l[i,j,:,:]-(1/(q*q))*np.sum(l[i,j,:,:])
+    return w
 
 
-def submat_on_w_no_ab_ab(w, pair_matrix=P2P_PROBA, submat_tau=0.8, **kwargs):
-    pb = np.sum(pair_matrix, axis=0)
-    cond_prob = pair_matrix / pb[np.newaxis, :]
-
-    w_pc = np.zeros_like(w)
-    for a in range(20):
-        for b in range(20):
-            ab = a*20+b
-            for c in range(20):
-                for d in range(20):
-                    cd = c*20+d
-                    if (ab!=cd):
-                        w_pc[:,:,a,b]+=cond_prob[ab,cd]*w[:,:,c,d]
-    new_w = (1-submat_tau)*np.copy(w)+submat_tau*w_pc
-    for i in range(len(w)):
-        for j in range(len(w)):
-            if euclidean_norm(new_w[i][j])!=0:
-                new_w[i][j] = euclidean_norm(w[i][j])/euclidean_norm(new_w[i][j])*new_w[i][j]
-    return new_w
+def submat_on_w(w, w_submat_tau=0.2):
+    reduced_w = w[:,:,:20,:20]
+    p = softmax_w(reduced_w)
+    p_p2p = f_with_pc(p, submat_tau=w_submat_tau)
+    extended_w = np.zeros_like(w)
+    extended_w[:,:,:20,:20] = unsoftmax(p_p2p)
+    return extended_w

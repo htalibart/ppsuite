@@ -52,6 +52,7 @@ def call_reformat(input_file, output_file):
     print("will reformat "+str(input_file)+" thanks to Soeding's reformat.pl to "+str(output_file))
     fm.check_if_file_ok(input_file)
     call = "reformat.pl a3m fas "+str(input_file)+" "+str(output_file)+" -r"
+    print(call)
     subprocess.Popen(call, shell=True, stdout=subprocess.DEVNULL, stderr=subprocess.DEVNULL).wait()
     if not output_file.is_file():
         raise Exception("Reformat failed")
