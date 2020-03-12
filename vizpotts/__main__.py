@@ -3,7 +3,7 @@ import pathlib
 
 from makepotts.potts_object import *
 from vizpotts.vizpotts import *
-from comutils.potts_model import *
+from makepotts.potts_model import *
 
 
 def main():

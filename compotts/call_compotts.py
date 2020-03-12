@@ -4,7 +4,7 @@ import pandas as pd
 
 from compotts.compute_scores import *
 from makepotts.potts_object import *
-from comutils.potts_model import *
+from makepotts.potts_model import *
 import comutils.files_management as fm
 
 import pkg_resources

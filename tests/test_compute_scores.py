@@ -3,7 +3,7 @@ import shutil, tempfile
 import pathlib
 import numpy as np
 
-from comutils.potts_model import *
+from makepotts.potts_model import *
 from compotts.compute_scores import *
 from compotts.call_compotts import *
 

@@ -8,7 +8,7 @@ from tests.resources_manager import *
 from comutils import files_management as fm
 from makepotts.potts_object import *
 from makepotts.rescaling import *
-from comutils.potts_model import *
+from makepotts.potts_model import *
 
 class Test_Rescaling(unittest.TestCase):
 

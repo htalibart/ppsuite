@@ -4,7 +4,8 @@ import inspect
 
 from comutils.global_variables import ALPHABET
 from comutils.util import *
-from comutils.potts_model import *
+
+from makepotts.potts_model import *
 
 from compotts.compute_scores import *
 

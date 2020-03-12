@@ -1,7 +1,7 @@
 from math import *
 import numpy as np
 from comutils.util import *
-from comutils.potts_model import *
+from makepotts.potts_model import *
 
 from makepotts.pair_substitution_matrices import P2P_PROBA
 

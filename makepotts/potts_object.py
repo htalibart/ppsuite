@@ -2,7 +2,6 @@ import uuid
 import sys
 import argparse
 
-from comutils.potts_model import *
 from comutils.tool_wrapper import *
 from comutils.find_cutoff_index import *
 from comutils.blast_utils import *
@@ -10,6 +9,7 @@ from comutils.blast_utils import *
 from compotts.manage_positions import *
 
 from makepotts.rescaling import *
+from makepotts.potts_model import *
 
 class Potts_Object:
 
