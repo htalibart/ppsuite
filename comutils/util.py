@@ -1,3 +1,9 @@
+def almost_log(x):
+    if x==0:
+        return 0
+    else:
+        return np.log(x)
+
 import tempfile
 import shutil
 import numpy as np
@@ -108,3 +114,11 @@ def get_pos_first_seq_to_second_seq(first_seq, second_seq):
             first_pos+=1
             second_pos+=1
     return pos_dict_first_seq_to_second_seq
+
+def almost_log(x):
+    if x==0:
+        return 0
+    else:
+        return np.log(x)
+
+

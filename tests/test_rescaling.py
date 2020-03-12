@@ -35,9 +35,5 @@ class Test_Rescaling(unittest.TestCase):
         tau = 0.2
         resc = get_rescaled_potts_model(self.potts_model, "simulate_uniform_pc_on_v", "identity", use_w=True, rescaling_tau=tau)
         
-    def test_simulate_submat_on_w(self):
-        tau = 0.2
-        resc = get_rescaled_potts_model(self.potts_model, "identity", "submat_on_w", use_w=True, w_submat_tau=tau)
-
 if __name__=='__main__':
     unittest.main()

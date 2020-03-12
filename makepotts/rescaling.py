@@ -3,9 +3,6 @@ import numpy as np
 from comutils.util import *
 from makepotts.potts_model import *
 
-from makepotts.pair_substitution_matrices import P2P_PROBA
-
-
 VECTORIZABLE_FUNCTIONS = ["identity", "original_rescaling", "symmetric_relu_like", "shifted_relu", "add_number", "threshold_on_wijab"]
 
 
@@ -66,60 +63,3 @@ def simulate_uniform_pc_on_v(v, rescaling_tau=1/2, **kwargs):
             resc_vi[a] = resc_tmp[a]-(1/q)*S_all
         resc_v[i] = resc_vi
     return resc_v
-
-
-def f_p2p(f, pair_matrix=P2P_PROBA):
-    pb = np.sum(pair_matrix, axis=0)
-    cond_prob = pair_matrix / pb[np.newaxis, :]
-    q = len(f[0][0])
-    f_pc = np.zeros_like(f)
-    for a in range(q):
-        for b in range(q):
-            ab = a*q+b
-            for c in range(q):
-                for d in range(q):
-                    cd = c*q+d
-                    f_pc[:,:,a,b]+=cond_prob[ab,cd]*f[:,:,c,d]
-    return f_pc
-
-
-def f_with_pc(f, submat_tau):
-    return (1-submat_tau)*np.copy(f)+submat_tau*f_p2p(f)
-
-
-def softmax_w(w):
-    p = np.zeros_like(w)
-    p[:,:,:,:] = np.exp(w[:,:,:,:])
-    for i in range(len(p)):
-        for j in range(len(p)):
-            p[i,j,:,:] = p[i,j,:,:]/np.sum([p[i,j,:,:]])
-    return p
-
-
-def almost_log(x):
-    if x==0:
-        return 0
-    else:
-        return np.log(x)
-
-def logify_probas(p):
-    return np.vectorize(almost_log)(p)
-
-
-def unsoftmax(p):
-    w = np.zeros_like(p)
-    l = logify_probas(p)
-    q = len(w[0][0])
-    for i in range(len(w)):
-        for j in range(len(w)):
-            w[i,j,:,:] = l[i,j,:,:]-(1/(q*q))*np.sum(l[i,j,:,:])
-    return w
-
-
-def submat_on_w(w, w_submat_tau=0.2):
-    reduced_w = w[:,:,:20,:20]
-    p = softmax_w(reduced_w)
-    p_p2p = f_with_pc(p, submat_tau=w_submat_tau)
-    extended_w = np.zeros_like(w)
-    extended_w[:,:,:20,:20] = unsoftmax(p_p2p)
-    return extended_w
