@@ -50,14 +50,7 @@ def p_to_w(p, potts_model):
     return w
 
 
-def get_potts_model_with_pseudo_w(potts_model, w_submat_tau):
-    direct_p = get_direct_p(potts_model)
-    direct_p_pc = f_with_pc(direct_p, w_submat_tau)
-    w = p_to_w(direct_p_pc, potts_model)
-    return Potts_Model.from_parameters(potts_model.v, w)
-
-
-def rescale_wij(wij):
+def f_rescale_wij(wij):
     resc_wij = np.vectorize(original_rescaling)(wij, alpha_rescaling=10)
     if euclidean_norm(resc_wij)==0:
         return resc_wij
@@ -65,14 +58,19 @@ def rescale_wij(wij):
         return euclidean_norm(wij)/euclidean_norm(resc_wij)*resc_wij
 
 
-def get_potts_model_with_pseudo_w_and_rescale(potts_model, w_submat_tau):
-    mrf = get_potts_model_with_pseudo_w(potts_model, w_submat_tau)
-    resc_w = np.zeros_like(mrf.w)
-    L = mrf.ncol
-    for i in range(L):
-        for j in range(L):
-            resc_w[i][j] = rescale_wij(mrf.w[i][j])
-    return Potts_Model.from_parameters(mrf.v, resc_w)
+def get_potts_model_with_pseudo_w(potts_model, w_submat_tau, rescale_wij=False):
+    direct_p = get_direct_p(potts_model)
+    direct_p_pc = f_with_pc(direct_p, w_submat_tau)
+    w = p_to_w(direct_p_pc, potts_model)
+    if not rescale_wij:
+        return Potts_Model.from_parameters(potts_model.v, w)
+    else:
+        resc_w = np.zeros_like(w)
+        L = potts_model.ncol
+        for i in range(L):
+            for j in range(L):
+                resc_w[i][j] = f_rescale_wij(w[i][j])
+        return Potts_Model.from_parameters(potts_model.v, resc_w)
 
 
 def softmax_w(w):
