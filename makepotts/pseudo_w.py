@@ -1,6 +1,7 @@
 import numpy as np
 from comutils.util import *
 from makepotts.potts_model import *
+from makepotts.rescaling import *
 from makepotts.pair_substitution_matrices import P2P_PROBA
 
 def f_p2p(f, pair_matrix=P2P_PROBA):
@@ -54,6 +55,24 @@ def get_potts_model_with_pseudo_w(potts_model, w_submat_tau):
     direct_p_pc = f_with_pc(direct_p, w_submat_tau)
     w = p_to_w(direct_p_pc, potts_model)
     return Potts_Model.from_parameters(potts_model.v, w)
+
+
+def rescale_wij(wij):
+    resc_wij = np.vectorize(original_rescaling)(wij, alpha_rescaling=10)
+    if euclidean_norm(resc_wij)==0:
+        return resc_wij
+    else:
+        return euclidean_norm(wij)/euclidean_norm(resc_wij)*resc_wij
+
+
+def get_potts_model_with_pseudo_w_and_rescale(potts_model, w_submat_tau):
+    mrf = get_potts_model_with_pseudo_w(potts_model, w_submat_tau)
+    resc_w = np.zeros_like(mrf.w)
+    L = mrf.ncol
+    for i in range(L):
+        for j in range(L):
+            resc_w[i][j] = rescale_wij(mrf.w[i][j])
+    return Potts_Model.from_parameters(mrf.v, resc_w)
 
 
 def softmax_w(w):

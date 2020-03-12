@@ -27,5 +27,12 @@ class Test_Pseudo_W(unittest.TestCase):
         tau = 0.5
         resc = get_potts_model_with_pseudo_w(self.potts_model, tau)
 
+
+    
+    def test_potts_model_with_pseudo_w_and_rescale(self):
+        w_submat_tau=0.001
+        resc = get_potts_model_with_pseudo_w_and_rescale(self.potts_model, w_submat_tau)
+        resc.to_msgpack("tmp_test.mrf")
+
 if __name__=='__main__':
     unittest.main()

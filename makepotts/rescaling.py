@@ -32,16 +32,14 @@ def get_rescaled_parameters(x, rescaling_function_name, **kwargs):
 def identity(x, **kwargs):
     return x
 
-def original_rescaling(x, **kwargs):
-    return sign_ind(x)*(exp(abs(x))-1)
-
+def original_rescaling(x, alpha_rescaling=1, **kwargs):
+    return sign_ind(x)*(exp(alpha_rescaling*abs(x))-1)
 
 def add_number(x, v_shift=3, **kwargs):
         return x+v_shift
 
 def threshold_on_wijab(x, wijab_threshold=0.05, **kwargs):
         return x*(abs(x)>=wijab_threshold)
-
 
 def simulate_uniform_pc_on_v(v, rescaling_tau=1/2, **kwargs):
     resc_v = np.zeros_like(v)
