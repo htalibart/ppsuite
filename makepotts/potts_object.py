@@ -82,7 +82,8 @@ class Potts_Object:
 
         if (feature.potts_model is not None):
             if add_pseudo_w:
-                feature.potts_model = get_potts_model_with_pseudo_w(feature.potts_model, w_submat_tau, rescale_wij=rescale_wij)
+                #feature.potts_model = get_potts_model_with_pseudo_w(feature.potts_model, w_submat_tau, rescale_wij=rescale_wij)
+                feature.potts_model = add_pseudo_w_to_mrf(feature.potts_model)
             feature.potts_model = get_rescaled_potts_model(feature.potts_model, v_rescaling_function, w_rescaling_function, use_w=use_w, **kwargs)
 
         return feature
@@ -226,7 +227,8 @@ class Potts_Object:
         if (potts_model_file is not None) and (add_pseudo_w):
             if "potts_model" not in locals():
                 potts_model = Potts_Model.from_msgpack(potts_model_file)
-            potts_model = get_potts_model_with_pseudo_w(potts_model, w_submat_tau, rescale_wij=rescale_wij)
+            #potts_model = get_potts_model_with_pseudo_w(potts_model, w_submat_tau, rescale_wij=rescale_wij)
+            potts_model = add_pseudo_w_to_mrf(potts_model)
             potts_model.to_msgpack(potts_model_file)
 
         if (potts_model_file is not None) and (v_rescaling_function!="identity") and (w_rescaling_function!="identity"):

@@ -50,6 +50,21 @@ def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, w_coe
     return w_coeff*w_scores
 
 
+def get_w_score_at(w_scores,i,k,j,l):
+    if (i==j):
+        return 0
+    elif (k==l):
+        return 0
+    else:
+        if (l<k):
+            if (j<i):
+                return w_scores[j+int(i*(i+1)/2)][l+int(k*(k+1)/2)]
+            else:
+                return get_w_score_at(w_scores,j,k,i,l)
+        else:
+            return get_w_score_at(w_scores,i,l,j,k)
+
+
 def get_vw_coeffs(mrfs, vw_coeff_method, edges_maps, v_score_function=scalar_product, w_score_function=scalar_product, use_v=True, use_w=True):
     if vw_coeff_method.startswith("arbitrary_"):
         return [float(strcoeff) for strcoeff in vw_coeff_method[len("arbitrary_"):].split('_')]

@@ -23,16 +23,19 @@ class Test_Pseudo_W(unittest.TestCase):
         pass
 
        
-    def test_simulate_submat_on_w(self):
-        tau = 0.5
-        resc = get_potts_model_with_pseudo_w(self.potts_model, tau, rescale_wij=False)
+   # def test_simulate_submat_on_w(self):
+   #     tau = 0.5
+   #     resc = get_potts_model_with_pseudo_w(self.potts_model, tau, rescale_wij=False)
 
+   # 
+   # def test_potts_model_with_pseudo_w_and_rescale(self):
+   #     w_submat_tau=0.001
+   #     resc = get_potts_model_with_pseudo_w(self.potts_model, w_submat_tau, rescale_wij=True)
 
-    
-    def test_potts_model_with_pseudo_w_and_rescale(self):
-        w_submat_tau=0.001
-        resc = get_potts_model_with_pseudo_w(self.potts_model, w_submat_tau, rescale_wij=True)
-        resc.to_msgpack("tmp_test.mrf")
+    def test_add_pseudo_w_to_mrf(self):
+        resc = add_pseudo_w_to_mrf(self.potts_model, cond_matrix_2d=P2P_PROBA_CONTACT_INTER_NOT_WEIGHTED, alpha_probas=0.9, alpha_rescaling=30)
+        resc.to_msgpack("tmp_pseudo.mrf")
+
 
 if __name__=='__main__':
     unittest.main()

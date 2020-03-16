@@ -121,4 +121,12 @@ def almost_log(x):
     else:
         return np.log(x)
 
-
+def matrix_to_4d(m2):
+    q = 20
+    m4 = np.zeros((q+1,q+1,q+1,q+1))
+    for a in range(q):
+        for b in range(q):
+            for c in range(q):
+                for d in range(q):
+                    m4[a,b,c,d] = m2[a*q+b,c*q+d]
+    return m4

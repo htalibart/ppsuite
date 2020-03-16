@@ -16,3 +16,6 @@ def get_proba_mat_from_csv(csv_file):
 
 
 P2P_PROBA = get_proba_mat_from_csv(pkg_resources.resource_filename(__name__,'P2Pmat14Weighted_prob.csv'))
+P2P_PROBA_CONTACT = get_proba_mat_from_csv(pkg_resources.resource_filename(__name__,'P2Pmat14WeightedInterIntra=_prob_cond.csv'))
+P2P_PROBA_CONTACT_INTER = get_proba_mat_from_csv(pkg_resources.resource_filename(__name__,'P2Pmat14WeightedInter=_prob_cond.csv'))
+P2P_PROBA_CONTACT_INTER_NOT_WEIGHTED = get_proba_mat_from_csv(pkg_resources.resource_filename(__name__,'P2Pmat14Inter=_prob_cond.csv'))
