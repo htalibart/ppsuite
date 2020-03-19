@@ -61,3 +61,33 @@ def simulate_uniform_pc_on_v(v, rescaling_tau=1/2, **kwargs):
             resc_vi[a] = resc_tmp[a]-(1/q)*S_all
         resc_v[i] = resc_vi
     return resc_v
+
+
+def simulate_uniform_pc_on_wij(w, rescaling_tau=0.5, beta=10, w_back_to_scale=True, **kwargs):
+    w_flat = w.flatten()
+    S = sum([exp(beta*elt) for elt in w_flat])
+    
+    resc_tmp = np.zeros_like(w_flat)
+    for elt in range(len(w_flat)):
+        frac = exp(beta*w_flat[elt])/S
+        resc_tmp[elt] = log((1-rescaling_tau)*frac+rescaling_tau/len(w_flat))
+    
+    resc_flat = np.zeros_like(w_flat)
+    S_all = np.sum(resc_tmp)
+    for elt in range(len(w_flat)):
+        resc_flat[elt] = (1/beta)*(resc_tmp[elt]-(1/len(w_flat))*S_all)
+
+    resc_unflat = resc_flat.reshape(w.shape)
+    
+    if w_back_to_scale and euclidean_norm(resc_unflat)!=0:
+        resc_unflat = euclidean_norm(w)/euclidean_norm(resc_unflat)*resc_unflat
+    return resc_unflat
+
+
+def simulate_uniform_pc_on_w(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=True, **kwargs):
+    resc_w = np.zeros_like(w)
+    for i in range(len(resc_w)):
+        for j in range(len(resc_w)):
+            resc_w[i,j] = simulate_uniform_pc_on_wij(w[i][j], rescaling_tau=w_rescaling_tau, beta=beta_softmax_w,
+                                                            w_back_to_scale=w_back_to_scale)
+    return resc_w

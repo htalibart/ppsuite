@@ -34,6 +34,12 @@ class Test_Rescaling(unittest.TestCase):
     def test_simulate_uniform_pc_on_v(self):
         tau = 0.2
         resc = get_rescaled_potts_model(self.potts_model, "simulate_uniform_pc_on_v", "identity", use_w=True, rescaling_tau=tau)
+
+
+    def test_simulate_uniform_pc_on_w(self):
+        tau = 0.2
+        resc = get_rescaled_potts_model(self.potts_model, "identity", "simulate_uniform_pc_on_w", use_w=True, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=True)
+
         
 if __name__=='__main__':
     unittest.main()
