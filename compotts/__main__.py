@@ -33,6 +33,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--add_pseudo_w', help="Add pseudocounts on w (default : False)", action='store_true')
     parser.add_argument('--rescale_wij', help="Rescale wij after adding pseudocounts on w (default : False)", action='store_true')
     parser.add_argument('--w_submat_tau', help="Tau parameter for pseudocounts on w", type=float, default=0.05)
+    parser.add_argument('--beta_softmax_w', help="Beta rescaling parameter to simulate uniform pseudo-counts on w through softmax", type=float, default=10)
     parser.add_argument('-vwc', '--vw_coeff_method', help=argparse.SUPPRESS, default="arbitrary_1_1") # v w coeff method
     parser.add_argument('-gc', '--gap_cost_method', help=argparse.SUPPRESS, default="arbitrary_8_0") # gap costs method
 
