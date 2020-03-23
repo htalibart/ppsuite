@@ -40,6 +40,11 @@ class Test_Rescaling(unittest.TestCase):
         tau = 0.2
         resc = get_rescaled_potts_model(self.potts_model, "identity", "simulate_uniform_pc_on_w", use_w=True, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=True)
 
+
+    def test_simulate_uniform_pc_on_w_and_apply_threshold(self):
+        tau = 0.2
+        resc = get_rescaled_potts_model(self.potts_model, "identity", "simulate_uniform_pc_on_w_and_apply_threshold", use_w=True, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=True, wijab_threshold=0)
+        assert((resc.w>=0).all())
         
 if __name__=='__main__':
     unittest.main()

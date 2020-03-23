@@ -91,3 +91,8 @@ def simulate_uniform_pc_on_w(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_t
             resc_w[i,j] = simulate_uniform_pc_on_wij(w[i][j], rescaling_tau=w_rescaling_tau, beta=beta_softmax_w,
                                                             w_back_to_scale=w_back_to_scale)
     return resc_w
+
+def simulate_uniform_pc_on_w_and_apply_threshold(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=True, wijab_threshold=0, **kwargs):
+    resc_w = simulate_uniform_pc_on_w(w, w_rescaling_tau=w_rescaling_tau, beta_softmax_w=beta_softmax_w, w_back_to_scale=w_back_to_scale, **kwargs)
+    resc_w[resc_w<=wijab_threshold]=0
+    return resc_w
