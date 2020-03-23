@@ -36,7 +36,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--beta_softmax_w', help="Beta rescaling parameter to simulate uniform pseudo-counts on w through softmax", type=float, default=10)
     parser.add_argument('-vwc', '--vw_coeff_method', help=argparse.SUPPRESS, default="arbitrary_1_1") # v w coeff method
     parser.add_argument('-gc', '--gap_cost_method', help=argparse.SUPPRESS, default="arbitrary_8_0") # gap costs method
-
+    parser.add_argument('--gap_auto_coeff', help=argparse.SUPPRESS, type=float, default=2.5) # gap costs method
     # solver options
     parser.add_argument('-t', '--t_limit', help="solver : time limit in seconds (default : 36000)", type=float, default=36000)
     parser.add_argument('-lit', '--iter_limit_param', help="solver : nb Lagrangian iterations (default : 1000000000)", type=int, default=1000000000)
