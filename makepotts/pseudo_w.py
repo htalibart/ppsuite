@@ -132,16 +132,20 @@ def reweight_wij(wij, cond_matrix):
         return euclidean_norm(wij)/euclidean_norm(rwij)*rwij
 
 
-def get_pseudo_wij(wij, reweighted_cond_matrix_4d, alpha_rescaling):
-    return f_rescale_wij(reweight_wij(wij, reweighted_cond_matrix_4d), alpha_rescaling)
+def get_pseudo_wij(wij, reweighted_cond_matrix_4d, rescale, alpha_rescaling):
+    rwij = reweight_wij(wij, reweighted_cond_matrix_4d)
+    if rescale:
+        return f_rescale_wij(rwij, alpha_rescaling)
+    else:
+        return rwij
 
-def get_pseudo_w(w, reweighted_cond_matrix_4d, alpha_rescaling):
+def get_pseudo_w(w, reweighted_cond_matrix_4d, rescale, alpha_rescaling):
     pseudo_w = np.zeros_like(w)
     for i in range(len(w)):
         for j in range(len(w)):
-            pseudo_w[i][j] = get_pseudo_wij(w[i][j], reweighted_cond_matrix_4d, alpha_rescaling)
+            pseudo_w[i][j] = get_pseudo_wij(w[i][j], reweighted_cond_matrix_4d, rescale, alpha_rescaling)
     return pseudo_w
 
-def add_pseudo_w_to_mrf(mrf, cond_matrix_2d=P2P_PROBA_CONTACT_INTER_NOT_WEIGHTED, alpha_probas=0.9, alpha_rescaling=30):
+def add_pseudo_w_to_mrf(mrf, cond_matrix_2d=P2P_PROBA_CONTACT_INTER_NOT_WEIGHTED, alpha_probas=0.9, rescale=False, alpha_rescaling=30):
     reweighted_cond_matrix = matrix_to_4d(redistribute_probas(cond_matrix_2d, alpha_probas))
-    return Potts_Model.from_parameters(mrf.v, get_pseudo_w(mrf.w, reweighted_cond_matrix, alpha_rescaling))
+    return Potts_Model.from_parameters(mrf.v, get_pseudo_w(mrf.w, reweighted_cond_matrix, rescale, alpha_rescaling))
