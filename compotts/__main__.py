@@ -30,6 +30,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--v_shift', help="Number added to each vi(a) if using rescaling function add_number", type=float, default=3)
     parser.add_argument('--wijab_threshold', help="If |wijab|<wijab_threshold, wijab is set to 0 if using rescaling function threshold_on_wijab", type=float, default=0)
     parser.add_argument('--rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
+    parser.add_argument('--w_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_w", type=float, default=0.5)
     parser.add_argument('--add_pseudo_w', help="Add pseudocounts on w (default : False)", action='store_true')
     parser.add_argument('--rescale_wij', help="Rescale wij after adding pseudocounts on w (default : False)", action='store_true')
     parser.add_argument('--w_submat_tau', help="Tau parameter for pseudocounts on w", type=float, default=0.05)
