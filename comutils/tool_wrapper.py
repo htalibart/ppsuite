@@ -76,3 +76,16 @@ def call_muscle_profile(msa_file, seq_file, output_file):
     fm.check_if_file_ok(seq_file)
     muscle_cline = MuscleCommandline(profile=True, in1=str(msa_file), in2=str(seq_file), out=str(output_file), gapopen=-0.1)
     stdout, stderr = muscle_cline()
+
+def call_mafft(input_file, output_file=None):
+    print("calling MAFFT")
+    if output_file is None:
+        output_file_name = '.'.join(str(input_file).split('.')[:-1])+"_mafft.fasta"
+        output_file = pathlib.Path(output_file_name)
+    fm.check_if_file_ok(input_file)
+    cmd = "mafft "+str(input_file)+" > "+str(output_file)
+    subprocess.Popen(cmd, shell=True).wait()
+    if not output_file.is_file():
+        raise Exception("MAFFT failed")
+
+

@@ -86,6 +86,7 @@ def get_real_pos_list(real_seq, other_seq):
     """ retourne une liste où other_to_real_dict[k] est la position dans la vraie séquence @real_seq correspondant à la position k de @other_seq """
     alignments = pairwise2.align.globalxx(other_seq, real_seq)
     aln = alignments[0][0]
+    print(aln)
     pos_in_other_seq = 0
     pos_in_real_seq = 0
     other_to_real_dict = []

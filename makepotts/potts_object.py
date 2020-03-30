@@ -155,7 +155,7 @@ class Potts_Object:
                 fm.create_fasta_file_with_less_sequences(unaligned_fasta, cutoff_fasta, cutoff_index)
                 unaligned_fasta = cutoff_fasta
             aln_original = feature_folder/"aln_original.fasta"
-            call_muscle(unaligned_fasta, aln_original)
+            call_mafft(unaligned_fasta, aln_original)
             fm.copy(aln_original, feature_folder/"aln_original.fasta")
 
         elif inference_type=='one_submat' or inference_type=='one_hot':
@@ -250,6 +250,8 @@ class Potts_Object:
             original_first_seq = fm.get_first_sequence_in_fasta_file(aln_original)
             seq = fm.get_first_sequence_in_fasta_file(sequence_file)
             seq_aln_pos = get_real_pos_list(seq, original_first_seq)
+            print(seq_aln_pos)
+            print(mrf_pos_to_aln_pos)
             mrf_pos_to_seq_pos = [seq_aln_pos[pos] for pos in mrf_pos_to_aln_pos]
         elif aln_original is not None:
             seq = fm.get_first_sequence_in_fasta_file(aln_original)
