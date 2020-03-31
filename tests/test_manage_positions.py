@@ -60,6 +60,13 @@ class Test_ManagePositions(unittest.TestCase):
         assert(original_positions=={"pos_ref":[1,2,3,4], "pos_2":[0,1,2,10]})
 
 
+    def test_get_mrf_pos_to_seq_pos(self):
+        seq = "EPA"
+        aln_seq = "--E-P-A"
+        mrf_pos_to_aln_pos = [k for k in range(len(aln_seq))]
+        mrf_pos_to_seq_pos = get_mrf_pos_to_seq_pos(aln_seq, seq, mrf_pos_to_aln_pos)
+        assert(mrf_pos_to_seq_pos==[None, None, 0, None, 1, None, 2])
+
 
 if __name__=='__main__':
     unittest.main()

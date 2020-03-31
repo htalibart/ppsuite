@@ -199,3 +199,13 @@ def write_positions_to_csv(positions_dict, output_file):
         for ind in range(len(positions_dict[list(positions_dict.keys())[0]])):
             row = [positions_dict[key][ind] for key in positions_dict]
             csvwriter.writerow(row)
+
+
+def add_sequence_to_fasta_file_if_missing(unaligned_fasta, sequence_file):
+    unaligned_records = list(SeqIO.parse(unaligned_fasta, "fasta"))
+    sequence_record = list(SeqIO.parse(sequence_file, "fasta"))[0]
+    if str(sequence_record.seq)!=str(unaligned_records[0].seq):
+        new_unaligned_records = [sequence_record]+unaligned_records
+        SeqIO.write(new_unaligned_records, unaligned_fasta, "fasta")
+
+

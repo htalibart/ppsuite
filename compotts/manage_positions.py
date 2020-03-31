@@ -5,6 +5,7 @@ from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import IUPAC
 
 import comutils.files_management as fm
+from comutils.util import *
 
 def get_alignment_with_gaps(aligned_positions, X='X'):
     """ input : dict of lists of aligned positions, output : alignment with gaps and "unknown areas" (symbole @X) """
@@ -82,20 +83,6 @@ def get_pos_aligned_at_pos(aligned_positions_dict, pos):
         return None
 
 
-def get_real_pos_list(real_seq, other_seq):
-    """ retourne une liste où other_to_real_dict[k] est la position dans la vraie séquence @real_seq correspondant à la position k de @other_seq """
-    alignments = pairwise2.align.globalxx(other_seq, real_seq)
-    aln = alignments[0][0]
-    print(aln)
-    pos_in_other_seq = 0
-    pos_in_real_seq = 0
-    other_to_real_dict = []
-    for i in range(len(aln)):
-        if (aln[i]!='-'):
-            other_to_real_dict.append(pos_in_real_seq)
-            pos_in_other_seq+=1
-        pos_in_real_seq+=1
-    return other_to_real_dict
 
 
 def get_aligned_v_scores(aligned_positions_dict, v_scores):
@@ -118,3 +105,9 @@ def get_aln_sequences_from_aln_file(aln_file, compotts_objects, output_file):
     aligned_positions = fm.get_aligned_positions_dict_from_compotts_output_file(aln_file)
     sequence_positions = get_initial_positions(aligned_positions, {"pos_ref":compotts_objects[0].mrf_pos_to_seq_pos, "pos_2":compotts_objects[1].mrf_pos_to_seq_pos})
     fm.write_positions_to_csv(sequence_positions, output_file)
+
+def get_mrf_pos_to_seq_pos(original_first_seq, seq, mrf_pos_to_aln_pos):
+    seq_aln_pos = get_pos_first_seq_to_second_seq(original_first_seq, seq)
+    mrf_pos_to_seq_pos = [seq_aln_pos[pos] for pos in mrf_pos_to_aln_pos]
+    return mrf_pos_to_seq_pos
+

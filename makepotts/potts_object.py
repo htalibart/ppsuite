@@ -154,6 +154,8 @@ class Potts_Object:
                 cutoff_fasta = feature_folder/("cutoff_"+str(cutoff_index)+".fasta")
                 fm.create_fasta_file_with_less_sequences(unaligned_fasta, cutoff_fasta, cutoff_index)
                 unaligned_fasta = cutoff_fasta
+            if sequence_file is not None:
+                fm.add_sequence_to_fasta_file_if_missing(unaligned_fasta, sequence_file)
             aln_original = feature_folder/"aln_original.fasta"
             call_mafft(unaligned_fasta, aln_original)
             fm.copy(aln_original, feature_folder/"aln_original.fasta")
@@ -249,10 +251,7 @@ class Potts_Object:
             fm.copy(sequence_file, feature_folder/"sequence.fasta")
             original_first_seq = fm.get_first_sequence_in_fasta_file(aln_original)
             seq = fm.get_first_sequence_in_fasta_file(sequence_file)
-            seq_aln_pos = get_real_pos_list(seq, original_first_seq)
-            print(seq_aln_pos)
-            print(mrf_pos_to_aln_pos)
-            mrf_pos_to_seq_pos = [seq_aln_pos[pos] for pos in mrf_pos_to_aln_pos]
+            mrf_pos_to_seq_pos = get_mrf_pos_to_seq_pos(original_first_seq, seq, mrf_pos_to_aln_pos)
         elif aln_original is not None:
             seq = fm.get_first_sequence_in_fasta_file(aln_original)
             seq_name = fm.get_first_sequence_name(aln_original)
