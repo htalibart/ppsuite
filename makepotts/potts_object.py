@@ -282,7 +282,13 @@ class Potts_Object:
 
 
     def get_seq_positions(self, positions):
-        return [self.mrf_pos_to_seq_pos[pos] for pos in positions]
+        seq_positions = []
+        for pos in positions:
+            if pos is None:
+                seq_positions.append(None)
+            else:
+                seq_positions.append(self.mrf_pos_to_seq_pos[pos])
+        return seq_positions
 
 
     def get_name(self):

@@ -140,10 +140,16 @@ def get_list_from_csv(csv_file):
     with open(str(csv_file), 'r') as f:
         csvreader = csv.reader(f)
         row = next(csvreader)
-        l = [int(s) for s in row]
-    return l
+        csv_list = []
+        for s in row:
+            if s == 'None':
+                csv_list.append(None)
+            else:
+                csv_list.append(int(s))
+    return csv_list
 
-def write_list_to_csv(l, csv_file):
+def write_list_to_csv(l_, csv_file):
+    l = [str(s) for s in l_]
     with open(str(csv_file), 'w') as f:
         csvwriter = csv.writer(f)
         csvwriter.writerow(l)
