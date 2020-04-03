@@ -50,6 +50,7 @@ class Test_ManagePositions(unittest.TestCase):
             objs.append(Potts_Object.from_files(feature_folder=feature_folder, sequence_file=seq_file, inference_type="one_hot"))
         aligned_positions = {"pos_ref":[4,5,7,8,9,10], "pos_2":[0,1,2,3,4,5]}
         seqs_aligned = get_seqs_aligned(aligned_positions, objs)
+        print(seqs_aligned)
         self.assertEqual(seqs_aligned[0], 'YFYFMAEIKEH')
         self.assertEqual(seqs_aligned[1], '----MA-IKDH')
 

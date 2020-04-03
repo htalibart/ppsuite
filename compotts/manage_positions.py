@@ -45,7 +45,12 @@ def get_seq_positions(aligned_positions, compotts_objects):
     c_names = ['pos_ref', 'pos_2']
     for k in range(2):
         real_seq_positions[c_names[k]] = compotts_objects[k].get_seq_positions(aligned_positions[c_names[k]])
-    return real_seq_positions
+    real_seq_positions_without_none = {'pos_ref':[], 'pos_2':[]}
+    for ind in range(len(real_seq_positions["pos_ref"])):
+        if (real_seq_positions["pos_ref"][ind] is not None) and (real_seq_positions["pos_2"][ind] is not None):
+            for name in c_names:
+                real_seq_positions_without_none[name].append(real_seq_positions[name][ind])
+    return real_seq_positions_without_none
 
 
 def get_seqs_aligned(aligned_positions, compotts_objects, X='X'):
