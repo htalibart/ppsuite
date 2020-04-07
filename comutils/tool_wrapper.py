@@ -39,10 +39,12 @@ def call_hhblits(input_file, output_file, database, maxfilt=100000, realign_max=
     return hhr_file
 
 
-def call_trimal(input_file, output_file, trimal_gt, cons, colnumbering_file):
+def call_trimal(input_file, output_file, trimal_gt, cons, colnumbering_file=None):
     print("calling trimal gt "+str(trimal_gt)+" cons "+str(cons)+" on "+str(input_file))
     fm.check_if_file_ok(input_file)
-    cmd = "trimal -in "+str(input_file)+" -out "+str(output_file)+" -gt "+str(trimal_gt)+" -cons "+str(cons)+" -colnumbering > "+str(colnumbering_file)
+    cmd = "trimal -in "+str(input_file)+" -out "+str(output_file)+" -gt "+str(trimal_gt)+" -cons "+str(cons)
+    if colnumbering_file is not None:
+        cmd+=" -colnumbering > "+str(colnumbering_file)
     subprocess.Popen(cmd, shell=True).wait()
     if not output_file.is_file():
         raise Exception("Trimal failed")
