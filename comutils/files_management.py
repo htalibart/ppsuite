@@ -126,7 +126,7 @@ def write_readme(folder, **kwargs):
 
 def copy(old_location, new_location):
     if not new_location.is_file():
-        shutil.copy(old_location, new_location)
+        shutil.copy(str(old_location), str(new_location))
 
 def get_format(seq_file):
     extension = seq_file.suffix[1:]
