@@ -288,8 +288,6 @@ class Potts_Object:
 
 
     def get_seq_positions(self, positions):
-        print("mrf pos to seq pos : ", self.mrf_pos_to_seq_pos)
-        print("positions : ", positions)
         seq_positions = []
         for pos in positions:
             if pos is None:
