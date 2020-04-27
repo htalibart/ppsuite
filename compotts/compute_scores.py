@@ -77,23 +77,23 @@ def get_epsilon(precision_method, selfscores):
 
 
 
-def compute_scores_etc(mrfs, v_score_function=scalar_product, w_score_function=scalar_product, use_v=True, use_w=True, alpha_w=1, w_threshold_method="percentile_0", precision_method="similarity_0.005", **kwargs):
-    if use_w:
-        edges_maps = [get_edges_map(mrf, w_threshold_method) for mrf in mrfs]
-    else:
-        edges_maps = [np.zeros((mrf.w.shape[0:2])) for mrf in mrfs]
-    if use_v:
-        v_scores = compute_v_scores(*mrfs, v_score_function, v_coeff=1)
-    else:
-        v_scores = np.zeros(tuple([mrf.v.shape[0] for mrf in mrfs]))
-    if use_w:
-        w_scores = compute_w_scores(*mrfs, *edges_maps, w_score_function, w_coeff=alpha_w)
-    else:
-        w_scores = np.zeros(1)
-    selfscores = [compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v, use_w, alpha_w, **kwargs) for mrf, edges_map in zip(mrfs, edges_maps)]
-    epsilon = get_epsilon(precision_method, selfscores)
-    return v_scores, w_scores, edges_maps, selfscores, epsilon
-
+#def compute_scores_etc(mrfs, v_score_function=scalar_product, w_score_function=scalar_product, use_v=True, use_w=True, alpha_w=1, w_threshold_method="percentile_0", precision_method="similarity_0.005", **kwargs):
+#    if use_w:
+#        edges_maps = [get_edges_map(mrf, w_threshold_method) for mrf in mrfs]
+#    else:
+#        edges_maps = [np.zeros((mrf.w.shape[0:2])) for mrf in mrfs]
+#    if use_v:
+#        v_scores = compute_v_scores(*mrfs, v_score_function, v_coeff=1)
+#    else:
+#        v_scores = np.zeros(tuple([mrf.v.shape[0] for mrf in mrfs]))
+#    if use_w:
+#        w_scores = compute_w_scores(*mrfs, *edges_maps, w_score_function, w_coeff=alpha_w)
+#    else:
+#        w_scores = np.zeros(1)
+#    selfscores = [compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v, use_w, alpha_w, **kwargs) for mrf, edges_map in zip(mrfs, edges_maps)]
+#    epsilon = get_epsilon(precision_method, selfscores)
+#    return v_scores, w_scores, edges_maps, selfscores, epsilon
+#
 
 def compute_self_w_scores(mrf, edges_map, w_score_function, **kwargs):
     w_score = 0
@@ -104,7 +104,9 @@ def compute_self_w_scores(mrf, edges_map, w_score_function, **kwargs):
     return w_score
 
 
-def compute_selfscore(mrf, edges_map, v_score_function, w_score_function, use_v=True, use_w=True, alpha_w=1, **kwargs):
+def compute_selfscore(mrf, edges_map, use_v=True, use_w=True, alpha_w=1, **kwargs):
+    v_score_function = scalar_product
+    w_score_function = scalar_product
     if use_v:
         v_score = sum([v_score_function(vi,vi) for vi in mrf.v])
     else:

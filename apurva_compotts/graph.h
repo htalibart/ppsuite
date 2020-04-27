@@ -56,11 +56,11 @@ class graph
         /**
         * Return coeficient S_{col,row} of node N_{col,row}
         */
-        virtual inline double get_node_coef(int col, int row) = 0;
+        virtual inline float get_node_coef(int col, int row) = 0;
         /**
         * Return coeficient C_{col1,row1,col2,row2} of edge E_{col1,row1,col2,row2}
         */
-        virtual inline double get_edge_coef(int col1, int row1, int col2, int row2) = 0;
+        virtual inline float get_edge_coef(int col1, int row1, int col2, int row2) = 0;
 
 };
 

@@ -18,31 +18,52 @@ double total_time(0.);
 
 
 // scores and lengths are global variables because of f_vertex_mrf and f_edge_mrf
-double* v_scores;
-float* w_scores;
+//double* v_scores;
+//float* w_scores;
 int LA;
 int LB;
+int q=21;
 
+float* v_A;
+float* v_B;
+float* w_A;
+float* w_B;
 
 // gap_open and gap_extend
 double gap_open = 0.0;
 double gap_extend = 0.0;
 
 
-double f_vertex_mrf(int k, int i)
+float f_vertex_mrf(int k, int i)
 {
-	return v_scores[i*LB+k];
+	//return v_scores[i*LB+k];
+	float score_vivk=0;
+	for(int a=0; a<q; a++)
+	{
+		score_vivk+=v_A[i*q+a]*v_B[k*q+a];
+	}
+	return score_vivk;
 }
 
 
 // score pour l'alignement de deux arcs (A.(i,j),B.(k,l))
-double f_edge_mrf(int k, int i, int l, int j)
+float f_edge_mrf(int k, int i, int l, int j)
 {
 	if (l<=k)
 	{
 		if (j<=i)
 		{
-			return w_scores[(j+(i*(i+1))/2)*(LB*(LB+1)/2) + l+(k*(k+1))/2];
+			//return w_scores[(j+(i*(i+1))/2)*(LB*(LB+1)/2) + l+(k*(k+1))/2];
+			float score_wijwkl=0;
+			for (int a=0; a<q; a++)
+			{
+				for (int b=0; b<q; b++)
+				{
+					score_wijwkl+=w_A[b+a*q+j*q*q+i*q*q*LA]*w_B[b+a*q+l*q*q+k*q*q*LB];
+				}
+			}
+			//cout << score_wijwkl << endl;
+			return score_wijwkl;
 		}
 		else
 		{
@@ -259,9 +280,9 @@ int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_tim
     std::cout << "started solving problem" << std::endl;
     int status(0);
 
-    double (*score_vertex)(int,int);
+    float (*score_vertex)(int,int);
     score_vertex = &f_vertex_mrf;
-    double (*score_edge)(int,int,int,int);
+    float (*score_edge)(int,int,int,int);
     score_edge = &f_edge_mrf;
 
     int nb_row = LA;
@@ -334,16 +355,25 @@ int** unflatten(int* flat_array, int length)
 
 
 
-extern "C" int call_from_python(double* v_scores_, float* w_scores_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min)
+
+extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_B_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min)
 {
 	int status(0);
 
-	v_scores = v_scores_;
-	w_scores = w_scores_;
+	v_A = v_A_;
+	v_B = v_B_;
+	w_A = w_A_;
+	w_B = w_B_;
+	//v_scores = v_scores_;
+	//w_scores = w_scores_;
 	LA = LA_;
 	LB = LB_;
 	gap_open = gap_open_;
 	gap_extend = gap_extend_;
+	cout << "gap open=" << gap_open << endl;
+	cout << "gap extend=" << gap_extend << endl;
+
+	cout << "epsilon=" << epsilon << endl;
 
 	// computation time
 	long tic_per_sec = sysconf(_SC_CLK_TCK);

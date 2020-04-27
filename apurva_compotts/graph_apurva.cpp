@@ -4,7 +4,7 @@ using namespace std;
 
 
 
-graph_apurva :: graph_apurva(int nb_node1, int ** contacts1, int nb_node2, int ** contacts2, double (*s_vertex)(int,int), double (*s_edge)(int,int,int,int), int ** forbidden)
+graph_apurva :: graph_apurva(int nb_node1, int ** contacts1, int nb_node2, int ** contacts2, float (*s_vertex)(int,int), float (*s_edge)(int,int,int,int), int ** forbidden)
 {
     edge_col = contacts2;
     edge_row = contacts1;

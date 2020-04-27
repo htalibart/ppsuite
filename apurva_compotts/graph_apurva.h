@@ -33,19 +33,19 @@ class graph_apurva : public graph
          * The function pointer for the function assigning node weights
          * @author IW
          */
-        double (*score_vertex)(int,int);
+        float (*score_vertex)(int,int);
 
         /*
          * The function pointer for the function assigning edge weights
          * @author IW
          */
-        double (*score_edge)(int,int,int,int);
+        float (*score_edge)(int,int,int,int);
 
 
     public :
 
         /* Constructors & Destructor */
-        graph_apurva(int nb_node1, int ** contacts1, int nb_node2, int ** contacts2, double (*s_vertex)(int,int), double (*s_edge)(int,int,int,int), int ** forbidden);
+        graph_apurva(int nb_node1, int ** contacts1, int nb_node2, int ** contacts2, float (*s_vertex)(int,int), float (*s_edge)(int,int,int,int), int ** forbidden);
 
         ~graph_apurva()
         {
@@ -127,19 +127,19 @@ class graph_apurva : public graph
 
         // return the coeficient of a node (0. for all node in the case of apurva)
         // this function doesn't check if col.row is valid node
-        inline double get_node_coef(int col, int row)
+        inline float get_node_coef(int col, int row)
         {
         	return score_vertex(col, row);
         };
 
         // return the coeficient of an edge (1. for all edges in the case of apurva)
         // this function doesn't check if <col1.row1, col2.row2> is valid edge
-        inline double get_edge_coef(int col1, int row1, int col2, int row2)
+        inline float get_edge_coef(int col1, int row1, int col2, int row2)
         {
 
             int edge1 = edge_col[col1][col2];
             int edge2 = edge_row[row1][row2];
-            double value = MIN(edge1, edge2);
+            float value = MIN(edge1, edge2);
 
             if(value != 0)
             {
@@ -179,13 +179,13 @@ class graph_apurva : public graph
         inline int get_edge_row(int row1, int row2){ return(edge_row[row1][row2]);};
 
         /// return the function pointer to the scoring function for the vertices (IW)
-        inline double (*get_vertex_scoringfunction())(int,int)
+        inline float (*get_vertex_scoringfunction())(int,int)
 		{
         	return score_vertex;
 		}
 
         /// return the function pointer to the scoring function for the edges (IW)
-        inline double (*get_edge_scoringfunction())(int,int,int,int)
+        inline float (*get_edge_scoringfunction())(int,int,int,int)
 		{
         	return score_edge;
 		}
