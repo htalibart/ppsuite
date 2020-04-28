@@ -31,6 +31,14 @@ class Test_Compute_Scores(unittest.TestCase):
         self.assertTrue(abs(selfcomp-UB)<1)
 
 
+    def test_selfscore_no_v(self):
+        edges_map = get_edges_map(self.mrf, "")
+        selfcomp = compute_selfscore(self.mrf, edges_map, use_v=False, use_w=True)
+        aln_dict, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_v=False)
+        UB = infos_solver['UB']
+        self.assertTrue(abs(selfcomp-UB)<1)
+
+
     def test_selfscore(self):
         v_score_function = scalar_product
         w_score_function = scalar_product
@@ -39,6 +47,15 @@ class Test_Compute_Scores(unittest.TestCase):
         aln_dict, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=True)
         UB = infos_solver['UB']
         self.assertTrue(abs(selfcomp-UB)<1)
+
+
+    def test_selfscore_alpha_w(self):
+        edges_map = get_edges_map(self.mrf, "")
+        selfcomp_normal = compute_selfscore(self.mrf, edges_map, use_v=False, use_w=True)
+        alpha_w = 2
+        selfcomp_alpha = compute_selfscore(self.mrf, edges_map, use_v=False, use_w=True, alpha_w=alpha_w)
+        assert(selfcomp_alpha==alpha_w*selfcomp_normal)
+
 
 
 if __name__=='__main__':

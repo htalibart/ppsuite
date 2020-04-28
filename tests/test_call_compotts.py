@@ -98,5 +98,14 @@ class Test_Call_ComPotts(unittest.TestCase):
         aligned_positions, infos_solver = align_two_potts_models([resc_mrf, resc_mrf], self.output_folder)
         similarity_global = infos_solver["similarity_global"]
 
+
+    def test_alpha_w(self):
+        alpha_w = 2
+        aligned_positions_alpha, infos_solver_alpha = align_two_potts_models([self.potts_model, self.potts_model], self.output_folder, alpha_w=alpha_w, use_v=False)
+        aligned_positions_normal, infos_solver_normal = align_two_potts_models([self.potts_model, self.potts_model], self.output_folder, use_v=False)
+        assert((infos_solver_alpha['UB']-alpha_w*infos_solver_normal['UB'])<1)
+
+
+
 if __name__=='__main__':
     unittest.main()

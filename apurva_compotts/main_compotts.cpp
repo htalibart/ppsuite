@@ -24,6 +24,8 @@ int LA;
 int LB;
 int q=21;
 
+double alpha_w;
+
 float* v_A;
 float* v_B;
 float* w_A;
@@ -63,7 +65,7 @@ float f_edge_mrf(int k, int i, int l, int j)
 				}
 			}
 			//cout << score_wijwkl << endl;
-			return score_wijwkl;
+			return alpha_w*score_wijwkl;
 		}
 		else
 		{
@@ -356,7 +358,7 @@ int** unflatten(int* flat_array, int length)
 
 
 
-extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_B_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min)
+extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_B_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min, double alpha_w_)
 {
 	int status(0);
 
@@ -370,6 +372,7 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
 	LB = LB_;
 	gap_open = gap_open_;
 	gap_extend = gap_extend_;
+	alpha_w = alpha_w_;
 	cout << "gap open=" << gap_open << endl;
 	cout << "gap extend=" << gap_extend << endl;
 
