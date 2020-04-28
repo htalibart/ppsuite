@@ -159,8 +159,9 @@ class Potts_Object:
             aln_mafft = feature_folder/"aln_mafft.fasta"
             call_mafft(unaligned_fasta, aln_mafft)
             aln_original = feature_folder/"aln_original.fasta"
-            call_trimal(aln_mafft, aln_original, 0.05, 0) # trim 0.05 because hhfilter can't handle too long sequences
-            fm.copy(aln_original, feature_folder/"aln_original.fasta")
+            fm.remove_positions_with_gaps_in_first_sequence(aln_mafft, aln_original)
+            #call_trimal(aln_mafft, aln_original, 0.05, 0) # trim 0.05 because hhfilter can't handle too long sequences
+            fm.copy(aln_original, feature_folder/"aln_original.fasta") # ? check
 
         elif inference_type=='one_submat' or inference_type=='one_hot':
             aln_original = sequence_file

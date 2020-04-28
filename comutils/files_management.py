@@ -10,7 +10,7 @@ import ctypes
 import pathlib
 import shutil
 import csv
-
+import subprocess
 
 def create_folder(name):
     p = pathlib.Path(name) 
@@ -215,3 +215,12 @@ def add_sequence_to_fasta_file_if_missing(unaligned_fasta, sequence_file):
         SeqIO.write(new_unaligned_records, unaligned_fasta, "fasta")
 
 
+def remove_positions_with_gaps_in_first_sequence(input_fasta, output_fasta):
+    # removes all positions with gaps in the first sequence
+    aln = AlignIO.read(str(input_fasta), 'fasta')
+    first_sequence = str(aln[0].seq)
+    bad_positions = [k for k in range(len(first_sequence)) if first_sequence[k]=='-']
+    trimal_select = "{ "+','.join([str(pos) for pos in bad_positions])+" }"
+    trimal_call = "trimal -in "+str(input_fasta)+" -out "+str(output_fasta)+" -select "+trimal_select
+    subprocess.Popen(trimal_call, shell=True).wait()
+    return output_fasta
