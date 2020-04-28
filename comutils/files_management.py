@@ -3,7 +3,7 @@ from urllib.request import urlopen
 import re
 import json
 import pandas as pd
-from Bio import SeqIO, AlignIO, pairwise2
+from Bio import SeqIO, AlignIO, Align, pairwise2
 import Bio.PDB
 from Bio.PDB.Polypeptide import PPBuilder
 import ctypes
@@ -219,10 +219,12 @@ def remove_positions_with_gaps_in_first_sequence(input_fasta, output_fasta):
     # removes all positions with gaps in the first sequence
     aln = AlignIO.read(str(input_fasta), 'fasta')
     first_sequence = str(aln[0].seq)
-    bad_positions = [k for k in range(len(first_sequence)) if first_sequence[k]=='-']
-    trimal_select = "{ "+','.join([str(pos) for pos in bad_positions])+" }"
-    trimal_call = "trimal -in "+str(input_fasta)+" -out "+str(output_fasta)+" -select "+trimal_select
-    subprocess.Popen(trimal_call, shell=True).wait()
+    good_positions = [k for k in range(len(first_sequence)) if first_sequence[k]!='-']
+    first_pos = good_positions[0]
+    clean_aln = Align.MultipleSeqAlignment(aln[:,first_pos:first_pos+1])
+    for pos in good_positions[1:]:
+        clean_aln+=aln[:,pos:pos+1]
+    AlignIO.write(clean_aln, output_fasta, 'fasta')
     return output_fasta
 
 def remove_sequences_with_bad_characters_from_fasta_file(input_fasta, output_fasta, bad_characters=['J','U','Z','B','O','X']):
