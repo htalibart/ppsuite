@@ -54,7 +54,7 @@ class Test_MakePotts(unittest.TestCase):
     def test_cutoff_blast(self):
         cf = Potts_Object.from_files(self.feature_folder, unaligned_fasta=BLAST_FASTA, blast_xml=BLAST_XML, use_evalue_cutoff=True, infer_potts_model=False, filter_alignment=False)
         nb_sequences = fm.get_nb_sequences_in_fasta_file(cf.aln_train)
-        assert(nb_sequences==18)
+        assert(nb_sequences==17) # because clean
 
     def test_less_sequences(self):
         cf = Potts_Object.from_files(self.feature_folder, aln_file=ALN_1CC8, trim_alignment=False, use_less_sequences=True, max_nb_sequences=1000, infer_potts_model=False, filter_alignment=False)

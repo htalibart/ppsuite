@@ -224,3 +224,15 @@ def remove_positions_with_gaps_in_first_sequence(input_fasta, output_fasta):
     trimal_call = "trimal -in "+str(input_fasta)+" -out "+str(output_fasta)+" -select "+trimal_select
     subprocess.Popen(trimal_call, shell=True).wait()
     return output_fasta
+
+def remove_sequences_with_bad_characters_from_fasta_file(input_fasta, output_fasta, bad_characters=['J','U','Z','B','O','X']):
+    all_records = list(SeqIO.parse(input_fasta, 'fasta'))
+    clean_records = []
+    for record in all_records:
+        if not any(bad_character in str(record.seq).upper() for bad_character in bad_characters):
+            clean_records.append(record)
+    SeqIO.write(clean_records, output_fasta, 'fasta')
+
+
+
+

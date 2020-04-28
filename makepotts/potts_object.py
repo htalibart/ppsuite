@@ -141,6 +141,9 @@ class Potts_Object:
             else:
                 raise Exception("Unknown format : "+str(fm.get_format(aln_file))+" for "+str(aln_file))
 
+            aln_original_before_clean = aln_original
+            aln_original = feature_folder/"aln_original.fasta"
+            fm.remove_sequences_with_bad_characters_from_fasta_file(aln_original_before_clean, aln_original)
             if use_evalue_cutoff:
                 cutoff_fasta = feature_folder/("cutoff_"+str(cutoff_index)+".fasta")
                 fm.create_fasta_file_with_less_sequences(aln_original, cutoff_fasta, cutoff_index)
@@ -156,8 +159,10 @@ class Potts_Object:
                 unaligned_fasta = cutoff_fasta
             if sequence_file is not None:
                 fm.add_sequence_to_fasta_file_if_missing(unaligned_fasta, sequence_file)
+            clean_unaligned_fasta = feature_folder/"clean_unaligned_sequences.fasta"
+            fm.remove_sequences_with_bad_characters_from_fasta_file(unaligned_fasta, clean_unaligned_fasta)
             aln_mafft = feature_folder/"aln_mafft.fasta"
-            call_mafft(unaligned_fasta, aln_mafft)
+            call_mafft(clean_unaligned_fasta, aln_mafft)
             aln_original = feature_folder/"aln_original.fasta"
             fm.remove_positions_with_gaps_in_first_sequence(aln_mafft, aln_original)
             #call_trimal(aln_mafft, aln_original, 0.05, 0) # trim 0.05 because hhfilter can't handle too long sequences
@@ -280,7 +285,7 @@ class Potts_Object:
 
 
         if not keep_tmp_files:
-            for name in ["aln_original.a3m", "reformat.fasta", "filtered.fasta", "less_"+str(max_nb_sequences)+".fasta", "trim_80.fasta", "aln_mafft.fasta"]:
+            for name in ["aln_original.a3m", "reformat.fasta", "filtered.fasta", "less_"+str(max_nb_sequences)+".fasta", "trim_80.fasta", "aln_mafft.fasta", "clean_unaligned_sequences.fasta"]:
                 if (feature_folder/name).is_file():
                     (feature_folder/name).unlink()
 
