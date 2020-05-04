@@ -356,6 +356,15 @@ int** unflatten(int* flat_array, int length)
 }
 
 
+void free_2d_int_array(int** array_2d, int length)
+{
+	for (int i=0; i<length; i++)
+	{
+		delete[] array_2d[i];
+	}
+    	delete[] array_2d;
+
+}
 
 
 extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_B_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min, double alpha_w_)
@@ -427,6 +436,9 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
     	}
     	delete[] forbidden_res;
     	delete[] res_alignment;
+
+	free_2d_int_array(row_map, LA);
+	free_2d_int_array(col_map, LB);
 
 	return 0;
 }
