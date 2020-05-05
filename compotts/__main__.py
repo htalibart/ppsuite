@@ -59,6 +59,9 @@ def main(args=sys.argv[1:]):
 
     args = vars(parser.parse_args(args))
 
+    if args["gap_extend"]>args["gap_open"]:
+        raise Exception("Gap extend must be smaller than gap open (convergence issues with the solver)")
+
 
     # CREATE_FOLDER IF NOT EXISTING
     if args["output_folder"] is None:
