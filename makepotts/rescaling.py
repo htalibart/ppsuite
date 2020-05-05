@@ -41,7 +41,7 @@ def add_number(x, v_shift=3, **kwargs):
 def threshold_on_wijab(x, wijab_threshold=0.05, **kwargs):
         return x*(abs(x)>=wijab_threshold)
 
-def simulate_uniform_pc_on_v(v, v_rescaling_tau=1/2, **kwargs):
+def simulate_uniform_pc_on_v(v, v_rescaling_tau=1/2, v_back_to_scale=True, **kwargs):
     resc_v = np.zeros_like(v)
     for i in range(len(v)):
         vi = v[i]
@@ -59,6 +59,8 @@ def simulate_uniform_pc_on_v(v, v_rescaling_tau=1/2, **kwargs):
         S_all = np.sum(resc_tmp)
         for a in range(q):
             resc_vi[a] = resc_tmp[a]-(1/q)*S_all
+        if v_back_to_scale and euclidean_norm(resc_vi)!=0:
+            resc_vi = euclidean_norm(vi)/euclidean_norm(resc_vi)*resc_vi
         resc_v[i] = resc_vi
     return resc_v
 
