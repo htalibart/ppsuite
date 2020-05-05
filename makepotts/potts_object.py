@@ -161,6 +161,10 @@ class Potts_Object:
                 fm.add_sequence_to_fasta_file_if_missing(unaligned_fasta, sequence_file)
             clean_unaligned_fasta = feature_folder/"clean_unaligned_sequences.fasta"
             fm.remove_sequences_with_bad_characters_from_fasta_file(unaligned_fasta, clean_unaligned_fasta)
+            tmp_unaligned_fasta = feature_folder/"clean_unaligned_sequences_bis.fasta"
+            fm.copy(clean_unaligned_fasta, tmp_unaligned_fasta)
+            fm.create_fasta_file_with_less_sequences(tmp_unaligned_fasta, clean_unaligned_fasta, nb_sequences=10000, fileformat="fasta") # limit to 10000 sequences for MAFFT
+            tmp_unaligned_fasta.unlink()
             aln_mafft = feature_folder/"aln_mafft.fasta"
             call_mafft(clean_unaligned_fasta, aln_mafft)
             aln_original = feature_folder/"aln_original.fasta"
