@@ -30,7 +30,8 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--v_shift', help=argparse.SUPPRESS, type=float, default=3)
     parser.add_argument('--wijab_threshold', help="If |wijab|<wijab_threshold, wijab is set to 0 if using rescaling function threshold_on_wijab", type=float, default=0)
     parser.add_argument('--v_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
-    parser.add_argument('--no_v_back_to_scale', help="Don't put v back to old norm after simulate_uniform_pc_on_v", default=False, action='store_true')
+    parser.add_argument('--v_back_to_scale', help="Put v back to old norm after simulate_uniform_pc_on_v", default=False, action='store_true')
+    parser.add_argument('--w_back_to_scale', help="Put w back to old norm after simulate_uniform_pc_on_v", default=False, action='store_true')
     parser.add_argument('--w_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_w", type=float, default=0.5)
     parser.add_argument('--add_pseudo_w', help=argparse.SUPPRESS, action='store_true')
     parser.add_argument('--rescale_wij', help=argparse.SUPPRESS, action='store_true')
@@ -85,8 +86,6 @@ def main(args=sys.argv[1:]):
     args["use_v"]= not args["no_v"]
     del args["no_v"]
 
-
-    args['v_back_to_scale'] = not args['no_v_back_to_scale']
 
     # INSTANCIATING OBJECTS
     compotts_objects = []

@@ -41,7 +41,7 @@ def add_number(x, v_shift=3, **kwargs):
 def threshold_on_wijab(x, wijab_threshold=0.05, **kwargs):
         return x*(abs(x)>=wijab_threshold)
 
-def simulate_uniform_pc_on_v(v, v_rescaling_tau=1/2, v_back_to_scale=True, **kwargs):
+def simulate_uniform_pc_on_v(v, v_rescaling_tau=1/2, v_back_to_scale=False, **kwargs):
     resc_v = np.zeros_like(v)
     for i in range(len(v)):
         vi = v[i]
@@ -65,7 +65,7 @@ def simulate_uniform_pc_on_v(v, v_rescaling_tau=1/2, v_back_to_scale=True, **kwa
     return resc_v
 
 
-def simulate_uniform_pc_on_wij(w, rescaling_tau=0.5, beta=10, w_back_to_scale=True, **kwargs):
+def simulate_uniform_pc_on_wij(w, rescaling_tau=0.5, beta=10, w_back_to_scale=False, **kwargs):
     w_flat = w.flatten()
     S = sum([exp(beta*elt) for elt in w_flat])
     
@@ -86,7 +86,7 @@ def simulate_uniform_pc_on_wij(w, rescaling_tau=0.5, beta=10, w_back_to_scale=Tr
     return resc_unflat
 
 
-def simulate_uniform_pc_on_w(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=True, **kwargs):
+def simulate_uniform_pc_on_w(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=False, **kwargs):
     resc_w = np.zeros_like(w)
     for i in range(len(resc_w)):
         for j in range(len(resc_w)):
@@ -94,7 +94,7 @@ def simulate_uniform_pc_on_w(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_t
                                                             w_back_to_scale=w_back_to_scale)
     return resc_w
 
-def simulate_uniform_pc_on_w_and_apply_threshold(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=True, wijab_threshold=0, **kwargs):
+def simulate_uniform_pc_on_w_and_apply_threshold(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=False, wijab_threshold=0, **kwargs):
     resc_w = simulate_uniform_pc_on_w(w, w_rescaling_tau=w_rescaling_tau, beta_softmax_w=beta_softmax_w, w_back_to_scale=w_back_to_scale, **kwargs)
     resc_w[resc_w<=wijab_threshold]=0
     return resc_w
