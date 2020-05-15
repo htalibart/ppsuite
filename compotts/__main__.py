@@ -146,7 +146,7 @@ def main(args=sys.argv[1:]):
         # REMOVE TEMPORARY FOLDERS
         for temp_folder in temp_folders: 
             if temp_folder.is_dir():
-                temp_folder.unlink()
+                shutil.rmtree(temp_folder)
 
         return {"compotts_objects": compotts_objects, "aligned_positions":aligned_positions, "infos_solver":infos_solver}
 
