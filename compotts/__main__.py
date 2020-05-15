@@ -93,7 +93,7 @@ def main(args=sys.argv[1:]):
     for k in range(1,3):
         if args["potts_model_file_"+str(k)] is not None:
             feature_folder = pathlib.Path(tempfile.mkdtemp())
-            shutil.copy(args["potts_model_file_"+str(k)], feature_folder/"potts_model.mrf")
+            shutil.copy(str(args["potts_model_file_"+str(k)]), str(feature_folder/"potts_model.mrf"))
             obj = Potts_Object.from_folder(feature_folder, **args)
             compotts_objects.append(obj)
             temp_folders.append(feature_folder)
@@ -146,7 +146,7 @@ def main(args=sys.argv[1:]):
         # REMOVE TEMPORARY FOLDERS
         for temp_folder in temp_folders: 
             if temp_folder.is_dir():
-                shutil.rmtree(temp_folder)
+                shutil.rmtree(str(temp_folder))
 
         return {"compotts_objects": compotts_objects, "aligned_positions":aligned_positions, "infos_solver":infos_solver}
 
