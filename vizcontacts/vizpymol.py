@@ -9,6 +9,7 @@ from makepotts.potts_object import *
 import pymol
 
 def launch_pymol(pdb_id, pdbfile=None):
+    pymol.cmd.reinitialize()
     #pymol.finish_launching(['pymol'])
     if pdbfile is not None:
         pymol.cmd.load(pdbfile)
