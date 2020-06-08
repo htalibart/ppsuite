@@ -912,6 +912,11 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 			cout <<"Optimal. Stop now.\n";
 		    status = OPTIMAL;
 		}
+		else if(solve_time >= params.my_time_limit)
+		{
+			cout <<"Time limit reached. Stop now.\n";
+		    status = TIME_LIMIT;
+		}
 		else if (ub-lb <= params.epsilon)
 		{
 			cout <<"Less than " << params.epsilon << " difference between upper and lower bound. Stop now.\n";
@@ -941,11 +946,6 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 		{
 		    cout << "More than " << nb_non_increasing_steps_max <<" non increasing steps. Stop now.\n";
 		    status = APPROXIMATE;
-		}
-		else if(solve_time >= params.my_time_limit)
-		{
-			cout <<"Time limit reached. Stop now.\n";
-		    status = TIME_LIMIT;
 		}
 		else
 		{
