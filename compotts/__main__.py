@@ -24,29 +24,22 @@ def main(args=sys.argv[1:]):
     # options alignement
     parser.add_argument('-nw', '--no_w', help="Don't use w scores (default : False)", action='store_true')
     parser.add_argument('-nv', '--no_v', help="Don't use v scores (default : False)", action='store_true')
-    parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold") # TODO checker si c'est bien fait avant le rescaling
+    parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold")
     parser.add_argument('--v_rescaling_function', help="Rescaling function for the v parameters of the Potts model. (default : no rescaling (identity))", default="identity")
     parser.add_argument('--w_rescaling_function', help="Rescaling function for the w parameters of the Potts model. (default : no rescaling (identity))", default="identity")
-    parser.add_argument('--v_shift', help=argparse.SUPPRESS, type=float, default=3)
     parser.add_argument('--wijab_threshold', help="If |wijab|<wijab_threshold, wijab is set to 0 if using rescaling function threshold_on_wijab", type=float, default=0)
     parser.add_argument('--v_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
     parser.add_argument('--v_back_to_scale', help="Put v back to old norm after simulate_uniform_pc_on_v", default=False, action='store_true')
     parser.add_argument('--w_back_to_scale', help="Put w back to old norm after simulate_uniform_pc_on_v", default=False, action='store_true')
-    parser.add_argument('--w_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_w", type=float, default=0.5)
-    parser.add_argument('--add_pseudo_w', help=argparse.SUPPRESS, action='store_true')
-    parser.add_argument('--rescale_wij', help=argparse.SUPPRESS, action='store_true')
-    parser.add_argument('--w_submat_tau', help=argparse.SUPPRESS, type=float, default=0.05)
-    parser.add_argument('--beta_softmax_w', help="Beta rescaling parameter to simulate uniform pseudo-counts on w through softmax", type=float, default=10)
-    # parser.add_argument('-vwc', '--vw_coeff_method', help=argparse.SUPPRESS, default="arbitrary_1_1") # v w coeff method
+    parser.add_argument('--w_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_w", type=float, default=0.9)
+    parser.add_argument('--beta_softmax_w', help="Beta rescaling parameter to simulate uniform pseudo-counts on w through softmax", type=float, default=2)
     parser.add_argument('--alpha_w', help="coefficient before w score", default=1, type=float)
-    #parser.add_argument('-gc', '--gap_cost_method', help=argparse.SUPPRESS, default="arbitrary_8_0") # gap costs method
     parser.add_argument('-go', '--gap_open', help="gap open", default=8, type=float) # gap costs method
     parser.add_argument('-ge', '--gap_extend', help="gap extend", default=0, type=float) # gap costs method
-    #parser.add_argument('--gap_auto_coeff', help=argparse.SUPPRESS, type=float, default=2.5) # gap costs method (soon to be deprecated)
+
     # solver options
     parser.add_argument('-t', '--t_limit', help="solver : time limit in seconds (default : 36000)", type=float, default=36000)
     parser.add_argument('-lit', '--iter_limit_param', help="solver : nb Lagrangian iterations (default : 1000000000)", type=int, default=1000000000)
-    #parser.add_argument('-e', '--epsilon', help="solver : precision", type=float, default=1)
     parser.add_argument('-e', '--precision_method', help="solver : precision method (default : similarity_0.005)", default="similarity_0.005") # TODO documenter toutes les précisions
     parser.add_argument('-ga', '--gamma', help="solver : gamma (default : 1.0)", type=float, default=1.0)
     parser.add_argument('-th', '--theta', help="solver : theta (default : 0.9)", type=float, default=0.9)
