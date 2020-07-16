@@ -78,6 +78,26 @@ def get_seqs_aligned_in_fasta_file(aligned_positions, compotts_objects, output_f
     print("output can be found at "+str(output_file))
 
 
+def get_seqs_aligned_in_fasta_file_only_aligned_positions(aligned_positions, compotts_objects, output_file):
+    """ (positions aligned by solver + compotts objects) -> sequences aligned (only at positions in the train msas) -> in output_file """
+    msas = [list(SeqIO.parse(str(o.aln_train), "fasta")) for o in compotts_objects]
+    records = []
+    for k, c_name in zip(range(2), ['pos_ref', 'pos_2']):
+        msa = msas[k]
+        record = msa[0]
+        new_record = record
+        new_seq=""
+        for pos in aligned_positions[c_name]:
+            new_seq+=record[pos]
+        new_record.seq=Seq(new_seq)
+        records.append(new_record)
+    with open(str(output_file), 'w') as f:
+        SeqIO.write(records, f, "fasta")
+    print("output can be found at "+str(output_file))
+
+
+
+
 def get_pos_aligned_at_pos(aligned_positions_dict, pos):
     """ returns the position in object 2 aligned at position @pos in object 1"""
     d = aligned_positions_dict
@@ -86,8 +106,6 @@ def get_pos_aligned_at_pos(aligned_positions_dict, pos):
     else:
         print(str(pos)+" is not aligned")
         return None
-
-
 
 
 def get_aligned_v_scores(aligned_positions_dict, v_scores):

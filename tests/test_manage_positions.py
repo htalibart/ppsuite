@@ -69,5 +69,22 @@ class Test_ManagePositions(unittest.TestCase):
         assert(mrf_pos_to_seq_pos==[None, None, 0, None, 1, None, 2])
 
 
+    def test_get_seqs_aligned_in_fasta_file_only_aligned_positions(self):
+        objs = []
+        for k in range(2):
+            seq_file = FAKE_SEQS_FOLDER/("fake_seq_"+str(k)+".fasta")
+            feature_folder = pathlib.Path(tempfile.mkdtemp())
+            objs.append(Potts_Object.from_files(feature_folder=feature_folder, sequence_file=seq_file, inference_type="one_hot"))
+        aligned_positions = {"pos_ref":[4,5,7,8,9,10], "pos_2":[0,1,2,3,4,5]}
+        output_file = next(tempfile._get_candidate_names()) 
+        get_seqs_aligned_in_fasta_file_only_aligned_positions(aligned_positions, objs, output_file)
+        aligned_records = list(SeqIO.parse(output_file, 'fasta'))
+        assert(len(aligned_records[0])==len(aligned_records[1]))
+        assert(len(aligned_records[0])==len(aligned_positions['pos_ref']))
+        os.remove(output_file)
+
+
+
+
 if __name__=='__main__':
     unittest.main()
