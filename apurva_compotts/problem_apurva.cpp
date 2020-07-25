@@ -891,23 +891,13 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 			 best_solution[ii] = solution[ii];
 		    }
 		}
-		if (current_lb != lb && current_ub != ub)   // else, number of improving iteration = 0, and increase number of non-improving iteration
+		else if (current_lb != lb && current_ub != ub)   // else, number of improving iteration = 0, and increase number of non-improving iteration
 		{
 		    cnt_non_increas++;
 		    cnt_break++;
 		    cnt_increas = 0;
 		}
-		if (cnt_non_increas > 5)   // after 20 non-improving iteration, reduce gamma
-		{
-		    gamma *= theta;
-		    cnt_non_increas = 0;
-		}
-		if (cnt_increas > 5)       // after 20 improving iteration, increase gamma
-		{
-		    gamma /= theta;
-		    cnt_increas = 0;
-		}
-		if (lb >= ub || ((int)lb >= ub && obj_is_int))
+		else if (lb >= ub || ((int)lb >= ub && obj_is_int))
 		{
 			cout <<"Optimal. Stop now.\n";
 		    status = OPTIMAL;
@@ -957,6 +947,17 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 		    }
 		    update_lambda(step);
 		}
+		if (cnt_non_increas > 5)   // after 20 non-improving iteration, reduce gamma
+		{
+		    gamma *= theta;
+		    cnt_non_increas = 0;
+		}
+		if (cnt_increas > 5)       // after 20 improving iteration, increase gamma
+		{
+		    gamma /= theta;
+		    cnt_increas = 0;
+		}
+
 	}
 	//cout << "UB-LB=" << ub - lb << endl;
     	tic2 = times(&end);
