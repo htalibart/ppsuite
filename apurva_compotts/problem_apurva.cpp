@@ -897,7 +897,7 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 		    cnt_break++;
 		    cnt_increas = 0;
 		}
-		else if (lb >= ub || ((int)lb >= ub && obj_is_int))
+		if (lb >= ub || ((int)lb >= ub && obj_is_int))
 		{
 			cout <<"Optimal. Stop now.\n";
 		    status = OPTIMAL;
