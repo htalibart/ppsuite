@@ -66,9 +66,10 @@ def translate_dict_to_pdb_pos(couplings_dict, pdb_chain, real_sequence):
     d = get_real_pos_to_pdb_pos(pdb_chain, real_sequence)
     pdb_couplings_dict = OrderedDict()
     for c in couplings_dict:
-        new_c = (d[c[0]], d[c[1]])
-        if not None in new_c:
-            pdb_couplings_dict[new_c] = couplings_dict[c]
+        if not None in c:
+            new_c = (d[c[0]], d[c[1]])
+            if not None in new_c:
+                pdb_couplings_dict[new_c] = couplings_dict[c]
     return pdb_couplings_dict
 
 
