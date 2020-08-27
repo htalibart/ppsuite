@@ -143,7 +143,7 @@ class Potts_Object:
 
             aln_original_before_clean = aln_original
             aln_original = feature_folder/"aln_original.fasta"
-            fm.remove_sequences_with_bad_characters_from_fasta_file(aln_original_before_clean, aln_original)
+            fm.remove_sequences_with_bad_characters_from_fasta_file_and_upper(aln_original_before_clean, aln_original)
             if use_evalue_cutoff:
                 cutoff_fasta = feature_folder/("cutoff_"+str(cutoff_index)+".fasta")
                 fm.create_fasta_file_with_less_sequences(aln_original, cutoff_fasta, cutoff_index)
