@@ -89,8 +89,6 @@ def main(args=sys.argv[1:]):
             feature_folder = pathlib.Path(tempfile.mkdtemp())
             shutil.copy(str(args["potts_model_file_"+str(k)]), str(feature_folder/"potts_model.mrf"))
             obj = Potts_Object.from_folder(feature_folder, **args)
-            if args["exp"]:
-                obj.potts_model = get_rescaled_potts_model(obj.potts_model, "exponential", "exponential", args["use_w"])
             compotts_objects.append(obj)
             temp_folders.append(feature_folder)
         elif args["feature_folder_"+str(k)] is not None:
@@ -102,7 +100,11 @@ def main(args=sys.argv[1:]):
         else:
             raise Exception("Need input "+str(k))
 
-    
+    # EXP IF NEEDED
+    for obj in compotts_objects:
+        if args["exp"]:
+            obj.potts_model = get_rescaled_potts_model(obj.potts_model, "exponential", "exponential", args["use_w"])
+
     # WRITE README
     fm.write_readme(output_folder, **args)
 
