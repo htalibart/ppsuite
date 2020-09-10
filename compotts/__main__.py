@@ -34,6 +34,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--w_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_w", type=float, default=0.9)
     parser.add_argument('--beta_softmax_w', help="Beta rescaling parameter to simulate uniform pseudo-counts on w through softmax", type=float, default=2)
     parser.add_argument('--alpha_w', help="coefficient before w score", default=1, type=float)
+    parser.add_argument('--exp', help="scalar product of the exp instead of simple scalar product", action='store_true', default=False)
     parser.add_argument('-go', '--gap_open', help="gap open", default=8, type=float) # gap costs method
     parser.add_argument('-ge', '--gap_extend', help="gap extend", default=0, type=float) # gap costs method
 
@@ -88,6 +89,8 @@ def main(args=sys.argv[1:]):
             feature_folder = pathlib.Path(tempfile.mkdtemp())
             shutil.copy(str(args["potts_model_file_"+str(k)]), str(feature_folder/"potts_model.mrf"))
             obj = Potts_Object.from_folder(feature_folder, **args)
+            if args["exp"]:
+                obj.potts_model = get_rescaled_potts_model(obj.potts_model, "exponential", "exponential", args["use_w"])
             compotts_objects.append(obj)
             temp_folders.append(feature_folder)
         elif args["feature_folder_"+str(k)] is not None:

@@ -34,5 +34,11 @@ class Test_Call_ComPotts(unittest.TestCase):
         print(res_compotts)
         assert(res_compotts['infos_solver']['UB']==res_compotts['infos_solver']['selfcomp1'])
 
+    def test_exponential_scalar_product(self):
+        compotts_args = ["--potts_model_file_1", str(self.feature_folder_1/"potts_model.mrf"), "--potts_model_file_2", str(self.feature_folder_1/"potts_model.mrf"), "--output_folder", str(self.output_folder), "--exp"]
+        res_compotts = main(compotts_args)
+        print(res_compotts)
+
+
 if __name__=='__main__':
     unittest.main()

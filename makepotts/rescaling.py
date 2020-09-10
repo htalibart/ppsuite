@@ -3,7 +3,7 @@ import numpy as np
 from comutils.util import *
 from makepotts.potts_model import *
 
-VECTORIZABLE_FUNCTIONS = ["identity", "original_rescaling", "symmetric_relu_like", "shifted_relu", "add_number", "threshold_on_wijab"]
+VECTORIZABLE_FUNCTIONS = ["identity", "original_rescaling", "symmetric_relu_like", "shifted_relu", "add_number", "threshold_on_wijab", "exponential"]
 
 
 def get_rescaled_potts_model(potts_model, v_rescaling_function_name, w_rescaling_function_name, use_w=True, **kwargs):
@@ -40,6 +40,10 @@ def add_number(x, v_shift=3, **kwargs):
 
 def threshold_on_wijab(x, wijab_threshold=0.05, **kwargs):
         return x*(abs(x)>=wijab_threshold)
+
+def exponential(x, **kwargs):
+    return np.exp(x)
+
 
 def simulate_uniform_pc_on_v(v, v_rescaling_tau=1/2, v_back_to_scale=False, **kwargs):
     resc_v = np.zeros_like(v)
