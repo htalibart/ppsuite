@@ -25,6 +25,7 @@ int LB;
 int q=21;
 
 double alpha_w;
+double offset_v;
 
 float* v_A;
 float* v_B;
@@ -44,7 +45,7 @@ float f_vertex_mrf(int k, int i)
 	{
 		score_vivk+=v_A[i*q+a]*v_B[k*q+a];
 	}
-	return score_vivk;
+	return score_vivk-offset_v;
 }
 
 
@@ -367,7 +368,7 @@ void free_2d_int_array(int** array_2d, int length)
 }
 
 
-extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_B_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min, double alpha_w_)
+extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_B_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min, double alpha_w_, double offset_v_)
 {
 	int status(0);
 
@@ -382,6 +383,7 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
 	gap_open = gap_open_;
 	gap_extend = gap_extend_;
 	alpha_w = alpha_w_;
+	offset_v = offset_v_;
 	cout << "gap open=" << gap_open << endl;
 	cout << "gap extend=" << gap_extend << endl;
 

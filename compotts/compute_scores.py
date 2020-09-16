@@ -27,11 +27,11 @@ def get_edges_map(mrf, w_threshold_method):
     return 1*(mrf.get_w_norms()>w_threshold)
 
 
-def compute_v_scores(mrf1, mrf2, v_score_function, v_coeff=1, **kwargs):
+def compute_v_scores(mrf1, mrf2, v_score_function, v_coeff=1, offset_v=0, **kwargs):
     v_scores = np.zeros((mrf1.ncol, mrf2.ncol))
     for i in range(mrf1.ncol):
         for k in range(mrf2.ncol):
-            v_scores[i][k] = v_score_function(mrf1.v[i], mrf2.v[k])
+            v_scores[i][k] = v_score_function(mrf1.v[i], mrf2.v[k])-offset_v
     return v_coeff*v_scores
 
 def compute_w_scores(mrf1, mrf2, edges_map1, edges_map2, w_score_function, w_coeff=1, **kwargs):
@@ -104,11 +104,11 @@ def compute_self_w_scores(mrf, edges_map, w_score_function, **kwargs):
     return w_score
 
 
-def compute_selfscore(mrf, edges_map, use_v=True, use_w=True, alpha_w=1, **kwargs):
+def compute_selfscore(mrf, edges_map, use_v=True, use_w=True, alpha_w=1, offset_v=0, **kwargs):
     v_score_function = scalar_product
     w_score_function = scalar_product
     if use_v:
-        v_score = sum([v_score_function(vi,vi) for vi in mrf.v])
+        v_score = sum([v_score_function(vi,vi)-offset_v for vi in mrf.v])
     else:
         v_score = 0
     if use_w:
