@@ -1,4 +1,5 @@
 from math import *
+from comutils.global_variables import *
 import numpy as np
 from comutils.util import *
 from makepotts.potts_model import *
@@ -27,6 +28,18 @@ def get_rescaled_parameters(x, rescaling_function_name, **kwargs):
         return vfunc(x, **kwargs)
     else:
         return eval(rescaling_function_name)(x,**kwargs)
+
+
+def get_background_v0():
+    f0 = np.array(AA_BACKGROUND_FREQUENCIES)
+    logf0 = np.log(f0)
+    vaa = logf0-(1/len(f0))*np.sum(logf0)
+    v0 = np.append(vaa, [0])
+    return v0
+
+def remove_v0(x, **kwargs):
+    v0 = get_background_v0()
+    return x-[v0]*len(x)
 
 
 def identity(x, **kwargs):

@@ -36,6 +36,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--alpha_w', help="coefficient before w score", default=1, type=float)
     parser.add_argument('--offset_v', help="score offset for v parameters", default=0, type=float)
     parser.add_argument('--exp', help="scalar product of the exp instead of simple scalar product", action='store_true', default=False)
+    parser.add_argument('--remove_v0', help="remove background v0", action='store_true', default=False)
     parser.add_argument('-go', '--gap_open', help="gap open", default=8, type=float) # gap costs method
     parser.add_argument('-ge', '--gap_extend', help="gap extend", default=0, type=float) # gap costs method
 
@@ -105,6 +106,11 @@ def main(args=sys.argv[1:]):
     for obj in compotts_objects:
         if args["exp"]:
             obj.potts_model = get_rescaled_potts_model(obj.potts_model, "exponential", "exponential", args["use_w"])
+    
+    # REMOVE BACKGROUND IF NEEDED
+    for obj in compotts_objects:
+        if args["remove_v0"]:
+            obj.potts_model = get_rescaled_potts_model(obj.potts_model, "remove_v0", "identity", args["use_w"])
 
     # WRITE README
     fm.write_readme(output_folder, **args)

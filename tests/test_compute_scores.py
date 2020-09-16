@@ -56,6 +56,10 @@ class Test_Compute_Scores(unittest.TestCase):
         selfcomp_alpha = compute_selfscore(self.mrf, edges_map, use_v=False, use_w=True, alpha_w=alpha_w)
         assert(selfcomp_alpha==alpha_w*selfcomp_normal)
 
+    def test_background_v0(self):
+        v0 = get_background_v0()
+        assert(sum(v0)<0.00001)
+
 
 
 if __name__=='__main__':

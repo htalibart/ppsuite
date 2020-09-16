@@ -7,6 +7,7 @@ from numpy import linalg as LA
 # TODO décider d'un seuil
 # TODO commenter
 
+
 def count_edges(edges_map):
     return sum(edges_map.flatten())
 
