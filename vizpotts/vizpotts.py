@@ -45,12 +45,21 @@ def visualize_parameters(v, v_norm, w_norm, name, alphabet=ALPHABET, start_at_1=
     v = get_reordered_v(v, alphabet)
     sns.heatmap(np.transpose(v), yticklabels=alphabet, xticklabels=xticklabels, cmap="RdBu", ax=ax[0], center=0)
     ax[0].tick_params(labelsize='xx-small')
+    ax[0].set_xlabel('i')
+    ax[0].set_ylabel('a')
+    ax[0].collections[0].colorbar.set_label("vi(a)")
+    #ax[0].text(-5,10,'v',fontsize=15)
 
     sns.heatmap(w_norm, xticklabels=xticklabels, yticklabels=xticklabels, cmap="RdBu", center=0, ax=ax[1])
     ax[1].tick_params(labelsize='xx-small')
+    ax[1].set_xlabel('i')
+    ax[1].set_ylabel('j')
+    ax[1].collections[0].colorbar.set_label("wij(a,b)")
 
     sns.heatmap([v_norm], xticklabels=xticklabels, yticklabels=[], cmap="RdBu", center=0, ax=ax[2])
     ax[2].tick_params(labelsize='xx-small')
+    ax[2].set_xlabel('i')
+    ax[2].collections[0].colorbar.set_label("||vi||")
 
     plt.tight_layout()
     plt.draw()
