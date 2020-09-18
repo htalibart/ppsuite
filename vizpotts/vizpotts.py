@@ -54,7 +54,7 @@ def visualize_parameters(v, v_norm, w_norm, name, alphabet=ALPHABET, start_at_1=
     ax[1].tick_params(labelsize='xx-small')
     ax[1].set_xlabel('i')
     ax[1].set_ylabel('j')
-    ax[1].collections[0].colorbar.set_label("wij(a,b)")
+    ax[1].collections[0].colorbar.set_label("||wij||")
 
     sns.heatmap([v_norm], xticklabels=xticklabels, yticklabels=[], cmap="RdBu", center=0, ax=ax[2])
     ax[2].tick_params(labelsize='xx-small')
