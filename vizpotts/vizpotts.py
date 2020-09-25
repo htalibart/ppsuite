@@ -305,6 +305,7 @@ def plot_one_vi(vi, alphabet=ALPHABET, **kwargs):
     plt.figure()
     sns.heatmap(vi.reshape(vi.shape[0], 1), square=True, cmap="RdBu", center=0, yticklabels=alphabet, xticklabels=[], **kwargs)
     plt.margins(0,0)
+    plt.tight_layout()
     plt.show()
 
 
