@@ -5,13 +5,13 @@ from comutils.util import *
 from makepotts.potts_model import *
 
 VECTORIZABLE_FUNCTIONS = ["identity", "original_rescaling", "symmetric_relu_like", "shifted_relu", "threshold_on_wijab", "exponential"]
-
+USEFUL_KWARGS =  ["alpha_rescaling", "wijab_threshold", "v_rescaling_tau", "w_rescaling_tau", "v_back_to_scale", "w_back_to_scale", "beta_softmax_w"]
 
 def get_rescaled_potts_model(potts_model, v_rescaling_function_name, w_rescaling_function_name, use_w=True, **kwargs):
     """ returns a copy of Potts Model @mrf rescaled using @v_rescaled_function_name rescaling function to rescale v and @w_rescaled_function for w if @use_w """
     useful_kwargs = {}
     for key in kwargs.keys():
-        if key in ["alpha_rescaling", "wijab_threshold", "v_rescaling_tau", "w_rescaling_tau", "v_back_to_scale", "w_back_to_scale", "beta_softmax_w"]:
+        if key in USEFUL_KWARGS:
             useful_kwargs[key] = kwargs[key]
     if (v_rescaling_function_name=="identity") and (w_rescaling_function_name=="identity"):
         return potts_model
@@ -24,6 +24,17 @@ def get_rescaled_potts_model(potts_model, v_rescaling_function_name, w_rescaling
         else:
             t_w = np.zeros_like(potts_model.w)
         return Potts_Model.from_parameters(t_v, t_w, name=potts_model.name+'_'+v_rescaling_function_name+'_'+w_rescaling_function_name)
+
+
+def get_potts_model_without_v0(potts_model, v_rescaling_function_name, **kwargs):
+    useful_kwargs = {}
+    for key in kwargs.keys():
+        if key in USEFUL_KWARGS:
+            useful_kwargs[key] = kwargs[key]
+    v0 = get_background_v0()
+    tiled_v0 = np.tile(v0, (len(potts_model.v),1))
+    t_v = potts_model.v-get_rescaled_parameters(tiled_v0, v_rescaling_function_name, **useful_kwargs)
+    return Potts_Model.from_parameters(t_v, potts_model.w, name=potts_model.name+'_without_v0')
 
 
 def get_rescaled_parameters(x, rescaling_function_name, **kwargs):
@@ -40,11 +51,6 @@ def get_background_v0():
     vaa = logf0-(1/len(f0))*np.sum(logf0)
     v0 = np.append(vaa, [0])
     return v0
-
-def remove_v0(x, v_rescaling_function_name="identity", **kwargs):
-    v0 = get_background_v0()
-    v0_rescaled = get_rescaled_parameters(v0, v_rescaling_function_name, **kwargs)
-    return x-v0_rescaled
 
 
 def identity(x, **kwargs):

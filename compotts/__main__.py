@@ -110,7 +110,7 @@ def main(args=sys.argv[1:]):
     # REMOVE BACKGROUND IF NEEDED
     for obj in compotts_objects:
         if args["remove_v0"]:
-            obj.potts_model = get_rescaled_potts_model(obj.potts_model, "remove_v0", "identity", args["use_w"])
+            obj.potts_model = get_potts_model_without_v0(obj.potts_model, args["v_rescaling_function"], **args)
 
     # WRITE README
     fm.write_readme(output_folder, **args)
