@@ -10,7 +10,7 @@ from tests.resources_manager import *
 from compotts.__main__ import *
 
 
-class Test_Call_ComPotts(unittest.TestCase):
+class Test_ComPotts_Main(unittest.TestCase):
 
     def setUp(self):
         self.output_folder = pathlib.Path(tempfile.mkdtemp())
@@ -47,6 +47,11 @@ class Test_Call_ComPotts(unittest.TestCase):
 
     def test_remove_v0(self):
         compotts_args = ["--potts_model_file_1", str(self.feature_folder_1/"potts_model.mrf"), "--potts_model_file_2", str(self.feature_folder_1/"potts_model.mrf"), "--output_folder", str(self.output_folder), "--remove_v0"]
+        res_compotts = main(compotts_args)
+        print(res_compotts)
+
+    def test_remove_v0_rescaled(self):
+        compotts_args = ["--potts_model_file_1", str(self.feature_folder_1/"potts_model.mrf"), "--potts_model_file_2", str(self.feature_folder_1/"potts_model.mrf"), "--output_folder", str(self.output_folder), "--remove_v0", "--v_rescaling_function", "simulate_uniform_pc_on_v"]
         res_compotts = main(compotts_args)
         print(res_compotts)
 
