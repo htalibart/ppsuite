@@ -146,17 +146,16 @@ def visualize_pos_norms_alignment(aligned_mrfs, dict_aligned_pos, start_at_1=Tru
         plt.show()
 
 
-def visualize_v_w_scores_at_positions(aligned_mrfs, dict_aligned_pos, show_figure=True, tick_space=3, label_with_ref=False, label_with_2=False, v_score_function=scalar_product, w_score_function=scalar_product):
+def visualize_v_w_scores_at_positions(aligned_mrfs, dict_aligned_pos, show_figure=True, tick_space=3, v_score_function=scalar_product, w_score_function=scalar_product):
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1]})
     aligned_pos = list(dict_aligned_pos.values())
 
+    xticklabels = ['('+str(aligned_pos[0][k])+','+str(aligned_pos[1][k])+')' if (k%tick_space==0) else " " for k in range(len(aligned_pos[0]))]
+
     v_scores = [v_score_function(aligned_mrfs[0].v[i],aligned_mrfs[1].v[k]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
-    #xticklabels = [str(aligned_pos[k][i]+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
-    xticklabels = []
-    sns.heatmap([v_scores], yticklabels=['v'], xticklabels=xticklabels, cmap="RdBu", ax=ax[0], center=0)
+    sns.heatmap([v_scores], yticklabels=['v'], xticklabels=[], cmap="RdBu", ax=ax[0], center=0)
 
     w_scores_sums = [sum([w_score_function(aligned_mrfs[0].w[i][j],aligned_mrfs[1].w[k][l]) for j in aligned_pos[0] for l in aligned_pos[1]]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
-    #xticklabels = [str(aligned_pos[k][i]+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
     sns.heatmap([w_scores_sums], yticklabels=['w'], xticklabels=xticklabels, cmap="RdBu", ax=ax[1], center=0)
 
     plt.tight_layout()
@@ -245,6 +244,7 @@ def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=T
     else:
         insp = inspect.getargspec(sns.heatmap)
         xticklabels = insp.defaults[insp.args.index('xticklabels')]
+    xticklabels = [str(xi+start_at_1) if (xi%tick_space==0) else " " for xi in xticklabels]
     sns.heatmap(w_scores, xticklabels=xticklabels, yticklabels=xticklabels, cmap="RdBu", center=0, ax=ax[1])
     ax[1].tick_params(labelsize='xx-small')
 
