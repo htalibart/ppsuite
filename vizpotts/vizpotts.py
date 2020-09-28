@@ -185,7 +185,7 @@ def visualize_v_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=Tru
         plt.show()
 
 
-def visualize_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=True, tick_space=3, label_with_ref=False, label_with_2=False, w_score_function=scalar_product):
+def visualize_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=True, tick_space=3, label_with_ref=False, label_with_2=False, w_score_function=scalar_product, start_at_1=False):
     aligned_pos = list(dict_aligned_pos.values())
     len_aln = len(aligned_pos[0])
     plt.figure()
@@ -204,6 +204,8 @@ def visualize_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=Tru
         #xticklabels = insp.defaults[insp.args.index('xticklabels')]
         xticklabels = []
         yticklabels = []
+    xticklabels = [str(xi+start_at_1) if (xi%tick_space==0) else " " for xi in xticklabels]
+    yticklabels = [str(xi+start_at_1) if (xi%tick_space==0) else " " for xi in yticklabels]
     sns.heatmap(scores, yticklabels=yticklabels, xticklabels=xticklabels, cmap="RdBu", center=0)
     plt.tight_layout()
     plt.draw()
