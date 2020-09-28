@@ -213,7 +213,7 @@ def visualize_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=Tru
 
 
 
-def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=True, tick_space=3, label_with_ref=False, label_with_2=False, v_score_function=scalar_product, w_score_function=scalar_product, alphabet=ALPHABET, start_at_1=True):
+def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=True, tick_space=3, v_score_function=scalar_product, w_score_function=scalar_product, alphabet=ALPHABET, start_at_1=True):
     aligned_pos = list(dict_aligned_pos.values())
     len_aln = len(aligned_pos[0])
 
@@ -237,15 +237,11 @@ def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=T
     for ind_i in range(len_aln):
         for ind_j in range(len_aln):
                 w_scores[ind_i,ind_j] = w_score_function(aligned_mrfs[0].w[aligned_pos[0][ind_i],aligned_pos[0][ind_j]], aligned_mrfs[1].w[aligned_pos[1][ind_i],aligned_pos[1][ind_j]])
-    if label_with_ref:
-        xticklabels = aligned_pos[0]
-    elif label_with_2:
-        xticklabels = aligned_pos[1]
-    else:
-        insp = inspect.getargspec(sns.heatmap)
-        xticklabels = insp.defaults[insp.args.index('xticklabels')]
+    xticklabels = aligned_pos[0]
+    yticklabels = aligned_pos[1]
     xticklabels = [str(xi+start_at_1) if (xi%tick_space==0) else " " for xi in xticklabels]
-    sns.heatmap(w_scores, xticklabels=xticklabels, yticklabels=xticklabels, cmap="RdBu", center=0, ax=ax[1])
+    yticklabels = [str(xi+start_at_1) if (xi%tick_space==0) else " " for xi in yticklabels]
+    sns.heatmap(w_scores, xticklabels=xticklabels, yticklabels=yticklabels, cmap="RdBu", center=0, ax=ax[1])
     ax[1].tick_params(labelsize='xx-small')
 
     # v scores alignment
