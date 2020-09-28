@@ -155,7 +155,7 @@ def visualize_v_w_scores_at_positions(aligned_mrfs, dict_aligned_pos, show_figur
     v_scores = [v_score_function(aligned_mrfs[0].v[i],aligned_mrfs[1].v[k]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
     sns.heatmap([v_scores], yticklabels=['v'], xticklabels=[], cmap="RdBu", ax=ax[0], center=0)
 
-    w_scores_sums = [sum([w_score_function(aligned_mrfs[0].w[i][j],aligned_mrfs[1].w[k][l]) for j in aligned_pos[0] for l in aligned_pos[1]]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
+    w_scores_sums = [sum([w_score_function(aligned_mrfs[0].w[i][j],aligned_mrfs[1].w[k][l]) for j,l in zip(aligned_pos[0], aligned_pos[1])]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
     sns.heatmap([w_scores_sums], yticklabels=['w'], xticklabels=xticklabels, cmap="RdBu", ax=ax[1], center=0)
 
     plt.tight_layout()
