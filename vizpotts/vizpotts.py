@@ -256,7 +256,7 @@ def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=T
 
     len_aln = len(aligned_pos[0])
 
-    fig, ax = plt.subplots(nrows=4, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,6,1,1]})
+    fig, ax = plt.subplots(nrows=4, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1,6,1]})
 
     # v alignment : sqrt(vi(a)*vk(a))
     len_v = len(aligned_mrfs[0].v[0])
@@ -270,6 +270,11 @@ def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=T
     ax[0].tick_params(labelsize='xx-small')
 
 
+    # v scores alignment
+    v_scores = [v_score_function(aligned_mrfs[0].v[i],aligned_mrfs[1].v[j]) for i,j in zip(aligned_pos[0], aligned_pos[1])]
+    sns.heatmap([v_scores], xticklabels=[], yticklabels=['v'], cmap="RdBu", center=0, ax=ax[1])
+    #ax[2].tick_params(labelsize='xx-small')
+
     # w scores
     w_scores = np.zeros((len_aln,len_aln))
     for ind_i in range(len_aln):
@@ -278,13 +283,9 @@ def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=T
     xticklabels = [(label_list[0][k]+start_at_1,label_list[1][k]+start_at_1) for k in range(len(aligned_pos[0]))]
     xticklabels = [xi if (i%tick_space==0) else " " for i, xi in enumerate(xticklabels)]
     yticklabels=xticklabels
-    sns.heatmap(w_scores, xticklabels=[], yticklabels=yticklabels, cmap="RdBu", center=0, ax=ax[1])
-    ax[1].tick_params(labelsize='x-small')
+    sns.heatmap(w_scores, xticklabels=[], yticklabels=yticklabels, cmap="RdBu", center=0, ax=ax[2])
+    ax[2].tick_params(labelsize='x-small')
 
-    # v scores alignment
-    v_scores = [v_score_function(aligned_mrfs[0].v[i],aligned_mrfs[1].v[j]) for i,j in zip(aligned_pos[0], aligned_pos[1])]
-    sns.heatmap([v_scores], xticklabels=[], yticklabels=['v'], cmap="RdBu", center=0, ax=ax[2])
-    #ax[2].tick_params(labelsize='xx-small')
 
     # w scores contributions
     w_scores_sums = [sum([w_score_function(aligned_mrfs[0].w[i][j],aligned_mrfs[1].w[k][l]) for j,l in zip(aligned_pos[0], aligned_pos[1])]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
