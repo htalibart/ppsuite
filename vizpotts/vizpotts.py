@@ -256,7 +256,7 @@ def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=T
 
     len_aln = len(aligned_pos[0])
 
-    fig, ax = plt.subplots(nrows=4, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,4,1,1]})
+    fig, ax = plt.subplots(nrows=4, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,6,1,1]})
 
     # v alignment : sqrt(vi(a)*vk(a))
     len_v = len(aligned_mrfs[0].v[0])
@@ -265,7 +265,6 @@ def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=T
         for a in range(len_v):
             letter_v_scores[ind_i][a] = aligned_mrfs[0].v[aligned_pos[0][ind_i]][a]*aligned_mrfs[1].v[aligned_pos[1][ind_i]][a]
     v = get_reordered_v(letter_v_scores, alphabet)
-    #xticklabels = [str(aligned_pos[k][i]+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
     xticklabels = []
     sns.heatmap(np.transpose(v), yticklabels=alphabet, xticklabels=xticklabels, cmap="RdBu", ax=ax[0], center=0)
     ax[0].tick_params(labelsize='xx-small')
@@ -279,9 +278,8 @@ def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=T
     xticklabels = [(label_list[0][k]+start_at_1,label_list[1][k]+start_at_1) for k in range(len(aligned_pos[0]))]
     xticklabels = [xi if (i%tick_space==0) else " " for i, xi in enumerate(xticklabels)]
     yticklabels=xticklabels
-    #yticklabels = [str(xi+start_at_1) if (xi%tick_space==0) else " " for xi in yticklabels]
     sns.heatmap(w_scores, xticklabels=[], yticklabels=yticklabels, cmap="RdBu", center=0, ax=ax[1])
-    #ax[1].tick_params(labelsize='xx-small')
+    ax[1].tick_params(labelsize='x-small')
 
     # v scores alignment
     v_scores = [v_score_function(aligned_mrfs[0].v[i],aligned_mrfs[1].v[j]) for i,j in zip(aligned_pos[0], aligned_pos[1])]
@@ -291,6 +289,7 @@ def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=T
     # w scores contributions
     w_scores_sums = [sum([w_score_function(aligned_mrfs[0].w[i][j],aligned_mrfs[1].w[k][l]) for j,l in zip(aligned_pos[0], aligned_pos[1])]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
     sns.heatmap([w_scores_sums], yticklabels=['w'], xticklabels=xticklabels, cmap="RdBu", ax=ax[3], center=0)
+    ax[3].tick_params(labelsize='x-small')
 
 
     plt.tight_layout()
@@ -298,7 +297,7 @@ def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=T
     plt.draw()
     if show_figure:
         plt.show()
-
+    return fig
 
 
 
