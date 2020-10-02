@@ -46,6 +46,17 @@ def visualize_v_parameters(v, alphabet=ALPHABET, start_at_1=True, show_figure=Tr
         plt.show()
 
 
+def visualize_v_norms(v_norm, alphabet=ALPHABET, start_at_1=True, show_figure=True):
+    tick_space = 3
+    xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,len(v_norm))]
+    sns.heatmap([v_norm], xticklabels=xticklabels, yticklabels=[], cmap="RdBu", center=0)
+    plt.tick_params(labelsize='xx-small')
+    plt.tight_layout()
+    plt.draw()
+    if show_figure:
+        plt.show()
+
+
 
 
 def visualize_parameters(v, v_norm, w_norm, name, alphabet=ALPHABET, start_at_1=True, show_figure=True):
