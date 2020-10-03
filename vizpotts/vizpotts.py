@@ -38,6 +38,7 @@ def visualize_v_parameters(v, alphabet=ALPHABET, start_at_1=True, show_figure=Tr
     tick_space = 3
     xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
     v = get_reordered_v(v, alphabet)
+    plt.figure(figsize=(10,2))
     sns.heatmap(np.transpose(v), yticklabels=alphabet, xticklabels=xticklabels, cmap="RdBu", center=0)
     plt.tick_params(labelsize='xx-small')
     plt.tight_layout()
@@ -49,6 +50,7 @@ def visualize_v_parameters(v, alphabet=ALPHABET, start_at_1=True, show_figure=Tr
 def visualize_v_norms(v_norm, alphabet=ALPHABET, start_at_1=True, show_figure=True):
     tick_space = 3
     xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,len(v_norm))]
+    plt.figure(figsize=(10,2))
     sns.heatmap([v_norm], xticklabels=xticklabels, yticklabels=[], cmap="RdBu", center=0)
     plt.tick_params(labelsize='xx-small')
     plt.tight_layout()

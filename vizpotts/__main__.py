@@ -15,6 +15,8 @@ def main():
     parser.add_argument('-1', '--start_at_1', help="Start numbering at 1", action='store_true', default=True), 
     parser.add_argument('-0', '--start_at_0', help="Start numbering at 0", action='store_true', default=False), 
     parser.add_argument('-aln', '--aln_compotts', help="ComPotts output file", type=pathlib.Path, default=None)
+    parser.add_argument('-v', '--v_only', help="Only plot vi parameters", action='store_true', default=False), 
+    parser.add_argument('-vn', '--v_norms_only', help="Only plot vi norms parameters", action='store_true', default=False), 
     args = vars(parser.parse_args())
 
 
@@ -39,7 +41,12 @@ def main():
         else:
             for msgpack in args["potts_models"]:
                 mrf = Potts_Model.from_msgpack(msgpack)
-                visualize_mrf(mrf, start_at_1=start_at_1, show_figure=False)
+                if args["v_only"]:
+                    visualize_v_parameters(mrf.v, start_at_1=start_at_1, show_figure=False)
+                elif args["v_norms_only"]:
+                    visualize_v_norms(mrf.get_v_norms(), start_at_1=start_at_1, show_figure=False)
+                else:
+                    visualize_mrf(mrf, start_at_1=start_at_1, show_figure=False)
         plt.show()
 
 
