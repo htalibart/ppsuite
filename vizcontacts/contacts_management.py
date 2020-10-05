@@ -43,16 +43,17 @@ def get_contact_scores_for_sequence(potts_object):
     return seq_contact_scores
 
 
-def get_pdb_offset(pdb_chain, real_sequence):
+def get_pdb_offset(pdb_file, chain_id, real_sequence):
+    pdb_chain = fm.get_pdb_chain(pdb_file, chain_id)
     r = next(pdb_chain.get_residues())
     offset = r.get_full_id()[3][1]-1
     return offset
 
 
-def get_real_pos_to_pdb_pos(pdb_chain, real_sequence):
-    pdb_sequence = fm.get_sequence_from_pdb_chain(pdb_chain) 
+def get_real_pos_to_pdb_pos(pdb_file, chain_id, real_sequence):
+    pdb_sequence = fm.get_sequence_from_pdb_file(pdb_file, chain_id) 
     d = get_pos_first_seq_to_second_seq(real_sequence, pdb_sequence) # d[pos_in_real_seq] = pos_in_pdb_seq
-    pdb_offset = get_pdb_offset(pdb_chain, real_sequence)
+    pdb_offset = get_pdb_offset(pdb_file, chain_id, real_sequence)
     rtpdb = []
     for pos in range(len(real_sequence)):
         if d[pos] is None:
@@ -62,8 +63,8 @@ def get_real_pos_to_pdb_pos(pdb_chain, real_sequence):
     return rtpdb
 
 
-def translate_dict_to_pdb_pos(couplings_dict, pdb_chain, real_sequence):
-    d = get_real_pos_to_pdb_pos(pdb_chain, real_sequence)
+def translate_dict_to_pdb_pos(couplings_dict, pdb_file, chain_id, real_sequence):
+    d = get_real_pos_to_pdb_pos(pdb_file, chain_id, real_sequence)
     pdb_couplings_dict = OrderedDict()
     for c in couplings_dict:
         if not None in c:
@@ -73,7 +74,8 @@ def translate_dict_to_pdb_pos(couplings_dict, pdb_chain, real_sequence):
     return pdb_couplings_dict
 
 
-def is_true_contact(pdb_sequence_coupling, pdb_chain, contact_distance=8):
+def is_true_contact(pdb_sequence_coupling, pdb_file, chain_id, contact_distance=8):
+    pdb_chain = fm.get_pdb_chain(pdb_file, chain_id)
     return aa_distance(pdb_sequence_coupling[0], pdb_sequence_coupling[1], pdb_chain) <= contact_distance
 
 
@@ -84,13 +86,13 @@ def aa_distance(pos1, pos2, pdb_chain):
     return np.sqrt(np.sum(diff_vector*diff_vector))
 
 
-def get_colored_true_false_dicts(couplings_dict, pdb_chain, real_sequence, colors={True:'blue', False:'red'}, contact_distance=8):
-    d = get_real_pos_to_pdb_pos(pdb_chain, real_sequence)
+def get_colored_true_false_dicts(couplings_dict, pdb_file, chain_id, real_sequence, colors={True:'blue', False:'red'}, contact_distance=8):
+    d = get_real_pos_to_pdb_pos(pdb_file, chain_id, real_sequence)
     tf_d = {colors[val]:OrderedDict() for val in colors}
     for c in couplings_dict:
         pdb_c = (d[c[0]], d[c[1]])
         if not None in pdb_c:
-            tf_d[colors[is_true_contact(pdb_c, pdb_chain, contact_distance=contact_distance)]][c] = couplings_dict[c]
+            tf_d[colors[is_true_contact(pdb_c, pdb_file, chain_id, contact_distance=contact_distance)]][c] = couplings_dict[c]
     return tf_d
 
 def remove_couplings_too_close(couplings_dict, coupling_sep_min):

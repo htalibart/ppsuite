@@ -8,13 +8,15 @@ from makepotts.potts_object import *
 
 import pymol
 
-def launch_pymol(pdb_id, pdbfile=None):
+def launch_pymol(pdb_id=None, pdbfile=None):
     pymol.cmd.reinitialize()
     #pymol.finish_launching(['pymol'])
     if pdbfile is not None:
         pymol.cmd.load(pdbfile)
-    else:
+    elif pdb_id is not None:
         pymol.cmd.fetch(pdb_id, async_=0, type="pdb")
+    else:
+        raise Exception("must provide pdb file or pdb id")
     pymol.cmd.show('cartoon')
     pymol.cmd.hide('lines')
     pymol.cmd.hide('nonbonded')
@@ -33,33 +35,33 @@ def show_coupling(pdb_coupling, strength, color, chain_id='A'):
     pymol.cmd.label("coupling", 'resi')
 
 
-def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, pdb_id, chain_id='A', coupling_sep_min=2, thickness=1, colors={True:'green', False:'red'}):
-    pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
+def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, chain_id='A', coupling_sep_min=2, thickness=1, colors={True:'green', False:'red'}):
+    #pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
     n=0
     for i, (c, score) in enumerate(pdb_seq_couplings_dict.items()):
         if n<nb_couplings:
             if abs(c[0]-c[1])>coupling_sep_min:
                 strength = score*thickness
-                show_coupling(c, strength, colors[is_true_contact(c, pdb_chain)], chain_id)
+                show_coupling(c, strength, colors[is_true_contact(c, pdb_file, chain_id)], chain_id)
                 n+=1
 
 
-def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, normalize=False, debug_mode=False, **kwargs):
+def show_predicted_contacts_with_pymol(feature_folders, pdb_id=None, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, normalize=False, debug_mode=False, **kwargs):
 
     potts_objects = []
     for feature_folder in feature_folders:
         potts_objects.append(Potts_Object.from_folder(feature_folder))
 
-    if pdb_file is None:
+    if (pdb_file is None) and (pdb_id is not None):
         name = str(potts_objects[0].folder)+'/'+pdb_id
         pdb_file = fm.fetch_pdb_file(pdb_id, name)
-    pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
+    #pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
 
     pdb_couplings_dicts = []
     tops = []
     for potts_object in potts_objects:
         couplings_dict = get_contact_scores_for_sequence(potts_object)
-        pdb_couplings_dict = translate_dict_to_pdb_pos(couplings_dict, pdb_chain, potts_object.sequence)
+        pdb_couplings_dict = translate_dict_to_pdb_pos(couplings_dict, pdb_file, chain_id, potts_object.sequence)
         if auto_top:
             cutindex = get_elbow_index(pdb_couplings_dict, plot_elbow=debug_mode)
             pdb_couplings_dict = get_smaller_dict(pdb_couplings_dict, cutindex)
@@ -83,14 +85,14 @@ def show_predicted_contacts_with_pymol(feature_folders, pdb_id, chain_id='A', pd
             exclus_overlap[k] = get_normalized_ordered_dict(exclus_overlap[k])
 
     for d, colors in zip(exclus_overlap, [{True:'green', False:'red'}, {True:'blue', False:'yellow'}, {True:'teal', False:'orange'}]):
-        show_n_couplings(len(d), d, pdb_file, pdb_id, chain_id=chain_id, coupling_sep_min=coupling_sep_min, thickness=thickness, colors=colors)
+        show_n_couplings(len(d), d, pdb_file, chain_id=chain_id, coupling_sep_min=coupling_sep_min, thickness=thickness, colors=colors)
 
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--feature_folders', help="Feature folder(s)", type=pathlib.Path, nargs='+', required=True)
     parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
-    parser.add_argument('-id', '--pdb_id', help="PDB id", required=True)
+    parser.add_argument('-id', '--pdb_id', help="PDB id")
     parser.add_argument('-cid', '--chain_id', help="PDB chain id (default : A)", default='A')
     parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling (default : 3)", default=3, type=int)
     parser.add_argument('-n', '--top', help="Nb of couplings displayed (default : 20)", type=int, default=20)
