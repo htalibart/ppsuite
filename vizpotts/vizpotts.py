@@ -59,6 +59,19 @@ def visualize_v_norms(v_norm, alphabet=ALPHABET, start_at_1=True, show_figure=Tr
         plt.show()
 
 
+def visualize_w_norms(w_norm, alphabet=ALPHABET, start_at_1=True, show_figure=True):
+    tick_space = 3
+    xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,len(w_norm))]
+    plt.figure()
+    sns.heatmap(w_norm, xticklabels=xticklabels, yticklabels=xticklabels, cmap="RdBu", center=0)
+    plt.tick_params(labelsize='xx-small')
+    plt.tight_layout()
+    plt.draw()
+    if show_figure:
+        plt.show()
+
+
+
 
 
 def visualize_parameters(v, v_norm, w_norm, name, alphabet=ALPHABET, start_at_1=True, show_figure=True):
@@ -173,7 +186,7 @@ def visualize_pos_norms_alignment(aligned_mrfs, dict_aligned_pos, start_at_1=Tru
         plt.show()
 
 
-def visualize_v_w_scores_at_positions(aligned_mrfs, dict_aligned_pos, show_figure=True, tick_space=3, v_score_function=scalar_product, w_score_function=scalar_product, label_dict=None):
+def visualize_v_w_scores_at_positions(aligned_mrfs, dict_aligned_pos, show_figure=True, tick_space=3, v_score_function=scalar_product, w_score_function=scalar_product, label_dict=None, start_at_1=False):
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1]})
     aligned_pos = list(dict_aligned_pos.values())
 
