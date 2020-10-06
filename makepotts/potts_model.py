@@ -23,7 +23,7 @@ class Potts_Model:
             self.name = kwargs['name']
         else:
             self.name = "Billy"
-        print("w norm: ", self.get_w_norm(), "normalized w norm: ", self.get_normalized_w_norm())
+        #print("w norm: ", self.get_w_norm(), "normalized w norm: ", self.get_normalized_w_norm())
 
 
     @classmethod
