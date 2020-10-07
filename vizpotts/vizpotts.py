@@ -34,8 +34,7 @@ def plot_heatmap(matrix, center=0, show_figure=True, **kwargs):
         plt.show()
 
 
-def visualize_v_parameters(v, alphabet=ALPHABET, start_at_1=True, show_figure=True):
-    tick_space = 3
+def visualize_v_parameters(v, alphabet=ALPHABET, start_at_1=True, show_figure=True, tick_space=3):
     xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
     v = get_reordered_v(v, alphabet)
     plt.figure(figsize=(10,2))
@@ -47,8 +46,7 @@ def visualize_v_parameters(v, alphabet=ALPHABET, start_at_1=True, show_figure=Tr
         plt.show()
 
 
-def visualize_v_norms(v_norm, alphabet=ALPHABET, start_at_1=True, show_figure=True):
-    tick_space = 3
+def visualize_v_norms(v_norm, alphabet=ALPHABET, start_at_1=True, show_figure=True, tick_space=3):
     xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,len(v_norm))]
     plt.figure(figsize=(10,2))
     sns.heatmap([v_norm], xticklabels=xticklabels, yticklabels=[], cmap="RdBu", center=0, cbar_kws={'label': r'$||v_i||$'})
@@ -59,8 +57,7 @@ def visualize_v_norms(v_norm, alphabet=ALPHABET, start_at_1=True, show_figure=Tr
         plt.show()
 
 
-def visualize_w_norms(w_norm, alphabet=ALPHABET, start_at_1=True, show_figure=True):
-    tick_space = 3
+def visualize_w_norms(w_norm, alphabet=ALPHABET, start_at_1=True, show_figure=True, tick_space=3):
     xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,len(w_norm))]
     plt.figure()
     sns.heatmap(w_norm, xticklabels=xticklabels, yticklabels=xticklabels, cmap="RdBu", center=0, cbar_kws={'label': r'$||w_{ij}||$'})
