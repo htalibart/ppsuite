@@ -46,7 +46,7 @@ def visualize_v_parameters(v, alphabet=ALPHABET, start_at_1=True, show_figure=Tr
         plt.show()
 
 
-def visualize_v_norms(v_norm, alphabet=ALPHABET, start_at_1=True, show_figure=True, tick_space=3, figsize=(10,2), tight_layout=True, colorbar_label=r'$||v_i||$'):
+def visualize_v_norms(v_norm, start_at_1=True, show_figure=True, tick_space=3, figsize=(10,2), tight_layout=True, colorbar_label=r'$||v_i||$'):
     xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,len(v_norm))]
     plt.figure(figsize=figsize)
     sns.heatmap([v_norm], xticklabels=xticklabels, yticklabels=[], cmap="RdBu", center=0, cbar_kws={'label': colorbar_label})
@@ -58,7 +58,7 @@ def visualize_v_norms(v_norm, alphabet=ALPHABET, start_at_1=True, show_figure=Tr
         plt.show()
 
 
-def visualize_w_norms(w_norm, alphabet=ALPHABET, start_at_1=True, show_figure=True, tick_space=3, figsize=(10,9), tight_layout=True, colorbar_label = r'$||w_{ij}||$'):
+def visualize_w_norms(w_norm, start_at_1=True, show_figure=True, tick_space=3, figsize=(10,9), tight_layout=True, colorbar_label = r'$||w_{ij}||$'):
     xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,len(w_norm))]
     plt.figure(figsize=figsize)
     sns.heatmap(w_norm, xticklabels=xticklabels, yticklabels=xticklabels, cmap="RdBu", center=0, cbar_kws={'label': colorbar_label})
@@ -313,6 +313,13 @@ def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=T
     if show_figure:
         plt.show()
     return fig
+
+
+
+def visualize_v_w_scores_alignment_from_files(mrf_files, aln_res_file, **kwargs):
+    aligned_mrfs = [Potts_Model.from_msgpack(mrf_file) for mrf_file in mrf_files]
+    dict_aligned_pos = fm.get_aligned_positions_dict_from_compotts_output_file(aln_res_file)
+    visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, v_score_function=scalar_product, w_score_function=scalar_product, **kwargs)
 
 
 
