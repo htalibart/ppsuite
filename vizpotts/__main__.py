@@ -18,7 +18,13 @@ def main():
     parser.add_argument('-v', '--v_only', help="Only plot vi parameters", action='store_true', default=False), 
     parser.add_argument('-vn', '--v_norms_only', help="Only plot vi norms", action='store_true', default=False), 
     parser.add_argument('-wn', '--w_norms_only', help="Only plot wij norms", action='store_true', default=False), 
+    parser.add_argument('-alph', '--alphabetical', help="Use alphabetical amino acid order", action='store_true', default=False), 
     args = vars(parser.parse_args())
+
+    if args["alphabetical"]:
+        alphabet=ALPHABET
+    else:
+        alphabet="CSTPAGNDEQHRKMILVFYW-"
 
 
     start_at_1 = args["start_at_1"] and not args["start_at_0"]
@@ -34,22 +40,23 @@ def main():
             if start_at_1:
                 i-=1
                 j-=1
-            plot_one_wij(mrf.w[i][j], show_figure=False)
+            plot_one_wij(mrf.w[i][j], show_figure=False, alphabet=alphabet)
         plt.show()
     else:
         if args["aln_compotts"] is not None:
-            visualize_v_alignment_from_files(args["potts_models"], args["aln_compotts"], start_at_1=start_at_1, show_figure=False)
+            visualize_v_alignment_from_files(args["potts_models"], args["aln_compotts"], start_at_1=start_at_1, show_figure=False, alphabet=alphabet)
+            visualize_v_w_scores_alignment_from_files(args["potts_models"], args["aln_compotts"], start_at_1=start_at_1, show_figure=False, alphabet=alphabet)
         else:
             for msgpack in args["potts_models"]:
                 mrf = Potts_Model.from_msgpack(msgpack)
                 if args["v_only"]:
-                    visualize_v_parameters(mrf.v, start_at_1=start_at_1, show_figure=False)
+                    visualize_v_parameters(mrf.v, start_at_1=start_at_1, show_figure=False, alphabet=alphabet)
                 elif args["v_norms_only"]:
                     visualize_v_norms(mrf.get_v_norms(), start_at_1=start_at_1, show_figure=False)
                 elif args["w_norms_only"]:
                     visualize_w_norms(mrf.get_w_norms(), start_at_1=start_at_1, show_figure=True)
                 else:
-                    visualize_mrf(mrf, start_at_1=start_at_1, show_figure=False)
+                    visualize_mrf(mrf, start_at_1=start_at_1, show_figure=False, alphabet=alphabet)
         plt.show()
 
 
