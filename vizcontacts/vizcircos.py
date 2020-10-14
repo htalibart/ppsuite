@@ -112,13 +112,13 @@ def write_conf(circos_conf_filename, karyotype_filename, links_folder, output_ci
 
 
 
-def get_displayed_position(pos, numbering_type, pdb_chain=None, sequence=None):
+def get_displayed_position(pos, numbering_type, pdb_file=None, chain_id=None, sequence=None):
     """ returns the position that will be displayed around the Circos circle according to the required numbering type"""
     if numbering_type=='sequence':
         return pos+1
     elif numbering_type=='pdb':
-        if (pdb_chain is not None) and (sequence is not None):
-            pdb_pos = get_real_pos_to_pdb_pos(pdb_chain, sequence)[pos]
+        if (pdb_file is not None) and (chain_id is not None) and (sequence is not None):
+            pdb_pos = get_real_pos_to_pdb_pos(pdb_file, chain_id, sequence)[pos]
             if pdb_pos is None:
                 return ('#')
             else:
@@ -131,18 +131,18 @@ def get_displayed_position(pos, numbering_type, pdb_chain=None, sequence=None):
 
 # KARYOTYPE
 # chr - id label start end color
-def write_karyotype(karyotype_filename, sequence, seq_pos_to_mrf_pos, numbering_type, pdb_chain=None):
+def write_karyotype(karyotype_filename, sequence, seq_pos_to_mrf_pos, numbering_type, pdb_file=None, chain_id=None):
     with open(karyotype_filename,"w") as f:
         for pos in range(len(sequence)):
             if seq_pos_to_mrf_pos[pos] is None:
                 color = "black"
             else:
                 color = "dgrey"
-            displayed_position = get_displayed_position(pos, numbering_type, pdb_chain=pdb_chain, sequence=sequence)
+            displayed_position = get_displayed_position(pos, numbering_type, pdb_file=pdb_file, chain_id=chain_id, sequence=sequence)
             f.write("chr - "+str(pos+1)+" "+str(displayed_position)+"-"+sequence[pos]+" 0 1 "+color+"\n")
 
 
-def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, sequence, seq_pos_to_mrf_pos, numbering_type, pdb_chain=None, output_circos_image=None, thickness=1):
+def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, sequence, seq_pos_to_mrf_pos, numbering_type, pdb_file=None, chain_id=None, output_circos_image=None, thickness=1):
     of = str(circos_output_folder)+'/'
     if not os.path.isdir(of):
         os.mkdir(of)
@@ -152,7 +152,7 @@ def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_c
     if not os.path.isdir(links_folder):
         os.mkdir(links_folder)
     tmp_name = str(uuid.uuid4())
-    write_karyotype(karyotype_filename, sequence, seq_pos_to_mrf_pos, numbering_type, pdb_chain=pdb_chain)
+    write_karyotype(karyotype_filename, sequence, seq_pos_to_mrf_pos, numbering_type, pdb_file=pdb_file, chain_id=chain_id)
     write_conf(circos_conf_filename, karyotype_filename, links_folder, tmp_name+".png", coupling_dicts_for_sequence_indexed_by_colors, thickness=thickness)
     #os.system("circos -silent -conf "+circos_conf_filename)
     os.system("circos -conf "+circos_conf_filename)
@@ -164,7 +164,7 @@ def create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_c
     print("Circos image can be found at "+str(output_circos_image))
 
 
-def create_circos_from_potts_object_and_pdb_chain(potts_object, pdb_chain, coupling_sep_min=3, top=20, numbering_type='sequence', output_circos_image=None, thickness=1, auto_top=False, wij_cutoff=None, **args):
+def create_circos_from_potts_object_and_pdb_chain(potts_object, pdb_file=None, chain_id='A', coupling_sep_min=3, top=20, numbering_type='sequence', output_circos_image=None, thickness=1, auto_top=False, wij_cutoff=None, **args):
     couplings_dict = get_contact_scores_for_sequence(potts_object)
     seq_pos_to_mrf_pos = potts_object.get_seq_pos_to_mrf_pos()
     couplings_dict_with_coupling_sep_min = remove_couplings_too_close(couplings_dict, coupling_sep_min)
@@ -176,9 +176,9 @@ def create_circos_from_potts_object_and_pdb_chain(potts_object, pdb_chain, coupl
         smaller_couplings_dict = get_smaller_dict(couplings_dict_with_coupling_sep_min, top)
     else:
         smaller_couplings_dict = OrderedDict()
-    coupling_dicts_for_sequence_indexed_by_colors = get_colored_true_false_dicts(smaller_couplings_dict, pdb_chain, real_sequence=potts_object.sequence, colors={True:'green', False:'red'})
+    coupling_dicts_for_sequence_indexed_by_colors = get_colored_true_false_dicts(smaller_couplings_dict, pdb_file, chain_id, real_sequence=potts_object.sequence, colors={True:'green', False:'red'})
     circos_output_folder = str(potts_object.folder.absolute())+"/circos_output"
-    create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, potts_object.sequence, seq_pos_to_mrf_pos, numbering_type, pdb_chain=pdb_chain, output_circos_image=output_circos_image, thickness=thickness)
+    create_circos(circos_output_folder, coupling_dicts_for_sequence_indexed_by_colors, potts_object.sequence, seq_pos_to_mrf_pos, numbering_type, pdb_file=pdb_file, chain_id=chain_id, output_circos_image=output_circos_image, thickness=thickness)
 
 
 
@@ -186,7 +186,7 @@ def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
     parser.add_argument('-f', '--feature_folder', help="Feature folder", type=pathlib.Path, required=True)
     parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
-    parser.add_argument('-i', '--pdb_id', help="PDB id", required=True)
+    parser.add_argument('-i', '--pdb_id', help="PDB id", required=False)
     parser.add_argument('-cid', '--chain_id', help="PDB chain id (default : A)", default='A')
     parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling (default : 3)", type=int, default=3)
     parser.add_argument('-n', '--top', help="Nb of couplings displayed (default : 20)", type=int, default=20)
@@ -205,8 +205,7 @@ def main(args=sys.argv[1:]):
         name = str(potts_object.folder)+'/'+args['pdb_id']
         args['pdb_file'] = fm.fetch_pdb_file(args['pdb_id'], name)
     fm.check_if_file_ok(args["pdb_file"])
-    pdb_chain = fm.get_pdb_chain(args['pdb_id'], args['pdb_file'], chain_id=args['chain_id'])
-    create_circos_from_potts_object_and_pdb_chain(potts_object, pdb_chain, **args)
+    create_circos_from_potts_object_and_pdb_chain(potts_object, **args)
 
 if __name__=="__main__":
     main()

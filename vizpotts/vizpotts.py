@@ -152,12 +152,18 @@ def visualize_v_alignment_from_files(mrf_files, aln_res_file, **kwargs):
     visualize_v_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)
 
 
-def visualize_v_alignment(aligned_mrfs, dict_aligned_pos, alphabet=ALPHABET, start_at_1=True, show_figure=True, tick_space=3):
-    fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1]})
+def visualize_v_alignment(aligned_mrfs, dict_aligned_pos, alphabet=ALPHABET, start_at_1=True, show_figure=True, tick_space=3, label_dict=None):
     aligned_pos = list(dict_aligned_pos.values())
+    if label_dict is None:
+        label_dict = dict_aligned_pos
+        label_list = aligned_pos
+    else:
+        label_list = list(label_dict.values())
+
+    fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1]})
     for k in range(2):
         v = get_reordered_v(aligned_mrfs[k].v[aligned_pos[k],:], alphabet)
-        xticklabels = [str(aligned_pos[k][i]+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
+        xticklabels = [str(label_list[k][i]+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
         sns.heatmap(np.transpose(v), yticklabels=alphabet, xticklabels=xticklabels, cmap="RdBu", ax=ax[k], center=0)
         ax[k].tick_params(labelsize='xx-small')
     plt.tight_layout()
