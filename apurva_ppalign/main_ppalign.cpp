@@ -271,16 +271,6 @@ void display_results_and_print_to_files(int** row_map, int** col_map, double sel
 
 int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_time, double &ub, double &lb, int& nb_bb_nodes, int** row_map, int** col_map, double self1, double self2, int iter_limit_param, int n_limit_param, double t_limit, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min, double dalih_bound = 0.0)
 {
-	std::cout << "self1 " << self1 << endl;
-	std::cout << "self2 " << self2 << endl;
-	std::cout << "iter_limit " << iter_limit_param << endl;
-	std::cout << "n_limit " << n_limit_param << endl;
-	std::cout << "epsilon " << epsilon << endl;
-	std::cout << "gamma " << gamma << endl;
-	std::cout << "theta  " << theta << endl;
-	std::cout << "stepsize_min  " << stepsize_min << endl;
-	std::cout << "nb_non_increasing_steps_max  " << nb_non_increasing_steps_max << endl;
-    std::cout << "started solving problem" << std::endl;
     int status(0);
 
     float (*score_vertex)(int,int);
@@ -311,14 +301,10 @@ int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_tim
 
     //create problem
     graph_apurva        g(nb_row, row_map, nb_col, col_map, score_vertex, score_edge, forbidden);
-    std::cout << "graph apurva ok" << std::endl;
     lambda_mat_apurva   lm(g);
-    std::cout << "lambda mat apurva ok" << std::endl;
     dp_mat_apurva       dp(g, gap_open, gap_extend);
     //dp_mat_apurva       dp(g);
-    std::cout << "dp mat apurva ok" << std::endl;
     problem_apurva      prb(g,dp,lm,self1,self2,score_min);
-    std::cout << "problem apurva ok" << std::endl;
     branch_and_bound    bandb;
 
 
@@ -384,10 +370,6 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
 	gap_extend = gap_extend_;
 	alpha_w = alpha_w_;
 	offset_v = offset_v_;
-	cout << "gap open=" << gap_open << endl;
-	cout << "gap extend=" << gap_extend << endl;
-
-	cout << "epsilon=" << epsilon << endl;
 
 	// computation time
 	long tic_per_sec = sysconf(_SC_CLK_TCK);
