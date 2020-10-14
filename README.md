@@ -1,8 +1,8 @@
-# ComPotts Suite
+# PPsuite
 
 This package contains the following tools :
 
-* *ComPotts* aligns Potts models and corresponding sequences / alignments
+* *PPalign* aligns Potts models and corresponding sequences / alignments
 * *MakePotts* builds a Potts model from a sequence or a MSA (output is a folder which also contains positions matching between model and MSA / sequence files)
 * *VizPotts* allows you to visualize inferred Potts models
 * *VizContacts* allows you to visualize the top N couplings of the inferred Potts model and whether the couplings are contacts in the 3D structure or not. You can visualize them around a circle thanks to Circos, or on a PDB structure using PyMOL.
@@ -10,7 +10,7 @@ This package contains the following tools :
 ## Requirements
 
 ### Necessary requirements
-ComPotts was developped with Python3.6 and requires the following packages, which will normally be automatically installed by setup.py (with versions under which ComPotts was developped):
+PPalign was developped with Python3.6 and requires the following packages, which will normally be automatically installed by setup.py (with versions under which PPalign was developped):
 
 * numpy (1.16.2)
 * pandas (0.23.4)
@@ -68,7 +68,7 @@ To visualize predicted contacts using VizContacts, you also need to install :
 ### Compile the C++ solver library
 
 ```
-cd apurva_compotts/
+cd apurva_ppalign/
 bash compile.bash
 cd ..
 ```
@@ -105,7 +105,7 @@ makepotts -f my_1cc8_potts_folder/ -s examples/1cc8_everything/1cc8.fasta -aln e
 
 This command creates a folder named my_1cc8_potts_folder/ which contains the Potts model which was inferred by CCMpredPy - with carefully selected arguments - from the MSA after having processed it (i.e. trimmed it and reduced the number of sequences). The folder contains this training MSA and information on the matching between positions of the training MSA and the original MSA.
 
-You can use it as a ComPotts input (see section [ComPotts](#compotts-presentation)) to align it with another Potts model.
+You can use it as a PPalign input (see section [PPalign](#ppalign-presentation)) to align it with another Potts model.
 
 Optionally, you can also use the visualization tools to see what it looks like.
 
@@ -161,28 +161,28 @@ cd tests/
 
 
 ```
-compotts -f1 examples/1cc8_potts_folder -f2 4ydx_potts_folder -o 1cc8_4ydx_compotts_output/ -oaln -osaln
+ppalign -f1 examples/1cc8_potts_folder -f2 4ydx_potts_folder -o 1cc8_4ydx_ppalign_output/ -oaln -osaln
 ```
 
-1cc8_4ydx_compotts_output/ now contains :
+1cc8_4ydx_ppalign_output/ now contains :
 
 * aln.csv : contains the list of aligned positions in the two Potts models
 * aln_original.csv : contains the list of aligned positions of the original alignments (before trimming etc.)
 * aln_sequences.csv : contains the list of aligned positions of the original sequences
-* info.csv : contains information about the alignment made by ComPotts (including similarity score and computing time)
+* info.csv : contains information about the alignment made by PPalign (including similarity score and computing time)
 * aligned_training_sets.fasta (thanks to -oaln option) : a MSA made with the aligned columns of the two train MSAs
-* aligned_sequences.fasta (thanks to -osaln option) : a fasta file with an alignment of the two original sequences derived from the alignment made by ComPotts. Since alignment was trimmed and not all positions are aligned by ComPotts, it is not possible to have an alignment of the whole sequences. Ambiguous regions are marked with an X.
+* aligned_sequences.fasta (thanks to -osaln option) : a fasta file with an alignment of the two original sequences derived from the alignment made by PPalign. Since alignment was trimmed and not all positions are aligned by PPalign, it is not possible to have an alignment of the whole sequences. Ambiguous regions are marked with an X.
 
 
 You can visualize the vi parameters of the two Potts models at aligned positions using VizPotts :
 ```
-vizpotts -f examples/1cc8_potts_folder examples/4ydx_potts_folder -aln 1cc8_4ydx_compotts_output/aln.csv
+vizpotts -f examples/1cc8_potts_folder examples/4ydx_potts_folder -aln 1cc8_4ydx_ppalign_output/aln.csv
 ```
 
 <img src="tests/examples/output_examples/1cc8_4ydx_v.png" width="500">
 
 ### More detailed presentation of the packages
-ComPotts aligns two Potts models built using MakePotts. Its inputs are two folders which contain the following files :
+PPalign aligns two Potts models built using MakePotts. Its inputs are two folders which contain the following files :
 
 * sequence.fasta : the sequence in fasta format
 * original_aln.fasta : the alignment (a priori) derived from the sequence 
@@ -241,18 +241,18 @@ makepotts -aln path/to/your/alignment.fasta
 The feature folder will be created in the current folder, and will be named using the uuuid generator.
 
 
-<a id="compotts-presentation"></a>
-### ComPotts
+<a id="ppalign-presentation"></a>
+### PPalign
 
 
 Use :
 ```
-compotts -f1 potts_folder_1/ -f2 potts_folder_2/ -o output_folder/
+ppalign -f1 potts_folder_1/ -f2 potts_folder_2/ -o output_folder/
 ```
 
 or, if you are only interested in the aligned positions of Potts models files :
 ```
-compotts -p1 potts_model_1.mrf -p2 potts_model_2.mrf -o output_folder/
+ppalign -p1 potts_model_1.mrf -p2 potts_model_2.mrf -o output_folder/
 ```
 
 output_folder/ will contain at least :
@@ -289,9 +289,9 @@ vizpotts -p potts_model.mrf -i 15 -j 23
 ```
 You can specify whether for you positions start at 0 or at 1 with option --start_at_0 or --start_at_1. 
 
-* visualizing the fields parameters v of two Potts models aligned by ComPotts :
+* visualizing the fields parameters v of two Potts models aligned by PPalign :
 ```
-vizpotts -f potts_model_folder_1 potts_model_folder_2 -aln compotts_aln_output/aln.csv
+vizpotts -f potts_model_folder_1 potts_model_folder_2 -aln ppalign_aln_output/aln.csv
 ```
 
 

@@ -6,11 +6,10 @@ from comutils.tool_wrapper import *
 from comutils.find_cutoff_index import *
 from comutils.blast_utils import *
 
-from compotts.manage_positions import *
+from ppalign.manage_positions import *
 
 from makepotts.rescaling import *
 from makepotts.potts_model import *
-from makepotts.pseudo_w import *
 
 class Potts_Object:
 
@@ -36,7 +35,7 @@ class Potts_Object:
 
 
     @classmethod
-    def from_folder(cls, feature_folder, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, add_pseudo_w=False, w_submat_tau=0.05, rescale_wij=False, **kwargs):
+    def from_folder(cls, feature_folder, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, w_submat_tau=0.05, rescale_wij=False, **kwargs):
         feature = cls()
 
         feature.folder = feature_folder
@@ -81,9 +80,6 @@ class Potts_Object:
             feature.mrf_pos_to_seq_pos = None
 
         if (feature.potts_model is not None):
-            if add_pseudo_w:
-                #feature.potts_model = get_potts_model_with_pseudo_w(feature.potts_model, w_submat_tau, rescale_wij=rescale_wij)
-                feature.potts_model = add_pseudo_w_to_mrf(feature.potts_model)
             feature.potts_model = get_rescaled_potts_model(feature.potts_model, v_rescaling_function, w_rescaling_function, use_w=use_w, **kwargs)
 
         return feature
@@ -92,7 +88,7 @@ class Potts_Object:
 
 
     @classmethod
-    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_single_count=1, reg_lambda_pair_factor=0.2, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, keep_tmp_files=False, add_pseudo_w=False, w_submat_tau=0.05, rescale_wij=False, max_potts_model_length=250, **kwargs):
+    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_single_count=1, reg_lambda_pair_factor=0.2, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, keep_tmp_files=False, w_submat_tau=0.05, rescale_wij=False, max_potts_model_length=250, **kwargs):
 
         # ALIGNMENT FOLDER
         if feature_folder is None:
@@ -160,7 +156,7 @@ class Potts_Object:
             if sequence_file is not None:
                 fm.add_sequence_to_fasta_file_if_missing(unaligned_fasta, sequence_file)
             clean_unaligned_fasta = feature_folder/"clean_unaligned_sequences.fasta"
-            fm.remove_sequences_with_bad_characters_from_fasta_file(unaligned_fasta, clean_unaligned_fasta)
+            fm.remove_sequences_with_bad_characters_from_fasta_file_and_upper(unaligned_fasta, clean_unaligned_fasta)
             tmp_unaligned_fasta = feature_folder/"clean_unaligned_sequences_bis.fasta"
             fm.copy(clean_unaligned_fasta, tmp_unaligned_fasta)
             fm.create_fasta_file_with_less_sequences(tmp_unaligned_fasta, clean_unaligned_fasta, nb_sequences=10000, fileformat="fasta") # limit to 10000 sequences for MAFFT
@@ -242,11 +238,9 @@ class Potts_Object:
 
 
         
-        if (potts_model_file is not None) and (add_pseudo_w):
+        if (potts_model_file is not None):
             if "potts_model" not in locals():
                 potts_model = Potts_Model.from_msgpack(potts_model_file)
-            #potts_model = get_potts_model_with_pseudo_w(potts_model, w_submat_tau, rescale_wij=rescale_wij)
-            potts_model = add_pseudo_w_to_mrf(potts_model)
             potts_model.to_msgpack(potts_model_file)
 
         if (potts_model_file is not None) and (v_rescaling_function!="identity") and (w_rescaling_function!="identity"):
@@ -293,7 +287,7 @@ class Potts_Object:
                 if (feature_folder/name).is_file():
                     (feature_folder/name).unlink()
 
-        return cls.from_folder(feature_folder, v_rescaling_function="identity", w_rescaling_function="identity", add_pseudo_w=False, rescale_wij=False)
+        return cls.from_folder(feature_folder, v_rescaling_function="identity", w_rescaling_function="identity", rescale_wij=False)
 
 
 

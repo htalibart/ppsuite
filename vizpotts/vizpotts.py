@@ -7,7 +7,7 @@ from comutils.util import *
 
 from makepotts.potts_model import *
 
-from compotts.compute_scores import *
+from ppalign.compute_scores import *
 
 def get_reordered_v(v, alphabet):
     """ reorders all vi for a given alphabet """
@@ -148,7 +148,7 @@ def visualize_one_sequence(mrf, sequence, show_figure=True):
 
 def visualize_v_alignment_from_files(mrf_files, aln_res_file, **kwargs):
     aligned_mrfs = [Potts_Model.from_msgpack(mrf_file) for mrf_file in mrf_files]
-    dict_aligned_pos = fm.get_aligned_positions_dict_from_compotts_output_file(aln_res_file)
+    dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
     visualize_v_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)
 
 
@@ -318,7 +318,7 @@ def visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, show_figure=T
 
 def visualize_v_w_scores_alignment_from_files(mrf_files, aln_res_file, **kwargs):
     aligned_mrfs = [Potts_Model.from_msgpack(mrf_file) for mrf_file in mrf_files]
-    dict_aligned_pos = fm.get_aligned_positions_dict_from_compotts_output_file(aln_res_file)
+    dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
     visualize_v_w_scores_alignment(aligned_mrfs, dict_aligned_pos, v_score_function=scalar_product, w_score_function=scalar_product, **kwargs)
 
 

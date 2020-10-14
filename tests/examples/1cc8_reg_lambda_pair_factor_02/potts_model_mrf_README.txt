@@ -1,0 +1,1 @@
+"ccmpred 1cc8_reg_lambda_pair_factor_02/trim_80.fasta -b 1cc8_reg_lambda_pair_factor_02/potts_model.mrf --pc-single-count 1000 --reg-lambda-pair-factor 0.2 --pc-pair-count 1 --ofn-pll "

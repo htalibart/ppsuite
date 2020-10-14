@@ -1,0 +1,1 @@
+"ccmpred tmp_submat/trim_80.fasta -b tmp_submat/potts_model.mrf --pc-single-count 1000 --reg-lambda-pair-factor 0.4918032786885246 --pc-submat  --pc-pair-count 1 --ofn-pll "

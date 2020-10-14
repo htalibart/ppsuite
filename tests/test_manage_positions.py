@@ -5,7 +5,7 @@ import pathlib
 import numpy as np
 
 from makepotts.potts_object import *
-from compotts.manage_positions import *
+from ppalign.manage_positions import *
 
 import pkg_resources
 from tests.resources_manager import *

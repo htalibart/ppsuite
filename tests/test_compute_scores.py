@@ -4,8 +4,8 @@ import pathlib
 import numpy as np
 
 from makepotts.potts_model import *
-from compotts.compute_scores import *
-from compotts.call_compotts import *
+from ppalign.compute_scores import *
+from ppalign.call_ppalign import *
 
 import pkg_resources
 from resources_manager import *

@@ -14,7 +14,7 @@ def main():
     parser.add_argument('-j', '--j_index', help="j index", type=int, default=None)
     parser.add_argument('-1', '--start_at_1', help="Start numbering at 1", action='store_true', default=True), 
     parser.add_argument('-0', '--start_at_0', help="Start numbering at 0", action='store_true', default=False), 
-    parser.add_argument('-aln', '--aln_compotts', help="ComPotts output file", type=pathlib.Path, default=None)
+    parser.add_argument('-aln', '--aln_ppalign', help="ComPotts output file", type=pathlib.Path, default=None)
     parser.add_argument('-v', '--v_only', help="Only plot vi parameters", action='store_true', default=False), 
     parser.add_argument('-vn', '--v_norms_only', help="Only plot vi norms", action='store_true', default=False), 
     parser.add_argument('-wn', '--w_norms_only', help="Only plot wij norms", action='store_true', default=False), 
@@ -43,9 +43,9 @@ def main():
             plot_one_wij(mrf.w[i][j], show_figure=False, alphabet=alphabet)
         plt.show()
     else:
-        if args["aln_compotts"] is not None:
-            visualize_v_alignment_from_files(args["potts_models"], args["aln_compotts"], start_at_1=start_at_1, show_figure=False, alphabet=alphabet)
-            visualize_v_w_scores_alignment_from_files(args["potts_models"], args["aln_compotts"], start_at_1=start_at_1, show_figure=False, alphabet=alphabet)
+        if args["aln_ppalign"] is not None:
+            visualize_v_alignment_from_files(args["potts_models"], args["aln_ppalign"], start_at_1=start_at_1, show_figure=False, alphabet=alphabet)
+            visualize_v_w_scores_alignment_from_files(args["potts_models"], args["aln_ppalign"], start_at_1=start_at_1, show_figure=False, alphabet=alphabet)
         else:
             for msgpack in args["potts_models"]:
                 mrf = Potts_Model.from_msgpack(msgpack)
