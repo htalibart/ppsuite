@@ -26,13 +26,15 @@ def get_rescaled_potts_model(potts_model, v_rescaling_function_name, w_rescaling
         return Potts_Model.from_parameters(t_v, t_w, name=potts_model.name+'_'+v_rescaling_function_name+'_'+w_rescaling_function_name)
 
 
-def get_potts_model_without_v0(potts_model, v_rescaling_function_name, **kwargs):
+def get_potts_model_without_v0(potts_model, v_rescaling_function_name, rescale_removed_v0=False, **kwargs):
     useful_kwargs = {}
     for key in kwargs.keys():
         if key in USEFUL_KWARGS:
             useful_kwargs[key] = kwargs[key]
     v0 = get_background_v0()
     tiled_v0 = np.tile(v0, (len(potts_model.v),1))
+    if not rescale_removed_v0:
+        v_rescaling_function_name="identity"
     t_v = potts_model.v-get_rescaled_parameters(tiled_v0, v_rescaling_function_name, **useful_kwargs)
     return Potts_Model.from_parameters(t_v, potts_model.w, name=potts_model.name+'_without_v0')
 

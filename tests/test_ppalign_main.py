@@ -51,7 +51,7 @@ class Test_ComPotts_Main(unittest.TestCase):
         print(res_ppalign)
 
     def test_remove_v0_rescaled(self):
-        ppalign_args = ["--potts_model_file_1", str(self.feature_folder_1/"potts_model.mrf"), "--potts_model_file_2", str(self.feature_folder_1/"potts_model.mrf"), "--output_folder", str(self.output_folder), "--remove_v0", "--v_rescaling_function", "simulate_uniform_pc_on_v"]
+        ppalign_args = ["--potts_model_file_1", str(self.feature_folder_1/"potts_model.mrf"), "--potts_model_file_2", str(self.feature_folder_1/"potts_model.mrf"), "--output_folder", str(self.output_folder), "--remove_v0", "--rescale_removed_v0", "--v_rescaling_function", "simulate_uniform_pc_on_v"]
         res_ppalign = main(ppalign_args)
         print(res_ppalign)
 

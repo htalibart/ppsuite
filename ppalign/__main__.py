@@ -37,6 +37,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--offset_v', help="score offset for v parameters", default=0, type=float)
     parser.add_argument('--exp', help="scalar product of the exp instead of simple scalar product", action='store_true', default=False)
     parser.add_argument('--remove_v0', help="remove background v0", action='store_true', default=False)
+    parser.add_argument('--rescale_removed_v0', help="rescale background v0", action='store_true', default=False)
     parser.add_argument('-go', '--gap_open', help="gap open", default=8, type=float) # gap costs method
     parser.add_argument('-ge', '--gap_extend', help="gap extend", default=0, type=float) # gap costs method
 
