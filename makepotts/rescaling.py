@@ -121,3 +121,9 @@ def simulate_uniform_pc_on_w(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_t
             resc_w[i,j] = simulate_uniform_pc_on_wij(w[i][j], rescaling_tau=w_rescaling_tau, beta=beta_softmax_w,
                                                             w_back_to_scale=w_back_to_scale)
     return resc_w
+
+
+def remove_negative_couplings(w, **kwargs):
+    resc_w = w
+    resc_w[w<0]=0
+    return resc_w

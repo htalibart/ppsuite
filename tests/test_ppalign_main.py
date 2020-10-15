@@ -55,5 +55,11 @@ class Test_ComPotts_Main(unittest.TestCase):
         res_ppalign = main(ppalign_args)
         print(res_ppalign)
 
+    def test_remove_negative_couplings(self):
+        ppalign_args = ["--potts_model_file_1", str(self.feature_folder_1/"potts_model.mrf"), "--potts_model_file_2", str(self.feature_folder_1/"potts_model.mrf"), "--output_folder", str(self.output_folder), "--w_rescaling_function", "remove_negative_couplings"]
+        res_ppalign = main(ppalign_args)
+        print(res_ppalign)
+
+
 if __name__=='__main__':
     unittest.main()
