@@ -31,6 +31,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--w_rescaling_tau', help="Tau parameter for coupling smoothing", type=float, default=0.4)
     parser.add_argument('--beta_softmax_w', help="Softmax base parameter for coupling smoothing", type=float, default=10)
     parser.add_argument('--w_back_to_scale', help=argparse.SUPPRESS, default=False, action='store_true')
+    parser.add_argument('--insert_null_at_trimmed', help="insert null parameters at trimmed positions", default=False, action='store_true')
 
     # options alignement
     parser.add_argument('-nw', '--no_w', help="Don't use w scores (default : False)", action='store_true')
@@ -115,6 +116,14 @@ def main(args=sys.argv[1:]):
         if args["remove_v0"]:
             obj.potts_model = get_potts_model_without_v0(obj.potts_model, args["v_rescaling_function"], **args)
 
+
+    # INSERT NULL AT TRIMMED
+    for obj in objects:
+        if args["insert_null_at_trimmed"]:
+            if (args["feature_folder_1"] is None) or (args["feature_folder_2"]) is None:
+                raise Exception("folders must be specified to insert null columns")
+            obj.insert_null_at_trimmed()
+
     # WRITE README
     fm.write_readme(output_folder, **args)
 
@@ -128,10 +137,10 @@ def main(args=sys.argv[1:]):
 
     if len(aligned_positions)>0:
 
-        # GIVE ALIGNED POSITIONS FOR THE ORIGINAL ALIGNMENTS
-        if all((o.mrf_pos_to_aln_pos is not None) for o in objects):
-            original_positions = get_initial_positions(aligned_positions, {"pos_ref":objects[0].mrf_pos_to_aln_pos, "pos_2":objects[1].mrf_pos_to_aln_pos})
-            fm.write_positions_to_csv(original_positions, output_folder/("aln_original.csv"))
+      #  # GIVE ALIGNED POSITIONS FOR THE ORIGINAL ALIGNMENTS
+      #  if all((o.mrf_pos_to_aln_pos is not None) for o in objects):
+      #      original_positions = get_initial_positions(aligned_positions, {"pos_ref":objects[0].mrf_pos_to_aln_pos, "pos_2":objects[1].mrf_pos_to_aln_pos})
+      #      fm.write_positions_to_csv(original_positions, output_folder/("aln_original.csv"))
 
         # GIVE ALIGNED POSITIONS FOR THE SEQUENCES
         if all((o.mrf_pos_to_seq_pos is not None) for o in objects):

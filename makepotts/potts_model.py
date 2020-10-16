@@ -262,3 +262,23 @@ class Potts_Model:
                 sw+=self.w[i, j, code(x[i]), code(x[j])]
             p+=self.v[i,code(x[i])]+sw-math.log(Zi)
         return p
+
+
+    def insert_null_position_at(self, pos):
+        self.ncol = self.ncol+1
+        self.v = np.concatenate((self.v[:pos],np.zeros((1,21)),self.v[pos:]))
+        new_w = np.zeros((self.ncol,self.ncol,21,21))
+        for i in range(self.ncol-1):
+            for j in range(i+1,self.ncol):
+                if (i==pos) or (j==pos):
+                    new_w[i,j]=np.zeros((21,21))
+                else:
+                    new_w[i,j]=self.w[i-(i>pos),j-(j>pos)]
+                new_w[j,i] = new_w[i,j]
+        self.w = new_w
+
+
+    def insert_null_positions_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length):
+        for pos_in_seq in range(sequence_length):
+            if not pos_in_seq in mrf_pos_to_seq_pos:
+                self.insert_null_position_at(pos_in_seq)

@@ -10,7 +10,7 @@ from tests.resources_manager import *
 from ppalign.__main__ import *
 
 
-class Test_ComPotts_Main(unittest.TestCase):
+class Test_PPalign_Main(unittest.TestCase):
 
     def setUp(self):
         self.output_folder = pathlib.Path(tempfile.mkdtemp())
@@ -65,6 +65,15 @@ class Test_ComPotts_Main(unittest.TestCase):
         ppalign_args = ["--potts_model_file_1", str(self.feature_folder_1/"potts_model.mrf"), "--potts_model_file_2", str(self.feature_folder_1/"potts_model.mrf"), "--output_folder", str(self.output_folder), "--w_percent", str(10)]
         res_ppalign = main(ppalign_args)
         print(res_ppalign)
+
+
+    def test_insert_null(self):
+        ppalign_args = ["--feature_folder_1", str(self.feature_folder_1), "--feature_folder_2", str(self.feature_folder_1), "--output_folder", str(self.output_folder)]
+        res_ppalign = main(ppalign_args)
+        ppalign_args = ["--feature_folder_1", str(self.feature_folder_1), "--feature_folder_2", str(self.feature_folder_1), "--output_folder", str(self.output_folder), "--insert_null_at_trimmed"]
+        res_ppalign_null = main(ppalign_args)
+        assert(res_ppalign_null['infos_solver']['UB']==res_ppalign['infos_solver']['UB'])
+
 
 if __name__=='__main__':
     unittest.main()

@@ -78,6 +78,23 @@ class Test_MakePotts(unittest.TestCase):
         assert(cf.sequence=="MAEIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVRSGKQL")
         assert(cf.potts_model.ncol==62)
 
+    def test_insert_null_position(self):
+        pos=5
+        potts_model = Potts_Model.from_msgpack(pathlib.Path(MRF_1CC8))
+        L = potts_model.ncol
+        potts_model.insert_null_position_at(pos)
+        assert(potts_model.ncol==L+1)
+        assert(potts_model.v.shape==(L+1,21))
+        assert(potts_model.w.shape==(L+1,L+1,21,21))
+        assert(potts_model.v[pos][5]==0)
+        assert(potts_model.w[0,pos][1,7]==0)
+
+    def test_insert_null_positions(self):
+        self.feature_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
+        shutil.copytree(FEATURE_FOLDER, self.feature_folder)
+        cf = Potts_Object.from_folder(self.feature_folder)
+        cf.potts_model.insert_null_positions_to_complete_mrf_pos(cf.mrf_pos_to_seq_pos, len(cf.sequence))
+
 
     #def test_from_file_calling_hhblits_and_evalue_cutoff(self):
     #    cf = Potts_Object.from_files(sequence_file=SEQ_1CC8, database='~/data/uniclust30_2018_08/uniclust30_2018_08', fetch_sequences=True, sequences_fetcher='hhblits', use_evalue_cutoff=True) 
