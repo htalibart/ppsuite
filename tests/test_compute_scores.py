@@ -24,7 +24,7 @@ class Test_Compute_Scores(unittest.TestCase):
     def test_selfscore_no_w(self):
         v_score_function = scalar_product
         w_score_function = scalar_product
-        edges_map = get_edges_map(self.mrf, "")
+        edges_map = get_edges_map(self.mrf, 100)
         selfcomp = compute_selfscore(self.mrf, edges_map, use_v=True, use_w=False)
         aln_dict, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=False)
         UB = infos_solver['UB']
@@ -32,7 +32,7 @@ class Test_Compute_Scores(unittest.TestCase):
 
 
     def test_selfscore_no_v(self):
-        edges_map = get_edges_map(self.mrf, "")
+        edges_map = get_edges_map(self.mrf, 100)
         selfcomp = compute_selfscore(self.mrf, edges_map, use_v=False, use_w=True)
         aln_dict, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_v=False)
         UB = infos_solver['UB']
@@ -42,7 +42,7 @@ class Test_Compute_Scores(unittest.TestCase):
     def test_selfscore(self):
         v_score_function = scalar_product
         w_score_function = scalar_product
-        edges_map = get_edges_map(self.mrf, "")
+        edges_map = get_edges_map(self.mrf, 100)
         selfcomp = compute_selfscore(self.mrf, edges_map, use_v=True, use_w=True)
         aln_dict, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=True)
         UB = infos_solver['UB']
@@ -50,7 +50,7 @@ class Test_Compute_Scores(unittest.TestCase):
 
 
     def test_selfscore_alpha_w(self):
-        edges_map = get_edges_map(self.mrf, "")
+        edges_map = get_edges_map(self.mrf, 100)
         selfcomp_normal = compute_selfscore(self.mrf, edges_map, use_v=False, use_w=True)
         alpha_w = 2
         selfcomp_alpha = compute_selfscore(self.mrf, edges_map, use_v=False, use_w=True, alpha_w=alpha_w)

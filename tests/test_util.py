@@ -32,7 +32,7 @@ class Test_Util(unittest.TestCase):
 
     def test_get_pos_dict_first_seq_to_second_seq_1cc8(self): 
         real_seq = fm.get_first_sequence_in_fasta_file(SEQ_1CC8)
-        pdb_seq = fm.get_sequence_from_pdb_chain(fm.get_pdb_chain('1cc8', PDB_1CC8, chain_id='A'))
+        pdb_seq = fm.get_sequence_from_pdb_file(PDB_1CC8, 'A')
         d = get_pos_first_seq_to_second_seq(real_seq, pdb_seq)
         for pos_in_real_seq in range(len(real_seq)):
             if d[pos_in_real_seq] is not None:
@@ -41,7 +41,7 @@ class Test_Util(unittest.TestCase):
 
     def test_get_pos_dict_first_seq_to_second_seq_5jzr(self): 
         real_seq = fm.get_first_sequence_in_fasta_file(SEQ_5JZR)
-        pdb_seq = fm.get_sequence_from_pdb_chain(fm.get_pdb_chain('5jzr', PDB_5JZR, chain_id='A'))
+        pdb_seq = fm.get_sequence_from_pdb_file(PDB_5JZR, 'A')
         d = get_pos_first_seq_to_second_seq(real_seq, pdb_seq)
         for pos_in_real_seq in range(len(real_seq)):
             if d[pos_in_real_seq] is not None:

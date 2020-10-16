@@ -61,5 +61,10 @@ class Test_ComPotts_Main(unittest.TestCase):
         print(res_ppalign)
 
 
+    def test_perc_w(self):
+        ppalign_args = ["--potts_model_file_1", str(self.feature_folder_1/"potts_model.mrf"), "--potts_model_file_2", str(self.feature_folder_1/"potts_model.mrf"), "--output_folder", str(self.output_folder), "--w_percent", str(10)]
+        res_ppalign = main(ppalign_args)
+        print(res_ppalign)
+
 if __name__=='__main__':
     unittest.main()

@@ -13,7 +13,7 @@ COMPOTTS_CPP_LIBRARY = pkg_resources.resource_filename('ppalign', 'ppalign_solve
 COMPOTTS_SOLVER = ctypes.CDLL(COMPOTTS_CPP_LIBRARY)
 INFINITY = 1000000000
 
-def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, precision_method="arbitrary_1", w_threshold_method="none", use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, gap_open=8, gap_extend=0, sim_min=0.1, offset_v=0, **kwargs):
+def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, gap_open=8, gap_extend=0, sim_min=0.1, offset_v=0, **kwargs):
 
     aln_res_file = fm.get_aln_res_file_name(output_folder)
     info_res_file = fm.get_info_res_file_name(output_folder)
@@ -31,7 +31,7 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     c_vs = [vflat.astype(np.float32).ctypes.data_as(c_float_p) for vflat in v_flats]
 
     if use_w:
-        edges_maps = [get_edges_map(mrf, w_threshold_method) for mrf in mrfs]
+        edges_maps = [get_edges_map(mrf, w_percent) for mrf in mrfs]
         w_flats = [np.ascontiguousarray(mrf.w.flatten()) for mrf in mrfs]
     else:
         edges_maps = [np.zeros((mrf.w.shape[0:2])) for mrf in mrfs]
@@ -39,7 +39,7 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     c_ws = [wflat.astype(np.float32).ctypes.data_as(c_float_p) for wflat in w_flats]
         
     selfcomps = [compute_selfscore(mrf, edges_map, use_v, use_w, alpha_w, offset_v, **kwargs) for mrf, edges_map in zip(mrfs, edges_maps)]
-    epsilon = get_epsilon(precision_method, selfcomps)
+    epsilon = get_epsilon(epsilon_sim, selfcomps)
 
     print("gap open=",gap_open)
 

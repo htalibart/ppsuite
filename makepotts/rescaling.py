@@ -4,8 +4,8 @@ import numpy as np
 from comutils.util import *
 from makepotts.potts_model import *
 
-VECTORIZABLE_FUNCTIONS = ["identity", "original_rescaling", "symmetric_relu_like", "shifted_relu", "threshold_on_wijab", "exponential"]
-USEFUL_KWARGS =  ["alpha_rescaling", "wijab_threshold", "v_rescaling_tau", "w_rescaling_tau", "v_back_to_scale", "w_back_to_scale", "beta_softmax_w"]
+VECTORIZABLE_FUNCTIONS = ["identity", "original_rescaling", "exponential"]
+USEFUL_KWARGS =  ["alpha_rescaling", "v_rescaling_tau", "w_rescaling_tau", "v_back_to_scale", "w_back_to_scale", "beta_softmax_w"]
 
 def get_rescaled_potts_model(potts_model, v_rescaling_function_name, w_rescaling_function_name, use_w=True, **kwargs):
     """ returns a copy of Potts Model @mrf rescaled using @v_rescaled_function_name rescaling function to rescale v and @w_rescaled_function for w if @use_w """
@@ -61,9 +61,6 @@ def identity(x, **kwargs):
 def original_rescaling(x, alpha_rescaling=1, **kwargs):
     return sign_ind(x)*(exp(alpha_rescaling*abs(x))-1)
 
-
-def threshold_on_wijab(x, wijab_threshold=0.05, **kwargs):
-        return x*(abs(x)>=wijab_threshold)
 
 def exponential(x, **kwargs):
     return np.exp(x)

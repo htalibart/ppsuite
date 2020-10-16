@@ -21,18 +21,20 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-gf2', '--guess_folder_2', help=argparse.SUPPRESS, type=pathlib.Path)
     parser.add_argument('-o', '--output_folder', help="Output folder (if not specified : output_ppalign/[DATE]/)", type=pathlib.Path)
 
+
+    # options to pre-process potts models
+    parser.add_argument('--w_percent', help="% couplings considered (wij with lowest norms are set to 0)", default=100, type=float)
+    parser.add_argument('--v_rescaling_function', help="Rescaling function for the v parameters of the Potts model. (default : no rescaling (identity))", default="identity")
+    parser.add_argument('--v_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
+    parser.add_argument('--v_back_to_scale', help="Put v back to old norm after simulate_uniform_pc_on_v", default=False, action='store_true')
+    parser.add_argument('--w_rescaling_function', help="Rescaling function for the w parameters of the Potts model. (default : no rescaling (identity))", default="identity")
+    parser.add_argument('--w_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_w", type=float, default=0.9)
+    parser.add_argument('--beta_softmax_w', help="Beta rescaling parameter to simulate uniform pseudo-counts on w through softmax", type=float, default=2)
+    parser.add_argument('--w_back_to_scale', help="Put w back to old norm after simulate_uniform_pc_on_v", default=False, action='store_true')
+
     # options alignement
     parser.add_argument('-nw', '--no_w', help="Don't use w scores (default : False)", action='store_true')
     parser.add_argument('-nv', '--no_v', help="Don't use v scores (default : False)", action='store_true')
-    parser.add_argument('-wt', '--w_threshold_method', help="w threshold method. Couplings that have a Frobenius norm below the threshold are not considered by ComPotts", default="no_threshold")
-    parser.add_argument('--v_rescaling_function', help="Rescaling function for the v parameters of the Potts model. (default : no rescaling (identity))", default="identity")
-    parser.add_argument('--w_rescaling_function', help="Rescaling function for the w parameters of the Potts model. (default : no rescaling (identity))", default="identity")
-    parser.add_argument('--wijab_threshold', help="If |wijab|<wijab_threshold, wijab is set to 0 if using rescaling function threshold_on_wijab", type=float, default=0)
-    parser.add_argument('--v_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
-    parser.add_argument('--v_back_to_scale', help="Put v back to old norm after simulate_uniform_pc_on_v", default=False, action='store_true')
-    parser.add_argument('--w_back_to_scale', help="Put w back to old norm after simulate_uniform_pc_on_v", default=False, action='store_true')
-    parser.add_argument('--w_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_w", type=float, default=0.9)
-    parser.add_argument('--beta_softmax_w', help="Beta rescaling parameter to simulate uniform pseudo-counts on w through softmax", type=float, default=2)
     parser.add_argument('--alpha_w', help="coefficient before w score", default=1, type=float)
     parser.add_argument('--offset_v', help="score offset for v parameters", default=0, type=float)
     parser.add_argument('--exp', help="scalar product of the exp instead of simple scalar product", action='store_true', default=False)
@@ -44,14 +46,14 @@ def main(args=sys.argv[1:]):
     # solver options
     parser.add_argument('-t', '--t_limit', help="solver : time limit in seconds (default : 36000)", type=float, default=36000)
     parser.add_argument('-lit', '--iter_limit_param', help="solver : nb Lagrangian iterations (default : 1000000000)", type=int, default=1000000000)
-    parser.add_argument('-e', '--precision_method', help="solver : precision method (default : similarity_0.005)", default="similarity_0.005") # TODO documenter toutes les précisions
+    parser.add_argument('--epsilon_sim', help="solver : max 2*(UB-LB)/(s(A,A)+s(B,B)) (default : 0.005)", default=0.005, type=float)
     parser.add_argument('-ga', '--gamma', help="solver : gamma (default : 1.0)", type=float, default=1.0)
     parser.add_argument('-th', '--theta', help="solver : theta (default : 0.9)", type=float, default=0.9)
     parser.add_argument('-stpz', '--stepsize_min', help="solver : stepsize_min (default : 0.000000005)", type=float, default=0.000000005)
     parser.add_argument('-stpm', '--nb_non_increasing_steps_max', help="solver : nb_non_increasing_steps_max (default : 500)", type=int, default=500)
-    parser.add_argument('-sim_min', '--sim_min', help='if similarity score is below sim_min, solver considers that the Potts models are not similar and stops. (default : 0)', type=float, default=0)
+    parser.add_argument('-sim_min', '--sim_min', help='if similarity score is below sim_min, solver considers that the Potts models are not similar and stops. (default : -100)', type=float, default=-100)
 
-    # autres options
+    # other output options
     parser.add_argument('-ali', '--call_aliview', help=argparse.SUPPRESS, action='store_true')
     parser.add_argument('-oaln', '--get_training_sets_fasta_aln', help="Get training sets alignment in a fasta file", action='store_true')
     parser.add_argument('-osaln', '--get_sequences_fasta_aln', help="Get sequences alignment in a fasta file", action='store_true')
