@@ -325,5 +325,5 @@ vizcircos -f 5lqp_feature_folder/ -i 5lqp --chain_id AB -o 5lqp_circos_image.png
 
 ## Acknowledgments
 
-[TODO]
-
+The C++ ILP solver in apurva_ppalign/ was designed by Wohlers, Andonov, Malod-Dognin, Klau and Yanev:
+I. Wohlers, R. Andonov, G.W. Klau. DALIX: optimal DALI protein structure alignment. IEEE/ACM Trans Comput Biol Bioinform. 2013 Jan-Feb;10(1):26-36.
