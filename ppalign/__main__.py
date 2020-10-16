@@ -24,13 +24,13 @@ def main(args=sys.argv[1:]):
 
     # options to pre-process potts models
     parser.add_argument('--w_percent', help="% couplings considered (wij with lowest norms are set to 0)", default=100, type=float)
-    parser.add_argument('--v_rescaling_function', help="Rescaling function for the v parameters of the Potts model. (default : no rescaling (identity))", default="identity")
-    parser.add_argument('--v_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
-    parser.add_argument('--v_back_to_scale', help="Put v back to old norm after simulate_uniform_pc_on_v", default=False, action='store_true')
-    parser.add_argument('--w_rescaling_function', help="Rescaling function for the w parameters of the Potts model. (default : no rescaling (identity))", default="identity")
-    parser.add_argument('--w_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_w", type=float, default=0.9)
-    parser.add_argument('--beta_softmax_w', help="Beta rescaling parameter to simulate uniform pseudo-counts on w through softmax", type=float, default=2)
-    parser.add_argument('--w_back_to_scale', help="Put w back to old norm after simulate_uniform_pc_on_v", default=False, action='store_true')
+    parser.add_argument('--v_rescaling_function', help=argparse.SUPPRESS, default="simulate_uniform_pc_on_v")
+    parser.add_argument('--v_rescaling_tau', help="Tau parameter for field smoothing", type=float, default=0.4)
+    parser.add_argument('--v_back_to_scale', help=argparse.SUPPRESS, default=False, action='store_true')
+    parser.add_argument('--w_rescaling_function', help=argparse.SUPPRESS, default="simulate_uniform_pc_on_w")
+    parser.add_argument('--w_rescaling_tau', help="Tau parameter for coupling smoothing", type=float, default=0.4)
+    parser.add_argument('--beta_softmax_w', help="Softmax base parameter for coupling smoothing", type=float, default=10)
+    parser.add_argument('--w_back_to_scale', help=argparse.SUPPRESS, default=False, action='store_true')
 
     # options alignement
     parser.add_argument('-nw', '--no_w', help="Don't use w scores (default : False)", action='store_true')
@@ -40,8 +40,8 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--exp', help="scalar product of the exp instead of simple scalar product", action='store_true', default=False)
     parser.add_argument('--remove_v0', help="remove background v0", action='store_true', default=False)
     parser.add_argument('--rescale_removed_v0', help="rescale background v0", action='store_true', default=False)
-    parser.add_argument('-go', '--gap_open', help="gap open", default=8, type=float) # gap costs method
-    parser.add_argument('-ge', '--gap_extend', help="gap extend", default=0, type=float) # gap costs method
+    parser.add_argument('-go', '--gap_open', help="gap open", default=14, type=float)
+    parser.add_argument('-ge', '--gap_extend', help="gap extend", default=0, type=float)
 
     # solver options
     parser.add_argument('-t', '--t_limit', help="solver : time limit in seconds (default : 36000)", type=float, default=36000)
