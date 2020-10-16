@@ -89,6 +89,7 @@ class problem_apurva : public problem
         	self2(s2),
         	bound_ub_score(b_ub_score),
         	obj_is_int(is_int)
+		{};
         /**
         * Constructors : create a sub problem of C, using lo1 and up1 as lower and upper limits.
         */
