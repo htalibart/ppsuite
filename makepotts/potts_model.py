@@ -16,9 +16,9 @@ POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff",
 class Potts_Model:
 
     def __init__(self, v, w, **kwargs):
-        self.v = v
+        self.v = v.astype(np.float32)
         self.ncol = len(self.v)
-        self.w = w
+        self.w = w.astype(np.float32)
         if 'name' in kwargs:
             self.name = kwargs['name']
         else:

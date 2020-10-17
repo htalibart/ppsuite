@@ -20,7 +20,6 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
 
     time_start = time.time()
     
-    
     c_float_p = ctypes.POINTER(ctypes.c_float) # defining type for ctypes : pointer to float
 
     # handle v
@@ -49,7 +48,6 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     c_edges_maps = [np.ascontiguousarray(edges_map.flatten(), dtype=np.int32).ctypes.data_as(c_int_p) for edges_map in edges_maps]
 
     score_min = (1/2)*sim_min*sum(selfcomps); 
-
 
     COMPOTTS_SOLVER.call_from_python.argtypes=[c_float_p, c_float_p, c_float_p, c_float_p, ctypes.c_int, ctypes.c_int, c_int_p, c_int_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double]
 

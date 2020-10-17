@@ -830,7 +830,7 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
     int cnt_increas(0);
     int cnt_break(0);
 
-    cout.precision(12); // utilité ??
+    cout.precision(6);
 
     long tic_per_sec = sysconf(_SC_CLK_TCK);
     struct tms start, end;
