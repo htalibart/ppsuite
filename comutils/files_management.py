@@ -255,5 +255,5 @@ def remove_sequences_with_bad_characters_from_fasta_file_and_upper(input_fasta, 
     SeqIO.write(clean_records, output_fasta, 'fasta')
 
 
-
-
+def get_parameters_from_readme_file(readme_file):
+    return json.load(open(str(readme_file)))
