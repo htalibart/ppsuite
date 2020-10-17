@@ -15,8 +15,8 @@ def main():
     parser.add_argument('-j', '--j_index', help="j index", type=int, default=None)
     parser.add_argument('-1', '--start_at_1', help="Start numbering at 1", action='store_true', default=True), 
     parser.add_argument('-0', '--start_at_0', help="Start numbering at 0", action='store_true', default=False), 
-    parser.add_argument('-aln', '--aln_ppalign', help="PPalign output file", type=pathlib.Path, default=None),
-    parser.add_argument('-saln', '--aln_seq_ppalign', help="PPalign output file for sequences)", type=pathlib.Path, default=None),
+    parser.add_argument('-o', '--output_folder', help="PPalign output folder", type=pathlib.Path, default=None),
+    parser.add_argument('-aln', '--visualize_alignment', help="Visualize aligned scores, requires PPalign output folder path (-o option)", action='store_true', default=False), 
     parser.add_argument('-v', '--v_only', help="Only plot vi parameters", action='store_true', default=False), 
     parser.add_argument('-vn', '--v_norms_only', help="Only plot vi norms", action='store_true', default=False), 
     parser.add_argument('-wn', '--w_norms_only', help="Only plot wij norms", action='store_true', default=False), 
@@ -31,12 +31,12 @@ def main():
 
     start_at_1 = args["start_at_1"] and not args["start_at_0"]
 
+    potts_models = [Potts_Model.from_msgpack(potts_model_file) for potts_model_file in args["potts_models"]]
     for feature_folder in args["feature_folders"]:
-        args["potts_models"].append(Potts_Object.from_folder(feature_folder).potts_model_file)
+        potts_models.append(Potts_Object.from_folder(feature_folder).potts_model)
 
     if (args["i_index"] is not None) and (args["j_index"] is not None):
-        for msgpack in args["potts_models"]:
-            mrf = Potts_Model.from_msgpack(msgpack)
+        for mrf in potts_models:
             i = args["i_index"]
             j = args["j_index"]
             if start_at_1:
@@ -45,16 +45,17 @@ def main():
             plot_one_wij(mrf.w[i][j], show_figure=False, alphabet=alphabet)
         plt.show()
     else:
-        if args["aln_seq_ppalign"] is not None:
-            label_dict=fm.get_aligned_positions_dict_from_ppalign_output_file(args["aln_seq_ppalign"])
+        if args["visualize_alignment"]:
+            if args["output_folder"] is None:
+                raise Exception("Requires PPalign output folder path (-o option)")
+            else:
+                params = fm.get_parameters_from_readme_file(args["output_folder"]/"README.txt")
+                potts_models = [get_rescaled_potts_model(pm, **params) for pm in potts_models]
+                label_dict=fm.get_aligned_positions_dict_from_ppalign_output_file(args["output_folder"]/("aln_sequences.csv"))
+                visualize_v_alignment(potts_models, args["output_folder"]/("aln.csv"), start_at_1=start_at_1, show_figure=False, alphabet=alphabet, label_dict=label_dict, **params)
+                visualize_v_w_scores_alignment(potts_models, args["output_folder"]/("aln.csv"), start_at_1=start_at_1, show_figure=False, alphabet=alphabet, label_dict=label_dict, **params)
         else:
-            label_dict=None
-        if args["aln_ppalign"] is not None:
-            visualize_v_alignment_from_files(args["potts_models"], args["aln_ppalign"], start_at_1=start_at_1, show_figure=False, alphabet=alphabet, label_dict=label_dict)
-            visualize_v_w_scores_alignment_from_files(args["potts_models"], args["aln_ppalign"], start_at_1=start_at_1, show_figure=False, alphabet=alphabet, label_dict=label_dict)
-        else:
-            for msgpack in args["potts_models"]:
-                mrf = Potts_Model.from_msgpack(msgpack)
+            for mrf in potts_models:
                 if args["v_only"]:
                     visualize_v_parameters(mrf.v, start_at_1=start_at_1, show_figure=False, alphabet=alphabet)
                 elif args["v_norms_only"]:
