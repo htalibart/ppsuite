@@ -105,10 +105,11 @@ def simulate_uniform_pc_on_wij(w, rescaling_tau=0.5, beta=10, w_back_to_scale=Fa
 
 def simulate_uniform_pc_on_w(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=False, **kwargs):
     resc_w = np.zeros_like(w)
-    for i in range(len(resc_w)):
-        for j in range(len(resc_w)):
+    for i in range(len(resc_w)-1):
+        for j in range(i+1,len(resc_w)):
             resc_w[i,j] = simulate_uniform_pc_on_wij(w[i][j], rescaling_tau=w_rescaling_tau, beta=beta_softmax_w,
                                                             w_back_to_scale=w_back_to_scale)
+            resc_w[j,i]=resc_w[i,j]
     return resc_w
 
 
