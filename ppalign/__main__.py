@@ -111,12 +111,7 @@ def main(args=sys.argv[1:]):
         if args["exp"]:
             obj.potts_model = get_rescaled_potts_model(obj.potts_model, "exponential", "exponential", args["use_w"])
     
-    # REMOVE BACKGROUND IF NEEDED
-    for obj in objects:
-        if args["remove_v0"]:
-            obj.potts_model = get_potts_model_without_v0(obj.potts_model, args["v_rescaling_function"], **args)
-
-
+    
     # INSERT NULL AT TRIMMED
     for obj in objects:
         if args["insert_null_at_trimmed"]:

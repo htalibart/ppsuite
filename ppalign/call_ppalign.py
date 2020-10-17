@@ -13,7 +13,7 @@ COMPOTTS_CPP_LIBRARY = pkg_resources.resource_filename('ppalign', 'ppalign_solve
 COMPOTTS_SOLVER = ctypes.CDLL(COMPOTTS_CPP_LIBRARY)
 INFINITY = 1000000000
 
-def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, gap_open=8, gap_extend=0, sim_min=0.1, offset_v=0, **kwargs):
+def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, gap_open=8, gap_extend=0, sim_min=0.1, offset_v=0, remove_v0=False, **kwargs):
 
     aln_res_file = fm.get_aln_res_file_name(output_folder)
     info_res_file = fm.get_info_res_file_name(output_folder)
@@ -25,7 +25,11 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
 
     # handle v
     if use_v:
-        v_flats = [np.ascontiguousarray(mrf.v.flatten()) for mrf in mrfs]
+        if remove_v0:
+            vs = [mrf.v-np.tile(get_background_v0(**kwargs),(mrf.ncol,1)) for mrf in mrfs]
+        else:
+            vs = [mrf.v for mrf in mrfs]
+        v_flats = [np.ascontiguousarray(v.flatten()) for v in vs]
     else:
         v_flats = [np.ascontiguousarray(np.zeros(mrf.v.shape)).flatten() for mrf in mrfs]
     c_vs = [vflat.astype(np.float32).ctypes.data_as(c_float_p) for vflat in v_flats]
@@ -38,10 +42,8 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
         w_flats = [np.ascontiguousarray(np.zeros(mrf.w.shape)).flatten() for mrf in mrfs]
     c_ws = [wflat.astype(np.float32).ctypes.data_as(c_float_p) for wflat in w_flats]
         
-    selfcomps = [compute_selfscore(mrf, edges_map, use_v, use_w, alpha_w, offset_v, **kwargs) for mrf, edges_map in zip(mrfs, edges_maps)]
+    selfcomps = [compute_selfscore(mrf, edges_map, alpha_w=alpha_w, remove_v0=remove_v0, offset_v=offset_v, use_v=use_v, use_w=use_w, **kwargs) for mrf, edges_map in zip(mrfs, edges_maps)]
     epsilon = get_epsilon(epsilon_sim, selfcomps)
-
-    print("gap open=",gap_open)
 
     c_int_p = ctypes.POINTER(ctypes.c_int)
     c_edges_maps = [np.ascontiguousarray(edges_map.flatten(), dtype=np.int32).ctypes.data_as(c_int_p) for edges_map in edges_maps]

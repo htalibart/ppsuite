@@ -134,3 +134,5 @@ def get_mrf_pos_to_seq_pos(original_first_seq, seq, mrf_pos_to_aln_pos):
     mrf_pos_to_seq_pos = [seq_aln_pos[pos] for pos in mrf_pos_to_aln_pos]
     return mrf_pos_to_seq_pos
 
+
+
