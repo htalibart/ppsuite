@@ -132,19 +132,33 @@ def main(args=sys.argv[1:]):
 
     if len(aligned_positions)>0:
 
-      #  # GIVE ALIGNED POSITIONS FOR THE ORIGINAL ALIGNMENTS
-      #  if all((o.mrf_pos_to_aln_pos is not None) for o in objects):
-      #      original_positions = get_initial_positions(aligned_positions, {"pos_ref":objects[0].mrf_pos_to_aln_pos, "pos_2":objects[1].mrf_pos_to_aln_pos})
-      #      fm.write_positions_to_csv(original_positions, output_folder/("aln_original.csv"))
-
+     
         # GIVE ALIGNED POSITIONS FOR THE SEQUENCES
         if all((o.mrf_pos_to_seq_pos is not None) for o in objects):
-            sequence_positions = get_initial_positions(aligned_positions, {"pos_ref":objects[0].mrf_pos_to_seq_pos, "pos_2":objects[1].mrf_pos_to_seq_pos})
+            if args["insert_null_at_trimmed"]:
+                sequence_positions = aligned_positions
+            else:
+                sequence_positions = get_initial_positions(aligned_positions, {"pos_ref":objects[0].mrf_pos_to_seq_pos, "pos_2":objects[1].mrf_pos_to_seq_pos})
             fm.write_positions_to_csv(sequence_positions, output_folder/("aln_sequences.csv"))
  
         if all((o.sequence is not None) for o in objects) and args["get_sequences_fasta_aln"]:
             output_fasta_file = output_folder/("aligned_sequences.fasta")
             get_seqs_aligned_in_fasta_file(aligned_positions, objects, output_fasta_file)
+
+
+        # BACK TO ORIGINAL MRF POSITIONS
+        if args["insert_null_at_trimmed"]:
+            mrf_aligned_positions = {"pos_ref":[], "pos_2":[]}
+            for pos_in_aln in range(len(aligned_positions["pos_ref"])):
+                pos_dict = {"pos_ref":None, "pos_2":None}
+                for name,obj in zip(["pos_ref","pos_2"],objects):
+                    pos_in_seq = obj.get_seq_pos_to_mrf_pos()[aligned_positions[name][pos_in_aln]]
+                    pos_dict[name] = pos_in_seq
+                if (pos_dict["pos_ref"] is not None) and (pos_dict["pos_2"] is not None):
+                    mrf_aligned_positions[name].append(pos_in_seq)
+            aligned_positions = mrf_aligned_positions
+            fm.write_positions_to_csv(aligned_positions, output_folder/("aln.csv"))
+
 
 
         # ALIGN TRAINING MSAS
