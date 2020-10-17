@@ -11,8 +11,9 @@ def get_background_v0(v_rescaling_function_name="identity", rescale_removed_v0=F
     logf0 = np.log(f0)
     vaa = logf0-(1/len(f0))*np.sum(logf0)
     v0 = np.append(vaa, [0])
+    tiled_v0 = np.tile(v0, (1,1))
     if rescale_removed_v0:
-        v0 = eval(v_rescaling_function_name)(v0,**kwargs)
+        v0 = get_rescaled_parameters(tiled_v0, v_rescaling_function_name, **kwargs)
     return v0
 
 
@@ -28,24 +29,19 @@ def get_edges_map(mrf, w_percent):
     w_threshold = get_w_threshold(mrf, w_percent)
     return 1*(mrf.get_w_norms()>w_threshold)
 
-def get_vi_vk_score(vi, vk, remove_v0, offset_v, v_score_function=scalar_product):
+def get_vi_vk_score(vi, vk, remove_v0=False, offset_v=0, v_score_function=scalar_product, rescale_removed_v0=False, **kwargs):
     if remove_v0:
-        v_bg = get_background_v0()
+        v_bg = get_background_v0(rescale_removed_v0=rescale_removed_v0, **kwargs)
     else:
         v_bg=0
     return v_score_function(vi-v_bg,vk-v_bg)-offset_v
 
-def get_v_score_for_alignment(aligned_potts_models, aligned_positions_dict, remove_v0, offset_v, v_score_function):
-    aligned_pos = list(aligned_positions_dict.values())
-    v_scores = np.array([get_vi_vk_sore(aligned_potts_models[0].v[i],aligned_potts_models[1].v[k], remove_v0, offset_v, v_score_function) for i,k in zip(aligned_pos[0], aligned_pos[1])])
-    return np.sum(v_scores)
 
-
-def compute_v_scores(mrf1, mrf2, v_score_function, offset_v, remove_v0, **kwargs):
+def compute_v_scores(mrf1, mrf2, v_score_function, offset_v, remove_v0, rescale_removed_v0, **kwargs):
     v_scores = np.zeros((mrf1.ncol, mrf2.ncol))
     for i in range(mrf1.ncol):
         for k in range(mrf2.ncol):
-            v_scores[i][k] = get_vi_vk_score(mrf1.v[i], mrf2.v[k], remove_v0, offset_v, v_score_function)
+            v_scores[i][k] = get_vi_vk_score(mrf1.v[i], mrf2.v[k], remove_v0, offset_v, v_score_function, rescale_removed_v0, **kwargs)
     return v_scores
 
 
@@ -98,9 +94,9 @@ def compute_self_w_scores(mrf, edges_map, w_score_function, **kwargs):
     return w_score
 
 
-def compute_selfscore(mrf, edges_map, alpha_w=1, remove_v0=False, offset_v=0, use_v=True, use_w=True, v_score_function=scalar_product, w_score_function=scalar_product, **kwargs):
+def compute_selfscore(mrf, edges_map, alpha_w=1, remove_v0=False, offset_v=0, use_v=True, use_w=True, v_score_function=scalar_product, w_score_function=scalar_product, rescale_removed_v0=False,**kwargs):
     if use_v:
-        v_score = sum([get_vi_vk_score(vi, vi, remove_v0, offset_v, v_score_function=v_score_function) for vi in mrf.v])
+        v_score = sum([get_vi_vk_score(vi, vi, remove_v0, offset_v, v_score_function=v_score_function, rescale_removed_v0=rescale_removed_v0, **kwargs) for vi in mrf.v])
     else:
         v_score = 0
     if use_w:
@@ -111,12 +107,18 @@ def compute_selfscore(mrf, edges_map, alpha_w=1, remove_v0=False, offset_v=0, us
     return selfcomp
 
 
-def get_total_w_score(aligned_potts_models, dict_aligned_pos, w_score_function=scalar_product):
+def get_v_score_for_alignment(aligned_potts_models, aligned_positions_dict, remove_v0, offset_v, v_score_function, rescale_removed_v0=False, **kwargs):
+    aligned_pos = list(aligned_positions_dict.values())
+    v_scores = np.array([get_vi_vk_score(aligned_potts_models[0].v[i],aligned_potts_models[1].v[k], remove_v0, offset_v, v_score_function, rescale_removed_v0=rescale_removed_v0, **kwargs) for i,k in zip(aligned_pos[0], aligned_pos[1])])
+    return np.sum(v_scores)
+
+
+def get_w_score_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_function=scalar_product):
     aligned_pos = list(dict_aligned_pos.values())
     L = len(aligned_pos[0])
     w_scores = np.zeros((L,L))
-    for ind_i in range(L):
-        for ind_j in range(L):
+    for ind_i in range(1,L-1):
+        for ind_j in range(ind_i+1,L):
             w_scores[ind_i,ind_j] = get_wij_wkl_score(aligned_potts_models[0].w[aligned_pos[0][ind_i],aligned_pos[0][ind_j]], aligned_potts_models[1].w[aligned_pos[1][ind_i],aligned_pos[1][ind_j]], w_score_function)
     return np.sum(w_scores)
 
