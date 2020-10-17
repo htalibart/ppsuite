@@ -107,9 +107,15 @@ def compute_selfscore(mrf, edges_map, alpha_w=1, remove_v0=False, offset_v=0, us
     return selfcomp
 
 
-def get_v_score_for_alignment(aligned_potts_models, aligned_positions_dict, remove_v0, offset_v, v_score_function, rescale_removed_v0=False, **kwargs):
+def get_v_scores_for_alignment(aligned_potts_models, aligned_positions_dict, remove_v0, offset_v, v_score_function, rescale_removed_v0=False, **kwargs):
     aligned_pos = list(aligned_positions_dict.values())
     v_scores = np.array([get_vi_vk_score(aligned_potts_models[0].v[i],aligned_potts_models[1].v[k], remove_v0, offset_v, v_score_function, rescale_removed_v0=rescale_removed_v0, **kwargs) for i,k in zip(aligned_pos[0], aligned_pos[1])])
+    return v_scores
+
+
+
+def get_v_score_for_alignment(aligned_potts_models, aligned_positions_dict, remove_v0, offset_v, v_score_function, rescale_removed_v0=False, **kwargs):
+    v_scores = get_v_scores_for_alignment(aligned_potts_models, aligned_positions_dict, remove_v0, offset_v, v_score_function, rescale_removed_v0=False, **kwargs)
     return np.sum(v_scores)
 
 
@@ -117,7 +123,7 @@ def get_w_score_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_fu
     aligned_pos = list(dict_aligned_pos.values())
     L = len(aligned_pos[0])
     w_scores = np.zeros((L,L))
-    for ind_i in range(1,L-1):
+    for ind_i in range(L-1):
         for ind_j in range(ind_i+1,L):
             w_scores[ind_i,ind_j] = get_wij_wkl_score(aligned_potts_models[0].w[aligned_pos[0][ind_i],aligned_pos[0][ind_j]], aligned_potts_models[1].w[aligned_pos[1][ind_i],aligned_pos[1][ind_j]], w_score_function)
     return np.sum(w_scores)
