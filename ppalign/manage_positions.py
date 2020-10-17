@@ -69,7 +69,7 @@ def get_seqs_aligned(aligned_positions, objects, X='X'):
     return seqs_aligned
 
             
-def get_seqs_aligned_in_fasta_file(aligned_positions, objects, output_file, X='X'):
+def get_seqs_aligned_in_fasta_file(aligned_positions, objects, output_file, X='-'):
     """ (positions aligned by solver + objects) -> sequences aligned -> in output_file """
     seqs_aligned = get_seqs_aligned(aligned_positions, objects, X=X)
     seq_records = [SeqRecord(Seq(s, IUPAC.protein), id=o.get_name(), description='') for s,o in zip(seqs_aligned, objects)]
