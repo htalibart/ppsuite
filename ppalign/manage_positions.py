@@ -63,8 +63,6 @@ def aligned_positions_to_aligned_sequences(seq_positions, sequences):
     return seqs_aligned
 
 
-
-
 def get_seqs_aligned(aligned_positions, objects):
     seq_positions = get_alignment_with_gaps(get_seq_positions(aligned_positions, objects))
     return aligned_positions_to_aligned_sequences(seq_positions, [obj.sequence for obj in objects]) 
@@ -89,6 +87,12 @@ def aln_sequences_csv_to_aln_fasta(aln_sequences_file, objects, output_file):
     aligned_positions = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_sequences_file)
     alignment_with_gaps = get_alignment_with_gaps(aligned_positions)
     aligned_sequences = aligned_positions_to_aligned_sequences(alignment_with_gaps, [obj.sequence for obj in objects])
+    seq_records = [SeqRecord(Seq(s, IUPAC.protein), id=o.get_name(), description='') for s,o in zip(aligned_sequences, objects)]
+    with open(str(output_file), 'w') as f:
+        SeqIO.write(seq_records, f, "fasta")
+    print("output can be found at "+str(output_file))
+
+
 
 
 

@@ -22,7 +22,6 @@ class Test_ManagePositions(unittest.TestCase):
         aligned_positions = {"pos_ref":[4,5,7,8,9,10], "pos_2":[0,1,2,3,4,5]}
         alignment_with_gaps = {"pos_ref":[0,1,2,3,4,5,6,7,8,9,10], "pos_2":['-','-','-','-',0,1,'-',2,3,4,5]}
         res = get_alignment_with_gaps(aligned_positions)
-        print(res)
         self.assertEqual(alignment_with_gaps, res)
 
     def test_get_alignment_with_gaps_2(self):
@@ -42,6 +41,14 @@ class Test_ManagePositions(unittest.TestCase):
         alignment_with_gaps = {"pos_ref":[0,1,2,3,'-',4,5,6,7,8,9,10], "pos_2":['-','-','-','-',0,1,2,'-','-',3,4,5]}
         res = get_alignment_with_gaps(aligned_positions)
         self.assertEqual(alignment_with_gaps, res)
+
+
+    def test_aligned_sequences(self):
+        aligned_positions = {"pos_ref":[0,1,3], "pos_2":[0,1,2]}
+        sequences = ["ARND","ARND"]
+        seq_positions = get_alignment_with_gaps(aligned_positions)
+        aligned_sequences = aligned_positions_to_aligned_sequences(seq_positions, sequences)
+        self.assertEqual(aligned_sequences, ["ARND","AR-N"])
 
     def test_get_seqs_aligned(self):
         objs = []
