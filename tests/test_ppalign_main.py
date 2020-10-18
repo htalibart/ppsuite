@@ -21,7 +21,7 @@ class Test_PPalign_Main(unittest.TestCase):
 
     def tearDown(self):
         shutil.rmtree(self.output_folder)
-        shutil.rmtree(self.feature_folder)
+       shutil.rmtree(self.feature_folder)
 
     def test_self_alignment_from_folders(self):
         ppalign_args = ["--feature_folder_1", str(self.feature_folder_1), "--feature_folder_2", str(self.feature_folder_1), "--output_folder", str(self.output_folder), "--get_training_sets_fasta_aln", "--get_sequences_fasta_aln"]
@@ -73,6 +73,14 @@ class Test_PPalign_Main(unittest.TestCase):
         ppalign_args = ["--feature_folder_1", str(self.feature_folder_1), "--feature_folder_2", str(self.feature_folder_1), "--output_folder", str(self.output_folder), "--insert_null_at_trimmed"]
         res_ppalign_null = main(ppalign_args)
         assert(res_ppalign_null['infos_solver']['UB']==res_ppalign['infos_solver']['UB'])
+
+    def test_insert_null_and_remove_v0(self):
+        ppalign_args = ["--feature_folder_1", str(self.feature_folder_1), "--feature_folder_2", str(self.feature_folder_1), "--output_folder", str(self.output_folder), "--remove_v0"]
+        res_ppalign = main(ppalign_args)
+        ppalign_args = ["--feature_folder_1", str(self.feature_folder_1), "--feature_folder_2", str(self.feature_folder_1), "--output_folder", str(self.output_folder), "--insert_null_at_trimmed", "--remove_v0"]
+        res_ppalign_null = main(ppalign_args)
+        assert(res_ppalign_null['infos_solver']['UB']==res_ppalign['infos_solver']['UB'])
+
 
 
 if __name__=='__main__':

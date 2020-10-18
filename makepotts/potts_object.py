@@ -340,7 +340,7 @@ class Potts_Object:
 
     def insert_null_at_trimmed(self, remove_v0=False, **kwargs):
         if remove_v0:
-            v_null = get_background_v0(**kwargs)
+            v_null = np.tile(get_background_v0(**kwargs), (1,1))
         else:
             v_null = np.zeros((1,21)) 
         self.potts_model.insert_null_positions_to_complete_mrf_pos(self.mrf_pos_to_seq_pos, len(self.sequence), v_null=v_null)
