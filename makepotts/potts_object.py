@@ -7,7 +7,7 @@ from comutils.find_cutoff_index import *
 from comutils.blast_utils import *
 
 from ppalign.manage_positions import *
-
+from ppalign.compute_scores import *
 from makepotts.rescaling import *
 from makepotts.potts_model import *
 
