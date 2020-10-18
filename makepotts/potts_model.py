@@ -264,9 +264,9 @@ class Potts_Model:
         return p
 
 
-    def insert_null_position_at(self, pos):
+    def insert_null_position_at(self, pos, v_null):
         self.ncol = self.ncol+1
-        self.v = np.concatenate((self.v[:pos],np.zeros((1,21)),self.v[pos:]))
+        self.v = np.concatenate((self.v[:pos],v_null,self.v[pos:]))
         new_w = np.zeros((self.ncol,self.ncol,21,21))
         for i in range(self.ncol-1):
             for j in range(i+1,self.ncol):
@@ -278,7 +278,7 @@ class Potts_Model:
         self.w = new_w
 
 
-    def insert_null_positions_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length):
+    def insert_null_positions_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, v_null):
         for pos_in_seq in range(sequence_length):
             if not pos_in_seq in mrf_pos_to_seq_pos:
-                self.insert_null_position_at(pos_in_seq)
+                self.insert_null_position_at(pos_in_seq, v_null)

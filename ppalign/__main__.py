@@ -117,7 +117,7 @@ def main(args=sys.argv[1:]):
         if args["insert_null_at_trimmed"]:
             if (args["feature_folder_1"] is None) or (args["feature_folder_2"]) is None:
                 raise Exception("folders must be specified to insert null columns")
-            obj.insert_null_at_trimmed()
+            obj.insert_null_at_trimmed(**args)
 
     # WRITE README
     fm.write_readme(output_folder, **args)

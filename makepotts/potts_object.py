@@ -338,8 +338,12 @@ class Potts_Object:
         return in_seq_not_in_aln
 
 
-    def insert_null_at_trimmed(self):
-        self.potts_model.insert_null_positions_to_complete_mrf_pos(self.mrf_pos_to_seq_pos, len(self.sequence))
+    def insert_null_at_trimmed(self, remove_v0=False, **kwargs):
+        if remove_v0:
+            v_null = get_background_v0(**kwargs)
+        else:
+            v_null = np.zeros((1,21)) 
+        self.potts_model.insert_null_positions_to_complete_mrf_pos(self.mrf_pos_to_seq_pos, len(self.sequence), v_null=v_null)
         #self.mrf_pos_to_seq_pos = [pos for pos in range(len(self.sequence))]
 
 
