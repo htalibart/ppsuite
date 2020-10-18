@@ -7,36 +7,31 @@ from Bio.Alphabet import IUPAC
 import comutils.files_management as fm
 from comutils.util import *
 
-def get_alignment_with_gaps(aligned_positions, X='X'):
-    """ input : dict of lists of aligned positions, output : alignment with gaps and "unknown areas" (symbole @X) """
-    c_names = ["pos_ref", "pos_2"]
-    aligned_positions_with_gaps = {ck:[] for ck in c_names}
-    # positions 0 and before
-    if aligned_positions["pos_ref"][0]==0:
-        aligned_positions_with_gaps["pos_ref"]+=['-']*aligned_positions["pos_2"][0]+[0]
-        aligned_positions_with_gaps["pos_2"]+=list(range(aligned_positions["pos_2"][0]+1))
-    elif aligned_positions["pos_2"][0]==0:
-        aligned_positions_with_gaps["pos_2"]+=['-']*aligned_positions["pos_ref"][0]+[0]
-        aligned_positions_with_gaps["pos_ref"]+=list(range(aligned_positions["pos_ref"][0]+1))
-    else:
-        for ck in c_names:
-            aligned_positions_with_gaps[ck]+=[X,aligned_positions[ck][0]]
-    # positions [1:]
-    for pos_aln in range(1,len(aligned_positions["pos_ref"])):
-        diffs={ck : aligned_positions[ck][pos_aln]-aligned_positions[ck][pos_aln-1] for ck in c_names}
-        if diffs["pos_ref"]==diffs["pos_2"]:
-            for ck in c_names:
-                aligned_positions_with_gaps[ck]+=list(range(aligned_positions[ck][pos_aln-1]+1,aligned_positions[ck][pos_aln]+1))
-        elif diffs["pos_ref"]==1:
-            aligned_positions_with_gaps["pos_ref"]+=['-']*(aligned_positions["pos_2"][pos_aln]-aligned_positions["pos_2"][pos_aln-1]-1)+[aligned_positions["pos_ref"][pos_aln]]
-            aligned_positions_with_gaps["pos_2"]+=list(range(aligned_positions["pos_2"][pos_aln-1]+1,aligned_positions["pos_2"][pos_aln]+1))
-        elif diffs["pos_2"]==1:
-            aligned_positions_with_gaps["pos_2"]+=['-']*(aligned_positions["pos_ref"][pos_aln]-aligned_positions["pos_ref"][pos_aln-1]-1)+[aligned_positions["pos_2"][pos_aln]]
-            aligned_positions_with_gaps["pos_ref"]+=list(range(aligned_positions["pos_ref"][pos_aln-1]+1,aligned_positions["pos_ref"][pos_aln]+1))
-        else:
-            for ck in c_names:
-                aligned_positions_with_gaps[ck]+=[X]+[aligned_positions[ck][pos_aln]]
-    return aligned_positions_with_gaps
+
+def aln_dict_to_tuples_list(aln_dict):
+    tuples_list = []
+    for pos_aln in range(len(aln_dict["pos_ref"])):
+        tuples_list.append((aln_dict["pos_ref"][pos_aln], aln_dict["pos_2"][pos_aln]))
+    return tuples_list
+
+
+def tuples_list_to_aln_dict(tuples_list):
+    return {"pos_ref":[pair[0] for pair in tuples_list], "pos_2":[pair[1] for pair in tuples_list]}
+
+
+def get_alignment_with_gaps(aligned_positions):
+    tuples_list = aln_dict_to_tuples_list(aligned_positions)
+    tuples_list_with_gaps = []
+    previous_pair = (-1,-1)
+    for pair in tuples_list:
+        for pos_in_ref in list(range(previous_pair[0]+1,pair[0])):
+            tuples_list_with_gaps.append((pos_in_ref,'-'))
+        for pos_in_2 in list(range(previous_pair[1]+1,pair[1])):
+            tuples_list_with_gaps.append(('-',pos_in_2))
+        tuples_list_with_gaps.append(pair)
+        previous_pair=pair
+    return tuples_list_to_aln_dict(tuples_list_with_gaps)
+
 
 
 def get_seq_positions(aligned_positions, objects):
@@ -53,47 +48,47 @@ def get_seq_positions(aligned_positions, objects):
     return real_seq_positions_without_none
 
 
-def get_seqs_aligned(aligned_positions, objects, X='X'):
-    """ input : dict of lists of aligned positions + corresponding objects, output : sequences aligned """
+
+def aligned_positions_to_aligned_sequences(seq_positions, sequences):
     c_names = ["pos_ref", "pos_2"]
-    seq_positions = get_alignment_with_gaps(get_seq_positions(aligned_positions, objects), X=X)
     seqs_aligned = ["",""]
     for k in range(2):
         ck = c_names[k]
         for pos in seq_positions[ck]:
-            if (pos=='-') or (pos=='X'):
+            if (pos=='-'):
                 car=pos
             else:
-                car=objects[k].sequence[pos]
+                car=sequences[k][pos]
             seqs_aligned[k]+=car
     return seqs_aligned
 
+
+
+
+def get_seqs_aligned(aligned_positions, objects):
+    seq_positions = get_alignment_with_gaps(get_seq_positions(aligned_positions, objects))
+    return aligned_positions_to_aligned_sequences(seq_positions, [obj.sequence for obj in objects]) 
+
             
-def get_seqs_aligned_in_fasta_file(aligned_positions, objects, output_file, X='-'):
+def get_seqs_aligned_in_fasta_file(aligned_positions, objects, output_file):
     """ (positions aligned by solver + objects) -> sequences aligned -> in output_file """
-    seqs_aligned = get_seqs_aligned(aligned_positions, objects, X=X)
+    seqs_aligned = get_seqs_aligned(aligned_positions, objects)
     seq_records = [SeqRecord(Seq(s, IUPAC.protein), id=o.get_name(), description='') for s,o in zip(seqs_aligned, objects)]
     with open(str(output_file), 'w') as f:
         SeqIO.write(seq_records, f, "fasta")
     print("output can be found at "+str(output_file))
 
 
-def get_seqs_aligned_in_fasta_file_only_aligned_positions(aligned_positions, objects, output_file):
-    """ (positions aligned by solver + objects) -> sequences aligned (only at positions in the train msas) -> in output_file """
-    msas = [list(SeqIO.parse(str(o.aln_train), "fasta")) for o in objects]
-    records = []
-    for k, c_name in zip(range(2), ['pos_ref', 'pos_2']):
-        msa = msas[k]
-        record = msa[0]
-        new_record = record
-        new_seq=""
-        for pos in aligned_positions[c_name]:
-            new_seq+=record[pos]
-        new_record.seq=Seq(new_seq)
-        records.append(new_record)
-    with open(str(output_file), 'w') as f:
-        SeqIO.write(records, f, "fasta")
-    print("output can be found at "+str(output_file))
+
+def aln_csv_to_aln_fasta(aln_file, objects, output_file):
+    get_seqs_aligned_in_fasta_file(fm.get_aligned_positions_dict_from_ppalign_output_file(aln_file), objects, output_file)
+
+
+
+def aln_sequences_csv_to_aln_fasta(aln_sequences_file, objects, output_file):
+    aligned_positions = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_sequences_file)
+    alignment_with_gaps = get_alignment_with_gaps(aligned_positions)
+    aligned_sequences = aligned_positions_to_aligned_sequences(alignment_with_gaps, [obj.sequence for obj in objects])
 
 
 
@@ -107,14 +102,6 @@ def get_pos_aligned_at_pos(aligned_positions_dict, pos):
         print(str(pos)+" is not aligned")
         return None
 
-
-def get_aligned_v_scores(aligned_positions_dict, v_scores):
-    aligned_v_scores = np.zeros(len(aligned_positions_dict['pos_ref']))
-    pos=0
-    for i,k in zip(aligned_positions['pos_ref'], aligned_positions['pos_2']):
-        aligned_v_scores[pos] = v_scores[i][k]
-        pos+=1
-    return aligned_v_scores
 
 
 def get_initial_positions(aligned_positions, mrf_pos_to_initial_pos_dict):
