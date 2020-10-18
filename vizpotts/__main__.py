@@ -5,6 +5,7 @@ from makepotts.potts_object import *
 from vizpotts.vizpotts import *
 from makepotts.potts_model import *
 from comutils import files_management as fm
+from ppalign.manage_positions import *
 
 
 def main():
@@ -15,8 +16,10 @@ def main():
     parser.add_argument('-j', '--j_index', help="j index", type=int, default=None)
     parser.add_argument('-1', '--start_at_1', help="Start numbering at 1", action='store_true', default=True), 
     parser.add_argument('-0', '--start_at_0', help="Start numbering at 0", action='store_true', default=False), 
+    parser.add_argument('-va', '--visualize_alignment', help="Visualize aligned scores, requires PPalign output folder path (-o option) or aln.csv (-aln) and README.txt (--parameters_file)", action='store_true', default=False), 
     parser.add_argument('-o', '--output_folder', help="PPalign output folder", type=pathlib.Path, default=None),
-    parser.add_argument('-aln', '--visualize_alignment', help="Visualize aligned scores, requires PPalign output folder path (-o option)", action='store_true', default=False), 
+    parser.add_argument('-aln', '--aln_file', help="PPalign output csv file (aln.csv)", type=pathlib.Path, default=None), 
+    parser.add_argument('-pf', '--parameters_file', help="PPalign parameters to compute scores (README.txt)", type=pathlib.Path, default=None), 
     parser.add_argument('-v', '--v_only', help="Only plot vi parameters", action='store_true', default=False), 
     parser.add_argument('-vn', '--v_norms_only', help="Only plot vi norms", action='store_true', default=False), 
     parser.add_argument('-wn', '--w_norms_only', help="Only plot wij norms", action='store_true', default=False), 
@@ -32,8 +35,11 @@ def main():
     start_at_1 = args["start_at_1"] and not args["start_at_0"]
 
     potts_models = [Potts_Model.from_msgpack(potts_model_file) for potts_model_file in args["potts_models"]]
+    potts_objects = []
     for feature_folder in args["feature_folders"]:
-        potts_models.append(Potts_Object.from_folder(feature_folder).potts_model)
+        po = Potts_Object.from_folder(feature_folder)
+        potts_objects.append(po)
+        potts_models.append(po.potts_model)
 
     if (args["i_index"] is not None) and (args["j_index"] is not None):
         for mrf in potts_models:
@@ -46,14 +52,32 @@ def main():
         plt.show()
     else:
         if args["visualize_alignment"]:
-            if args["output_folder"] is None:
-                raise Exception("Requires PPalign output folder path (-o option)")
+            if args["aln_file"] is not None:
+                aln_file = args["aln_file"]
+            elif args["output_folder"] is not None:
+                aln_file = args["output_folder"]/"aln.csv"
             else:
+                raise Exception("aln.csv needed (provide aln.csv with -aln option or output folder with -o option)")
+
+            if args["parameters_file"] is not None:
+                params = fm.get_parameters_from_readme_file(args["parameters_file"])
+            elif args["output_folder"] is not None:
                 params = fm.get_parameters_from_readme_file(args["output_folder"]/"README.txt")
-                potts_models = [get_rescaled_potts_model(pm, **params) for pm in potts_models]
-                label_dict=fm.get_aligned_positions_dict_from_ppalign_output_file(args["output_folder"]/("aln_sequences.csv"))
-                visualize_v_alignment(potts_models, args["output_folder"]/("aln.csv"), start_at_1=start_at_1, show_figure=False, alphabet=alphabet, label_dict=label_dict, **params)
-                visualize_v_w_scores_alignment(potts_models, args["output_folder"]/("aln.csv"), start_at_1=start_at_1, show_figure=False, alphabet=alphabet, label_dict=label_dict, **params)
+            else:
+                params = {"v_rescaling_function_name":"identity", "w_rescaling_function_name":"identity"}
+                print("No PPalign parameters were provided, using default")
+
+
+            potts_models = [get_rescaled_potts_model(pm, **params) for pm in potts_models]
+            if len(potts_objects)==2:
+                label_dict = get_seq_positions(fm.get_aligned_positions_dict_from_ppalign_output_file(aln_file), potts_objects)
+                print("labeling with sequences")
+            else:
+                label_dict=None
+                print("labeling with Potts models")
+
+            visualize_v_alignment(potts_models, aln_file, start_at_1=start_at_1, show_figure=False, alphabet=alphabet, label_dict=label_dict, **params)
+            visualize_v_w_scores_alignment(potts_models, aln_file, start_at_1=start_at_1, show_figure=False, alphabet=alphabet, label_dict=label_dict, **params)
         else:
             for mrf in potts_models:
                 if args["v_only"]:
