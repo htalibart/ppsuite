@@ -40,9 +40,13 @@ def get_rescaled_potts_model(potts_model, v_rescaling_function_name, w_rescaling
 #
 
 def get_rescaled_parameters(x, rescaling_function_name, **kwargs):
+    useful_kwargs = {}
+    for key in kwargs.keys():
+        if key in USEFUL_KWARGS:
+            useful_kwargs[key] = kwargs[key]
     if rescaling_function_name in VECTORIZABLE_FUNCTIONS:
         vfunc = np.vectorize(eval(rescaling_function_name))
-        return vfunc(x, **kwargs)
+        return vfunc(x, **useful_kwargs)
     else:
         return eval(rescaling_function_name)(x,**kwargs)
 
