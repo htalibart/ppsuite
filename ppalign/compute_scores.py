@@ -115,7 +115,7 @@ def get_v_scores_for_alignment(aligned_potts_models, aligned_positions_dict, rem
 
 
 def get_v_score_for_alignment(aligned_potts_models, aligned_positions_dict, remove_v0, offset_v, v_score_function, rescale_removed_v0=False, **kwargs):
-    v_scores = get_v_scores_for_alignment(aligned_potts_models, aligned_positions_dict, remove_v0, offset_v, v_score_function, rescale_removed_v0=False, **kwargs)
+    v_scores = get_v_scores_for_alignment(aligned_potts_models, aligned_positions_dict, remove_v0, offset_v, v_score_function, rescale_removed_v0=rescale_removed_v0, **kwargs)
     return np.sum(v_scores)
 
 
