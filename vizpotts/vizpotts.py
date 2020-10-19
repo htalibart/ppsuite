@@ -138,7 +138,7 @@ def visualize_one_sequence(mrf, sequence, **kwargs):
 
 def visualize_v_alignment(aligned_mrfs, aln_res_file, alphabet=ALPHABET, start_at_1=True, tick_space=3, label_dict=None, **kwargs):
     dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
-    aligned_pos = list(dict_aligned_pos.values())
+    aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
     if label_dict is None:
         label_dict = dict_aligned_pos
         label_list = aligned_pos
@@ -158,7 +158,7 @@ def visualize_v_alignment(aligned_mrfs, aln_res_file, alphabet=ALPHABET, start_a
 def visualize_v_w_scores_at_positions(aligned_mrfs, aln_res_file, show_figure=True, tick_space=3, label_dict=None, start_at_1=False, **kwargs):
     dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1]})
-    aligned_pos = list(dict_aligned_pos.values())
+    aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
 
     if label_dict is None:
         label_dict = dict_aligned_pos
@@ -184,7 +184,7 @@ def visualize_v_w_scores_at_positions(aligned_mrfs, aln_res_file, show_figure=Tr
 
 def visualize_v_scores_alignment(aligned_mrfs, aln_res_file, tick_space=3, label_with_ref=False, label_with_2=False, v_score_function=scalar_product, **kwargs):
     dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
-    aligned_pos = list(dict_aligned_pos.values())
+    aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
     plt.figure()
     scores = [v_score_function(aligned_mrfs[0].v[i],aligned_mrfs[1].v[j]) for i,j in zip(aligned_pos[0], aligned_pos[1])]
     if label_with_ref:
@@ -200,7 +200,7 @@ def visualize_v_scores_alignment(aligned_mrfs, aln_res_file, tick_space=3, label
 
 def visualize_w_scores_alignment(aligned_mrfs, aln_res_file, tick_space=3, label_with_ref=False, label_with_2=False, w_score_function=scalar_product, start_at_1=False, **kwargs):
     dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
-    aligned_pos = list(dict_aligned_pos.values())
+    aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
     len_aln = len(aligned_pos[0])
     plt.figure()
     scores = np.zeros((len_aln,len_aln))
@@ -226,7 +226,7 @@ def visualize_w_scores_alignment(aligned_mrfs, aln_res_file, tick_space=3, label
 
 def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True, tick_space=3, v_score_function=scalar_product, w_score_function=scalar_product, alphabet=ALPHABET, start_at_1=False, label_dict=None, **kwargs):
     dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
-    aligned_pos = list(dict_aligned_pos.values())
+    aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
 
     if label_dict is None:
         label_dict = dict_aligned_pos
@@ -285,7 +285,7 @@ def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True,
 
 def visualize_v_norm_alignment(aligned_mrfs, aln_res_file, start_at_1=True, show_figure=True, tick_space=3):
     dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
-    aligned_pos = list(dict_aligned_pos.values())
+    aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
     fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1]})
     for k in range(2):
         v_norms = [euclidean_norm(aligned_mrfs[k].v[i]) for i in aligned_pos[k]]
