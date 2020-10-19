@@ -45,7 +45,7 @@ def compute_v_scores(mrf1, mrf2, v_score_function, offset_v, remove_v0, rescale_
     return v_scores
 
 
-def get_wij_wkl_score(wij, wkl, w_score_function=scalar_product):
+def get_wij_wkl_score(wij, wkl, w_score_function=scalar_product, **kwargs):
     return w_score_function(wij, wkl)
 
 
@@ -119,14 +119,21 @@ def get_v_score_for_alignment(aligned_potts_models, aligned_positions_dict, remo
     return np.sum(v_scores)
 
 
-def get_w_score_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_function=scalar_product):
+
+
+
+def get_w_scores_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_function=scalar_product, **kwargs):
     aligned_pos = list(dict_aligned_pos.values())
     L = len(aligned_pos[0])
     w_scores = np.zeros((L,L))
     for ind_i in range(L-1):
         for ind_j in range(ind_i+1,L):
-            w_scores[ind_i,ind_j] = get_wij_wkl_score(aligned_potts_models[0].w[aligned_pos[0][ind_i],aligned_pos[0][ind_j]], aligned_potts_models[1].w[aligned_pos[1][ind_i],aligned_pos[1][ind_j]], w_score_function)
-    return np.sum(w_scores)
+            w_scores[ind_i,ind_j] = get_wij_wkl_score(aligned_potts_models[0].w[aligned_pos[0][ind_i],aligned_pos[0][ind_j]], aligned_potts_models[1].w[aligned_pos[1][ind_i],aligned_pos[1][ind_j]], w_score_function, **kwargs)
+    return w_scores
+
+
+def get_w_score_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_function=scalar_product, **kwargs):
+   return np.sum(get_w_scores_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_function=w_score_function, **kwargs))
 
 
 def get_total_gap_cost(ad, gap_open):

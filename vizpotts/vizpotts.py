@@ -168,7 +168,7 @@ def visualize_v_w_scores_at_positions(aligned_mrfs, aln_res_file, show_figure=Tr
 
     xticklabels = ['('+str(label_list[0][k]+start_at_1)+','+str(label_list[1][k]+start_at_1)+')' if (k%tick_space==0) else " " for k in range(len(aligned_pos[0]))]
 
-    v_scores = get_v_scores_for_alignment(aligned_potts_models, aligned_positions_dict, **kwargs)
+    v_scores = get_v_scores_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)
     sns.heatmap([v_scores], yticklabels=['v'], xticklabels=[], cmap="RdBu", ax=ax[0], center=0)
 
     w_scores_sums = [sum([get_wij_wkl_score(aligned_mrfs[0].w[i][j],aligned_mrfs[1].w[k][l], **kwargs) for j,l in zip(aligned_pos[0], aligned_pos[1])]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
@@ -252,15 +252,12 @@ def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True,
 
 
     # v scores alignment
-    v_scores = [v_score_function(aligned_mrfs[0].v[i],aligned_mrfs[1].v[j]) for i,j in zip(aligned_pos[0], aligned_pos[1])]
+    v_scores = get_v_scores_for_alignment(aligned_mrfs, dict_aligned_pos, v_score_function=v_score_function, **kwargs)
     sns.heatmap([v_scores], xticklabels=[], yticklabels=['v'], cmap="RdBu", center=0, ax=ax[1])
     #ax[2].tick_params(labelsize='xx-small')
 
     # w scores
-    w_scores = np.zeros((len_aln,len_aln))
-    for ind_i in range(len_aln):
-        for ind_j in range(len_aln):
-                w_scores[ind_i,ind_j] = w_score_function(aligned_mrfs[0].w[aligned_pos[0][ind_i],aligned_pos[0][ind_j]], aligned_mrfs[1].w[aligned_pos[1][ind_i],aligned_pos[1][ind_j]])
+    w_scores = get_w_scores_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)
     xticklabels = [(label_list[0][k]+start_at_1,label_list[1][k]+start_at_1) for k in range(len(aligned_pos[0]))]
     xticklabels = [xi if (i%tick_space==0) else " " for i, xi in enumerate(xticklabels)]
     yticklabels=xticklabels
@@ -269,7 +266,7 @@ def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True,
 
 
     # w scores contributions
-    w_scores_sums = [sum([w_score_function(aligned_mrfs[0].w[i][j],aligned_mrfs[1].w[k][l]) for j,l in zip(aligned_pos[0], aligned_pos[1])]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
+    w_scores_sums = [sum([get_wij_wkl_score(aligned_mrfs[0].w[i][j],aligned_mrfs[1].w[k][l], w_score_function=w_score_function, **kwargs) for j,l in zip(aligned_pos[0], aligned_pos[1])]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
     sns.heatmap([w_scores_sums], yticklabels=['w'], xticklabels=xticklabels, cmap="RdBu", ax=ax[3], center=0)
     ax[3].tick_params(labelsize='x-small')
 
