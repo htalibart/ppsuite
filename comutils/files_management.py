@@ -36,7 +36,7 @@ def get_infos_solver_dict_from_ppalign_output_file(infos_res_file):
 
 def create_seq_fasta(seq, fastaseq_file, seq_name="Billy"):
     """ crée un fichier fasta de nom @fastaseq_file avec la séquence @seq dedans, et retourne le nom de la séquence """
-    with open(fastaseq_file, 'w') as of:
+    with open(str(fastaseq_file), 'w') as of:
         of.write(">"+seq_name+"\n")
         of.write(seq+"\n")
     return seq_name
