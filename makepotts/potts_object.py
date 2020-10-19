@@ -1,6 +1,7 @@
 import uuid
 import sys
 import argparse
+import copy
 
 from comutils.tool_wrapper import *
 from comutils.find_cutoff_index import *
@@ -338,13 +339,33 @@ class Potts_Object:
         return in_seq_not_in_aln
 
 
-    def insert_null_at_trimmed(self, remove_v0=False, **kwargs):
+    def insert_null_at_trimmed(self, remove_v0=False, change_mrf_pos_to_seq_pos=False, **kwargs):
         if remove_v0:
             v_null = np.tile(get_background_v0(**kwargs), (1,1))
         else:
             v_null = np.zeros((1,21)) 
         self.potts_model.insert_null_positions_to_complete_mrf_pos(self.mrf_pos_to_seq_pos, len(self.sequence), v_null=v_null)
-        #self.mrf_pos_to_seq_pos = [pos for pos in range(len(self.sequence))]
+        if change_mrf_pos_to_seq_pos:
+            self.mrf_pos_to_seq_pos = [pos for pos in range(len(self.sequence))]
+
+
+    def to_folder(self, output_folder):
+        if not output_folder.is_dir():
+            output_folder.mkdir()
+        self.potts_model.to_msgpack(output_folder/"potts_model.mrf")
+        fm.copy(self.aln_original, output_folder/"aln_original.fasta")
+        fm.copy(self.aln_train, output_folder/"aln_train.fasta")
+        fm.create_seq_fasta(self.sequence, output_folder/"sequence.fasta", seq_name=self.get_name())
+        fm.write_list_to_csv(self.mrf_pos_to_seq_pos, output_folder/"mrf_pos_to_seq_pos.csv")
+
+
+    def copy_with_null_positions(self, output_folder, remove_v0=False, **kwargs):
+        object_copy = copy.deepcopy(self)
+        object_copy.insert_null_at_trimmed(remove_v0=remove_v0, change_mrf_pos_to_seq_pos=True, **kwargs)
+        object_copy.to_folder(output_folder)
+        return object_copy
+
+        
 
 
 def main(args=sys.argv[1:]):
