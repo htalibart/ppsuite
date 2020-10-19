@@ -34,7 +34,7 @@ def get_alignment_with_gaps(aligned_positions):
 
 
 
-def get_seq_positions(aligned_positions, objects):
+def get_seq_positions_from_aln_dict(aligned_positions, objects):
     """ input : dict of lists of positions aligned by solver, output : dict of lists of positions in the original sequence """
     real_seq_positions = {}
     c_names = ['pos_ref', 'pos_2']

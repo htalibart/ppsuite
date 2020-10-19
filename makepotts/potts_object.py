@@ -78,11 +78,11 @@ class Potts_Object:
         try:
             feature.mrf_pos_to_aln_pos = fm.get_list_from_csv(feature_folder/"mrf_pos_to_aln_pos.csv") # mrf_pos_to_aln_pos[i] = position in original_aln corresponding to position i in Potts model
         except Exception as e:
-            feature.mrf_pos_to_seq_pos = None
+            feature.mrf_pos_to_aln_pos = None
 
         if (feature.potts_model is not None):
             feature.potts_model = get_rescaled_potts_model(feature.potts_model, v_rescaling_function, w_rescaling_function, use_w=use_w, **kwargs)
-
+        
         return feature
 
 

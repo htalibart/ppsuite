@@ -70,7 +70,7 @@ def main():
 
             potts_models = [get_rescaled_potts_model(pm, **params) for pm in potts_models]
             if len(potts_objects)==2:
-                label_dict = get_seq_positions(fm.get_aligned_positions_dict_from_ppalign_output_file(aln_file), potts_objects)
+                label_dict = get_seq_positions_from_aln_dict(fm.get_aligned_positions_dict_from_ppalign_output_file(aln_file), potts_objects)
                 print("labeling with sequences")
             else:
                 label_dict=None
