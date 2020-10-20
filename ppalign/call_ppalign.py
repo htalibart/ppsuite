@@ -14,6 +14,9 @@ COMPOTTS_SOLVER = ctypes.CDLL(COMPOTTS_CPP_LIBRARY)
 INFINITY = 1000000000
 
 def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, gap_open=8, gap_extend=0, sim_min=0.1, offset_v=0, remove_v0=False, **kwargs):
+    
+    if not output_folder.is_dir():
+        fm.create_folder(output_folder)
 
     aln_res_file = fm.get_aln_res_file_name(output_folder)
     info_res_file = fm.get_info_res_file_name(output_folder)
