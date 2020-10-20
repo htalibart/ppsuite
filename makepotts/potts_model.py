@@ -95,10 +95,8 @@ class Potts_Model:
 
 
     @classmethod
-    def from_sequence_file_to_one_hot(cls, seq_file, **kwargs):
+    def from_sequence_to_one_hot(cls, seq, seq_file=None, **kwargs):
         """ one hot encoding """
-        fm.check_if_file_ok(seq_file)
-        seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         x = code_whole_seq(seq)
         v = np.zeros((len(x),q))
         for i in range(len(x)):
@@ -110,6 +108,13 @@ class Potts_Model:
         obj = cls.from_parameters(v, w, **kwargs)
         obj.training_set = seq_file
         return obj
+
+    @classmethod
+    def from_sequence_file_to_one_hot(cls, seq_file, **kwargs):
+        """ one hot encoding """
+        fm.check_if_file_ok(seq_file)
+        seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
+        return cls.from_sequence_to_one_hot(seq, seq_file=seq_file, **kwargs)
 
 
 
@@ -265,7 +270,7 @@ class Potts_Model:
         return p
 
 
-    def insert_null_position_at(self, pos, v_null):
+    def insert_null_position_at(self, pos, v_null=np.zeros((1,21))):
         self.ncol = self.ncol+1
         self.v = np.concatenate((self.v[:pos],v_null,self.v[pos:]))
         new_w = np.zeros((self.ncol,self.ncol,21,21))
@@ -279,7 +284,7 @@ class Potts_Model:
         self.w = new_w
 
 
-    def insert_null_positions_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, v_null):
+    def insert_null_positions_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, v_null=np.zeros((1,21))):
         for pos_in_seq in range(sequence_length):
             if not pos_in_seq in mrf_pos_to_seq_pos:
                 self.insert_null_position_at(pos_in_seq, v_null)
