@@ -41,6 +41,17 @@ def main():
         potts_objects.append(po)
         potts_models.append(po.potts_model)
 
+
+    if args["alignment_readme"] is not None:
+        params = fm.get_parameters_from_readme_file(args["alignment_readme"])
+    elif args["alignment_folder"] is not None:
+        params = fm.get_parameters_from_readme_file(args["alignment_folder"]/"README.txt")
+    else:
+        params = {"v_rescaling_function_name":"identity", "w_rescaling_function_name":"identity"}
+        print("No PPalign parameters were provided, using default")
+    potts_models = [get_rescaled_potts_model(pm, **params) for pm in potts_models]
+
+
     if (args["i_index"] is not None) and (args["j_index"] is not None):
         for mrf in potts_models:
             i = args["i_index"]
@@ -59,16 +70,7 @@ def main():
             else:
                 raise Exception("aln.csv needed (provide aln.csv with -aln option or output folder with -o option)")
 
-            if args["alignment_readme"] is not None:
-                params = fm.get_parameters_from_readme_file(args["alignment_readme"])
-            elif args["alignment_folder"] is not None:
-                params = fm.get_parameters_from_readme_file(args["alignment_folder"]/"README.txt")
-            else:
-                params = {"v_rescaling_function_name":"identity", "w_rescaling_function_name":"identity"}
-                print("No PPalign parameters were provided, using default")
 
-
-            potts_models = [get_rescaled_potts_model(pm, **params) for pm in potts_models]
             if len(potts_objects)==2:
                 label_dict = get_seq_positions_from_aln_dict(fm.get_aligned_positions_dict_from_ppalign_output_file(aln_file), potts_objects)
                 print("labeling with sequences")
