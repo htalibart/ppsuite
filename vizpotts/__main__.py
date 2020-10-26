@@ -78,7 +78,7 @@ def main():
                 label_dict=None
                 print("labeling with Potts models")
 
-            visualize_v_alignment(potts_models, aln_file, start_at_1=start_at_1, show_figure=False, alphabet=alphabet, label_dict=label_dict, **params)
+            visualize_v_alignment_with_scalar_product(potts_models, aln_file, start_at_1=start_at_1, show_figure=False, alphabet=alphabet, label_dict=label_dict, **params)
             visualize_v_w_scores_alignment(potts_models, aln_file, start_at_1=start_at_1, show_figure=False, alphabet=alphabet, label_dict=label_dict, **params)
         else:
             for mrf in potts_models:

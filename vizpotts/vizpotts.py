@@ -154,6 +154,34 @@ def visualize_v_alignment(aligned_mrfs, aln_res_file, alphabet=ALPHABET, start_a
     end_visual(**kwargs)
    
 
+def visualize_v_alignment_with_scalar_product(aligned_mrfs, aln_res_file, alphabet=ALPHABET, start_at_1=True, tick_space=3, label_dict=None, **kwargs):
+    dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
+    aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
+    if label_dict is None:
+        label_dict = dict_aligned_pos
+        label_list = aligned_pos
+    else:
+        label_list = list(label_dict.values())
+
+    fig, ax = plt.subplots(nrows=3, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1,1]})
+    for k in range(2):
+        v = get_reordered_v(aligned_mrfs[k].v[aligned_pos[k],:], alphabet)
+        xticklabels = [str(label_list[k][i]+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
+        sns.heatmap(np.transpose(v), yticklabels=alphabet, xticklabels=xticklabels, cmap="RdBu", ax=ax[k], center=0)
+        ax[k].tick_params(labelsize='xx-small')
+    len_aln = len(aligned_pos[0])
+    len_v = len(aligned_mrfs[0].v[0])
+    letter_v_scores = np.zeros((len_aln, len_v))
+    for ind_i in range(len_aln):
+        for a in range(len_v):
+            letter_v_scores[ind_i][a] = aligned_mrfs[0].v[aligned_pos[0][ind_i]][a]*aligned_mrfs[1].v[aligned_pos[1][ind_i]][a]
+    v = get_reordered_v(letter_v_scores, alphabet)
+    xticklabels = []
+    sns.heatmap(np.transpose(v), yticklabels=alphabet, xticklabels=xticklabels, cmap="RdBu", ax=ax[2], center=0)
+    ax[2].tick_params(labelsize='xx-small')
+    end_visual(**kwargs)
+
+
 
 def visualize_v_w_scores_at_positions(aligned_mrfs, aln_res_file, show_figure=True, tick_space=3, label_dict=None, start_at_1=False, **kwargs):
     dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
@@ -239,7 +267,7 @@ def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True,
 
     fig, ax = plt.subplots(nrows=4, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1,6,1]})
 
-    # v alignment : sqrt(vi(a)*vk(a))
+    # v alignment : vi(a)*vk(a)
     len_v = len(aligned_mrfs[0].v[0])
     letter_v_scores = np.zeros((len_aln, len_v))
     for ind_i in range(len_aln):
