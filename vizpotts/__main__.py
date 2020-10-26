@@ -17,7 +17,7 @@ def main():
     parser.add_argument('-1', '--start_at_1', help="Start numbering at 1", action='store_true', default=True), 
     parser.add_argument('-0', '--start_at_0', help="Start numbering at 0", action='store_true', default=False), 
     parser.add_argument('-va', '--visualize_alignment', help="Visualize aligned scores, requires PPalign output folder path (-o option) or aln.csv (-aln) and README.txt (--parameters_file)", action='store_true', default=False), 
-    parser.add_argument('-o', '--output_folder', help="PPalign output folder", type=pathlib.Path, default=None),
+    parser.add_argument('-af', '--alignment_folder', help="PPalign output folder", type=pathlib.Path, default=None),
     parser.add_argument('-aln', '--aln_file', help="PPalign output csv file (aln.csv)", type=pathlib.Path, default=None), 
     parser.add_argument('-pf', '--parameters_file', help="PPalign parameters to compute scores (README.txt)", type=pathlib.Path, default=None), 
     parser.add_argument('-v', '--v_only', help="Only plot vi parameters", action='store_true', default=False), 
