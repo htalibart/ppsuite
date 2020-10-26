@@ -107,7 +107,7 @@ def compute_selfscore(mrf, edges_map, alpha_w=1, remove_v0=False, offset_v=0, us
     return selfcomp
 
 
-def get_v_scores_for_alignment(aligned_potts_models, aligned_positions_dict, remove_v0, offset_v, v_score_function, rescale_removed_v0=False, **kwargs):
+def get_v_scores_for_alignment(aligned_potts_models, aligned_positions_dict, remove_v0=False, offset_v=0, v_score_function=scalar_product, rescale_removed_v0=False, **kwargs):
     aligned_pos = [aligned_positions_dict["pos_ref"],aligned_positions_dict["pos_2"]]
     v_scores = np.array([get_vi_vk_score(aligned_potts_models[0].v[i],aligned_potts_models[1].v[k], remove_v0, offset_v, v_score_function, rescale_removed_v0=rescale_removed_v0, **kwargs) for i,k in zip(aligned_pos[0], aligned_pos[1])])
     return v_scores
