@@ -134,7 +134,7 @@ def get_w_score_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_fu
    return 0.5*np.sum(get_w_scores_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_function=w_score_function, **kwargs))
 
 
-def get_total_gap_cost(ad, gap_open):
+def get_total_gap_cost(ad, gap_open, **kwargs):
     gap_cost=0
     in_gap=True
     for pos_in_aln in range(1,len(ad["pos_ref"])):
@@ -146,3 +146,7 @@ def get_total_gap_cost(ad, gap_open):
             if ((ad["pos_ref"][pos_in_aln]-ad["pos_ref"][pos_in_aln-1]==1) and (ad["pos_2"][pos_in_aln]-ad["pos_2"][pos_in_aln-1]==1)):
                 in_gap=False
     return gap_cost
+
+
+def get_score_for_alignment(aligned_potts_models, aligned_positions_dict, alpha_w, **kwargs):
+    return get_v_score_for_alignment(aligned_potts_models, aligned_positions_dict, **kwargs) + alpha_w * get_w_score_for_alignment(aligned_potts_models, aligned_positions_dict, **kwargs) - get_total_gap_cost(aligned_positions_dict, **kwargs)
