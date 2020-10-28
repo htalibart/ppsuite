@@ -154,7 +154,7 @@ def visualize_v_alignment(aligned_mrfs, aln_res_file, alphabet=ALPHABET, start_a
     end_visual(**kwargs)
    
 
-def visualize_v_alignment_with_scalar_product(aligned_mrfs, aln_res_file, alphabet=ALPHABET, start_at_1=True, tick_space=3, label_dict=None, **kwargs):
+def visualize_v_alignment_with_scalar_product(aligned_mrfs, aln_res_file, alphabet=ALPHABET, start_at_1=True, tick_space=3, label_dict=None, v_score_function=scalar_product, **kwargs):
     dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
     aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
     if label_dict is None:
@@ -163,12 +163,16 @@ def visualize_v_alignment_with_scalar_product(aligned_mrfs, aln_res_file, alphab
     else:
         label_list = list(label_dict.values())
 
-    fig, ax = plt.subplots(nrows=3, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1,1]})
+    fig, ax = plt.subplots(nrows=4, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1,1,1]})
+
+    # vi alignment
     for k in range(2):
         v = get_reordered_v(aligned_mrfs[k].v[aligned_pos[k],:], alphabet)
         xticklabels = [str(label_list[k][i]+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
         sns.heatmap(np.transpose(v), yticklabels=alphabet, xticklabels=xticklabels, cmap="RdBu", ax=ax[k], center=0)
         ax[k].tick_params(labelsize='xx-small')
+
+    # vi*vk
     len_aln = len(aligned_pos[0])
     len_v = len(aligned_mrfs[0].v[0])
     letter_v_scores = np.zeros((len_aln, len_v))
@@ -179,6 +183,12 @@ def visualize_v_alignment_with_scalar_product(aligned_mrfs, aln_res_file, alphab
     xticklabels = []
     sns.heatmap(np.transpose(v), yticklabels=alphabet, xticklabels=xticklabels, cmap="RdBu", ax=ax[2], center=0)
     ax[2].tick_params(labelsize='xx-small')
+
+    # v scores
+    v_scores = get_v_scores_for_alignment(aligned_mrfs, dict_aligned_pos, v_score_function=v_score_function, **kwargs)
+    sns.heatmap([v_scores], xticklabels=[], yticklabels=['v'], cmap="RdBu", center=0, ax=ax[3])
+
+
     end_visual(**kwargs)
 
 
