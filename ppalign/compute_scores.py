@@ -134,19 +134,24 @@ def get_w_score_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_fu
    return 0.5*np.sum(get_w_scores_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_function=w_score_function, **kwargs))
 
 
-def get_total_gap_cost(ad, gap_open, **kwargs):
+def get_total_gap_cost(ad, gap_open, sequence_lengths, **kwargs):
     gap_cost=0
-    in_gap=True
-    for pos_in_aln in range(1,len(ad["pos_ref"])):
-        if not in_gap:
-            if ((ad["pos_ref"][pos_in_aln]-ad["pos_ref"][pos_in_aln-1]>1) or (ad["pos_2"][pos_in_aln]-ad["pos_2"][pos_in_aln-1]>1)):
-                in_gap=True
-                gap_cost+=gap_open
-        else:
-            if ((ad["pos_ref"][pos_in_aln]-ad["pos_ref"][pos_in_aln-1]==1) and (ad["pos_2"][pos_in_aln]-ad["pos_2"][pos_in_aln-1]==1)):
-                in_gap=False
+    for counter, pos_type in enumerate(["pos_ref", "pos_2"]):
+        in_gap=False
+        previous_aln_pos=-1
+        for pos_in_aln in range(len(ad[pos_type])):
+            if not in_gap:
+                if ad[pos_type][pos_in_aln]-previous_aln_pos>1:
+                    in_gap=True
+                    gap_cost+=gap_open
+            else:
+                if ad[pos_type][pos_in_aln]-previous_aln_pos==1:
+                    in_gap=False
+            previous_aln_pos = ad[pos_type][pos_in_aln]
+        if ad[pos_type][-1]<(sequence_lengths[counter]-1):
+            gap_cost+=gap_open
     return gap_cost
 
 
 def get_score_for_alignment(aligned_potts_models, aligned_positions_dict, alpha_w, **kwargs):
-    return get_v_score_for_alignment(aligned_potts_models, aligned_positions_dict, **kwargs) + alpha_w * get_w_score_for_alignment(aligned_potts_models, aligned_positions_dict, **kwargs) - get_total_gap_cost(aligned_positions_dict, **kwargs)
+    return get_v_score_for_alignment(aligned_potts_models, aligned_positions_dict, **kwargs) + alpha_w * get_w_score_for_alignment(aligned_potts_models, aligned_positions_dict, **kwargs) - get_total_gap_cost(aligned_positions_dict, sequence_lengths=[mrf.ncol for mrf in aligned_potts_models], **kwargs)

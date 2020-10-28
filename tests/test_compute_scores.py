@@ -63,9 +63,10 @@ class Test_Compute_Scores(unittest.TestCase):
 
     def test_get_gap_cost(self):
         gap_open=14
-        assert(get_total_gap_cost({"pos_ref":[4,5,7,8,9,10], "pos_2":[0,1,2,3,4,5]}, gap_open)==gap_open)
-        assert(get_total_gap_cost({"pos_ref":[4,5,7,8,10], "pos_2":[0,1,2,3,5]}, gap_open)==2*gap_open)
-        assert(get_total_gap_cost({"pos_ref":[4,5,7,8,9], "pos_2":[0,1,2,3,4]}, gap_open)==gap_open)
+        assert(get_total_gap_cost({"pos_ref":[4,5,7,8,9,10], "pos_2":[0,1,2,3,4,5]}, gap_open, [11,6])==2*gap_open)
+        assert(get_total_gap_cost({"pos_ref":[4,5,7,8,9,10], "pos_2":[0,1,2,3,4,5]}, gap_open, [11,7])==3*gap_open)
+        assert(get_total_gap_cost({"pos_ref":[4,5,7,8,10], "pos_2":[0,1,2,3,5]}, gap_open, [11,6])==4*gap_open)
+        assert(get_total_gap_cost({"pos_ref":[4,5,7,8,9], "pos_2":[0,1,2,3,4]}, gap_open, [10,5])==2*gap_open)
 
 
     def test_get_total_score(self):
