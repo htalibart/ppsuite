@@ -7,48 +7,36 @@ from makepotts.potts_model import *
 VECTORIZABLE_FUNCTIONS = ["identity", "original_rescaling", "exponential"]
 USEFUL_KWARGS =  ["alpha_rescaling", "v_rescaling_tau", "w_rescaling_tau", "v_back_to_scale", "w_back_to_scale", "beta_softmax_w"]
 
-def get_rescaled_potts_model(potts_model, v_rescaling_function_name, w_rescaling_function_name, use_w=True, **kwargs):
+def get_rescaled_potts_model(potts_model, v_rescaling_function, w_rescaling_function, use_w=True, **kwargs):
     """ returns a copy of Potts Model @mrf rescaled using @v_rescaled_function_name rescaling function to rescale v and @w_rescaled_function for w if @use_w """
     useful_kwargs = {}
     for key in kwargs.keys():
         if key in USEFUL_KWARGS:
             useful_kwargs[key] = kwargs[key]
-    if (v_rescaling_function_name=="identity") and (w_rescaling_function_name=="identity"):
+    if (v_rescaling_function=="identity") and (w_rescaling_function=="identity"):
         return potts_model
     else:
         print("rescaling Potts model")
-        t_v = get_rescaled_parameters(potts_model.v, v_rescaling_function_name, **useful_kwargs)
+        t_v = get_rescaled_parameters(potts_model.v, v_rescaling_function, **useful_kwargs)
         t_v[:,20]=0 # keep gap parameter to 0
         if use_w:
-            t_w = get_rescaled_parameters(potts_model.w, w_rescaling_function_name, **useful_kwargs)
+            t_w = get_rescaled_parameters(potts_model.w, w_rescaling_function, **useful_kwargs)
         else:
             t_w = np.zeros_like(potts_model.w)
-        return Potts_Model.from_parameters(t_v, t_w, name=potts_model.name+'_'+v_rescaling_function_name+'_'+w_rescaling_function_name)
+        return Potts_Model.from_parameters(t_v, t_w, name=potts_model.name+'_'+v_rescaling_function+'_'+w_rescaling_function)
 
 
-#def get_potts_model_without_v0(potts_model, v_rescaling_function_name, rescale_removed_v0=False, **kwargs):
-#    useful_kwargs = {}
-#    for key in kwargs.keys():
-#        if key in USEFUL_KWARGS:
-#            useful_kwargs[key] = kwargs[key]
-#    v0 = get_background_v0()
-#    tiled_v0 = np.tile(v0, (len(potts_model.v),1))
-#    if not rescale_removed_v0:
-#        v_rescaling_function_name="identity"
-#    t_v = potts_model.v-get_rescaled_parameters(tiled_v0, v_rescaling_function_name, **useful_kwargs)
-#    return Potts_Model.from_parameters(t_v, potts_model.w, name=potts_model.name+'_without_v0')
-#
 
-def get_rescaled_parameters(x, rescaling_function_name, **kwargs):
+def get_rescaled_parameters(x, rescaling_function, **kwargs):
     useful_kwargs = {}
     for key in kwargs.keys():
         if key in USEFUL_KWARGS:
             useful_kwargs[key] = kwargs[key]
-    if rescaling_function_name in VECTORIZABLE_FUNCTIONS:
-        vfunc = np.vectorize(eval(rescaling_function_name))
+    if rescaling_function in VECTORIZABLE_FUNCTIONS:
+        vfunc = np.vectorize(eval(rescaling_function))
         return vfunc(x, **useful_kwargs)
     else:
-        return eval(rescaling_function_name)(x,**kwargs)
+        return eval(rescaling_function)(x,**kwargs)
 
 
 def identity(x, **kwargs):

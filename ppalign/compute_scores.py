@@ -6,14 +6,14 @@ import math
 from numpy import linalg as LA
 
 
-def get_background_v0(v_rescaling_function_name="identity", rescale_removed_v0=False, **kwargs):
+def get_background_v0(v_rescaling_function, rescale_removed_v0=False, **kwargs):
     f0 = np.array(AA_BACKGROUND_FREQUENCIES)
     logf0 = np.log(f0)
     vaa = logf0-(1/len(f0))*np.sum(logf0)
     v0 = np.append(vaa, [0])
     tiled_v0 = np.tile(v0, (1,1))
     if rescale_removed_v0:
-        v0 = get_rescaled_parameters(tiled_v0, v_rescaling_function_name, **kwargs)
+        v0 = get_rescaled_parameters(tiled_v0, v_rescaling_function, **kwargs)
     return v0
 
 

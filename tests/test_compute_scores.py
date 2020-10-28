@@ -57,7 +57,7 @@ class Test_Compute_Scores(unittest.TestCase):
         assert(selfcomp_alpha==alpha_w*selfcomp_normal)
 
     def test_background_v0(self):
-        v0 = get_background_v0()
+        v0 = get_background_v0("identity")
         assert(sum(v0)<0.00001)
 
 
@@ -66,6 +66,15 @@ class Test_Compute_Scores(unittest.TestCase):
         assert(get_total_gap_cost({"pos_ref":[4,5,7,8,9,10], "pos_2":[0,1,2,3,4,5]}, gap_open)==gap_open)
         assert(get_total_gap_cost({"pos_ref":[4,5,7,8,10], "pos_2":[0,1,2,3,5]}, gap_open)==2*gap_open)
         assert(get_total_gap_cost({"pos_ref":[4,5,7,8,9], "pos_2":[0,1,2,3,4]}, gap_open)==gap_open)
+
+
+    def test_get_total_score(self):
+        params = {'alpha_w':1, 'remove_v0':True, 'offset_v':1, 'gap_open':10, 'v_rescaling_function':'identity'}
+        aln_dict, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=False, **params)
+        LB = infos_solver['LB']
+        total_score = get_score_for_alignment([self.mrf, self.mrf], aln_dict, **params)
+        assert((LB-total_score)<0.1)
+
 
 
 

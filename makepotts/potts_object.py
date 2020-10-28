@@ -276,7 +276,7 @@ class Potts_Object:
 
         if (insert_null_at_trimmed) and (potts_model is not None):
             if v_null_is_v0:
-                v_null = np.tile(get_background_v0(**kwargs), (1,1))
+                v_null = np.tile(get_background_v0(v_rescaling_function, **kwargs), (1,1))
             else:
                 v_null = np.zeros((1,21)) 
             potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_seq_pos, len(seq), v_null=v_null)

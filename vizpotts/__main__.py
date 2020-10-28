@@ -47,7 +47,7 @@ def main():
     elif args["alignment_folder"] is not None:
         params = fm.get_parameters_from_readme_file(args["alignment_folder"]/"README.txt")
     else:
-        params = {"v_rescaling_function_name":"identity", "w_rescaling_function_name":"identity"}
+        params = {"v_rescaling_function":"identity", "w_rescaling_function":"identity"}
         print("No PPalign parameters were provided, using default")
     potts_models = [get_rescaled_potts_model(pm, **params) for pm in potts_models]
 

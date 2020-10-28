@@ -257,6 +257,4 @@ def remove_sequences_with_bad_characters_from_fasta_file_and_upper(input_fasta, 
 
 def get_parameters_from_readme_file(readme_file):
     params = json.load(open(str(readme_file)))
-    params["v_rescaling_function_name"]=params["v_rescaling_function"]
-    params["w_rescaling_function_name"]=params["w_rescaling_function"]
     return params
