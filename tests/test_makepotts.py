@@ -95,6 +95,11 @@ class Test_MakePotts(unittest.TestCase):
         cf = Potts_Object.from_folder(self.feature_folder)
         cf.potts_model.insert_null_positions_to_complete_mrf_pos(cf.mrf_pos_to_seq_pos, len(cf.sequence))
 
+    def test_makepotts_with_null_positions(self):
+        cf = Potts_Object.from_files(self.feature_folder, aln_file=A3M_1CC8, insert_null_at_trimmed=True)
+        assert(cf.potts_model.ncol==len(cf.sequence))
+
+
 
     #def test_from_file_calling_hhblits_and_evalue_cutoff(self):
     #    cf = Potts_Object.from_files(sequence_file=SEQ_1CC8, database='~/data/uniclust30_2018_08/uniclust30_2018_08', fetch_sequences=True, sequences_fetcher='hhblits', use_evalue_cutoff=True) 

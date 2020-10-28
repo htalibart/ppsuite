@@ -89,7 +89,7 @@ class Potts_Object:
 
 
     @classmethod
-    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_single_count=1, reg_lambda_pair_factor=0.2, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, keep_tmp_files=False, max_potts_model_length=250, **kwargs):
+    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_single_count=1, reg_lambda_pair_factor=0.2, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, keep_tmp_files=False, max_potts_model_length=250, insert_null_at_trimmed=False, v_null_is_v0=True, **kwargs):
 
         # ALIGNMENT FOLDER
         if feature_folder is None:
@@ -251,6 +251,8 @@ class Potts_Object:
             potts_model.to_msgpack(potts_model_file)
 
 
+            
+
 
         # IF NO ALN, NO MRF_POS_TO_ALN_POS
         if aln_original is None:
@@ -270,6 +272,18 @@ class Potts_Object:
             mrf_pos_to_seq_pos = mrf_pos_to_aln_pos
         else:
             mrf_pos_to_seq_pos = None
+
+
+        if (insert_null_at_trimmed) and (potts_model is not None):
+            if v_null_is_v0:
+                v_null = np.tile(get_background_v0(**kwargs), (1,1))
+            else:
+                v_null = np.zeros((1,21)) 
+            potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_seq_pos, len(seq), v_null=v_null)
+            mrf_pos_to_seq_pos = [pos for pos in range(len(seq))]
+            if (potts_model_file is not None):
+                potts_model.to_msgpack(potts_model_file)
+
 
         if mrf_pos_to_seq_pos is not None:
             fm.write_list_to_csv(mrf_pos_to_seq_pos, feature_folder/"mrf_pos_to_seq_pos.csv")
@@ -409,6 +423,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--w_rescaling_function', help="Rescaling function for the w parameters of the Potts model. (default : no rescaling (identity))", default="identity")
     parser.add_argument('--v_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
     parser.add_argument('-nw', '--dont_use_w', help="Speed up computations if we are not interested in w parameters (not recommended)", action='store_true', default=False)
+    parser.add_argument('--insert_null_at_trimmed', help="Insert background parameters at positions trimmed by trimal", action='store_true', default=False)
 
     # CCMpredPy options
     parser.add_argument('--pc_submat', help="CCMpred : Use substitution matrix single pseudocounts instead of uniform (default : False)", default=False, action='store_true')
