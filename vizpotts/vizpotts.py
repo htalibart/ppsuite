@@ -275,7 +275,7 @@ def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True,
 
     len_aln = len(aligned_pos[0])
 
-    fig, ax = plt.subplots(nrows=4, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1,6,1]})
+    fig, ax = plt.subplots(nrows=4, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1,1,6]})
 
     # v alignment : vi(a)*vk(a)
     len_v = len(aligned_mrfs[0].v[0])
@@ -294,23 +294,25 @@ def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True,
     sns.heatmap([v_scores], xticklabels=[], yticklabels=['v'], cmap="RdBu", center=0, ax=ax[1])
     #ax[2].tick_params(labelsize='xx-small')
 
+    # w scores contributions
+    w_scores_sums = [sum([get_wij_wkl_score(aligned_mrfs[0].w[i][j],aligned_mrfs[1].w[k][l], w_score_function=w_score_function, **kwargs) for j,l in zip(aligned_pos[0], aligned_pos[1])]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
+    sns.heatmap([w_scores_sums], yticklabels=['w'], xticklabels=[], cmap="RdBu", ax=ax[2], center=0)
+    ax[2].tick_params(labelsize='x-small')
+
+
     # w scores
     w_scores = get_w_scores_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)
     xticklabels = [(label_list[0][k]+start_at_1,label_list[1][k]+start_at_1) for k in range(len(aligned_pos[0]))]
     xticklabels = [xi if (i%tick_space==0) else " " for i, xi in enumerate(xticklabels)]
     yticklabels=xticklabels
-    sns.heatmap(w_scores, xticklabels=[], yticklabels=yticklabels, cmap="RdBu", center=0, ax=ax[2])
-    ax[2].tick_params(labelsize='x-small')
-
-
-    # w scores contributions
-    w_scores_sums = [sum([get_wij_wkl_score(aligned_mrfs[0].w[i][j],aligned_mrfs[1].w[k][l], w_score_function=w_score_function, **kwargs) for j,l in zip(aligned_pos[0], aligned_pos[1])]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
-    sns.heatmap([w_scores_sums], yticklabels=['w'], xticklabels=xticklabels, cmap="RdBu", ax=ax[3], center=0)
+    sns.heatmap(w_scores, xticklabels=xticklabels, yticklabels=yticklabels, cmap="RdBu", center=0, ax=ax[3])
     ax[3].tick_params(labelsize='x-small')
 
 
+
     # print scores
-    text="total PPalign score : "+"{:4.4f}".format(get_score_for_alignment(aligned_mrfs, dict_aligned_pos, alpha_w=alpha_w, **kwargs))+"\npositional score : "+"{:4.4f}".format(get_v_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+"\ncoupling score : "+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+" x "+str(alpha_w)+"="+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)*alpha_w)+"\ngap cost : "+str(get_total_gap_cost(dict_aligned_pos, kwargs["gap_open"]))+"\nnb positions aligned : "+str(len_aln)
+    #text="total PPalign score : "+"{:4.4f}".format(get_score_for_alignment(aligned_mrfs, dict_aligned_pos, alpha_w=alpha_w, **kwargs))+"\npositional score : "+"{:4.4f}".format(get_v_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+"\ncoupling score : "+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+" x "+str(alpha_w)+"="+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)*alpha_w)+"\ngap cost : "+str(get_total_gap_cost(dict_aligned_pos, kwargs["gap_open"]))+"\nnb positions aligned : "+str(len_aln)
+    text="positional score : "+"{:4.4f}".format(get_v_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+"\ncoupling score : "+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+" x "+str(alpha_w)+"="+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)*alpha_w)+"\nnb positions aligned : "+str(len_aln)
     plt.gca()
     plt.subplots_adjust(bottom=0.5)
     plt.figtext(0.05,0.01, text, fontsize=10, va="bottom", ha="left")
