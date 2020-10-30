@@ -119,10 +119,8 @@ class Potts_Model:
 
 
     @classmethod
-    def from_sequence_file_with_submat(cls, seq_file, tau=0.5, **kwargs):
+    def from_sequence_with_submat(cls, seq, seq_file=None, tau=0.5, **kwargs):
         """ substitution matrix pseudocounts """
-        fm.check_if_file_ok(seq_file)
-        seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
         x = code_whole_seq(seq)
         v = np.zeros((len(x), q))
         v = np.zeros((len(x),q))
@@ -143,6 +141,15 @@ class Potts_Model:
         obj = cls.from_parameters(v, w, **kwargs)
         obj.training_set = seq_file
         return obj
+
+
+
+    @classmethod
+    def from_sequence_file_with_submat(cls, seq_file, tau=0.5, **kwargs):
+        """ substitution matrix pseudocounts """
+        fm.check_if_file_ok(seq_file)
+        seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
+        return cls.from_sequence_with_submat(seq, seq_file, **kwargs)
 
 
     @classmethod
