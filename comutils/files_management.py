@@ -243,16 +243,16 @@ def remove_positions_with_gaps_in_first_sequence(input_fasta, output_fasta):
     clean_aln = Align.MultipleSeqAlignment(aln[:,first_pos:first_pos+1])
     for pos in good_positions[1:]:
         clean_aln+=aln[:,pos:pos+1]
-    AlignIO.write(clean_aln, output_fasta, 'fasta')
+    AlignIO.write(clean_aln, str(output_fasta), 'fasta')
     return output_fasta
 
 def remove_sequences_with_bad_characters_from_fasta_file_and_upper(input_fasta, output_fasta, bad_characters=['J','U','Z','B','O','X']):
-    all_records = list(SeqIO.parse(input_fasta, 'fasta'))
+    all_records = list(SeqIO.parse(str(input_fasta), 'fasta'))
     clean_records = []
     for record in all_records:
         if not any(bad_character in str(record.seq).upper() for bad_character in bad_characters):
             clean_records.append(record.upper())
-    SeqIO.write(clean_records, output_fasta, 'fasta')
+    SeqIO.write(clean_records, str(output_fasta), 'fasta')
 
 
 def get_parameters_from_readme_file(readme_file):
