@@ -63,6 +63,13 @@ def aligned_positions_to_aligned_sequences(seq_positions, sequences):
     return seqs_aligned
 
 
+def get_seq_positions(aligned_positions, objects):
+    seq_positions = {}
+    seq_positions['pos_ref'] = objects[0].get_seq_positions(aligned_positions['pos_ref'])
+    seq_positions['pos_2'] = objects[1].get_seq_positions(aligned_positions['pos_2'])
+    return seq_positions
+
+
 def get_seqs_aligned(aligned_positions, objects):
     seq_positions = get_alignment_with_gaps(get_seq_positions(aligned_positions, objects))
     return aligned_positions_to_aligned_sequences(seq_positions, [obj.sequence for obj in objects]) 
@@ -91,9 +98,6 @@ def aln_sequences_csv_to_aln_fasta(aln_sequences_file, objects, output_file):
     with open(str(output_file), 'w') as f:
         SeqIO.write(seq_records, f, "fasta")
     print("output can be found at "+str(output_file))
-
-
-
 
 
 
