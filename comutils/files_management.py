@@ -26,8 +26,19 @@ def get_aln_res_file_name(output_folder):
 
 def get_aligned_positions_dict_from_ppalign_output_file(aln_res_file):
     check_if_file_ok(aln_res_file)
-    df = pd.read_csv(aln_res_file)
-    return df.to_dict('list') 
+    with open(aln_res_file, 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        header = next(csv_reader)
+        aln_dict = {name:[] for name in header}
+        for row in csv_reader:
+            for k in range(2):
+                try:
+                    value = int(row[k])
+                except Exception as e:
+                    value = None
+                aln_dict[header[k]].append(value)
+    assert(len(aln_dict['pos_ref'])==len(aln_dict['pos_2']))
+    return aln_dict
 
 def get_infos_solver_dict_from_ppalign_output_file(infos_res_file):
     df = pd.read_csv(infos_res_file)

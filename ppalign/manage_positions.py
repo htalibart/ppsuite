@@ -112,7 +112,8 @@ def aln_sequences_csv_to_aln_fasta(aln_sequences_file, objects, output_file):
 
 def aln_sequences_csv_to_aln_fasta_using_sequences_only(aln_sequences_file, sequence_files, output_file):
     aligned_positions = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_sequences_file)
-    alignment_with_gaps = get_alignment_with_gaps(aligned_positions)
+    aligned_positions_without_None = remove_None_positions(aligned_positions)
+    alignment_with_gaps = get_alignment_with_gaps(aligned_positions_without_None)
     records = [list(SeqIO.parse(seq_file, 'fasta'))[0] for seq_file in sequence_files]
     aligned_sequences = aligned_positions_to_aligned_sequences(alignment_with_gaps, [str(rec.seq) for rec in records])
     seq_records = [SeqRecord(Seq(s, IUPAC.protein), id=rec.id, description='') for s,rec in zip(aligned_sequences, records)]
