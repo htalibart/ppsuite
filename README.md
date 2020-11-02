@@ -111,7 +111,7 @@ Optionally, you can also use the visualization tools to see what it looks like.
 
 You can visualize the Potts model with VizPotts
 ```
-vizpotts -f my_1cc8_potts_folder/
+vizpotts -pf my_1cc8_potts_folder/
 ```
 
 <img src="tests/examples/output_examples/1cc8_potts_model.png" width="800">
@@ -278,7 +278,7 @@ vizpotts -p potts_model_1.mrf potts_model_2.mrf potts_model_3.mrf
 
 or
 ```
-vizpotts -p potts_model_folder_1 potts_model_folder_2 potts_model_folder_3
+vizpotts -pf potts_model_folder_1 potts_model_folder_2 potts_model_folder_3
 ```
 
 
@@ -291,7 +291,7 @@ You can specify whether for you positions start at 0 or at 1 with option --start
 
 * visualizing the fields parameters v of two Potts models aligned by PPalign :
 ```
-vizpotts -f potts_model_folder_1 potts_model_folder_2 -aln ppalign_aln_output/aln.csv
+vizpotts -pf potts_model_folder_1 potts_model_folder_2 -aln ppalign_aln_output/aln.csv
 ```
 
 
