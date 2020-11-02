@@ -74,6 +74,14 @@ class Potts_Object:
         except Exception as e:
             feature.mrf_pos_to_seq_pos = None
 
+        feature.aln_pos_to_seq_pos=None
+        try:
+            feature.aln_pos_to_seq_pos = fm.get_list_from_csv(feature_folder/"aln_pos_to_seq_pos.csv") # aln_pos_to_aln_pos[i] = position in sequence corresponding to position i in original MSA
+        except Exception as e:
+            feature.aln_pos_to_seq_pos = None
+
+
+
         feature.mrf_pos_to_aln_pos=None
         try:
             feature.mrf_pos_to_aln_pos = fm.get_list_from_csv(feature_folder/"mrf_pos_to_aln_pos.csv") # mrf_pos_to_aln_pos[i] = position in original_aln corresponding to position i in Potts model
@@ -269,13 +277,16 @@ class Potts_Object:
             original_first_seq = fm.get_first_sequence_in_fasta_file(aln_original)
             seq = fm.get_first_sequence_in_fasta_file(sequence_file)
             mrf_pos_to_seq_pos = get_mrf_pos_to_seq_pos(original_first_seq, seq, mrf_pos_to_aln_pos)
+            aln_pos_to_seq_pos = get_pos_first_seq_to_second_seq(original_first_seq, seq) 
         elif aln_original is not None:
             seq = fm.get_first_sequence_in_fasta_file(aln_original)
             seq_name = fm.get_first_sequence_name(aln_original)
             fm.create_seq_fasta(seq, feature_folder/"sequence.fasta", seq_name=seq_name)
             mrf_pos_to_seq_pos = mrf_pos_to_aln_pos
+            aln_pos_to_seq_pos = [pos for pos in range(len(seq))]
         else:
             mrf_pos_to_seq_pos = None
+            aln_pos_to_seq_pos = None
 
 
         if (insert_null_at_trimmed) and (potts_model is not None):
@@ -283,8 +294,9 @@ class Potts_Object:
                 v_null = np.tile(get_background_v0(v_rescaling_function, **kwargs), (1,1))
             else:
                 v_null = np.zeros((1,21)) 
-            potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_seq_pos, len(seq), v_null=v_null)
-            mrf_pos_to_seq_pos = [pos for pos in range(len(seq))]
+            potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_aln_pos, len(seq), v_null=v_null)
+            mrf_pos_to_seq_pos = aln_pos_to_seq_pos
+            mrf_pos_to_aln_pos = [pos for pos in range(fm.get_nb_columns_in_alignment(aln_original))]
             if (potts_model_file is not None):
                 potts_model.to_msgpack(potts_model_file)
 
@@ -294,6 +306,9 @@ class Potts_Object:
 
         if mrf_pos_to_aln_pos is not None:
             fm.write_list_to_csv(mrf_pos_to_aln_pos, feature_folder/"mrf_pos_to_aln_pos.csv")
+
+        if aln_pos_to_seq_pos is not None:
+            fm.write_list_to_csv(aln_pos_to_seq_pos, feature_folder/"aln_pos_to_seq_pos.csv")
 
 
         if potts_model_file is not None:
@@ -357,14 +372,15 @@ class Potts_Object:
         return in_seq_not_in_aln
 
 
-    def insert_null_at_trimmed(self, remove_v0=False, change_mrf_pos_to_seq_pos=False, **kwargs):
+    def insert_null_at_trimmed(self, remove_v0=False, change_mrf_pos_lists=False, **kwargs):
         if remove_v0:
             v_null = np.tile(get_background_v0(**kwargs), (1,1))
         else:
             v_null = np.zeros((1,21)) 
-        self.potts_model.insert_null_positions_to_complete_mrf_pos(self.mrf_pos_to_seq_pos, len(self.sequence), v_null=v_null)
-        if change_mrf_pos_to_seq_pos:
-            self.mrf_pos_to_seq_pos = [pos for pos in range(len(self.sequence))]
+        self.potts_model.insert_null_positions_to_complete_mrf_pos(self.mrf_pos_to_aln_pos, len(self.sequence), v_null=v_null)
+        if change_mrf_pos_lists:
+            self.mrf_pos_to_seq_pos = aln_pos_to_seq_pos
+            self.mrf_pos_to_aln_pos = [pos for pos in range(fm.get_nb_columns_in_alignment(aln_original))]
 
 
     def to_folder(self, output_folder):
@@ -375,11 +391,13 @@ class Potts_Object:
         fm.copy(self.aln_train, output_folder/"aln_train.fasta")
         fm.create_seq_fasta(self.sequence, output_folder/"sequence.fasta", seq_name=self.get_name())
         fm.write_list_to_csv(self.mrf_pos_to_seq_pos, output_folder/"mrf_pos_to_seq_pos.csv")
+        fm.write_list_to_csv(self.mrf_pos_to_aln_pos, output_folder/"mrf_pos_to_aln_pos.csv")
+        fm.write_list_to_csv(self.aln_pos_to_seq_pos, output_folder/"aln_pos_to_seq_pos.csv")
 
 
     def copy_with_null_positions(self, output_folder, remove_v0=False, **kwargs):
         object_copy = copy.deepcopy(self)
-        object_copy.insert_null_at_trimmed(remove_v0=remove_v0, change_mrf_pos_to_seq_pos=True, **kwargs)
+        object_copy.insert_null_at_trimmed(remove_v0=remove_v0, change_mrf_pos_lists=True, **kwargs)
         object_copy.to_folder(output_folder)
         return object_copy
 

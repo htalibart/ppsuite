@@ -55,7 +55,7 @@ def main(args=sys.argv[1:]):
 
     # other output options
     parser.add_argument('-ali', '--call_aliview', help=argparse.SUPPRESS, action='store_true')
-    parser.add_argument('-oaln', '--get_training_sets_fasta_aln', help="Get training sets alignment in a fasta file", action='store_true')
+    #parser.add_argument('-oaln', '--get_training_sets_fasta_aln', help="Get training sets alignment in a fasta file", action='store_true')
     parser.add_argument('-osaln', '--get_sequences_fasta_aln', help="Get sequences alignment in a fasta file", action='store_true')
 
     args = vars(parser.parse_args(args))
@@ -153,13 +153,13 @@ def main(args=sys.argv[1:]):
 
 
         # ALIGN TRAINING MSAS
-        if all((o.aln_train is not None) for o in objects) and args["get_training_sets_fasta_aln"]:
-            output_msa = output_folder/("aligned_training_sets.fasta")
-            get_msas_aligned(aligned_positions, [o.aln_train for o in objects], output_msa)
-            if args["call_aliview"]:
-                cmd = "aliview "+str(output_msa)
-                subprocess.Popen(cmd, shell=True).wait()
-
+#        if all((o.aln_train is not None) for o in objects) and args["get_training_sets_fasta_aln"]:
+#            output_msa = output_folder/("aligned_training_sets.fasta")
+#            get_msas_aligned(aligned_positions, [o.aln_train for o in objects], output_msa)
+#            if args["call_aliview"]:
+#                cmd = "aliview "+str(output_msa)
+#                subprocess.Popen(cmd, shell=True).wait()
+#
         # REMOVE TEMPORARY FOLDERS
         for temp_folder in temp_folders: 
             if temp_folder.is_dir():

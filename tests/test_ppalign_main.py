@@ -24,7 +24,7 @@ class Test_PPalign_Main(unittest.TestCase):
         shutil.rmtree(self.feature_folder)
 
     def test_self_alignment_from_folders(self):
-        ppalign_args = ["--feature_folder_1", str(self.feature_folder_1), "--feature_folder_2", str(self.feature_folder_1), "--output_folder", str(self.output_folder), "--get_training_sets_fasta_aln", "--get_sequences_fasta_aln"]
+        ppalign_args = ["--feature_folder_1", str(self.feature_folder_1), "--feature_folder_2", str(self.feature_folder_1), "--output_folder", str(self.output_folder), "--get_sequences_fasta_aln"]
         res_ppalign = main(ppalign_args)
         assert(res_ppalign['infos_solver']['UB']==res_ppalign['infos_solver']['selfcomp1'])
 

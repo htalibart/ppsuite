@@ -70,8 +70,19 @@ def get_seq_positions(aligned_positions, objects):
     return seq_positions
 
 
+def remove_None_positions(positions_dict):
+    new_positions_dict = {'pos_ref':[], 'pos_2':[]}
+    for pos_aln in range(len(positions_dict['pos_ref'])):
+        if (positions_dict['pos_ref'][pos_aln] is not None) and (positions_dict['pos_2'][pos_aln]) is not None:
+            new_positions_dict['pos_ref'].append(positions_dict['pos_ref'][pos_aln])
+            new_positions_dict['pos_2'].append(positions_dict['pos_2'][pos_aln])
+    return new_positions_dict
+
+
 def get_seqs_aligned(aligned_positions, objects):
-    seq_positions = get_alignment_with_gaps(get_seq_positions(aligned_positions, objects))
+    seq_positions_from_objects = get_seq_positions(aligned_positions, objects)
+    seq_positions_without_None = remove_None_positions(seq_positions_from_objects)
+    seq_positions = get_alignment_with_gaps(seq_positions_without_None)
     return aligned_positions_to_aligned_sequences(seq_positions, [obj.sequence for obj in objects]) 
 
             
