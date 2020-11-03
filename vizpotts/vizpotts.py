@@ -262,7 +262,7 @@ def visualize_w_scores_alignment(aligned_mrfs, aln_res_file, tick_space=3, label
     end_visual(**kwargs)
     
 
-def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True, tick_space=3, v_score_function=scalar_product, w_score_function=scalar_product, alpha_w=1, alphabet=ALPHABET, start_at_1=False, label_dict=None, **kwargs):
+def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True, tick_space=3, v_score_function=scalar_product, w_score_function=scalar_product, alpha_w=1, alphabet=ALPHABET, start_at_1=False, label_dict=None, print_text=True, **kwargs):
     dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
     aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
 
@@ -311,11 +311,12 @@ def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True,
 
 
     # print scores
-    text="total PPalign score : "+"{:4.4f}".format(get_score_for_alignment(aligned_mrfs, dict_aligned_pos, alpha_w=alpha_w, **kwargs))+"\npositional score : "+"{:4.4f}".format(get_v_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+"\ncoupling score : "+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+" x "+str(alpha_w)+"="+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)*alpha_w)+"\ngap cost : "+str(get_total_gap_cost(dict_aligned_pos, sequence_lengths=[mrf.ncol for mrf in aligned_mrfs], gap_open=kwargs["gap_open"]))+"\nnb positions aligned : "+str(len_aln)
-    #text="positional score : "+"{:4.4f}".format(get_v_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+"\ncoupling score : "+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+" x "+str(alpha_w)+"="+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)*alpha_w)+"\nnb positions aligned : "+str(len_aln)
-    plt.gca()
-    plt.subplots_adjust(bottom=0.5)
-    plt.figtext(0.05,0.01, text, fontsize=10, va="bottom", ha="left")
+    if print_text:
+        text="total PPalign score : "+"{:4.4f}".format(get_score_for_alignment(aligned_mrfs, dict_aligned_pos, alpha_w=alpha_w, **kwargs))+"\npositional score : "+"{:4.4f}".format(get_v_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+"\ncoupling score : "+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+" x "+str(alpha_w)+"="+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)*alpha_w)+"\ngap cost : "+str(get_total_gap_cost(dict_aligned_pos, sequence_lengths=[mrf.ncol for mrf in aligned_mrfs], gap_open=kwargs["gap_open"]))+"\nnb positions aligned : "+str(len_aln)
+        #text="positional score : "+"{:4.4f}".format(get_v_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+"\ncoupling score : "+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs))+" x "+str(alpha_w)+"="+"{:4.4f}".format(get_w_score_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)*alpha_w)+"\nnb positions aligned : "+str(len_aln)
+        plt.gca()
+        plt.subplots_adjust(bottom=0.5)
+        plt.figtext(0.05,0.01, text, fontsize=10, va="bottom", ha="left")
 
     plt.tight_layout()
     plt.subplots_adjust(wspace=0, hspace=0)
