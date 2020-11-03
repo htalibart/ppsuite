@@ -26,7 +26,7 @@ def get_aln_res_file_name(output_folder):
 
 def get_aligned_positions_dict_from_ppalign_output_file(aln_res_file):
     check_if_file_ok(aln_res_file)
-    with open(aln_res_file, 'r') as csv_file:
+    with open(str(aln_res_file), 'r') as csv_file:
         csv_reader = csv.reader(csv_file)
         header = next(csv_reader)
         aln_dict = {name:[] for name in header}
