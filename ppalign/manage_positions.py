@@ -56,10 +56,19 @@ def aligned_positions_to_aligned_sequences(seq_positions, sequences):
         ck = c_names[k]
         for pos in seq_positions[ck]:
             if (pos=='-'):
-                car=pos
+                car='-'
             else:
                 car=sequences[k][pos]
             seqs_aligned[k]+=car
+
+    if (len(sequences[0])-seq_positions['pos_ref'][-1]+1>0):
+        for pos_in_ref in range(seq_positions['pos_ref'][-1]+1,len(sequences[0])):
+            seqs_aligned[0]+=sequences[0][pos_in_ref]
+            seqs_aligned[1]+='-'
+    if (len(sequences[1])-seq_positions['pos_2'][-1]+1>0):
+        for pos_in_2 in range(seq_positions['pos_2'][-1]+1, len(sequences[1])):
+            seqs_aligned[1]+=sequences[1][pos_in_2]
+            seqs_aligned[0]+='-'
     return seqs_aligned
 
 
