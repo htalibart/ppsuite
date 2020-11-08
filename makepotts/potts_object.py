@@ -324,6 +324,13 @@ class Potts_Object:
         return cls.from_folder(feature_folder, v_rescaling_function="identity", w_rescaling_function="identity")
 
 
+    @classmethod
+    def from_merge(cls, feature_folder, objects, aligned_positions_dict, use_less_sequences=False, **kwargs):
+        if not feature_folder.is_dir():
+            feature_folder.mkdir()
+        aln_original = feature_folder/"aln_original.fasta"
+        get_original_msas_aligned_from_aligned_positions(aligned_positions_dict, objects, aln_original)
+        return cls.from_files(feature_folder=feature_folder, aln_file=aln_original, use_less_sequences=use_less_sequences, **kwargs)
 
     def get_seq_positions(self, positions):
         seq_positions = []
@@ -333,6 +340,17 @@ class Potts_Object:
             else:
                 seq_positions.append(self.mrf_pos_to_seq_pos[pos])
         return seq_positions
+
+    def get_aln_positions(self, positions):
+        aln_positions = []
+        for pos in positions:
+            if pos is None:
+                aln_positions.append(None)
+            else:
+                aln_positions.append(self.mrf_pos_to_aln_pos[pos])
+        return aln_positions
+
+
 
 
     def get_name(self):

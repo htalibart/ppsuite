@@ -76,6 +76,12 @@ class Test_ManagePositions(unittest.TestCase):
         assert(mrf_pos_to_seq_pos==[None, None, 0, None, 1, None, 2])
 
 
+#    def test_get_merge_mrf_pos_to_aln_pos(self):
+#        mrf_pos_to_aln_pos_list = [[0,1,None,2],[0,1,2]]
+#        aligned_positions_dict = {'pos_ref':[1,2,3],'pos_2':[0,1,2]}
+#        merged_mrf_pos_to_aln_pos = get_merge_mrf_pos_to_aln_pos(mrf_pos_to_aln_pos_list, aligned_positions_dict)
+#        assert(merged_mrf_pos_to_aln_pos==[0,None,1])
+#
 
 if __name__=='__main__':
     unittest.main()

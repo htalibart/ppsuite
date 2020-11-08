@@ -3,6 +3,7 @@ from Bio import SeqIO, pairwise2
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
 from Bio.Alphabet import IUPAC
+from Bio.Align import MultipleSeqAlignment
 
 import comutils.files_management as fm
 from comutils.util import *
@@ -46,6 +47,19 @@ def get_seq_positions_from_aln_dict(aligned_positions, objects):
             for name in c_names:
                 real_seq_positions_without_none[name].append(real_seq_positions[name][ind])
     return real_seq_positions_without_none
+
+def get_aln_positions_from_aln_dict(aligned_positions, objects):
+    """ input : dict of lists of positions aligned by solver, output : dict of lists of positions in the original multiple sequence alignment """
+    real_aln_positions = {}
+    c_names = ['pos_ref', 'pos_2']
+    for k in range(2):
+        real_aln_positions[c_names[k]] = objects[k].get_aln_positions(aligned_positions[c_names[k]])
+    real_aln_positions_without_none = {'pos_ref':[], 'pos_2':[]}
+    for ind in range(len(real_aln_positions["pos_ref"])):
+        if (real_aln_positions["pos_ref"][ind] is not None) and (real_aln_positions["pos_2"][ind] is not None):
+            for name in c_names:
+                real_aln_positions_without_none[name].append(real_aln_positions[name][ind])
+    return real_aln_positions_without_none
 
 
 
@@ -161,4 +175,34 @@ def get_mrf_pos_to_seq_pos(original_first_seq, seq, mrf_pos_to_aln_pos):
     return mrf_pos_to_seq_pos
 
 
+#def get_merge_mrf_pos_to_aln_pos(mrf_pos_to_aln_pos_list, aligned_positions_dict):
+#    mrf_pos_to_aln_pos_merge = []
+#    pos_in_aln_train=0
+#    for pos_aln in range(len(aligned_positions_dict["pos_ref"])):
+#        pos_in_ref = mrf_pos_to_aln_pos_list[0][aligned_positions_dict["pos_ref"][pos_aln]]
+#        pos_in_2 = mrf_pos_to_aln_pos_list[1][aligned_positions_dict["pos_2"][pos_aln]]
+#        if (pos_in_ref!=None) and (pos_in_2!=None):
+#            mrf_pos_to_aln_pos_merge.append(pos_in_aln_train)
+#            pos_in_aln_train+=1
+#        else:
+#            mrf_pos_to_aln_pos_merge.append(None)
+#    return mrf_pos_to_aln_pos_merge
 
+
+def get_original_msas_aligned_from_aligned_positions(aligned_positions_dict, objects, output_msa_file):
+    msa_aligned_positions_dict = get_aln_positions_from_aln_dict(aligned_positions_dict, objects)
+    aligns = [SeqIO.parse(str(obj.aln_original), "fasta") for obj in objects]
+    records = []
+    for k, c_name in zip(range(2), ['pos_ref', 'pos_2']):
+        align = aligns[k]
+        for record in align:
+            new_record = record
+            new_seq=""
+            for pos in msa_aligned_positions_dict[c_name]:
+                new_seq+=record[pos]
+            new_record.seq=Seq(new_seq)
+            records.append(new_record)
+    new_alignment = MultipleSeqAlignment(records)
+    with open(str(output_msa_file), 'w') as f:
+        AlignIO.write(new_alignment, f, "fasta")
+    print("output can be found at "+str(output_msa_file))
