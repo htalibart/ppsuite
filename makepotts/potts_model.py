@@ -117,12 +117,36 @@ class Potts_Model:
         return cls.from_sequence_to_one_hot(seq, seq_file=seq_file, **kwargs)
 
 
+    @classmethod
+    def from_sequence_with_submat_freq(cls, seq, seq_file=None, tau=0.5, **kwargs):
+        """ substitution matrix pseudocounts to frequencies"""
+        x = code_whole_seq(seq)
+        
+        v = np.zeros((len(x),q))
+        for i in range(len(x)):
+            for a in range(q-1):
+                v[i,a] = (1-tau)*(a==x[i]) + tau*pseudocounts.get_cond_proba(a,x[i])
+
+        w = np.zeros((len(x),len(x),q,q))
+        for i in range(len(x)):
+            for j in range(len(x)):
+                w[i,j,x[i],x[j]] = 1
+        obj = cls.from_parameters(v, w, **kwargs)
+        obj.training_set = seq_file
+        return obj
+
+    @classmethod
+    def from_sequence_file_with_submat_freq(cls, seq_file, tau=0.5, **kwargs):
+        """ substitution matrix pseudocounts to frequencies"""
+        fm.check_if_file_ok(seq_file)
+        seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
+        return cls.from_sequence_with_submat_freq(seq, seq_file, **kwargs)
+
 
     @classmethod
     def from_sequence_with_submat(cls, seq, seq_file=None, tau=0.5, **kwargs):
         """ substitution matrix pseudocounts """
         x = code_whole_seq(seq)
-        v = np.zeros((len(x), q))
         v = np.zeros((len(x),q))
 
         for i in range(len(x)):
