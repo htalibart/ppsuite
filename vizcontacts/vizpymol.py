@@ -22,6 +22,11 @@ def script_init(fout, pdb_id=None, pdbfile=None):
     fout.write(f'set cartoon_color, grey\n')
     fout.write(f'set cartoon_transparency, 0.2\n')
 
+    # green
+    # fout.write(f'set_color contact_coupling_color, [0.00 , 0.53 , 0.22]\n')
+    # red
+    # fout.write(f'set_color distant_coupling_color, [1.00 , 0.00 , 0.00]\n')
+
 
 def launch_pymol(fout, pdb_id=None, pdbfile=None):
     script_init(fout, pdb_id, pdbfile)
@@ -43,14 +48,12 @@ def launch_pymol(fout, pdb_id=None, pdbfile=None):
 def script_coupling(fout, pdb_coupling, strength, color, chain_id='A'):
     pos1 = pdb_coupling[0]
     pos2 = pdb_coupling[1]
-    fout.write(f'select coupling, resi {pos1} and name CA and chain {chain_id}')
-    fout.write(f' + resi {pos2} and name CA and chain {chain_id}\n')
-    fout.write(f'bond resi {pos1} and name CA and chain {chain_id}')
-    fout.write(f', resi {pos2} and name CA and chain {chain_id}\n')
-    fout.write(f'set_bond stick_color, {color}, coupling\n')
-    fout.write(f'set_bond stick_radius, {strength}, coupling\n')
-    fout.write(f'show sticks, coupling\n')
-    fout.write(f'label coupling, resi\n')
+    fout.write(f'bond {chain_id}/{pos1}/CA, {chain_id}/{pos2}/CA\n')
+    fout.write(f'select {chain_id}/{pos1}+{pos2}/CA\n')
+    fout.write(f'set_bond stick_color, {color}, sele\n')
+    fout.write(f'set_bond stick_radius, {strength}, sele\n')
+    fout.write(f'show sticks, sele\n')
+    fout.write(f'label sele, resi\n')
 
 
 def show_coupling(fout, pdb_coupling, strength, color, chain_id='A'):
