@@ -22,10 +22,14 @@ def script_init(fout, pdb_id=None, pdbfile=None):
     fout.write(f'set cartoon_color, grey\n')
     fout.write(f'set cartoon_transparency, 0.2\n')
 
-    # green
-    # fout.write(f'set_color contact_coupling_color, [0.00 , 0.53 , 0.22]\n')
-    # red
-    # fout.write(f'set_color distant_coupling_color, [1.00 , 0.00 , 0.00]\n')
+    fout.write(f'set_color contact_coupling_color1, [0.00 , 0.53 , 0.22] # green\n')
+    fout.write(f'set_color distant_coupling_color1, [1.00 , 0.00 , 0.00] # red\n')
+
+    fout.write(f'set_color contact_coupling_color2, [0.0 , 0.0 , 1.0] # blue\n')
+    fout.write(f'set_color distant_coupling_color2, [1.0 , 1.0 , 0.0] # yellow\n')
+
+    fout.write(f'set_color contact_coupling_color3, [0.0 , 0.75 , 0.75] # teal\n')
+    fout.write(f'set_color distant_coupling_color3, [1.0 , 0.5 , 0.0] # orange\n')
 
 
 def launch_pymol(fout, pdb_id=None, pdbfile=None):
@@ -43,6 +47,19 @@ def launch_pymol(fout, pdb_id=None, pdbfile=None):
     pymol.cmd.hide('nonbonded')
     pymol.cmd.set('cartoon_color', 'grey')
     pymol.cmd.set('cartoon_transparency', 0.2)
+
+    pymol.cmd.set_color(
+        'contact_coupling_color1', [0.00, 0.53, 0.22])
+    pymol.cmd.set_color(
+        'distant_coupling_color1', [1.00, 0.00, 0.00])
+    pymol.cmd.set_color(
+        'contact_coupling_color2', [0.0, 0.0, 1.0])
+    pymol.cmd.set_color(
+        'distant_coupling_color2', [1.0, 1.0, 0.0])
+    pymol.cmd.set_color(
+        'contact_coupling_color3', [0.0, 0.75, 0.75])
+    pymol.cmd.set_color(
+        'distant_coupling_color3', [1.0, 0.5, 0.0])
 
 
 def script_coupling(fout, pdb_coupling, strength, color, chain_id='A'):
@@ -70,7 +87,7 @@ def show_coupling(fout, pdb_coupling, strength, color, chain_id='A'):
     pymol.cmd.label("coupling", 'resi')
 
 
-def show_n_couplings(fout, nb_couplings, pdb_seq_couplings_dict, pdb_file, chain_id='A', coupling_sep_min=2, thickness=1, colors={True: 'green', False: 'red'}):
+def show_n_couplings(fout, nb_couplings, pdb_seq_couplings_dict, pdb_file, chain_id='A', coupling_sep_min=2, thickness=1, colors={True: 'contact_coupling_color1', False: 'distant_coupling_color1'}):
     #pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
     n = 0
     for i, (c, score) in enumerate(pdb_seq_couplings_dict.items()):
@@ -123,7 +140,7 @@ def show_predicted_contacts_with_pymol(fout, feature_folders, pdb_id=None, chain
         for k in range(len(exclus_overlap)):
             exclus_overlap[k] = get_normalized_ordered_dict(exclus_overlap[k])
 
-    for d, colors in zip(exclus_overlap, [{True: 'green', False: 'red'}, {True: 'blue', False: 'yellow'}, {True: 'teal', False: 'orange'}]):
+    for d, colors in zip(exclus_overlap, [{True: 'contact_coupling_color1', False: 'distant_coupling_color1'}, {True: 'contact_coupling_color2', False: 'distant_coupling_color2'}, {True: 'contact_coupling_color3', False: 'distant_coupling_color3'}]):
         show_n_couplings(fout, len(d), d, pdb_file, chain_id=chain_id,
                          coupling_sep_min=coupling_sep_min, thickness=thickness, colors=colors)
 
