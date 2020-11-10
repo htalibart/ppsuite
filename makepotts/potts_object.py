@@ -294,7 +294,7 @@ class Potts_Object:
                 v_null = np.tile(get_background_v0(v_rescaling_function, **kwargs), (1,1))
             else:
                 v_null = np.zeros((1,21)) 
-            potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_aln_pos, len(seq), v_null=v_null)
+            potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_original), v_null=v_null)
             mrf_pos_to_seq_pos = aln_pos_to_seq_pos
             mrf_pos_to_aln_pos = [pos for pos in range(fm.get_nb_columns_in_alignment(aln_original))]
             if (potts_model_file is not None):
