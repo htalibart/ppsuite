@@ -8,9 +8,30 @@ from makepotts.potts_object import *
 
 import pymol
 
-def launch_pymol(pdb_id=None, pdbfile=None):
+
+def script_init(fout, pdb_id=None, pdbfile=None):
+    if pdbfile is not None:
+        fout.write(f'load {pdbfile}\n')
+    elif pdb_id is not None:
+        fout.write(f'fetch {pdbfile}\n')
+    else:
+        raise Exception("must provide pdb file or pdb id")
+    fout.write(f'show cartoon\n')
+    fout.write(f'hide lines\n')
+    fout.write(f'hide nonbonded\n')
+    fout.write(f'set cartoon_color, grey\n')
+    fout.write(f'set cartoon_transparency, 0.2\n')
+
+    # green
+    # fout.write(f'set_color contact_coupling_color, [0.00 , 0.53 , 0.22]\n')
+    # red
+    # fout.write(f'set_color distant_coupling_color, [1.00 , 0.00 , 0.00]\n')
+
+
+def launch_pymol(fout, pdb_id=None, pdbfile=None):
+    script_init(fout, pdb_id, pdbfile)
     pymol.cmd.reinitialize()
-    #pymol.finish_launching(['pymol'])
+    # pymol.finish_launching(['pymol'])
     if pdbfile is not None:
         pymol.cmd.load(pdbfile)
     elif pdb_id is not None:
@@ -24,29 +45,44 @@ def launch_pymol(pdb_id=None, pdbfile=None):
     pymol.cmd.set('cartoon_transparency', 0.2)
 
 
-def show_coupling(pdb_coupling, strength, color, chain_id='A'):
+def script_coupling(fout, pdb_coupling, strength, color, chain_id='A'):
     pos1 = pdb_coupling[0]
     pos2 = pdb_coupling[1]
-    pymol.cmd.select("coupling", "resi "+str(pos1)+" and name CA and chain "+chain_id+" + resi "+str(pos2)+" and name CA and chain "+chain_id)
-    pymol.cmd.bond("resi "+str(pos1)+" and name CA and chain "+chain_id, "resi "+str(pos2)+" and name CA and chain "+chain_id)
+    fout.write(f'bond {chain_id}/{pos1}/CA, {chain_id}/{pos2}/CA\n')
+    fout.write(f'select {chain_id}/{pos1}+{pos2}/CA\n')
+    fout.write(f'set_bond stick_color, {color}, sele\n')
+    fout.write(f'set_bond stick_radius, {strength}, sele\n')
+    fout.write(f'show sticks, sele\n')
+    fout.write(f'label sele, resi\n')
+
+
+def show_coupling(fout, pdb_coupling, strength, color, chain_id='A'):
+    script_coupling(fout, pdb_coupling, strength, color, chain_id)
+    pos1 = pdb_coupling[0]
+    pos2 = pdb_coupling[1]
+    pymol.cmd.select("coupling", "resi "+str(pos1)+" and name CA and chain " +
+                     chain_id+" + resi "+str(pos2)+" and name CA and chain "+chain_id)
+    pymol.cmd.bond("resi "+str(pos1)+" and name CA and chain " +
+                   chain_id, "resi "+str(pos2)+" and name CA and chain "+chain_id)
     pymol.cmd.set_bond("stick_color", color, "coupling")
     pymol.cmd.set_bond("stick_radius", strength, "coupling")
     pymol.cmd.show('sticks', "coupling")
     pymol.cmd.label("coupling", 'resi')
 
 
-def show_n_couplings(nb_couplings, pdb_seq_couplings_dict, pdb_file, chain_id='A', coupling_sep_min=2, thickness=1, colors={True:'green', False:'red'}):
+def show_n_couplings(fout, nb_couplings, pdb_seq_couplings_dict, pdb_file, chain_id='A', coupling_sep_min=2, thickness=1, colors={True: 'green', False: 'red'}):
     #pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
-    n=0
+    n = 0
     for i, (c, score) in enumerate(pdb_seq_couplings_dict.items()):
-        if n<nb_couplings:
-            if abs(c[0]-c[1])>coupling_sep_min:
+        if n < nb_couplings:
+            if abs(c[0]-c[1]) > coupling_sep_min:
                 strength = score*thickness
-                show_coupling(c, strength, colors[is_true_contact(c, pdb_file, chain_id)], chain_id)
-                n+=1
+                show_coupling(fout, c, strength,
+                              colors[is_true_contact(c, pdb_file, chain_id)], chain_id)
+                n += 1
 
 
-def show_predicted_contacts_with_pymol(feature_folders, pdb_id=None, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, normalize=False, debug_mode=False, **kwargs):
+def show_predicted_contacts_with_pymol(fout, feature_folders, pdb_id=None, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, normalize=False, debug_mode=False, **kwargs):
 
     potts_objects = []
     for feature_folder in feature_folders:
@@ -61,9 +97,11 @@ def show_predicted_contacts_with_pymol(feature_folders, pdb_id=None, chain_id='A
     tops = []
     for potts_object in potts_objects:
         couplings_dict = get_contact_scores_for_sequence(potts_object)
-        pdb_couplings_dict = translate_dict_to_pdb_pos(couplings_dict, pdb_file, chain_id, potts_object.sequence)
+        pdb_couplings_dict = translate_dict_to_pdb_pos(
+            couplings_dict, pdb_file, chain_id, potts_object.sequence)
         if auto_top:
-            cutindex = get_elbow_index(pdb_couplings_dict, plot_elbow=debug_mode)
+            cutindex = get_elbow_index(
+                pdb_couplings_dict, plot_elbow=debug_mode)
             pdb_couplings_dict = get_smaller_dict(pdb_couplings_dict, cutindex)
             nb_couplings = len(pdb_couplings_dict)
         if wij_cutoff:
@@ -72,11 +110,12 @@ def show_predicted_contacts_with_pymol(feature_folders, pdb_id=None, chain_id='A
             nb_couplings = len(pdb_couplings_dict)
         else:
             nb_couplings = top
-        pdb_couplings_dict = remove_couplings_too_close(pdb_couplings_dict, coupling_sep_min)
+        pdb_couplings_dict = remove_couplings_too_close(
+            pdb_couplings_dict, coupling_sep_min)
         pdb_couplings_dicts.append(pdb_couplings_dict)
         tops.append(nb_couplings)
 
-    launch_pymol(pdb_id, pdb_file)
+    launch_pymol(fout, pdb_id, pdb_file)
 
     exclus_overlap = get_exclus_overlaps(pdb_couplings_dicts, tops)
 
@@ -84,34 +123,51 @@ def show_predicted_contacts_with_pymol(feature_folders, pdb_id=None, chain_id='A
         for k in range(len(exclus_overlap)):
             exclus_overlap[k] = get_normalized_ordered_dict(exclus_overlap[k])
 
-    for d, colors in zip(exclus_overlap, [{True:'green', False:'red'}, {True:'blue', False:'yellow'}, {True:'teal', False:'orange'}]):
-        show_n_couplings(len(d), d, pdb_file, chain_id=chain_id, coupling_sep_min=coupling_sep_min, thickness=thickness, colors=colors)
+    for d, colors in zip(exclus_overlap, [{True: 'green', False: 'red'}, {True: 'blue', False: 'yellow'}, {True: 'teal', False: 'orange'}]):
+        show_n_couplings(fout, len(d), d, pdb_file, chain_id=chain_id,
+                         coupling_sep_min=coupling_sep_min, thickness=thickness, colors=colors)
 
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--feature_folders', help="Feature folder(s)", type=pathlib.Path, nargs='+', required=True)
-    parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
+    parser.add_argument('-f', '--feature_folders', help="Feature folder(s)",
+                        type=pathlib.Path, nargs='+', required=True)
+    parser.add_argument('--pdb_file', help="PDB file",
+                        type=pathlib.Path, default=None)
     parser.add_argument('-id', '--pdb_id', help="PDB id")
-    parser.add_argument('-cid', '--chain_id', help="PDB chain id (default : A)", default='A')
-    parser.add_argument('-sep', '--coupling_sep_min', help="Min. nb residues between members of a coupling (default : 3)", default=3, type=int)
-    parser.add_argument('-n', '--top', help="Nb of couplings displayed (default : 20)", type=int, default=20)
-    parser.add_argument('--wij_cutoff', help="||wij|| <= wij_cutoff are removed (default : None)", default=None, type=float) 
-    parser.add_argument('--auto_top', help="Nb couplings displayed = elbow of the score curve (default : False)", default=False, action='store_true')
-    parser.add_argument('-t', '--thickness', help="Couplings thickness factor (default : 1)", type=float, default=1)
-    parser.add_argument('--normalize', help="Normalize coupling values (default : don't normalize)", default=False, action='store_true')
-    parser.add_argument('--debug_mode', help=argparse.SUPPRESS, default=False, action='store_true')
-    parser.add_argument('--out_session_file', '-pse', help="PyMOL output session file (must end in .pse) (default : /tmp/tmp_pymol_session_file.pse)", type=pathlib.Path, default=pathlib.Path('/tmp/tmp_pymol_session_file.pse'))
+    parser.add_argument('-cid', '--chain_id',
+                        help="PDB chain id (default : A)", default='A')
+    parser.add_argument('-sep', '--coupling_sep_min',
+                        help="Min. nb residues between members of a coupling (default : 3)", default=3, type=int)
+    parser.add_argument(
+        '-n', '--top', help="Nb of couplings displayed (default : 20)", type=int, default=20)
+    parser.add_argument(
+        '--wij_cutoff', help="||wij|| <= wij_cutoff are removed (default : None)", default=None, type=float)
+    parser.add_argument('--auto_top', help="Nb couplings displayed = elbow of the score curve (default : False)",
+                        default=False, action='store_true')
+    parser.add_argument(
+        '-t', '--thickness', help="Couplings thickness factor (default : 1)", type=float, default=1)
+    parser.add_argument('--normalize', help="Normalize coupling values (default : don't normalize)",
+                        default=False, action='store_true')
+    parser.add_argument('--debug_mode', help=argparse.SUPPRESS,
+                        default=False, action='store_true')
+    parser.add_argument('--out_session_file', '-pse',
+                        help="PyMOL output session file (must end in .pse) (default : /tmp/tmp_pymol_session_file.pse)",
+                        type=pathlib.Path, default=pathlib.Path('/tmp/tmp_pymol_session_file.pse'))
+    parser.add_argument('--out_script_file', '-pml',
+                        help="PyMOL output script file (must end in .pml) (default : /tmp/tmp_pymol_script_file.pml)",
+                        type=pathlib.Path, default=pathlib.Path('/tmp/tmp_pymol_session_file.pml'))
 
     args = vars(parser.parse_args(args))
 
     for d in args["feature_folders"]:
         fm.check_if_dir_ok(d)
-
-    show_predicted_contacts_with_pymol(**args)
+    with open(args['out_script_file'], 'w') as fout:
+        show_predicted_contacts_with_pymol(fout, **args)
     pymol.cmd.save(str(args["out_session_file"]))
     print("PyMOL session saved at "+str(args["out_session_file"]))
+    print("PyMOL script saved at "+str(args["out_script_file"]))
 
-if __name__=="__main__":
+
+if __name__ == "__main__":
     main()
-
