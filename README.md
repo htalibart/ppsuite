@@ -317,11 +317,9 @@ vizcircos -f 5lqp_feature_folder/ -i 5lqp --chain_id AB -o 5lqp_circos_image.png
 ```
 
 
-
-
 ## License
 
-[TODO]
+This software is released under the terms of the GNU Affero General Public License v3.0 (GNU AGPLv3).
 
 ## Acknowledgments
 
