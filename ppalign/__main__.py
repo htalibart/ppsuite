@@ -6,7 +6,6 @@ import subprocess
 
 from ppalign.call_ppalign import *
 from ppalign.manage_positions import *
-from makemsa.__main__ import *
 from vizpotts.vizpotts import *
 import comutils.files_management as fm
 
