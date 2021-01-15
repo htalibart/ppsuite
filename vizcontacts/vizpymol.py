@@ -87,7 +87,7 @@ def show_coupling(fout, pdb_coupling, strength, color, chain_id='A'):
     pymol.cmd.label("coupling", 'resi')
 
 
-def show_n_couplings(fout, nb_couplings, pdb_seq_couplings_dict, pdb_file, chain_id='A', coupling_sep_min=2, thickness=1, colors={True: 'contact_coupling_color1', False: 'distant_coupling_color1'}):
+def show_n_couplings(fout, nb_couplings, pdb_seq_couplings_dict, pdb_file, chain_id='A', coupling_sep_min=2, thickness=1, colors={True: 'contact_coupling_color1', False: 'distant_coupling_color1'}, contact_distance=8):
     #pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
     n = 0
     for i, (c, score) in enumerate(pdb_seq_couplings_dict.items()):
@@ -95,11 +95,11 @@ def show_n_couplings(fout, nb_couplings, pdb_seq_couplings_dict, pdb_file, chain
             if abs(c[0]-c[1]) > coupling_sep_min:
                 strength = score*thickness
                 show_coupling(fout, c, strength,
-                              colors[is_true_contact(c, pdb_file, chain_id)], chain_id)
+                              colors[is_true_contact(c, pdb_file, chain_id, contact_distance=contact_distance)], chain_id)
                 n += 1
 
 
-def show_predicted_contacts_with_pymol(fout, feature_folders, pdb_id=None, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, normalize=False, debug_mode=False, **kwargs):
+def show_predicted_contacts_with_pymol(fout, feature_folders, pdb_id=None, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, normalize=False, debug_mode=False, contact_distance=8, **kwargs):
 
     potts_objects = []
     for feature_folder in feature_folders:
@@ -142,7 +142,7 @@ def show_predicted_contacts_with_pymol(fout, feature_folders, pdb_id=None, chain
 
     for d, colors in zip(exclus_overlap, [{True: 'contact_coupling_color1', False: 'distant_coupling_color1'}, {True: 'contact_coupling_color2', False: 'distant_coupling_color2'}, {True: 'contact_coupling_color3', False: 'distant_coupling_color3'}]):
         show_n_couplings(fout, len(d), d, pdb_file, chain_id=chain_id,
-                         coupling_sep_min=coupling_sep_min, thickness=thickness, colors=colors)
+                         coupling_sep_min=coupling_sep_min, thickness=thickness, colors=colors, contact_distance=contact_distance)
 
 
 def main(args=sys.argv[1:]):
@@ -156,6 +156,8 @@ def main(args=sys.argv[1:]):
                         help="PDB chain id (default : A)", default='A')
     parser.add_argument('-sep', '--coupling_sep_min',
                         help="Min. nb residues between members of a coupling (default : 3)", default=3, type=int)
+    parser.add_argument('--contact_distance',
+            help="Distance threshold in Angstrom for a contact (default: 8)", default=8, type=float)
     parser.add_argument(
         '-n', '--top', help="Nb of couplings displayed (default : 20)", type=int, default=20)
     parser.add_argument(
