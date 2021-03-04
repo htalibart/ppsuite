@@ -167,7 +167,7 @@ class Potts_Model:
         return obj
 
 
-
+    
     @classmethod
     def from_sequence_file_with_submat(cls, seq_file, tau=0.5, **kwargs):
         """ substitution matrix pseudocounts """
