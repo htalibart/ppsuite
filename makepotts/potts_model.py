@@ -7,6 +7,10 @@ import msgpack
 import json
 import subprocess
 
+import ccmpred.weighting
+import ccmpred.io
+import ccmpred.counts
+
 from comutils.util import *
 from comutils import files_management as fm
 from comutils import pseudocounts
@@ -319,3 +323,24 @@ class Potts_Model:
         for pos_in_seq in range(sequence_length):
             if not pos_in_seq in mrf_pos_to_seq_pos:
                 self.insert_null_position_at(pos_in_seq, v_null)
+
+
+    def insert_vi_star_gapped_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, msa_file_before_trim, nb_pc_for_v_star=1):
+        msa_ccmpred = ccmpred.io.read_msa(msa_file_before_trim, 'fasta')
+        weights = ccmpred.weighting.weights_simple(msa_ccmpred, cutoff=0.8)
+        single_counts, double_counts = ccmpred.counts.both_counts(msa_ccmpred, weights)
+        neff = np.sum(weights)
+        single_freqs = single_counts/neff
+        #eps = 1e-10 # hack from CCMpredPy
+        #single_freqs[single_freqs<eps]=eps
+        tau = nb_pc_for_v_star/(neff+nb_pc_for_v_star)
+        uniform_pc = np.zeros_like(single_freqs)
+        uniform_pc.fill(1. / single_freqs.shape[1])
+        single_freqs = (1-tau)*single_freqs+tau*uniform_pc
+        lsingle_freqs = np.log(single_freqs)
+        v_star = lsingle_freqs - np.mean(lsingle_freqs[:, :21], axis=1)[:, np.newaxis]
+        v_star[:, 20]=0
+        for pos_in_seq in range(sequence_length):
+            if not pos_in_seq in mrf_pos_to_seq_pos:
+                v_i = v_star[pos_in_seq].reshape((1,21))
+                self.insert_null_position_at(pos_in_seq, v_null=v_i)

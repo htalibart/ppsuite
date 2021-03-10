@@ -97,7 +97,7 @@ class Potts_Object:
 
 
     @classmethod
-    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_single_count=1, reg_lambda_pair_factor=0.2, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, keep_tmp_files=False, max_potts_model_length=250, insert_null_at_trimmed=False, v_null_is_v0=True, **kwargs):
+    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_single_count=1, reg_lambda_pair_factor=0.2, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, keep_tmp_files=False, max_potts_model_length=250, insert_null_at_trimmed=False, v_null_is_v0=True, insert_v_star_at_trimmed=False, **kwargs):
 
         potts_model=None
         if potts_model_file is not None:
@@ -209,6 +209,7 @@ class Potts_Object:
                 if trim_alignment:
                     colnumbering_file = feature_folder/"colnumbering.csv"
                     trimmed_aln = feature_folder/("trim_"+str(int(trimal_gt*100))+".fasta")
+                    msa_file_before_trim = aln_train
                     call_trimal(aln_train, trimmed_aln, trimal_gt, trimal_cons, colnumbering_file)
                     aln_train = trimmed_aln
                     mrf_pos_to_aln_pos = fm.get_trimal_ncol(colnumbering_file) 
@@ -289,12 +290,15 @@ class Potts_Object:
             aln_pos_to_seq_pos = None
 
 
-        if (insert_null_at_trimmed) and (potts_model is not None):
-            if v_null_is_v0:
-                v_null = np.tile(get_background_v0(v_rescaling_function, **kwargs), (1,1))
-            else:
-                v_null = np.zeros((1,21)) 
-            potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_original), v_null=v_null)
+        if ((insert_null_at_trimmed) or (insert_v_star_at_trimmed)) and (potts_model is not None):
+            if (insert_v_star_at_trimmed):
+                potts_model.insert_vi_star_gapped_to_complete_mrf_pos(mrf_pos_to_seq_pos, fm.get_nb_columns_in_alignment(aln_original), msa_file_before_trim)
+            elif (insert_null_at_trimmed):
+                if v_null_is_v0:
+                    v_null = np.tile(get_background_v0(v_rescaling_function, **kwargs), (1,1))
+                else:
+                    v_null = np.zeros((1,21)) 
+                potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_original), v_null=v_null)
             mrf_pos_to_seq_pos = aln_pos_to_seq_pos
             mrf_pos_to_aln_pos = [pos for pos in range(fm.get_nb_columns_in_alignment(aln_original))]
             if (potts_model_file is not None):
@@ -464,6 +468,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--v_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
     parser.add_argument('-nw', '--dont_use_w', help="Speed up computations if we are not interested in w parameters (not recommended)", action='store_true', default=False)
     parser.add_argument('--insert_null_at_trimmed', help="Insert background parameters at positions trimmed by trimal", action='store_true', default=False)
+    parser.add_argument('--insert_v_star_at_trimmed', help="Insert v parameters at positions trimmed by trimal (computed from frequencies)", action='store_true', default=False)
 
     # CCMpredPy options
     parser.add_argument('--pc_submat', help="CCMpred : Use substitution matrix single pseudocounts instead of uniform (default : False)", default=False, action='store_true')
