@@ -54,7 +54,6 @@ def main(args=sys.argv[1:]):
 
     # other output options
     parser.add_argument('-ali', '--call_aliview', help=argparse.SUPPRESS, action='store_true')
-    #parser.add_argument('-oaln', '--get_training_sets_fasta_aln', help="Get training sets alignment in a fasta file", action='store_true')
     parser.add_argument('-osaln', '--get_sequences_fasta_aln', help="Get sequences alignment in a fasta file", action='store_true')
 
     args = vars(parser.parse_args(args))
@@ -120,46 +119,22 @@ def main(args=sys.argv[1:]):
     print("Total time : "+str(infos_solver["total_time"]))
 
 
-    # MAYBE DO SOMETHING WITH THE ALIGNMENT
 
+    # MAYBE DO SOMETHING WITH THE ALIGNMENT
     if len(aligned_positions)>0:
 
-     
         # GIVE ALIGNED POSITIONS FOR THE SEQUENCES
         if all((o.mrf_pos_to_seq_pos is not None) for o in objects):
             sequence_positions = get_initial_positions(aligned_positions, {"pos_ref":objects[0].mrf_pos_to_seq_pos, "pos_2":objects[1].mrf_pos_to_seq_pos})
             fm.write_positions_to_csv(sequence_positions, output_folder/("aln_sequences.csv"))
  
 
-        # BACK TO ORIGINAL MRF POSITIONS
-#        if args["insert_null_at_trimmed"]:
-#            mrf_aligned_positions = {"pos_ref":[], "pos_2":[]}
-#            for pos_in_aln in range(len(aligned_positions["pos_ref"])):
-#                pos_dict = {"pos_ref":None, "pos_2":None}
-#                for name, obj in zip(["pos_ref","pos_2"],objects):
-#                    pos_in_seq = obj.get_seq_pos_to_mrf_pos()[aligned_positions[name][pos_in_aln]]
-#                    pos_dict[name] = pos_in_seq
-#                if (pos_dict["pos_ref"] is not None) and (pos_dict["pos_2"] is not None):
-#                    for name in ["pos_ref","pos_2"]:
-#                        mrf_aligned_positions[name].append(pos_dict[name])
-#            aligned_positions = mrf_aligned_positions
-#            fm.write_positions_to_csv(aligned_positions, output_folder/("aln.csv"))
-#
         if all((o.sequence is not None) for o in objects) and args["get_sequences_fasta_aln"]:
             output_fasta_file = output_folder/("aligned_sequences.fasta")
             get_seqs_aligned_in_fasta_file(aligned_positions, objects, output_fasta_file)
 
 
-
-        # ALIGN TRAINING MSAS
-#        if all((o.aln_train is not None) for o in objects) and args["get_training_sets_fasta_aln"]:
-#            output_msa = output_folder/("aligned_training_sets.fasta")
-#            get_msas_aligned(aligned_positions, [o.aln_train for o in objects], output_msa)
-#            if args["call_aliview"]:
-#                cmd = "aliview "+str(output_msa)
-#                subprocess.Popen(cmd, shell=True).wait()
-#
-        # REMOVE TEMPORARY FOLDERS
+       # REMOVE TEMPORARY FOLDERS
         for temp_folder in temp_folders: 
             if temp_folder.is_dir():
                 shutil.rmtree(str(temp_folder))

@@ -81,11 +81,6 @@ class Test_Call_ComPotts(unittest.TestCase):
         self.assertEqual(edges_map.shape, self.potts_model.w.shape[0:2])
         self.assertEqual(sum([abs(edges_map[i][i]) for i in range(self.potts_model.ncol)]), 0)
 
-    def test_count_edges(self):
-        self.assertEqual(count_edges(np.ones((3,3))),9)
-        self.assertEqual(count_edges(np.zeros((3,3))),0)
-
-
     def test_rescale_mrf(self):
         resc_mrf = get_rescaled_potts_model(self.potts_model, "original_rescaling", "original_rescaling")
         self.assertEqual(self.potts_model.v.shape,resc_mrf.v.shape)
