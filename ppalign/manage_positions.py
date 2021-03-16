@@ -164,39 +164,29 @@ def get_pos_aligned_at_pos(aligned_positions_dict, pos):
         return None
 
 
-def get_initial_positions(aligned_positions, mrf_pos_to_initial_pos_dict): #TODO reprendre là
+def get_initial_positions(aligned_positions, mrf_pos_to_initial_pos_dict):
+    """ inputs @aligned_positions: dict of aligned positions, @mrf_pos_to_initial_pos_dict: list of positions in the original sequence for each position in the Potts model
+        outputs dict of aligned positions in the original sequences """
     initial_positions = {}
     for key in aligned_positions:
         initial_positions[key] = [mrf_pos_to_initial_pos_dict[key][pos] for pos in aligned_positions[key]]
     return initial_positions
 
 
-def get_aln_sequences_from_aln_file(aln_file, objects, output_file):
-    aligned_positions = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_file)
-    sequence_positions = get_initial_positions(aligned_positions, {"pos_ref":objects[0].mrf_pos_to_seq_pos, "pos_2":objects[1].mrf_pos_to_seq_pos})
-    fm.write_positions_to_csv(sequence_positions, output_file)
-
 def get_mrf_pos_to_seq_pos(original_first_seq, seq, mrf_pos_to_aln_pos):
+    """ @original_first_seq: typically first sequence in the seed MSA
+        @seq: sequence
+        outputs list of positions in the sequence for each position in the seed MSA """
     seq_aln_pos = get_pos_first_seq_to_second_seq(original_first_seq, seq)
     mrf_pos_to_seq_pos = [seq_aln_pos[pos] for pos in mrf_pos_to_aln_pos]
     return mrf_pos_to_seq_pos
 
 
-#def get_merge_mrf_pos_to_aln_pos(mrf_pos_to_aln_pos_list, aligned_positions_dict):
-#    mrf_pos_to_aln_pos_merge = []
-#    pos_in_aln_train=0
-#    for pos_aln in range(len(aligned_positions_dict["pos_ref"])):
-#        pos_in_ref = mrf_pos_to_aln_pos_list[0][aligned_positions_dict["pos_ref"][pos_aln]]
-#        pos_in_2 = mrf_pos_to_aln_pos_list[1][aligned_positions_dict["pos_2"][pos_aln]]
-#        if (pos_in_ref!=None) and (pos_in_2!=None):
-#            mrf_pos_to_aln_pos_merge.append(pos_in_aln_train)
-#            pos_in_aln_train+=1
-#        else:
-#            mrf_pos_to_aln_pos_merge.append(None)
-#    return mrf_pos_to_aln_pos_merge
-
-
 def get_original_msas_aligned_from_aligned_positions(aligned_positions_dict, objects, output_msa_file):
+    """ inputs
+        @aligned_positions_dict: dict of aligned positions outputted by PPalign
+        @objects: Potts objects that were aligned
+        outputs an alignment of the two original MSAs in @output_msa_file """
     msa_aligned_positions_dict = get_aln_positions_from_aln_dict(aligned_positions_dict, objects)
     aligns = [SeqIO.parse(str(obj.aln_original), "fasta") for obj in objects]
     records = []
