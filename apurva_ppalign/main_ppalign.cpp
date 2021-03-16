@@ -18,8 +18,6 @@ double total_time(0.);
 
 
 // scores and lengths are global variables because of f_vertex_mrf and f_edge_mrf
-//double* v_scores;
-//float* w_scores;
 int LA;
 int LB;
 int q=21;
@@ -37,9 +35,9 @@ double gap_open = 0.0;
 double gap_extend = 0.0;
 
 
+// similarity function for vA_i and vB_k
 float f_vertex_mrf(int k, int i)
 {
-	//return v_scores[i*LB+k];
 	float score_vivk=0;
 	for(int a=0; a<q; a++)
 	{
@@ -49,14 +47,13 @@ float f_vertex_mrf(int k, int i)
 }
 
 
-// score pour l'alignement de deux arcs (A.(i,j),B.(k,l))
+// similarity function for wA_ij and wB_kl
 float f_edge_mrf(int k, int i, int l, int j)
 {
 	if (l<=k)
 	{
 		if (j<=i)
 		{
-			//return w_scores[(j+(i*(i+1))/2)*(LB*(LB+1)/2) + l+(k*(k+1))/2];
 			float score_wijwkl=0;
 			for (int a=0; a<q; a++)
 			{
@@ -65,7 +62,6 @@ float f_edge_mrf(int k, int i, int l, int j)
 					score_wijwkl+=w_A[b+a*q+j*q*q+i*q*q*LA]*w_B[b+a*q+l*q*q+k*q*q*LB];
 				}
 			}
-			//cout << score_wijwkl << endl;
 			return alpha_w*score_wijwkl;
 		}
 		else
@@ -328,6 +324,7 @@ int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_tim
 }
 
 
+// 1D array given to cython -> 2D array
 int** unflatten(int* flat_array, int length)
 {
 	int** uf = new int*[length];
@@ -343,6 +340,7 @@ int** unflatten(int* flat_array, int length)
 }
 
 
+// free 2D array memory
 void free_2d_int_array(int** array_2d, int length)
 {
 	for (int i=0; i<length; i++)
@@ -362,8 +360,6 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
 	v_B = v_B_;
 	w_A = w_A_;
 	w_B = w_B_;
-	//v_scores = v_scores_;
-	//w_scores = w_scores_;
 	LA = LA_;
 	LB = LB_;
 	gap_open = gap_open_;
@@ -377,7 +373,7 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
 	int tic1(times(&start));
 
 
-	// alloc residues contact map filter (TODO : check if deprecated)
+	// alloc residues contact map filter
 	int** forbidden_res = new int* [LB];
     	for(int col(0); col != LB; ++col)
     	{
@@ -389,7 +385,7 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
 
 	// alloc solution arrays
 	int* res_alignment = new int[LB];
-	for(int col(0); col != LB; ++col) // TODO pourquoi ?
+	for(int col(0); col != LB; ++col)
     	{
                 res_alignment[col] = -1;
     	}
