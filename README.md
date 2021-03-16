@@ -200,36 +200,36 @@ This folder is created by invoking MakePotts with the desired arguments.
 
 * You have a sequence file, and a big alignment that you retrieved with HHblits for example. You want to filter it to remove redundancies, to trim it to remove positions with too many gaps, and you want to use only the first 1000 sequences to train the Potts model.
 ```
-makepotts -f output_feature_folder/ -s path/to/your/sequence.fasta -aln path/to/your/alignment.fasta --hhfilter_threshold 80 --trimal_gt 0.8 -maxnb 1000
+makepotts -f output_potts_folder/ -s path/to/your/sequence.fasta -aln path/to/your/alignment.fasta --hhfilter_threshold 80 --trimal_gt 0.8 -maxnb 1000
 ```
 By default, makepotts filters the alignment with a 80% threshold using HHfilter, trims it with trimal using options -gt 0.8 -cons 0 and takes the first 1000 sequences but you can change these parameters or choose not to do any of this with options such as --dont_trim_alignment.
 
 * You have a sequence file and you want MakePotts to call HHblits to get more sequences:
 ```
-makepotts -f output_feature_folder/ -s path/to/your/sequence.fasta -fetch -d path/to/the/database
+makepotts -f output_potts_folder/ -s path/to/your/sequence.fasta -fetch -d path/to/the/database
 ```
 (see [HH-suite documentation](https://github.com/soedinglab/hh-suite/wiki#searching-databases-of-hmms-using-hhsearch-and-hhblits) for more information on the databases format)
 
 This command calls HH-blits with [recommended parameters for CCMpred](https://github.com/soedinglab/CCMpred/wiki/FAQ#what-is-the-recommended-workflow-of-generating-alignments-for-ccmpred). If you want to use different parameters, run hhblits with the desired arguments and then run makepotts with the output alignment :
 ```
 hhblits [YOUR ARGUMENTS] -i your_sequence.fasta -oa3m hhblits_output.a3m
-makepotts -f output_feature_folder -s your_sequence.fasta -aln hhblits_output.a3m
+makepotts -f output_potts_folder -s your_sequence.fasta -aln hhblits_output.a3m
 ```
 
 
 * You have a sequence file and you want to infer a Potts model only from the sequence
 ```
-makepotts -f output_feature_folder/ -s path/to/your/sequence.fasta --inference_type one_submat
+makepotts -f output_potts_folder/ -s path/to/your/sequence.fasta --inference_type one_submat
 ```
 
 or
 ```
-makepotts -f output_feature_folder/ -s path/to/your/sequence.fasta --inference_type one_hot
+makepotts -f output_potts_folder/ -s path/to/your/sequence.fasta --inference_type one_hot
 ```
 
 * You have a sequence file, you used BLAST to retrieve sequences (in an unaligned fasta file) and you want to use as many sequences as there are before the E-value elbow :
 ```
-makepotts -f output_feature_folder/ -s path/to/your/sequence.fasta -ualn path/to/your/unaligned_sequences.fasta --use_evalue_cutoff --blast_xml path/to/blast_output.xml
+makepotts -f output_potts_folder/ -s path/to/your/sequence.fasta -ualn path/to/your/unaligned_sequences.fasta --use_evalue_cutoff --blast_xml path/to/blast_output.xml
 ```
 
 * You have an alignment - and no imagination for the name of your output folder <br/>
@@ -306,14 +306,14 @@ Both input a feature folder (provided by MakePotts). Green indicates that the co
 #### VizPyMOL
 
 ```
-vizpymol -f 5lqp_feature_folder/ -i 5lqp --chain_id AB -pse 5lq_pymol_session.pse
+vizpymol -f 5lqp_potts_folder/ -i 5lqp --chain_id AB -pse 5lq_pymol_session.pse
 pymol 5lqp_pymol_session.pse
 ```
 
 
 #### VizCircos
 ```
-vizcircos -f 5lqp_feature_folder/ -i 5lqp --chain_id AB -o 5lqp_circos_image.png
+vizcircos -f 5lqp_potts_folder/ -i 5lqp --chain_id AB -o 5lqp_circos_image.png
 ```
 
 

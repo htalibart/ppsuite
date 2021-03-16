@@ -13,17 +13,17 @@ from makepotts.potts_model import *
 class Test_Rescaling(unittest.TestCase):
 
     def setUp(self):
-        self.feature_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
-        shutil.copytree(FEATURE_FOLDER, self.feature_folder)
-        self.potts_model = Potts_Model.from_msgpack(self.feature_folder/"potts_model.mrf")
+        self.potts_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
+        shutil.copytree(FEATURE_FOLDER, self.potts_folder)
+        self.potts_model = Potts_Model.from_msgpack(self.potts_folder/"potts_model.mrf")
 
 
     def tearDown(self):
-        #shutil.rmtree(self.feature_folder)
+        #shutil.rmtree(self.potts_folder)
         pass
 
     def test_rescaling(self):
-        cf = Potts_Object.from_files(self.feature_folder, aln_file=SMALL_ALN_1CC8, trim_alignment=False, max_nb_sequences=250, v_rescaling_function="original_rescaling", w_rescaling_function="original_rescaling") 
+        cf = Potts_Object.from_files(self.potts_folder, aln_file=SMALL_ALN_1CC8, trim_alignment=False, max_nb_sequences=250, v_rescaling_function="original_rescaling", w_rescaling_function="original_rescaling") 
        
     def test_simulate_uniform_pc_on_v(self):
         tau = 0.2

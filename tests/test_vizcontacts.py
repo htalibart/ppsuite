@@ -14,12 +14,12 @@ from vizcontacts.vizcircos import *
 class Test_VizContacts(unittest.TestCase):
 
     def setUp(self):
-        self.feature_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
-        shutil.copytree(FEATURE_FOLDER, self.feature_folder)
-        self.potts_object = ComFeature.from_folder(self.feature_folder)
+        self.potts_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
+        shutil.copytree(FEATURE_FOLDER, self.potts_folder)
+        self.potts_object = ComFeature.from_folder(self.potts_folder)
 
     def tearDown(self):
-        #shutil.rmtree(self.feature_folder)
+        #shutil.rmtree(self.potts_folder)
         pass
 
     def test_get_contact_scores(self):
@@ -43,8 +43,8 @@ class Test_VizContacts(unittest.TestCase):
 #        show_n_couplings(50, pdb_contact_scores, PDB_1CC8, '1cc8')
 
     def test_show_pymol(self):
-        shutil.copy(PDB_1CC8, self.feature_folder)
-        show_predicted_contacts_with_pymol([self.feature_folder], "1cc8", chain_id='A', coupling_sep_min=3, top=20)
+        shutil.copy(PDB_1CC8, self.potts_folder)
+        show_predicted_contacts_with_pymol([self.potts_folder], "1cc8", chain_id='A', coupling_sep_min=3, top=20)
 
 
 #    def test_create_circos(self):

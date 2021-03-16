@@ -184,7 +184,7 @@ def create_circos_from_potts_object_and_pdb_chain(potts_object, pdb_file=None, c
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--feature_folder', help="Feature folder", type=pathlib.Path, required=True)
+    parser.add_argument('-f', '--potts_folder', help="Feature folder", type=pathlib.Path, required=True)
     parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
     parser.add_argument('-i', '--pdb_id', help="PDB id", required=False)
     parser.add_argument('-cid', '--chain_id', help="PDB chain id (default : A)", default='A')
@@ -198,9 +198,9 @@ def main(args=sys.argv[1:]):
 
     args = vars(parser.parse_args(args))
 
-    fm.check_if_dir_ok(args["feature_folder"])
+    fm.check_if_dir_ok(args["potts_folder"])
 
-    potts_object = Potts_Object.from_folder(args['feature_folder'])
+    potts_object = Potts_Object.from_folder(args['potts_folder'])
     if args['pdb_file'] is None:
         name = str(potts_object.folder)+'/'+args['pdb_id']
         args['pdb_file'] = fm.fetch_pdb_file(args['pdb_id'], name)

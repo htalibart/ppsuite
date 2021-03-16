@@ -99,11 +99,11 @@ def show_n_couplings(fout, nb_couplings, pdb_seq_couplings_dict, pdb_file, chain
                 n += 1
 
 
-def show_predicted_contacts_with_pymol(fout, feature_folders, pdb_id=None, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, normalize=False, debug_mode=False, contact_distance=8, **kwargs):
+def show_predicted_contacts_with_pymol(fout, potts_folders, pdb_id=None, chain_id='A', pdb_file=None, top=20, coupling_sep_min=3, thickness=1, auto_top=False, wij_cutoff=None, normalize=False, debug_mode=False, contact_distance=8, **kwargs):
 
     potts_objects = []
-    for feature_folder in feature_folders:
-        potts_objects.append(Potts_Object.from_folder(feature_folder))
+    for potts_folder in potts_folders:
+        potts_objects.append(Potts_Object.from_folder(potts_folder))
 
     if (pdb_file is None) and (pdb_id is not None):
         name = str(potts_objects[0].folder)+'/'+pdb_id
@@ -147,7 +147,7 @@ def show_predicted_contacts_with_pymol(fout, feature_folders, pdb_id=None, chain
 
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
-    parser.add_argument('-f', '--feature_folders', help="Feature folder(s)",
+    parser.add_argument('-f', '--potts_folders', help="Feature folder(s)",
                         type=pathlib.Path, nargs='+', required=True)
     parser.add_argument('--pdb_file', help="PDB file",
                         type=pathlib.Path, default=None)
@@ -179,7 +179,7 @@ def main(args=sys.argv[1:]):
 
     args = vars(parser.parse_args(args))
 
-    for d in args["feature_folders"]:
+    for d in args["potts_folders"]:
         fm.check_if_dir_ok(d)
     with open(args['out_script_file'], 'w') as fout:
         show_predicted_contacts_with_pymol(fout, **args)

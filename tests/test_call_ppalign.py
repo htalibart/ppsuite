@@ -30,14 +30,14 @@ class Test_Call_ComPotts(unittest.TestCase):
 
     def setUp(self):
         self.output_folder = pathlib.Path(tempfile.mkdtemp())
-        self.feature_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
-        shutil.copytree(FEATURE_FOLDER, self.feature_folder)
-        self.object = Potts_Object.from_folder(feature_folder=self.feature_folder)
+        self.potts_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
+        shutil.copytree(FEATURE_FOLDER, self.potts_folder)
+        self.object = Potts_Object.from_folder(potts_folder=self.potts_folder)
         self.potts_model = self.object.potts_model
 
     def tearDown(self):
         shutil.rmtree(self.output_folder)
-        shutil.rmtree(self.feature_folder)
+        shutil.rmtree(self.potts_folder)
 
     def test_align_ppalign_object_to_itself(self):
         aligned_positions, infos_solver = align_two_objects([self.object, self.object], self.output_folder)

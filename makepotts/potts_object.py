@@ -19,10 +19,10 @@ class Potts_Object:
 
 
     @classmethod
-    def guess_from_folder(cls, guess_folder, feature_folder=None, **kwargs):
+    def guess_from_folder(cls, guess_folder, potts_folder=None, **kwargs):
         # NOT RECOMMENDED
-        if feature_folder is None:
-            feature_folder = guess_folder
+        if potts_folder is None:
+            potts_folder = guess_folder
         sequence_file = fm.get_sequence_file_from_folder(guess_folder)
         potts_model_file = fm.get_potts_model_file_from_folder(guess_folder)
         if potts_model_file is not None:
@@ -32,37 +32,37 @@ class Potts_Object:
         aln_file = fm.get_file_from_folder_ending_with_extension(guess_folder, "_reformat.fasta")
         if aln_file is None:
             aln_file = fm.get_file_from_folder_ending_with_extension(guess_folder, ".a3m")
-        return cls.from_files(feature_folder=feature_folder, aln_file=aln_file, sequence_file=sequence_file, potts_model_file=potts_model_file, **kwargs)
+        return cls.from_files(potts_folder=potts_folder, aln_file=aln_file, sequence_file=sequence_file, potts_model_file=potts_model_file, **kwargs)
 
 
     @classmethod
-    def from_folder(cls, feature_folder, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, **kwargs):
+    def from_folder(cls, potts_folder, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, **kwargs):
         feature = cls()
 
-        feature.folder = feature_folder
+        feature.folder = potts_folder
         if not feature.folder.is_dir():
             raise Exception("Feature folder does not exist")
 
-        if (feature_folder/"aln_train.fasta").is_file():
-            feature.aln_train = feature_folder/"aln_train.fasta"
+        if (potts_folder/"aln_train.fasta").is_file():
+            feature.aln_train = potts_folder/"aln_train.fasta"
         else:
             feature.aln_train = None
 
-        if (feature_folder/"aln_original.fasta").is_file():
-            feature.aln_original = feature_folder/"aln_original.fasta"
+        if (potts_folder/"aln_original.fasta").is_file():
+            feature.aln_original = potts_folder/"aln_original.fasta"
         else:
             feature.aln_original = None
         
 
-        if (feature_folder/"sequence.fasta").is_file():
-            feature.sequence_file = feature_folder/"sequence.fasta"
+        if (potts_folder/"sequence.fasta").is_file():
+            feature.sequence_file = potts_folder/"sequence.fasta"
             feature.sequence = fm.get_first_sequence_in_fasta_file(feature.sequence_file)
         else:
             feature.sequence = None
 
         feature.potts_model = None
         try:
-            feature.potts_model_file = feature_folder/"potts_model.mrf"
+            feature.potts_model_file = potts_folder/"potts_model.mrf"
             feature.potts_model = Potts_Model.from_msgpack(feature.potts_model_file)
         except Exception as e:
             print("Potts model was not found")
@@ -70,13 +70,13 @@ class Potts_Object:
 
         feature.mrf_pos_to_seq_pos=None
         try:
-            feature.mrf_pos_to_seq_pos = fm.get_list_from_csv(feature_folder/"mrf_pos_to_seq_pos.csv") # mrf_pos_to_aln_pos[i] = position in sequence corresponding to position i in Potts model
+            feature.mrf_pos_to_seq_pos = fm.get_list_from_csv(potts_folder/"mrf_pos_to_seq_pos.csv") # mrf_pos_to_aln_pos[i] = position in sequence corresponding to position i in Potts model
         except Exception as e:
             feature.mrf_pos_to_seq_pos = None
 
         feature.aln_pos_to_seq_pos=None
         try:
-            feature.aln_pos_to_seq_pos = fm.get_list_from_csv(feature_folder/"aln_pos_to_seq_pos.csv") # aln_pos_to_aln_pos[i] = position in sequence corresponding to position i in original MSA
+            feature.aln_pos_to_seq_pos = fm.get_list_from_csv(potts_folder/"aln_pos_to_seq_pos.csv") # aln_pos_to_aln_pos[i] = position in sequence corresponding to position i in original MSA
         except Exception as e:
             feature.aln_pos_to_seq_pos = None
 
@@ -84,7 +84,7 @@ class Potts_Object:
 
         feature.mrf_pos_to_aln_pos=None
         try:
-            feature.mrf_pos_to_aln_pos = fm.get_list_from_csv(feature_folder/"mrf_pos_to_aln_pos.csv") # mrf_pos_to_aln_pos[i] = position in original_aln corresponding to position i in Potts model
+            feature.mrf_pos_to_aln_pos = fm.get_list_from_csv(potts_folder/"mrf_pos_to_aln_pos.csv") # mrf_pos_to_aln_pos[i] = position in original_aln corresponding to position i in Potts model
         except Exception as e:
             feature.mrf_pos_to_aln_pos = None
 
@@ -97,20 +97,20 @@ class Potts_Object:
 
 
     @classmethod
-    def from_files(cls, feature_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_single_count=1, reg_lambda_pair_factor=0.2, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, keep_tmp_files=False, max_potts_model_length=250, insert_null_at_trimmed=False, v_null_is_v0=True, insert_v_star_at_trimmed=False, **kwargs):
+    def from_files(cls, potts_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_single_count=1, reg_lambda_pair_factor=0.2, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, keep_tmp_files=False, max_potts_model_length=250, insert_null_at_trimmed=False, v_null_is_v0=True, insert_v_star_at_trimmed=False, **kwargs):
 
         potts_model=None
         if potts_model_file is not None:
             potts_model = Potts_Model.from_msgpack(potts_model_file)
 
         # ALIGNMENT FOLDER
-        if feature_folder is None:
+        if potts_folder is None:
             folder_name = str(uuid.uuid4())
-            feature_folder = pathlib.Path(folder_name)
-            print("No folder name specified, feature folder will be created at "+str(feature_folder)) 
+            potts_folder = pathlib.Path(folder_name)
+            print("No folder name specified, feature folder will be created at "+str(potts_folder)) 
 
-        if not feature_folder.is_dir():
-            feature_folder.mkdir()
+        if not potts_folder.is_dir():
+            potts_folder.mkdir()
 
         # FETCH SEQUENCES IF ASKED
         if fetch_sequences:
@@ -119,11 +119,11 @@ class Potts_Object:
             if sequence_file is None:
                 raise Exception("Sequence file missing !")
             if sequences_fetcher=='hhblits':
-                aln_file = feature_folder/"aln_original.a3m"
+                aln_file = potts_folder/"aln_original.a3m"
                 hhr_file = call_hhblits(sequence_file, aln_file, database, **kwargs)
             elif sequences_fetcher=='blast':
-                blast_fasta = feature_folder/"blast.fasta"
-                blast_xml = feature_folder/"blast.xml"
+                blast_fasta = potts_folder/"blast.fasta"
+                blast_xml = potts_folder/"blast.xml"
                 blast_xml, unaligned_fasta = get_blast_xml_and_fasta_output_from_sequence_file(sequence_file, database, blast_fasta=blast_fasta, blast_xml=blast_xml, n=nb_sequences_blast, evalue=blast_evalue)
             else:
                 raise Exception(str(sequences_fetcher)+" call not implemented yet. Available options are hhblits or blast")
@@ -144,42 +144,42 @@ class Potts_Object:
             if fm.get_format(aln_file)=="fasta":
                 aln_original = aln_file
             elif fm.get_format(aln_file)=="a3m":
-                reformat = feature_folder/"reformat.fasta"
+                reformat = potts_folder/"reformat.fasta"
                 call_reformat(aln_file, reformat)
                 aln_original = reformat
             else:
                 raise Exception("Unknown format : "+str(fm.get_format(aln_file))+" for "+str(aln_file))
 
             aln_original_before_clean = aln_original
-            aln_original = feature_folder/"aln_original.fasta"
+            aln_original = potts_folder/"aln_original.fasta"
             fm.remove_sequences_with_bad_characters_from_fasta_file_and_upper(aln_original_before_clean, aln_original)
             if use_evalue_cutoff:
-                cutoff_fasta = feature_folder/("cutoff_"+str(cutoff_index)+".fasta")
+                cutoff_fasta = potts_folder/("cutoff_"+str(cutoff_index)+".fasta")
                 fm.create_fasta_file_with_less_sequences(aln_original, cutoff_fasta, cutoff_index)
                 aln_original = cutoff_fasta
 
-            fm.copy(aln_original, feature_folder/"aln_original.fasta")
+            fm.copy(aln_original, potts_folder/"aln_original.fasta")
 
         elif unaligned_fasta is not None:
             fm.check_if_file_ok(unaligned_fasta)
             if use_evalue_cutoff:
-                cutoff_fasta = feature_folder/("cutoff_"+str(cutoff_index)+".fasta")
+                cutoff_fasta = potts_folder/("cutoff_"+str(cutoff_index)+".fasta")
                 fm.create_fasta_file_with_less_sequences(unaligned_fasta, cutoff_fasta, cutoff_index)
                 unaligned_fasta = cutoff_fasta
             if sequence_file is not None:
                 fm.add_sequence_to_fasta_file_if_missing(unaligned_fasta, sequence_file)
-            clean_unaligned_fasta = feature_folder/"clean_unaligned_sequences.fasta"
+            clean_unaligned_fasta = potts_folder/"clean_unaligned_sequences.fasta"
             fm.remove_sequences_with_bad_characters_from_fasta_file_and_upper(unaligned_fasta, clean_unaligned_fasta)
-            tmp_unaligned_fasta = feature_folder/"clean_unaligned_sequences_bis.fasta"
+            tmp_unaligned_fasta = potts_folder/"clean_unaligned_sequences_bis.fasta"
             fm.copy(clean_unaligned_fasta, tmp_unaligned_fasta)
             fm.create_fasta_file_with_less_sequences(tmp_unaligned_fasta, clean_unaligned_fasta, nb_sequences=10000, fileformat="fasta") # limit to 10000 sequences for MAFFT
             tmp_unaligned_fasta.unlink()
-            aln_mafft = feature_folder/"aln_mafft.fasta"
+            aln_mafft = potts_folder/"aln_mafft.fasta"
             call_mafft(clean_unaligned_fasta, aln_mafft)
-            aln_original = feature_folder/"aln_original.fasta"
+            aln_original = potts_folder/"aln_original.fasta"
             fm.remove_positions_with_gaps_in_first_sequence(aln_mafft, aln_original)
             #call_trimal(aln_mafft, aln_original, 0.05, 0) # trim 0.05 because hhfilter can't handle too long sequences
-            fm.copy(aln_original, feature_folder/"aln_original.fasta") # ? check
+            fm.copy(aln_original, potts_folder/"aln_original.fasta") # ? check
 
         elif inference_type=='one_submat' or inference_type=='one_hot':
             aln_original = sequence_file
@@ -196,19 +196,19 @@ class Potts_Object:
 
             if (inference_type=="standard"):
                 if filter_alignment:
-                    filtered = feature_folder/"filtered.fasta"
+                    filtered = potts_folder/"filtered.fasta"
                     call_hhfilter(aln_train, filtered, hhfilter_threshold)
                     aln_train = filtered
 
                 use_less_sequences = use_less_sequences and (not use_evalue_cutoff)
                 if use_less_sequences:
-                    less_fasta = feature_folder/("less_"+str(max_nb_sequences)+".fasta")
+                    less_fasta = potts_folder/("less_"+str(max_nb_sequences)+".fasta")
                     fm.create_fasta_file_with_less_sequences(aln_train, less_fasta, max_nb_sequences)
                     aln_train = less_fasta
                            
                 if trim_alignment:
-                    colnumbering_file = feature_folder/"colnumbering.csv"
-                    trimmed_aln = feature_folder/("trim_"+str(int(trimal_gt*100))+".fasta")
+                    colnumbering_file = potts_folder/"colnumbering.csv"
+                    trimmed_aln = potts_folder/("trim_"+str(int(trimal_gt*100))+".fasta")
                     msa_file_before_trim = aln_train
                     call_trimal(aln_train, trimmed_aln, trimal_gt, trimal_cons, colnumbering_file)
                     aln_train = trimmed_aln
@@ -221,7 +221,7 @@ class Potts_Object:
                 nb_pos = fm.get_nb_columns_in_alignment(aln_train)
                 mrf_pos_to_aln_pos = [pos for pos in range(nb_pos)]
 
-            fm.copy(aln_train, feature_folder/"aln_train.fasta")
+            fm.copy(aln_train, potts_folder/"aln_train.fasta")
             if fm.get_nb_sequences_in_fasta_file(aln_train)<min_nb_sequences:
                 raise Exception("Less than "+str(min_nb_sequences)+" in the training set : "+str(fm.get_nb_sequences_in_fasta_file(aln_train)))
 
@@ -229,7 +229,7 @@ class Potts_Object:
 
             # POTTS MODEL
             if (potts_model_file is None) and (infer_potts_model):
-                potts_model_file = feature_folder/"potts_model.mrf"
+                potts_model_file = potts_folder/"potts_model.mrf"
 
                 if fm.get_nb_columns_in_alignment(aln_train)>max_potts_model_length:
                     raise Exception("More than "+str(max_potts_model_length)+" columns in the alignment, won't infer the Potts model.")
@@ -274,7 +274,7 @@ class Potts_Object:
 
         # SEQUENCE FILE
         if sequence_file is not None:
-            fm.copy(sequence_file, feature_folder/"sequence.fasta")
+            fm.copy(sequence_file, potts_folder/"sequence.fasta")
             original_first_seq = fm.get_first_sequence_in_fasta_file(aln_original)
             seq = fm.get_first_sequence_in_fasta_file(sequence_file)
             mrf_pos_to_seq_pos = get_mrf_pos_to_seq_pos(original_first_seq, seq, mrf_pos_to_aln_pos)
@@ -282,7 +282,7 @@ class Potts_Object:
         elif aln_original is not None:
             seq = fm.get_first_sequence_in_fasta_file(aln_original)
             seq_name = fm.get_first_sequence_name(aln_original)
-            fm.create_seq_fasta(seq, feature_folder/"sequence.fasta", seq_name=seq_name)
+            fm.create_seq_fasta(seq, potts_folder/"sequence.fasta", seq_name=seq_name)
             mrf_pos_to_seq_pos = mrf_pos_to_aln_pos
             aln_pos_to_seq_pos = [pos for pos in range(len(seq))]
         else:
@@ -306,35 +306,35 @@ class Potts_Object:
 
 
         if mrf_pos_to_seq_pos is not None:
-            fm.write_list_to_csv(mrf_pos_to_seq_pos, feature_folder/"mrf_pos_to_seq_pos.csv")
+            fm.write_list_to_csv(mrf_pos_to_seq_pos, potts_folder/"mrf_pos_to_seq_pos.csv")
 
         if mrf_pos_to_aln_pos is not None:
-            fm.write_list_to_csv(mrf_pos_to_aln_pos, feature_folder/"mrf_pos_to_aln_pos.csv")
+            fm.write_list_to_csv(mrf_pos_to_aln_pos, potts_folder/"mrf_pos_to_aln_pos.csv")
 
         if aln_pos_to_seq_pos is not None:
-            fm.write_list_to_csv(aln_pos_to_seq_pos, feature_folder/"aln_pos_to_seq_pos.csv")
+            fm.write_list_to_csv(aln_pos_to_seq_pos, potts_folder/"aln_pos_to_seq_pos.csv")
 
 
         if potts_model_file is not None:
-            fm.copy(potts_model_file, feature_folder/"potts_model.mrf")
+            fm.copy(potts_model_file, potts_folder/"potts_model.mrf")
 
 
 
         if not keep_tmp_files:
             for name in ["aln_original.a3m", "reformat.fasta", "filtered.fasta", "less_"+str(max_nb_sequences)+".fasta", "trim_80.fasta", "aln_mafft.fasta", "clean_unaligned_sequences.fasta"]:
-                if (feature_folder/name).is_file():
-                    (feature_folder/name).unlink()
+                if (potts_folder/name).is_file():
+                    (potts_folder/name).unlink()
 
-        return cls.from_folder(feature_folder, v_rescaling_function="identity", w_rescaling_function="identity")
+        return cls.from_folder(potts_folder, v_rescaling_function="identity", w_rescaling_function="identity")
 
 
     @classmethod
-    def from_merge(cls, feature_folder, objects, aligned_positions_dict, use_less_sequences=False, **kwargs):
-        if not feature_folder.is_dir():
-            feature_folder.mkdir()
-        aln_original = feature_folder/"aln_original.fasta"
+    def from_merge(cls, potts_folder, objects, aligned_positions_dict, use_less_sequences=False, **kwargs):
+        if not potts_folder.is_dir():
+            potts_folder.mkdir()
+        aln_original = potts_folder/"aln_original.fasta"
         get_original_msas_aligned_from_aligned_positions(aligned_positions_dict, objects, aln_original)
-        return cls.from_files(feature_folder=feature_folder, aln_file=aln_original, use_less_sequences=use_less_sequences, **kwargs)
+        return cls.from_files(potts_folder=potts_folder, aln_file=aln_original, use_less_sequences=use_less_sequences, **kwargs)
 
     def get_seq_positions(self, positions):
         seq_positions = []
@@ -430,7 +430,7 @@ def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
 
     # files
-    parser.add_argument('-f', '--feature_folder', help="Output feature folder", type=pathlib.Path, default=None)
+    parser.add_argument('-f', '--potts_folder', help="Output feature folder", type=pathlib.Path, default=None)
     parser.add_argument('-gf', '--guess_folder', help=argparse.SUPPRESS, type=pathlib.Path, default=None)
     parser.add_argument('-aln', '--aln_file', help="Alignment file", type=pathlib.Path)
     parser.add_argument('-ualn', '--unaligned_fasta', help="Unaligned sequences in fasta format", type=pathlib.Path)
