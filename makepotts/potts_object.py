@@ -19,23 +19,6 @@ class Potts_Object:
 
 
     @classmethod
-    def guess_from_folder(cls, guess_folder, potts_folder=None, **kwargs):
-        # NOT RECOMMENDED
-        if potts_folder is None:
-            potts_folder = guess_folder
-        sequence_file = fm.get_sequence_file_from_folder(guess_folder)
-        potts_model_file = fm.get_potts_model_file_from_folder(guess_folder)
-        if potts_model_file is not None:
-            kwargs["infer_potts_model"] = False
-        else:
-            kwargs["infer_potts_model"] = True
-        aln_file = fm.get_file_from_folder_ending_with_extension(guess_folder, "_reformat.fasta")
-        if aln_file is None:
-            aln_file = fm.get_file_from_folder_ending_with_extension(guess_folder, ".a3m")
-        return cls.from_files(potts_folder=potts_folder, aln_file=aln_file, sequence_file=sequence_file, potts_model_file=potts_model_file, **kwargs)
-
-
-    @classmethod
     def from_folder(cls, potts_folder, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, **kwargs):
         feature = cls()
 
@@ -235,11 +218,6 @@ class Potts_Object:
                     raise Exception("More than "+str(max_potts_model_length)+" columns in the alignment, won't infer the Potts model.")
 
                 if inference_type=="standard":
-                    #if pc_single_count is None:
-                    #    pc_single_count = fm.get_nb_sequences_in_fasta_file(aln_train)
-                    #if reg_lambda_pair_factor is None:
-                    #    L = fm.get_nb_columns_in_alignment(aln_train)
-                    #    reg_lambda_pair_factor = 30/(L-1)
                     potts_model = Potts_Model.from_training_set(aln_train, potts_model_file, pc_single_count=pc_single_count, reg_lambda_pair_factor=reg_lambda_pair_factor, **kwargs)
 
                 elif inference_type=="one_submat":
@@ -263,8 +241,6 @@ class Potts_Object:
             potts_model = get_rescaled_potts_model(potts_model, v_rescaling_function, w_rescaling_function, use_w=use_w, **kwargs)
             potts_model.to_msgpack(potts_model_file)
 
-
-            
 
 
         # IF NO ALN, NO MRF_POS_TO_ALN_POS
@@ -328,6 +304,7 @@ class Potts_Object:
         return cls.from_folder(potts_folder, v_rescaling_function="identity", w_rescaling_function="identity")
 
 
+
     @classmethod
     def from_merge(cls, potts_folder, objects, aligned_positions_dict, use_less_sequences=False, **kwargs):
         if not potts_folder.is_dir():
@@ -335,25 +312,6 @@ class Potts_Object:
         aln_original = potts_folder/"aln_original.fasta"
         get_original_msas_aligned_from_aligned_positions(aligned_positions_dict, objects, aln_original)
         return cls.from_files(potts_folder=potts_folder, aln_file=aln_original, use_less_sequences=use_less_sequences, **kwargs)
-
-    def get_seq_positions(self, positions):
-        seq_positions = []
-        for pos in positions:
-            if pos is None:
-                seq_positions.append(None)
-            else:
-                seq_positions.append(self.mrf_pos_to_seq_pos[pos])
-        return seq_positions
-
-    def get_aln_positions(self, positions):
-        aln_positions = []
-        for pos in positions:
-            if pos is None:
-                aln_positions.append(None)
-            else:
-                aln_positions.append(self.mrf_pos_to_aln_pos[pos])
-        return aln_positions
-
 
 
 
@@ -372,6 +330,25 @@ class Potts_Object:
         else:
             self.name = None
         return self.name
+
+
+    def get_seq_positions(self, positions):
+        seq_positions = []
+        for pos in positions:
+            if pos is None:
+                seq_positions.append(None)
+            else:
+                seq_positions.append(self.mrf_pos_to_seq_pos[pos])
+        return seq_positions
+
+    def get_aln_positions(self, positions):
+        aln_positions = []
+        for pos in positions:
+            if pos is None:
+                aln_positions.append(None)
+            else:
+                aln_positions.append(self.mrf_pos_to_aln_pos[pos])
+        return aln_positions
 
 
     def get_seq_pos_to_mrf_pos(self):
@@ -417,13 +394,6 @@ class Potts_Object:
         fm.write_list_to_csv(self.aln_pos_to_seq_pos, output_folder/"aln_pos_to_seq_pos.csv")
 
 
-    def copy_with_null_positions(self, output_folder, remove_v0=False, **kwargs):
-        object_copy = copy.deepcopy(self)
-        object_copy.insert_null_at_trimmed(remove_v0=remove_v0, change_mrf_pos_lists=True, **kwargs)
-        object_copy.to_folder(output_folder)
-        return object_copy
-
-        
 
 
 def main(args=sys.argv[1:]):
@@ -431,7 +401,6 @@ def main(args=sys.argv[1:]):
 
     # files
     parser.add_argument('-f', '--potts_folder', help="Output feature folder", type=pathlib.Path, default=None)
-    parser.add_argument('-gf', '--guess_folder', help=argparse.SUPPRESS, type=pathlib.Path, default=None)
     parser.add_argument('-aln', '--aln_file', help="Alignment file", type=pathlib.Path)
     parser.add_argument('-ualn', '--unaligned_fasta', help="Unaligned sequences in fasta format", type=pathlib.Path)
     parser.add_argument('-s', '--sequence_file', help="Sequence file", type=pathlib.Path)
@@ -486,11 +455,5 @@ def main(args=sys.argv[1:]):
     args["trim_alignment"] = not args["dont_trim_alignment"]
     args["infer_potts_model"] = not args["dont_infer_potts_model"]
     args["use_w"] = not args["dont_use_w"]
-    if args["guess_folder"] is not None:
-        del args["aln_file"]
-        del args["sequence_file"]
-        del args["potts_model_file"]
-        cf = Potts_Object.guess_from_folder(**args)
-    else:
-        cf = Potts_Object.from_files(**args)
-        fm.write_readme(cf.folder, **args)
+    cf = Potts_Object.from_files(**args)
+    fm.write_readme(cf.folder, **args)

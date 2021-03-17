@@ -108,7 +108,7 @@ def get_w_scores_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_f
 
 def get_w_score_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_function=scalar_product, **kwargs):
     """ total w score (alpha_w not taken into account here """
-   return 0.5*np.sum(get_w_scores_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_function=w_score_function, **kwargs))
+    return 0.5*np.sum(get_w_scores_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_function=w_score_function, **kwargs))
 
 
 def get_total_gap_cost(ad, gap_open, sequence_lengths, **kwargs):

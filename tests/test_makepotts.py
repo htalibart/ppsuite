@@ -71,13 +71,6 @@ class Test_MakePotts(unittest.TestCase):
     def test_one_hot(self):
        cf = Potts_Object.from_files(self.potts_folder, sequence_file=SEQ_1CC8, inference_type="one_hot")
 
-    def test_guess_from_folder(self):
-       self.potts_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
-       shutil.copytree(RESOURCES_1CC8_EVERYTHING_FOLDER, self.potts_folder)
-       cf = Potts_Object.guess_from_folder(self.potts_folder)
-       assert(cf.sequence=="MAEIKHYQFNVVMTCSGCSGAVNKVLTKLEPDVSKIDISLEKQLVDVYTTLPYDFILEKIKKTGKEVRSGKQL")
-       assert(cf.potts_model.ncol==62)
-
     def test_insert_null_position(self):
        pos=5
        potts_model = Potts_Model.from_msgpack(pathlib.Path(MRF_1CC8))
