@@ -10,6 +10,7 @@ from comutils.util import *
 from vizcontacts import top_couplings
 
 def get_contact_scores_for_aln_train(potts_object):
+    """ returns an ordered dictionary of contact scores for positions in the train MSA """
 
     # Get contact scores in a csv file
     mat_file = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
@@ -35,6 +36,7 @@ def get_contact_scores_for_aln_train(potts_object):
 
 
 def get_contact_scores_for_sequence(potts_object):
+    """ returns an ordered dictionary of contact scores for positions in the original sequence """
     aln_scores = get_contact_scores_for_aln_train(potts_object)
     seq_contact_scores = OrderedDict()
     for c in aln_scores:
@@ -43,7 +45,8 @@ def get_contact_scores_for_sequence(potts_object):
     return seq_contact_scores
 
 
-def get_pdb_offset(pdb_file, chain_id, real_sequence):
+def get_pdb_offset(pdb_file, chain_id):
+    """ returns the number at which numbering starts in PDB file """
     pdb_chain = fm.get_pdb_chain(pdb_file, chain_id)
     r = next(pdb_chain.get_residues())
     offset = r.get_full_id()[3][1]-1
@@ -51,9 +54,10 @@ def get_pdb_offset(pdb_file, chain_id, real_sequence):
 
 
 def get_real_pos_to_pdb_pos(pdb_file, chain_id, real_sequence):
+    """ returns rtpdb where rtpdb[i] is the position in the PDB file for residue at position i in @real_sequence"""
     pdb_sequence = fm.get_sequence_from_pdb_file(pdb_file, chain_id) 
     d = get_pos_first_seq_to_second_seq(real_sequence, pdb_sequence) # d[pos_in_real_seq] = pos_in_pdb_seq
-    pdb_offset = get_pdb_offset(pdb_file, chain_id, real_sequence)
+    pdb_offset = get_pdb_offset(pdb_file, chain_id)
     rtpdb = []
     for pos in range(len(real_sequence)):
         if d[pos] is None:
@@ -64,6 +68,7 @@ def get_real_pos_to_pdb_pos(pdb_file, chain_id, real_sequence):
 
 
 def translate_dict_to_pdb_pos(couplings_dict, pdb_file, chain_id, real_sequence):
+    """ converts dictionary of coupled positions in real sequence to coupled positions in PDB """
     d = get_real_pos_to_pdb_pos(pdb_file, chain_id, real_sequence)
     pdb_couplings_dict = OrderedDict()
     for c in couplings_dict:
@@ -87,6 +92,7 @@ def aa_distance(pos1, pos2, pdb_chain):
 
 
 def get_colored_true_false_dicts(couplings_dict, pdb_file, chain_id, real_sequence, colors={True:'blue', False:'red'}, contact_distance=8):
+    """ tf_d['blue'][c] is the strength of coupling c predicted as true contact and tf_d['red'][c] is the strength of coupling c not predicted as contact """
     d = get_real_pos_to_pdb_pos(pdb_file, chain_id, real_sequence)
     tf_d = {colors[val]:OrderedDict() for val in colors}
     for c in couplings_dict:
@@ -96,6 +102,7 @@ def get_colored_true_false_dicts(couplings_dict, pdb_file, chain_id, real_sequen
     return tf_d
 
 def remove_couplings_too_close(couplings_dict, coupling_sep_min):
+    """ returns dictionary where couplings separated by less than @coupling_sep_min are removed """
     ok_dict = OrderedDict()
     for c in couplings_dict:
         if None not in c:
@@ -104,33 +111,34 @@ def remove_couplings_too_close(couplings_dict, coupling_sep_min):
     return ok_dict
 
 def get_smaller_dict(couplings_dict, nb_couplings):
+    """ returns couplings dictionary with only the strongest @nb_couplings couplings """
     new_dict = OrderedDict()
     for c in couplings_dict:
         if len(new_dict)<nb_couplings:
             new_dict[c] = couplings_dict[c]
     return new_dict
 
+
 def get_elbow_index(couplings_dict, plot_elbow=False):
+    """ find index at which coupling strengths starts to dramatically decrease """
     y = list(couplings_dict.values())
     x = list(range(len(y)))
-
     if plot_elbow:
         plt.figure()
         plt.plot(x,y)
         plt.show()
-
     y.reverse()
     data = np.array([[xi,yi] for xi,yi in zip(x,y)])
     rotor = Rotor()
     rotor.fit_rotate(data)
     elbow_idx = rotor.get_elbow_index()
-
     return len(y)-elbow_idx
 
+
 def get_cutoff_smaller_than(couplings_dict, score_cutoff):
+    """ returns index at which coupling strength starts to be lower than @score_cutoff in ordered @couplings_dict """
     y = list(couplings_dict.values())
     if y[0]<score_cutoff:
-        #return None
         return 0
     else:
         ind=0
