@@ -1,3 +1,4 @@
+""" module mainly used for test purposes: create artificial MSA for test """
 import numpy as np
 import random
 import os
@@ -5,40 +6,37 @@ from comutils.global_variables import ALPHABET_WITHOUT_GAP
 
 
 """
-Permet de créer un faux alignement multiple à partir d'un modèle
-Prend en entrée :
-- alphabet : un alphabet (dont les lettres serviront à créer l'alignement)
-- n : nombre de séquences qu'il y aura dans l'alignement
-- proba_noise : probabilité de bruit
-- nb_letters_conserved : nombre de lettres différentes par colonne pseudo-conservée (hors bruit)
-- template : l'allure de l'alignement multiple. Tableau de chaînes de caractères, chaque position indique le type de colonne :
-    - x : colonne totalement aléatoire
-    - y : colonne "pseudo-conservée", c'est-à-dire composée d'un ensemble restreint de lettres (de taille nb_letters_conserved)
-    - (lettre dans l'alphabet) : colonne conservée, càd avec presque uniquement la lettre en question, et du bruit
-    - numéro : colonne couplée avec la colonne correspondant au numéro
-    exemple : template=['y','y','6','y','R','9','y','y','11','y','9','y']
-- alnfname : nom de fichier de sortie .aln
-- nom fichier de sortie .fasta
-- nom fichier de sortie .fasta contenant la première séquence du MSA (pour pouvoir appeler les méthodes DCA ensuite)
+Input :
+- alphabet
+- n : number of sequences in the output MSA
+- proba_noise : probability for noise in each column
+- nb_letters_conserved : number of letters in each conserved column (noise aside)
+- template: list of characters, on per column in the MSA, indicating the column type, where:
+    - 'x' means completely random column (letters are randomly sampled from alphabet)
+    - 'y' means conserved column, i.e. there are only @nb_letters_conserved in the column (+ noise)
+    - (alphabet letter): conserved letter with only this one letter (+ noise)
+    - (number): column coupled with column at position (number)
+    example : template=['y','y','6','y','R','9','y','y','11','y','9','y']
+- alnfname : output file .aln
+- output file .fasta
 """
 
 
-
 def one_random_letter(alphabet):
-    """ retourne une lettre aléatoire dans l'alphabet donné en entrée """
+    """ returns a random letter in @alphabet """
     return alphabet[random.randint(0,len(alphabet)-1)]
 
 def n_random_letters(alphabet, n):
-    """ retourne une liste de n lettres prises aléatoirement dans l'alphabet """
+    """ returns @n random letters in @alphabet """
     return random.sample(set(alphabet), n) 
 
 def noise(proba_noise):
-    """ retourne vrai si on devrait avoir du bruit, en fonction de la probabilité proba_noise """
+    """ returns True if this letter should be noise if the probability of noise is @proba_noise """
     return random.random()<proba_noise
 
 
 def get_n_majority_letters(column, nb_letters):
-    """ retourne les nb_letters lettres majoritaires dans la colonne column """
+    """ returns the most frequent @nb_letters letters in @column """
     counts = {}
     for l in column:
         if l in counts:
@@ -55,7 +53,7 @@ def get_n_majority_letters(column, nb_letters):
 
 
 def generate_probadict_for_pseudoconserved_column(conserved_letters, proba_noise, alphabet):
-    """ génère un dictionnaire de probabilités de type {lettre : proba, lettre : proba, ...} """
+    """ outputs a probability dict like {letter:proba, letter:proba, ...} for each letter in the alphabet to build a column with a list @conserved_letters of conserved letters and a probability of noise @proba_noise"""
     probadict = {}
     proba_not_noise = 1-proba_noise
     proba_each_conserved_letter = proba_not_noise/len(conserved_letters)
@@ -69,7 +67,7 @@ def generate_probadict_for_pseudoconserved_column(conserved_letters, proba_noise
 
 
 def generate_column_from_probadict(n, probadict, proba_noise, alphabet):
-    """ génère une colonne à partir d'un dictionnaire de probabilités {lettre : proba, lettre : proba...} """
+    """ outputs a column from a dictionary providing a probability for each letter in the alphabet """
     c = []
     items = probadict.items()
     letters = [item[0] for item in items]
@@ -84,6 +82,7 @@ def generate_column_from_probadict(n, probadict, proba_noise, alphabet):
 
 
 def get_probadict_from_column(column):
+    """ outputs a probability dict {letter:proba, ...} given a column """
     probadict = {}
     for l in column:
         if l in probadict:
@@ -94,19 +93,20 @@ def get_probadict_from_column(column):
         probadict[l]=probadict[l]/len(column)
     return probadict
 
+
 def conserved_column(conserved_letter, n, proba_noise, alphabet):
-    """ retourne une colonne conservée (une lettre conserved_letter) de taille n sur un alphabet, avec une probabiltié de bruit proba_noise """
+    """ outputs a column of depth @n with one conserved letter @conserved_letter with noise probability @proba_noise """
     probadict = generate_probadict_for_pseudoconserved_column([conserved_letter], proba_noise, alphabet)
     return generate_column_from_probadict(n, probadict, proba_noise, alphabet)
 
 
 def random_column(n, alphabet, proba_noise):
-    """ prend un alphabet et une probabilité de bruit prova_noise et retourne une colonne totalement aléatoire de taille n """
+    """ outputs a column of depth @n with completely random letters """
     return pseudoconserved_column(alphabet, n, proba_noise, alphabet)
 
 
 def generate_probadict_for_one_coupling(letters1, letters2):
-    """ prend l'alphabet de la première colonne et génère la liste des probas de passer d'une lettre à l'autre, sous forme de dictionnaire {lettre : {{lettre : proba}, {lettre : proba},...}, lettre :...}"""
+    """ outputs a dictionary {letter1:{letter2:proba},...} where letter1 is in @letters1 and letter2 is in @letters2 """
     probadict = {}
     for l1 in letters1:
         probadict[l1] = {}
@@ -116,7 +116,7 @@ def generate_probadict_for_one_coupling(letters1, letters2):
 
 
 def get_correlated_column(c1, n, alphabet, proba_noise, probadict):
-    """ prend une colonne c1 d'alphabet letters 1 et retourne une colonne couplée selon le dictionnaire proba dict"""
+    """ inputs a column @c1 of depth @n on @alphabet and outputs a coupled column according to a probability dictionary @probadict in the form {letter:{letter:proba},...}"""
     c2 = []
     letters1 = list(probadict.keys())
     for l1 in c1:
@@ -134,7 +134,7 @@ def get_correlated_column(c1, n, alphabet, proba_noise, probadict):
 
 
 def print_result_in_file(msa, n, fname, reverse):
-    """ prend le MSA créé et l'écrit dans le fichier de taille fname, en inversant l'ordre des colonnes si reverse """
+    """ writes created MSA of depth @n in file @fname, reverses order if @reverse """
     p = len(msa[0])
     with open(fname, 'w') as f:
         for i in range(p):
@@ -150,33 +150,38 @@ def print_result_in_file(msa, n, fname, reverse):
 
 
 def get_aligned_column(ref, n, alphabet, proba_noise, nb_letters, msa, aln_dict, no_coupling):
-    """ retourne la colonne alignée à la colonne de référence (dont les infos sont dans @ref) dans l'alignement de référence, en fonction de l'alphabet, des probabilités de mutation proba_noise, de l'alignement en cours, et du dictionnaire aln_dict donnant les correspondances "colonne de l'alignement en cours" : "colonne dans l'alignement de référence
-    ref['type'] = type de la colonne
-    ref['col'] = la colonne
-    ref['ind_col1'] = si coupling, indice de la première colonne du coupling (dans le premier template)
-    ref['probadict_coupling'] = si coupling, dictionnaire de probabilités de passage d'une lettre à l'autre : {lettre : {lettre : proba}, {lettre : proba}, ...}
-    ref['probadict_column'] = dictionnaire de probabilités de la colonne {lettre : proba, lettre : proba, ...}
- """
-    if ref['type']=="x": # si la colonne de référence est de type x (random), on retourne une colonne random
+    """ outputs a column in a second MSA that should be aligned to a column in the first MSA described by @ref where:
+        - ref['type'] is the column type ('x', 'y', ...)
+        - ref['col'] is the actual column
+        - ref['ind_col1']: if column is coupled, position of the first coupled column
+        - ref['probadict_coupling']: if column is coupled, dict of probabilities {letter:{letter:proba},...}
+        - ref['probadict_column']: dict of probabilities for the column {letter:proba, letter:proba, ...}
+        @aln_dict is a dictionary providing columns that should be matched, in the form {column in this MSA: column in the first MSA}
+        @no_coupling is True if we don't want this column to be coupled even if @ref is
+    """
+    if ref['type']=="x": # if ref column type is 'x' (random), matched column is random too
         return random_column(n, alphabet, proba_noise)
-    elif ref['type']=="y": # si la colonnne est de type y (pseudo-conservée), on regarde les nb_letters majoritaires de la colonne de référence et on crée une colonne pseudo-conservée à partir d'elles 
+    elif ref['type']=="y": # if ref column is 'y' (conserved), retrieve the main letters and output column with these letters 
         probadict = ref['probadict_column']
         return generate_column_from_probadict(n, probadict, proba_noise, alphabet)
-    elif ref['type']=="C": # si la colonne est de type C (conservée), on regarde la lettre la plus conservée dans la référence et on crée une colonne conservée à partir d'elle
+    elif ref['type']=="C": # if ref letter is 'C' (one conserved letter), output column with the conserved letter
         letter = get_n_majority_letters(ref['col'], 1)
         return conserved_column(letter, n, proba_noise, alphabet)
-    elif ref['type']=="c2": # si la colonne est la deuxième colonne d'un coupling
+    elif ref['type']=="c2": # if column is the second column in a coupling
         if (no_coupling):    
             probadict = get_probadict_from_column(ref['col'])
             return generate_column_from_probadict(n, probadict, proba_noise, alphabet)
         else:
-            ind_col1 = aln_dict[ref['ind_col1']] # on regarde quel est l'indice de la première colonne dans notre alignement
+            ind_col1 = aln_dict[ref['ind_col1']] # index of the first coupled column in this MSA
             col1 = msa[ind_col1]
             probadict = ref['probadict_coupling']
             return get_correlated_column(col1, n, alphabet, proba_noise, probadict)
 
 
+
 def create_MSA(template, n, alphabet, proba_noise, nb_letters_conserved, reference_dict):
+    """ creates artificial MSA and outputs a reference dictionary describing it so that the next MSA may be aligned to it 
+        @reference_dict gives: {position:{type:, col: probadict_column,...},...} """
     p = len(template)
     msa = [[]]*p
     letters_list = [[]]*p
@@ -188,12 +193,12 @@ def create_MSA(template, n, alphabet, proba_noise, nb_letters_conserved, referen
     for i in range(p):
         new_ref_dict[i] = {}
         car = template[i]
-        if (car=="x"): # colonne totalement random
+        if (car=="x"): # completely random conserved
             msa[i] = random_column(n, alphabet, proba_noise)
             new_ref_dict[i]['type'] = "x"
 
 
-        elif (car=="y"): # colonne pseudo-conservée
+        elif (car=="y"): # conserved column with @nb_letters_conserved letters
             letters_list[i] = n_random_letters(alphabet, nb_letters_conserved)
             probadict = generate_probadict_for_pseudoconserved_column(letters_list[i], proba_noise, alphabet)
             msa[i] = generate_column_from_probadict(n, probadict, proba_noise, alphabet)
@@ -201,24 +206,23 @@ def create_MSA(template, n, alphabet, proba_noise, nb_letters_conserved, referen
             new_ref_dict[i]['col'] = msa[i]
             new_ref_dict[i]['probadict_column'] = probadict
 
-        elif (car in alphabet): # colonne conservée
+        elif (car in alphabet): # conserved column with one letter
             msa[i] = conserved_column(car, n, proba_noise, alphabet)
             new_ref_dict[i]['type'] = ["C"]
 
 
-        elif (car[0]=="["): # colonne devant s'aligner au MSA précédemment calculé
+        elif (car[0]=="["): # column that will be aligned to a column in a previously built MSA described in @reference_dict
             no_coupling = (car[1]=="-")
             col_nb = int(car[1+no_coupling:len(car)-1])
-            aln_dict[col_nb] = i # on stocke un dictionnaire {num ancienne colonne : num nouvelle colonne} (pour les couplings)
+            aln_dict[col_nb] = i # storing a dictonary {position first column: position second column} for couplings
             msa[i] = get_aligned_column(reference_dict[col_nb], n, alphabet, proba_noise, nb_letters_conserved, msa, aln_dict, no_coupling)
             letters_list[i] = get_n_majority_letters(msa[i], nb_letters_conserved)
-            #new_ref_dict[i]['probadict_column'] = reference_dict[col_nb]['probadict_column']
 
 
-        else: # colonne faisant partie d'un coupling
+        else: # column in a coupling
             letters_list[i]  = n_random_letters(alphabet, nb_letters_conserved)
 
-            if (i in next_list): # colonne couplée avec une colonne déjà créée
+            if (i in next_list): # column coupled with column already created
                 ind = previous_list[next_list.index(i)]
                 letters1 = get_n_majority_letters(msa[ind], nb_letters_conserved)
                 probadict = generate_probadict_for_one_coupling(letters1, letters_list[i])
@@ -230,40 +234,25 @@ def create_MSA(template, n, alphabet, proba_noise, nb_letters_conserved, referen
                 new_ref_dict[i]['ind_col1'] = ind
                 new_ref_dict[i]['probadict_coupling'] = probadict
 
-            else: # colonne pas encore couplée, qui sera couplée ensuite
+            else: # first column of a coupling
                 probadict = generate_probadict_for_pseudoconserved_column(letters_list[i], proba_noise, alphabet)
                 msa[i] = generate_column_from_probadict(n, probadict, proba_noise, alphabet)
                 new_ref_dict[i]['type'] = "y"
                 new_ref_dict[i]['col'] = msa[i]
                 new_ref_dict[i]['probadict_column'] = probadict
 
-            if(int(car)>i): # si la colonne doit être couplée à une autre colonne plus loin
+            if(int(car)>i): # column will be coupled to a column that will be created later
                 next_list.append(int(car))
                 previous_list.append(i)
+
     return msa, new_ref_dict
 
 
-def create_fake_seq_fasta(aln_file, fastaseq_file): # première séquence d'un aln
-    with open(aln_file, 'r') as f:
-        lines = f.readlines()
-
-    line = lines[0]
-    seq = line[0:len(line)-1]
-
-    with open(fastaseq_file, 'w') as of:
-        of.write(">0\n")
-        of.write(seq+"\n")
-
-def create_seq_fasta(seq, fastaseq_file): # à partir d'une séquence
-    with open(fastaseq_file, 'w') as of:
-        of.write(">0\n")
-        of.write(seq+"\n")
-
 
 def create_fake_fasta(aln_file, output_fasta):
+    """ converts created aln to fasta """
     with open(aln_file, 'r') as f:
         lines = f.readlines()
-
     with open(output_fasta, 'w') as of:
         i=0
         for line in lines:
