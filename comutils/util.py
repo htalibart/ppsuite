@@ -12,10 +12,8 @@ q = len(ALPHABET)
 
 
 def code(c):
-        """
-            gives number code in [0,21] for letter c
-        """
-        return ALPHABET.find(c.upper())
+    """ gives number code in [0,21] for letter @c"""
+    return ALPHABET.find(c.upper())
 
 
 def code_whole_seq(sequence):
@@ -31,11 +29,12 @@ def scalar_product(v1, v2):
 
 
 def sign_ind(x):
+    """ returns 1 if @x>=0, -1 otherwise """
     return 2*(x>=0)-1
 
 
 def seq_identity(seq1, seq2):
-    """ calcule l'identité de séquence entre @seq1 et @seq2 """
+    """ sequence identity between unaligned sequences @seq1 et @seq2 """
     alignment = pairwise2.align.globalxx(seq1, seq2, one_alignment_only=True)[0]
     nb_matches = alignment[2]
     length_alignment = len(alignment[0])
@@ -57,7 +56,7 @@ def is_gap_column(i, msa):
 
 
 def get_trimmed_sequence_for_msa(msa_file, seq):
-    """ retourne la séquence @seq taillée pour qu'elle rentre dans le MSA @msa_file : on enlève toutes les positions insérées """
+    """ aligns sequence @seq to MSA in @msa_file and removes all inserted positions in @seq so that it can be aligned to the MSA """
     temp_folder = pathlib.Path(tempfile.mkdtemp())
     tempseq_file = temp_folder/("seq.fasta")
     seq_name = fm.create_seq_fasta(seq, tempseq_file)
@@ -73,8 +72,9 @@ def get_trimmed_sequence_for_msa(msa_file, seq):
     shutil.rmtree(temp_folder)
     return trimmed
 
+
 def get_pos_first_seq_to_second_seq(first_seq, second_seq):
-    """ d[pos_in_first_seq] = pos_in_second_seq """
+    """ returns dictionary d[pos_in_first_seq] = pos_in_second_seq """
     gap_char='.'
     alns = pairwise2.align.globalxx(first_seq, second_seq, gap_char=gap_char)
     top_aln = alns[0]
@@ -93,15 +93,3 @@ def get_pos_first_seq_to_second_seq(first_seq, second_seq):
             first_pos+=1
             second_pos+=1
     return pos_dict_first_seq_to_second_seq
-
-
-
-def remove_sequences_with_too_many_gaps(input_file, output_file, gap_threshold):
-    alignment = AlignIO.read(open(input_file), "fasta")
-    acceptable_records = []
-    for record in alignment:
-        nb_gaps = str(record.seq).count('-')
-        if nb_gaps/len(str(record.seq))<1-gap_threshold:
-            acceptable_records.append(record)
-    with open(output_file, 'w') as f:
-        SeqIO.write(acceptable_records, f, "fasta")
