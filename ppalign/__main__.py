@@ -16,8 +16,6 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-p2', '--potts_model_file_2', help="Potts model 2", type=pathlib.Path)
     parser.add_argument('-f1', '--potts_folder_1', help="Folder containing files for sequence 1", type=pathlib.Path)
     parser.add_argument('-f2', '--potts_folder_2', help="Folder containing files for sequence 2", type=pathlib.Path)
-    parser.add_argument('-gf1', '--guess_folder_1', help=argparse.SUPPRESS, type=pathlib.Path)
-    parser.add_argument('-gf2', '--guess_folder_2', help=argparse.SUPPRESS, type=pathlib.Path)
     parser.add_argument('-o', '--output_folder', help="Output folder (if not specified : output_ppalign/[DATE]/)", type=pathlib.Path)
 
 
@@ -97,9 +95,6 @@ def main(args=sys.argv[1:]):
             temp_folders.append(potts_folder)
         elif args["potts_folder_"+str(k)] is not None:
             obj = Potts_Object.from_folder(args["potts_folder_"+str(k)], **args)
-            objects.append(obj)
-        elif args["guess_folder_"+str(k)] is not None:
-            obj = Potts_Object.guess_from_folder(args["guess_folder_"+str(k)], **args)
             objects.append(obj)
         else:
             raise Exception("Need input "+str(k))

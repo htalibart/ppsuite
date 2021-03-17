@@ -409,7 +409,7 @@ def main(args=sys.argv[1:]):
     # fetch sequences ?
     parser.add_argument('-fetch', '--fetch_sequences', help="Fetch sequences in database ? (requires a sequence file) (default : False)", action='store_true', default=False)
     parser.add_argument('-fetcher', '--sequences_fetcher', help="Fetch sequences with...? (hhblits or blast) (default : hhblits)", default='hhblits')
-    parser.add_argument('-d', '--database', help="Database path for HHblits or BLAST call", default=None) # TODO expliquer
+    parser.add_argument('-d', '--database', help="Database path for HHblits or BLAST call", default=None)
     parser.add_argument('--nb_sequences_blast', help="Nb sequences fetched by BLAST (default : 100000)", type=int, default=100000)
     parser.add_argument('--blast_evalue', help="BLAST E-value parameter (default : 1)", type=float, default=1)
     # E-value cutoff
