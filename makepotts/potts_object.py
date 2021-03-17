@@ -1,3 +1,4 @@
+""" Potts Objects are objects handled by PPalign, including Potts models, sequences, MSAs and correspondences between them """
 import uuid
 import sys
 import argparse
@@ -20,6 +21,7 @@ class Potts_Object:
 
     @classmethod
     def from_folder(cls, potts_folder, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, **kwargs):
+        """ instantiate Potts object from Potts folder """
         feature = cls()
 
         feature.folder = potts_folder
@@ -63,8 +65,6 @@ class Potts_Object:
         except Exception as e:
             feature.aln_pos_to_seq_pos = None
 
-
-
         feature.mrf_pos_to_aln_pos=None
         try:
             feature.mrf_pos_to_aln_pos = fm.get_list_from_csv(potts_folder/"mrf_pos_to_aln_pos.csv") # mrf_pos_to_aln_pos[i] = position in original_aln corresponding to position i in Potts model
@@ -90,7 +90,7 @@ class Potts_Object:
         if potts_folder is None:
             folder_name = str(uuid.uuid4())
             potts_folder = pathlib.Path(folder_name)
-            print("No folder name specified, feature folder will be created at "+str(potts_folder)) 
+            print("No folder name specified, Potts folder will be created at "+str(potts_folder)) 
 
         if not potts_folder.is_dir():
             potts_folder.mkdir()
@@ -122,17 +122,16 @@ class Potts_Object:
 
 
         # ORIGINAL ALIGNMENT, AFTER CUTOFF IF ANY
-        if aln_file is not None:
+        if aln_file is not None: # if MSA file is provided
             fm.check_if_file_ok(aln_file)
             if fm.get_format(aln_file)=="fasta":
                 aln_original = aln_file
-            elif fm.get_format(aln_file)=="a3m":
+            elif fm.get_format(aln_file)=="a3m": # convert to fasta
                 reformat = potts_folder/"reformat.fasta"
                 call_reformat(aln_file, reformat)
                 aln_original = reformat
             else:
                 raise Exception("Unknown format : "+str(fm.get_format(aln_file))+" for "+str(aln_file))
-
             aln_original_before_clean = aln_original
             aln_original = potts_folder/"aln_original.fasta"
             fm.remove_sequences_with_bad_characters_from_fasta_file_and_upper(aln_original_before_clean, aln_original)
@@ -140,10 +139,9 @@ class Potts_Object:
                 cutoff_fasta = potts_folder/("cutoff_"+str(cutoff_index)+".fasta")
                 fm.create_fasta_file_with_less_sequences(aln_original, cutoff_fasta, cutoff_index)
                 aln_original = cutoff_fasta
-
             fm.copy(aln_original, potts_folder/"aln_original.fasta")
 
-        elif unaligned_fasta is not None:
+        elif unaligned_fasta is not None: # if unaligned sequences are provided
             fm.check_if_file_ok(unaligned_fasta)
             if use_evalue_cutoff:
                 cutoff_fasta = potts_folder/("cutoff_"+str(cutoff_index)+".fasta")
@@ -161,34 +159,34 @@ class Potts_Object:
             call_mafft(clean_unaligned_fasta, aln_mafft)
             aln_original = potts_folder/"aln_original.fasta"
             fm.remove_positions_with_gaps_in_first_sequence(aln_mafft, aln_original)
-            #call_trimal(aln_mafft, aln_original, 0.05, 0) # trim 0.05 because hhfilter can't handle too long sequences
-            fm.copy(aln_original, potts_folder/"aln_original.fasta") # ? check
+            fm.copy(aln_original, potts_folder/"aln_original.fasta")
 
-        elif inference_type=='one_submat' or inference_type=='one_hot':
+        elif inference_type=='one_submat' or inference_type=='one_hot': # if Potts model is inferred from sequence, MSA is set to sequence
             aln_original = sequence_file
+
         else:
             aln_original = None
 
 
 
-        # TRAIN ALIGNMENT
+        # ORIGINAL MSA TO TRAIN MSA
         aln_train = aln_original
 
         if (aln_train is not None):
             fm.check_if_file_ok(aln_train)
 
             if (inference_type=="standard"):
-                if filter_alignment:
+                if filter_alignment: # filter alignment (default keep 80% sequence identity)
                     filtered = potts_folder/"filtered.fasta"
                     call_hhfilter(aln_train, filtered, hhfilter_threshold)
                     aln_train = filtered
-
                 use_less_sequences = use_less_sequences and (not use_evalue_cutoff)
-                if use_less_sequences:
+                if use_less_sequences: # if alignment depth fixed arbitrarily (no E-value cutoff)
                     less_fasta = potts_folder/("less_"+str(max_nb_sequences)+".fasta")
                     fm.create_fasta_file_with_less_sequences(aln_train, less_fasta, max_nb_sequences)
                     aln_train = less_fasta
-                           
+
+                # trimmed alignment
                 if trim_alignment:
                     colnumbering_file = potts_folder/"colnumbering.csv"
                     trimmed_aln = potts_folder/("trim_"+str(int(trimal_gt*100))+".fasta")
@@ -205,6 +203,7 @@ class Potts_Object:
                 mrf_pos_to_aln_pos = [pos for pos in range(nb_pos)]
 
             fm.copy(aln_train, potts_folder/"aln_train.fasta")
+
             if fm.get_nb_sequences_in_fasta_file(aln_train)<min_nb_sequences:
                 raise Exception("Less than "+str(min_nb_sequences)+" in the training set : "+str(fm.get_nb_sequences_in_fasta_file(aln_train)))
 
@@ -220,10 +219,10 @@ class Potts_Object:
                 if inference_type=="standard":
                     potts_model = Potts_Model.from_training_set(aln_train, potts_model_file, pc_single_count=pc_single_count, reg_lambda_pair_factor=reg_lambda_pair_factor, **kwargs)
 
-                elif inference_type=="one_submat":
+                elif inference_type=="one_submat": # build Potts model from sequence using substitution matrix pseudo-counts on single frequencies
                     potts_model = Potts_Model.from_sequence_file_with_submat(aln_train, filename=potts_model_file, **kwargs)
                 
-                elif inference_type=="one_hot":
+                elif inference_type=="one_hot": # build Potts model from sequence with one-hot encoding
                     potts_model = Potts_Model.from_sequence_file_to_one_hot(aln_train, filename=potts_model_file, **kwargs)
                 else:
                     raise Exception("Unknown inference type")
@@ -255,7 +254,7 @@ class Potts_Object:
             seq = fm.get_first_sequence_in_fasta_file(sequence_file)
             mrf_pos_to_seq_pos = get_mrf_pos_to_seq_pos(original_first_seq, seq, mrf_pos_to_aln_pos)
             aln_pos_to_seq_pos = get_pos_first_seq_to_second_seq(original_first_seq, seq) 
-        elif aln_original is not None:
+        elif aln_original is not None: # if no sequence file is provided, sequence is the first sequence of the MSA
             seq = fm.get_first_sequence_in_fasta_file(aln_original)
             seq_name = fm.get_first_sequence_name(aln_original)
             fm.create_seq_fasta(seq, potts_folder/"sequence.fasta", seq_name=seq_name)
@@ -266,6 +265,7 @@ class Potts_Object:
             aln_pos_to_seq_pos = None
 
 
+        # RE-INSERT NULL COLUMNS
         if ((insert_null_at_trimmed) or (insert_v_star_at_trimmed)) and (potts_model is not None):
             if (insert_v_star_at_trimmed):
                 potts_model.insert_vi_star_gapped_to_complete_mrf_pos(mrf_pos_to_seq_pos, fm.get_nb_columns_in_alignment(aln_original), msa_file_before_trim)
@@ -281,21 +281,18 @@ class Potts_Object:
                 potts_model.to_msgpack(potts_model_file)
 
 
+        # HANDLE CORRESPONDENCES BETWEEN POTTS MODEL POSITIONS AND SEQ/MSA POSITIONS
         if mrf_pos_to_seq_pos is not None:
             fm.write_list_to_csv(mrf_pos_to_seq_pos, potts_folder/"mrf_pos_to_seq_pos.csv")
-
         if mrf_pos_to_aln_pos is not None:
             fm.write_list_to_csv(mrf_pos_to_aln_pos, potts_folder/"mrf_pos_to_aln_pos.csv")
-
         if aln_pos_to_seq_pos is not None:
             fm.write_list_to_csv(aln_pos_to_seq_pos, potts_folder/"aln_pos_to_seq_pos.csv")
 
 
+        # HANDLE FILES
         if potts_model_file is not None:
             fm.copy(potts_model_file, potts_folder/"potts_model.mrf")
-
-
-
         if not keep_tmp_files:
             for name in ["aln_original.a3m", "reformat.fasta", "filtered.fasta", "less_"+str(max_nb_sequences)+".fasta", "trim_80.fasta", "aln_mafft.fasta", "clean_unaligned_sequences.fasta"]:
                 if (potts_folder/name).is_file():
@@ -307,6 +304,7 @@ class Potts_Object:
 
     @classmethod
     def from_merge(cls, potts_folder, objects, aligned_positions_dict, use_less_sequences=False, **kwargs):
+        """ create Potts object by merging two Potts objects aligned """
         if not potts_folder.is_dir():
             potts_folder.mkdir()
         aln_original = potts_folder/"aln_original.fasta"
@@ -333,6 +331,7 @@ class Potts_Object:
 
 
     def get_seq_positions(self, positions):
+        """ seq_positions[i] is the position in the sequence corresponding to position i in the Potts model """
         seq_positions = []
         for pos in positions:
             if pos is None:
@@ -342,6 +341,7 @@ class Potts_Object:
         return seq_positions
 
     def get_aln_positions(self, positions):
+        """ aln_positions[i] is the position in the original MSA corresponding to position i in the Potts model """
         aln_positions = []
         for pos in positions:
             if pos is None:
@@ -352,6 +352,7 @@ class Potts_Object:
 
 
     def get_seq_pos_to_mrf_pos(self):
+        """ seq_pos_to_mrf_pos[i] is the position in the Potts model corresponding to position i in the sequence """
         seq_pos_to_mrf_pos = []
         for pos in range(len(self.sequence)):
             try:
@@ -363,6 +364,7 @@ class Potts_Object:
 
 
     def get_positions_in_sequence_that_are_not_in_train_alignment(self):
+        """ returns all positions that are in the sequence but not in the MSA used to train the Potts model """
         seq_pos_to_mrf_pos = self.get_seq_pos_to_mrf_pos()
         in_seq_not_in_aln = []
         for pos in range(len(self.sequence)):
@@ -372,6 +374,7 @@ class Potts_Object:
 
 
     def insert_null_at_trimmed(self, remove_v0=False, change_mrf_pos_lists=False, **kwargs):
+        """ inserts null columns at positions trimmed by trimal """
         if remove_v0:
             v_null = np.tile(get_background_v0(**kwargs), (1,1))
         else:
