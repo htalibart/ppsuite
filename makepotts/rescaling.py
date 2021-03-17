@@ -5,7 +5,7 @@ from comutils.util import *
 from makepotts.potts_model import *
 
 VECTORIZABLE_FUNCTIONS = ["identity", "original_rescaling", "exponential"]
-USEFUL_KWARGS =  ["alpha_rescaling", "v_rescaling_tau", "w_rescaling_tau", "v_back_to_scale", "w_back_to_scale", "beta_softmax_w"]
+USEFUL_KWARGS =  ["alpha_rescaling", "v_rescaling_tau", "w_rescaling_tau", "v_back_to_scale", "w_back_to_scale", "beta_softmax_w"] # because Python won't accept too many parameters in kwargs
 
 def get_rescaled_potts_model(potts_model, v_rescaling_function, w_rescaling_function, use_w=True, **kwargs):
     """ returns a copy of Potts Model @mrf rescaled using @v_rescaled_function_name rescaling function to rescale v and @w_rescaled_function for w if @use_w """
