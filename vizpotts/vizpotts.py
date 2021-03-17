@@ -103,22 +103,6 @@ def visualize_mrf(mrf, alphabet=ALPHABET, start_at_1=True, **kwargs):
     visualize_parameters(mrf.v, mrf.get_v_norms(), mrf.get_w_norms(), mrf.name, alphabet=alphabet, start_at_1=start_at_1, **kwargs)
 
 
-def visualize_mrf_from_msgpack(msgpack_file, alphabet=ALPHABET, start_at_1=True, **kwargs):
-    mrf = Potts_Model.from_msgpack(msgpack_file)
-    visualize_mrf(mrf, alphabet=alphabet, start_at_1=start_at_1, **kwargs)
-
-
-def visualize_mrf_difference(mrf1, mrf2, alphabet=ALPHABET, start_at_1=True, **kwargs):
-    v_diff = mrf1.v-mrf2.v
-    v_norm_diff = [euclidean_norm(mrf1.v[i])-euclidean_norm(mrf2.v[i]) for i in range(mrf1.ncol)]
-    w_norm = mrf1.get_w_norms()-mrf2.get_w_norms()
-    name = mrf1.name+"-"+mrf2.name
-    visualize_parameters(v_diff, v_norm_diff, w_norm, name, alphabet, start_at_1, **kwargs)
-
-    mrf_diff = Potts_Model.from_parameters(mrf1.v-mrf2.v, mrf1.w-mrf2.w, name=name+"_diffmrf")
-    visualize_mrf(mrf_diff, alphabet, start_at_1, **kwargs)
-
-
 
 def visualize_one_sequence(mrf, sequence, **kwargs):
     """ visualization of parameters v_i_a and w_ij_ab of Potts model @mrf for a and b in sequence @sequence """
@@ -193,75 +177,6 @@ def visualize_v_alignment_with_scalar_product(aligned_mrfs, aln_res_file, alphab
 
 
 
-def visualize_v_w_scores_at_positions(aligned_mrfs, aln_res_file, show_figure=True, tick_space=3, label_dict=None, start_at_1=False, **kwargs):
-    dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
-    fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1]})
-    aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
-
-    if label_dict is None:
-        label_dict = dict_aligned_pos
-        label_list = aligned_pos
-    else:
-        label_list = list(label_dict.values())
-
-    xticklabels = ['('+str(label_list[0][k]+start_at_1)+','+str(label_list[1][k]+start_at_1)+')' if (k%tick_space==0) else " " for k in range(len(aligned_pos[0]))]
-
-    v_scores = get_v_scores_for_alignment(aligned_mrfs, dict_aligned_pos, **kwargs)
-    sns.heatmap([v_scores], yticklabels=['v'], xticklabels=[], cmap="RdBu", ax=ax[0], center=0)
-
-    w_scores_sums = [sum([get_wij_wkl_score(aligned_mrfs[0].w[i][j],aligned_mrfs[1].w[k][l], **kwargs) for j,l in zip(aligned_pos[0], aligned_pos[1])]) for i,k in zip(aligned_pos[0], aligned_pos[1])]
-    sns.heatmap([w_scores_sums], yticklabels=['w'], xticklabels=xticklabels, cmap="RdBu", ax=ax[1], center=0)
-
-    plt.tight_layout()
-    plt.subplots_adjust(wspace=0, hspace=0)
-    plt.draw()
-    if show_figure:
-        plt.show()
-
-
-
-def visualize_v_scores_alignment(aligned_mrfs, aln_res_file, tick_space=3, label_with_ref=False, label_with_2=False, v_score_function=scalar_product, **kwargs):
-    dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
-    aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
-    plt.figure()
-    scores = [v_score_function(aligned_mrfs[0].v[i],aligned_mrfs[1].v[j]) for i,j in zip(aligned_pos[0], aligned_pos[1])]
-    if label_with_ref:
-        xticklabels = aligned_pos[0]
-    elif label_with_2:
-        xticklabels = aligned_pos[1]
-    else:
-        insp = inspect.getargspec(sns.heatmap)
-        xticklabels = insp.defaults[insp.args.index('xticklabels')]
-    sns.heatmap([scores], yticklabels=["v"], xticklabels=xticklabels, cmap="RdBu", center=0)
-    end_visual(**kwargs)
-
-
-def visualize_w_scores_alignment(aligned_mrfs, aln_res_file, tick_space=3, label_with_ref=False, label_with_2=False, w_score_function=scalar_product, start_at_1=False, **kwargs):
-    dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
-    aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
-    len_aln = len(aligned_pos[0])
-    plt.figure()
-    scores = np.zeros((len_aln,len_aln))
-    for ind_i in range(len_aln):
-        for ind_j in range(len_aln):
-                scores[ind_i,ind_j] = w_score_function(aligned_mrfs[0].w[aligned_pos[0][ind_i],aligned_pos[0][ind_j]], aligned_mrfs[1].w[aligned_pos[1][ind_i],aligned_pos[1][ind_j]])
-    if label_with_ref:
-        xticklabels = aligned_pos[0]
-        yticklabels = aligned_pos[1]
-    elif label_with_2:
-        xticklabels = aligned_pos[1]
-        yticklabels = aligned_pos[0]
-    else:
-        #insp = inspect.getargspec(sns.heatmap)
-        #xticklabels = insp.defaults[insp.args.index('xticklabels')]
-        xticklabels = []
-        yticklabels = []
-    xticklabels = [str(xi+start_at_1) if (xi%tick_space==0) else " " for xi in xticklabels]
-    yticklabels = [str(xi+start_at_1) if (xi%tick_space==0) else " " for xi in yticklabels]
-    sns.heatmap(scores, yticklabels=yticklabels, xticklabels=xticklabels, cmap="RdBu", center=0)
-    end_visual(**kwargs)
-    
-
 def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True, tick_space=3, v_score_function=scalar_product, w_score_function=scalar_product, alpha_w=1, alphabet=ALPHABET, start_at_1=False, label_dict=None, print_text=True, **kwargs):
     dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
     aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
@@ -324,22 +239,6 @@ def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True,
     if show_figure:
         plt.show()
     return fig
-
-
-
-def visualize_v_norm_alignment(aligned_mrfs, aln_res_file, start_at_1=True, show_figure=True, tick_space=3):
-    dict_aligned_pos = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
-    aligned_pos = [dict_aligned_pos["pos_ref"], dict_aligned_pos["pos_2"]]
-    fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1]})
-    for k in range(2):
-        v_norms = [euclidean_norm(aligned_mrfs[k].v[i]) for i in aligned_pos[k]]
-        xticklabels = [str(aligned_pos[k][i]+start_at_1) if (i%tick_space==0) else " " for i in range(len(v_norms))]
-        sns.heatmap([v_norms], xticklabels=xticklabels, cmap="RdBu", ax=ax[k], center=0)
-        ax[k].tick_params(labelsize='xx-small')
-    plt.tight_layout()
-    plt.draw()
-    if show_figure:
-        plt.show()
 
 
 
