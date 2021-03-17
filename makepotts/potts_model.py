@@ -15,7 +15,7 @@ from comutils.util import *
 from comutils import files_management as fm
 from comutils import pseudocounts
 
-POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff", "reg-lambda-single", "reg-lambda-pair-factor", "reg-L2", "reg-noscaling", "reg-scale-by-L", "v-center", "v-zero", "max-gap-pos", "max-gap_seq", "pc-uniform", "pc-submat", "pc-constant", "pc-none", "pc-single-count", "pc-pair-count", "maxit", "ofn-pll", "ofn-cd", "pc-pair-submat", "persistent", "no-decay", "nr-markov-chains"] # TODO mettre toutes les options
+POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff", "reg-lambda-single", "reg-lambda-pair-factor", "reg-L2", "reg-noscaling", "reg-scale-by-L", "v-center", "v-zero", "max-gap-pos", "max-gap_seq", "pc-uniform", "pc-submat", "pc-constant", "pc-none", "pc-single-count", "pc-pair-count", "maxit", "ofn-pll", "ofn-cd", "pc-pair-submat", "persistent", "no-decay", "nr-markov-chains"]
 
 class Potts_Model:
 
@@ -27,7 +27,6 @@ class Potts_Model:
             self.name = kwargs['name']
         else:
             self.name = "Billy"
-        #print("w norm: ", self.get_w_norm(), "normalized w norm: ", self.get_normalized_w_norm())
 
 
     @classmethod
@@ -70,7 +69,7 @@ class Potts_Model:
     @classmethod
     def from_training_set(cls, aln_file, binary_file, write_readme=True, readme_file=None, **kwargs):
         """
-            initialize MRF from training set
+            initialize Potts model from train MSA file
         """
         fm.check_if_file_ok(aln_file)
         call = "ccmpred "+str(aln_file)+ " -b "+str(binary_file)
@@ -277,9 +276,7 @@ class Potts_Model:
 
 
     def Zi(self, x, i):
-        """
-            retourne la constante Zi à la position i pour la séquence x
-        """
+        """ pseudo-likelihood constant Zi at position i for sequence x """
         n = self.ncol
         Zi = 0
         for a in range(21):
@@ -291,9 +288,7 @@ class Potts_Model:
 
 
     def log_pseudo_likelihood(self,x):
-        """
-            retourne le log du pseudo-likelihood de la séquence x pour le MRF
-        """
+        """ log pseudo-likelihood of sequence @x """
         n = self.ncol
         p = 0
         for i in range(n-1):
@@ -306,6 +301,7 @@ class Potts_Model:
 
 
     def insert_null_position_at(self, pos, v_null=np.zeros((1,21))):
+        """ insert null column at position @pos where the field vector is @v_null and all w coupled with @pos are 0 """
         self.ncol = self.ncol+1
         self.v = np.concatenate((self.v[:pos],v_null,self.v[pos:]))
         new_w = np.zeros((self.ncol,self.ncol,21,21))
@@ -320,12 +316,14 @@ class Potts_Model:
 
 
     def insert_null_positions_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, v_null=np.zeros((1,21))):
+        """ insert null column at each position in the sequence which is not in the Potts model """
         for pos_in_seq in range(sequence_length):
             if not pos_in_seq in mrf_pos_to_seq_pos:
                 self.insert_null_position_at(pos_in_seq, v_null)
 
 
     def insert_vi_star_gapped_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, msa_file_before_trim, nb_pc_for_v_star=1):
+        """ insert v* column at each position in the sequence which is not in the Potts model """
         msa_ccmpred = ccmpred.io.read_msa(msa_file_before_trim, 'fasta')
         weights = ccmpred.weighting.weights_simple(msa_ccmpred, cutoff=0.8)
         single_counts, double_counts = ccmpred.counts.both_counts(msa_ccmpred, weights)
