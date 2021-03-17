@@ -25,6 +25,7 @@ def get_aln_res_file_name(output_folder):
     return output_folder/"aln.csv"
 
 def get_aligned_positions_dict_from_ppalign_output_file(aln_res_file):
+    """ get {"pos_ref":list of aligned positions in first Potts model, "pos_2":  list of aligned positions in second Potts model} from PPalign output .csv file """
     check_if_file_ok(aln_res_file)
     with open(str(aln_res_file), 'r') as csv_file:
         csv_reader = csv.reader(csv_file)
@@ -46,7 +47,7 @@ def get_infos_solver_dict_from_ppalign_output_file(infos_res_file):
 
 
 def create_seq_fasta(seq, fastaseq_file, seq_name="Billy"):
-    """ crée un fichier fasta de nom @fastaseq_file avec la séquence @seq dedans, et retourne le nom de la séquence """
+    """ creates fasta file @fastaseq_file for @seq and returns sequence name """ #TODO BioPython
     with open(str(fastaseq_file), 'w') as of:
         of.write(">"+seq_name+"\n")
         of.write(seq+"\n")
@@ -94,41 +95,10 @@ def split_fasta(fasta_file, seq_folder):
             SeqIO.write(record, f, "fasta")
 
 def get_trimal_ncol(colnumbering_file):
+    """ trimal output file to list """
     with colnumbering_file.open() as f:
         col_list = re.sub('[^0-9,.]', '', f.read()).split(',')
     return [int(s) for s in col_list]
-
-
-def get_file_from_folder_ending_with_extension(folder, extension):
-    files = [str(f) for f in pathlib.Path(folder).glob('*'+extension)]
-    if len(files)>0:
-        files.sort(key = len)
-        shortest = pathlib.Path(files[0])
-        if len(files)>1:
-            print("more than 1 file ending with "+extension+", using the one with the shortest name : "+files[0])
-        return shortest
-    else:
-        return None
-
-def get_potts_model_file_from_folder(folder, mrf_type=None):
-    if mrf_type is not None:
-        p = get_file_from_folder_ending_with_extension(folder, "_"+mrf_type+".mrf")
-        if p is not None:
-            return p
-    else:
-        return get_file_from_folder_ending_with_extension(folder, ".mrf")
-
-def get_sequence_file_from_folder(folder):
-   return get_file_from_folder_ending_with_extension(folder, ".fasta")
-
-def get_a3m_file_from_folder(folder):
-   return get_file_from_folder_ending_with_extension(folder, ".a3m")
-
-def get_pdb_file_from_folder(folder):
-    pdb_file = get_file_from_folder_ending_with_extension(folder, ".pdb")
-    if pdb_file is None:
-        pdb_file = get_file_from_folder_ending_with_extension(folder, ".cif")
-    return pdb_file
 
 
 def write_readme(folder, **kwargs):
@@ -229,6 +199,7 @@ def check_if_dir_ok(d):
 
 
 def write_positions_to_csv(positions_dict, output_file):
+    """ PPalign aln dict to csv file """
     with open(str(output_file), 'w') as f:
         csvwriter = csv.writer(f)
         csvwriter.writerow(list(positions_dict.keys()))
