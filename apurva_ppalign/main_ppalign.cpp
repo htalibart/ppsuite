@@ -31,8 +31,14 @@ float* w_A;
 float* w_B;
 
 // gap_open and gap_extend
-double gap_open = 0.0;
-double gap_extend = 0.0;
+//double gap_open = 0.0;
+//double gap_extend = 0.0;
+
+// position-specific insertion costs
+float* insert_open_A;
+float* insert_open_B;
+float* insert_extend_A;
+float* insert_extend_B;
 
 
 // similarity function for vA_i and vB_k
@@ -265,7 +271,7 @@ void display_results_and_print_to_files(int** row_map, int** col_map, double sel
 
 
 
-int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_time, double &ub, double &lb, int& nb_bb_nodes, int** row_map, int** col_map, double self1, double self2, int iter_limit_param, int n_limit_param, double t_limit, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min, double dalih_bound = 0.0)
+int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_time, double &ub, double &lb, int& nb_bb_nodes, int** row_map, int** col_map, double self1, double self2, int iter_limit_param, int n_limit_param, double t_limit, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min, float* insert_open_A, float* insert_open_B, float* insert_extend_A, float* insert_extend_B, double dalih_bound=0.0)
 {
     int status(0);
 
@@ -298,8 +304,7 @@ int solve_prb(int ** forbidden, int * sol, double &alloc_time, double &solve_tim
     //create problem
     graph_apurva        g(nb_row, row_map, nb_col, col_map, score_vertex, score_edge, forbidden);
     lambda_mat_apurva   lm(g);
-    dp_mat_apurva       dp(g, gap_open, gap_extend);
-    //dp_mat_apurva       dp(g);
+    dp_mat_apurva       dp(g, insert_open_A, insert_open_B, insert_extend_A, insert_extend_B);
     problem_apurva      prb(g,dp,lm,self1,self2,score_min);
     branch_and_bound    bandb;
 
@@ -352,7 +357,8 @@ void free_2d_int_array(int** array_2d, int length)
 }
 
 
-extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_B_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min, double alpha_w_, double offset_v_)
+//extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_B_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, double gap_open_, double gap_extend_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min, double alpha_w_, double offset_v_)
+extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_B_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, float* insert_open_A_, float* insert_open_B_, float*insert_extend_A_, float* insert_extend_B_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min, double alpha_w_, double offset_v_)
 {
 	int status(0);
 
@@ -362,10 +368,37 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
 	w_B = w_B_;
 	LA = LA_;
 	LB = LB_;
-	gap_open = gap_open_;
-	gap_extend = gap_extend_;
+	//gap_open = gap_open_;
+	//gap_extend = gap_extend_;
 	alpha_w = alpha_w_;
 	offset_v = offset_v_;
+
+	insert_open_A = insert_open_A_;
+	insert_open_B = insert_open_B_;
+	insert_extend_A = insert_extend_A_;
+	insert_extend_B = insert_extend_B_;
+
+
+    	// TEMP
+//	insert_open_A = new float[LA];
+//	insert_extend_A = new float[LA];
+//	for (int i=0; i<LA; i++)
+//	{
+//		insert_open_A[i] = gap_open_;
+//		insert_extend_A[i] = gap_extend_;
+//	}
+//
+//
+//	insert_open_B = new float[LB];
+//	insert_extend_B = new float[LB];
+//	for (int i=0; i<LB; i++)
+//	{
+//		insert_open_B[i] = gap_open_;
+//		insert_extend_B[i] = gap_extend_;
+//	}
+
+
+
 
 	// computation time
 	long tic_per_sec = sysconf(_SC_CLK_TCK);
@@ -401,7 +434,7 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
 	int** row_map = unflatten(edges_mapA, LA);
 	int** col_map = unflatten(edges_mapB, LB);
 
-	status = solve_prb(forbidden_res, res_alignment, res_alloc_time, res_solve_time, res_ub, res_lb, nb_bb_nodes, row_map, col_map, self1, self2, iter_limit_param, n_limit_param, t_limit, epsilon, gamma, theta, stepsize_min, nb_non_increasing_steps_max, score_min, -INFINITY);
+	status = solve_prb(forbidden_res, res_alignment, res_alloc_time, res_solve_time, res_ub, res_lb, nb_bb_nodes, row_map, col_map, self1, self2, iter_limit_param, n_limit_param, t_limit, epsilon, gamma, theta, stepsize_min, nb_non_increasing_steps_max, score_min, insert_open_A, insert_open_B, insert_extend_A, insert_extend_B, -INFINITY);
 
 
 	// computation time

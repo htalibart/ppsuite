@@ -245,6 +245,7 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
         **************************************/
 
         my_param.limit_lb = ub;     //to avoid spending too much time into useless subproblems
+	cout << "limit_lb was set to ub=" << ub << endl;
         my_param.my_time_limit = my_param.time_limit - solve_time;
 
         problem * current_problem(problem_list.front());
@@ -254,6 +255,8 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
         //update upper_bound (and possibly get a new best solution) and lower_bound
         update_ub(current_problem);
         update_lb(current_problem);
+	cout << "lb was updated to " << lb << endl;
+	cout << "ub was updated to " << ub << endl;
 
         /**************************************
         * Step 2.2 : Divide into subproblem   *

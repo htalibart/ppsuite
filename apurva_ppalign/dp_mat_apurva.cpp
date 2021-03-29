@@ -325,14 +325,14 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     double prev_aligned;
     double prev_gap_in_second;
     double prev_gap_in_first;
-    for(int i=1; i<=nb_col; ++i)
+    for(int i=1; i<=nb_col; ++i) // second sequence
     {
-    	for(int j=1; j<=nb_row; ++j)
+    	for(int j=1; j<=nb_row; ++j) // first sequence
     	{
-    		// compute P (alignment ends with gap in second sequence)
-    		prev_aligned = dp[i-1][j] + gap_open;
-    		prev_gap_in_second = dp_v[i-1][j] + gap_extend;
-    		prev_gap_in_first = dp_h[i-1][j] + gap_open;
+    		// compute P (alignment ends with gap in second sequence) 
+    		prev_aligned = dp[i-1][j] + get_insertion_open_after_row(j-1);
+    		prev_gap_in_second = dp_v[i-1][j] + get_insertion_extend_after_row(j-1);
+    		prev_gap_in_first = dp_h[i-1][j] + get_insertion_open_after_row(j-1);
     		if(prev_aligned <= prev_gap_in_first && prev_aligned <= prev_gap_in_second && lo[i-1] <= j-1 && up[i-1] >= j-1 && node_to_ind[i-1][j-1] >= 0) //if values are identical, priority is to align
     		{
     			dp_v[i][j] = prev_aligned;
@@ -350,9 +350,9 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     		}
 
     		// compute Q (alignment ends with gap in first sequence)
-    		prev_aligned = dp[i][j-1] + gap_open;
-    		prev_gap_in_second = dp_v[i][j-1] + gap_open;
-    		prev_gap_in_first = dp_h[i][j-1] + gap_extend;
+    		prev_aligned = dp[i][j-1] + get_insertion_open_after_col(i-1);
+    		prev_gap_in_second = dp_v[i][j-1] + get_insertion_open_after_col(i-1);
+    		prev_gap_in_first = dp_h[i][j-1] + get_insertion_extend_after_col(i-1);
     		if(prev_aligned <= prev_gap_in_first && prev_aligned <= prev_gap_in_second && lo[i-1] <= j-1 && up[i-1] >= j-1 && node_to_ind[i-1][j-1] >= 0) //if values are identical, priority is to align
     		{
     			dp_h[i][j] = prev_aligned;

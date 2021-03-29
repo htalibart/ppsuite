@@ -80,7 +80,7 @@ def get_nb_sequences_in_fasta_file(fasta_file):
     return len(records)
 
 
-def create_fasta_file_with_less_sequences(aln_file, aln_1000, nb_sequences=1000, fileformat="fasta"):
+def create_file_with_less_sequences(aln_file, aln_1000, nb_sequences=1000, fileformat="fasta"):
     records = list(SeqIO.parse(str(aln_file),fileformat))
     with open(str(aln_1000), 'w') as f:
         SeqIO.write(records[:nb_sequences], f, fileformat)
@@ -109,6 +109,11 @@ def write_readme(folder, **kwargs):
 def copy(old_location, new_location):
     if not new_location.is_file():
         shutil.copy(str(old_location), str(new_location))
+
+def remove_file(filepath):
+    if not filepath.is_file():
+        raise Exception("file does not exist")
+    os.remove(str(filepath))
 
 def get_format(seq_file):
     extension = seq_file.suffix[1:]
@@ -228,12 +233,13 @@ def remove_positions_with_gaps_in_first_sequence(input_fasta, output_fasta):
     AlignIO.write(clean_aln, str(output_fasta), 'fasta')
     return output_fasta
 
-def remove_sequences_with_bad_characters_from_fasta_file_and_upper(input_fasta, output_fasta, bad_characters=['J','U','Z','B','O','X']):
+def remove_sequences_with_bad_characters(input_fasta, output_fasta, bad_characters=['J','U','Z','B','O','X']):
     all_records = list(SeqIO.parse(str(input_fasta), 'fasta'))
     clean_records = []
     for record in all_records:
         if not any(bad_character in str(record.seq).upper() for bad_character in bad_characters):
-            clean_records.append(record.upper())
+            #clean_records.append(record.upper())
+            clean_records.append(record)
     SeqIO.write(clean_records, str(output_fasta), 'fasta')
 
 

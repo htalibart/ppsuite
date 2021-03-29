@@ -39,6 +39,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--rescale_removed_v0', help="rescale background v0", action='store_true', default=False)
     parser.add_argument('-go', '--gap_open', help="gap open", default=14, type=float)
     parser.add_argument('-ge', '--gap_extend', help="gap extend", default=0, type=float)
+    parser.add_argument('--use_insertion_penalties', help="use insertion penalties", action='store_true', default=False)
 
     # solver options
     parser.add_argument('-t', '--t_limit', help="solver : time limit in seconds (default : 36000)", type=float, default=36000)
@@ -109,8 +110,13 @@ def main(args=sys.argv[1:]):
     fm.write_readme(output_folder, **args)
 
 
+    # INSERT COSTS
+    insert_costs = [{'open': np.ones((objects[mrf_ind].potts_model.ncol))*args["gap_open"],
+                                'extend': np.ones((objects[mrf_ind].potts_model.ncol))*args["gap_extend"]}
+                                    for mrf_ind in range(2)]
+
     # ALIGNMENT
-    aligned_positions, infos_solver = align_two_objects(objects, output_folder, **args)
+    aligned_positions, infos_solver = align_two_objects(objects, output_folder, insert_costs=insert_costs, **args)
     print("Total time : "+str(infos_solver["total_time"]))
 
 

@@ -136,4 +136,6 @@ def get_total_gap_cost(ad, gap_open, sequence_lengths, **kwargs):
 
 def get_score_for_alignment(aligned_potts_models, aligned_positions_dict, alpha_w, **kwargs):
     """ total score for PPalign alignment """
+    if kwargs["use_insertion_penalties"]:
+        raise Exception("not implemented")
     return get_v_score_for_alignment(aligned_potts_models, aligned_positions_dict, **kwargs) + alpha_w * get_w_score_for_alignment(aligned_potts_models, aligned_positions_dict, **kwargs) - get_total_gap_cost(aligned_positions_dict, sequence_lengths=[mrf.ncol for mrf in aligned_potts_models], **kwargs)

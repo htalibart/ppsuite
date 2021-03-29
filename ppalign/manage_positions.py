@@ -188,7 +188,7 @@ def get_original_msas_aligned_from_aligned_positions(aligned_positions_dict, obj
         @objects: Potts objects that were aligned
         outputs an alignment of the two original MSAs in @output_msa_file """
     msa_aligned_positions_dict = get_aln_positions_from_aln_dict(aligned_positions_dict, objects)
-    aligns = [SeqIO.parse(str(obj.aln_original), "fasta") for obj in objects]
+    aligns = [SeqIO.parse(str(obj.seed_aln), "fasta") for obj in objects]
     records = []
     for k, c_name in zip(range(2), ['pos_ref', 'pos_2']):
         align = aligns[k]

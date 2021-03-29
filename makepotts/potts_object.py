@@ -10,8 +10,10 @@ from comutils.blast_utils import *
 
 from ppalign.manage_positions import *
 from ppalign.compute_scores import *
+
 from makepotts.rescaling import *
 from makepotts.potts_model import *
+from makepotts.handle_insertions import *
 
 class Potts_Object:
 
@@ -20,7 +22,7 @@ class Potts_Object:
 
 
     @classmethod
-    def from_folder(cls, potts_folder, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, **kwargs):
+    def from_folder(cls, potts_folder, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, use_insertion_penalties=False, **kwargs):
         """ instantiate Potts object from Potts folder """
         feature = cls()
 
@@ -33,10 +35,10 @@ class Potts_Object:
         else:
             feature.aln_train = None
 
-        if (potts_folder/"aln_original.fasta").is_file():
-            feature.aln_original = potts_folder/"aln_original.fasta"
+        if (potts_folder/"aln_before_trim.fasta").is_file():
+            feature.aln_before_trim = potts_folder/"aln_before_trim.fasta"
         else:
-            feature.aln_original = None
+            feature.aln_before_trim = None
         
 
         if (potts_folder/"sequence.fasta").is_file():
@@ -73,212 +75,211 @@ class Potts_Object:
 
         if (feature.potts_model is not None):
             feature.potts_model = get_rescaled_potts_model(feature.potts_model, v_rescaling_function, w_rescaling_function, use_w=use_w, **kwargs)
+
+        if (potts_folder/"insertion_penalties.ins").is_file() and use_insertion_penalties:
+            feature.insertion_penalties = get_insertion_penalties_from_file(potts_folder/"insertion_penalties.ins")
+            assert(len(feature.insertion_penalties['open']) == len(feature.insertion_penalties['extend']))
+            assert(len(feature.insertion_penalties['open']) == feature.potts_model.ncol+1)
+        else:
+            feature.insertion_penalties = None
         
         return feature
+
+
+    
+
+
+    @classmethod
+    def from_sequence_alone(cls, potts_folder, sequence_file, inference_type, **kwargs):
+
+        potts_model_file = potts_folder/"potts_model.mrf"
+        if inference_type=="one_submat":
+            potts_model = Potts_Model.from_sequence_file_with_submat(sequence_file, filename=potts_model_file, **kwargs)
+        elif inference_type=="one_hot":
+            potts_model = Potts_Model.from_sequence_file_to_one_hot(sequence_file, filename=potts_model_file, **kwargs)
+        else:
+            raise Exception("Unknown inference type")
+
+        nb_pos = fm.get_nb_columns_in_alignment(sequence_file)
+        mrf_pos_to_aln_pos = [pos for pos in range(nb_pos)]
+        mrf_pos_to_seq_pos = [pos for pos in range(nb_pos)]
+        aln_pos_to_seq_pos = [pos for pos in range(nb_pos)]
+
+        return cls.from_potts_model(potts_folder, potts_model_file, sequence_file=sequence_file, aln_train=sequence_file, aln_before_trim=sequence_file, mrf_pos_to_aln_pos=mrf_pos_to_aln_pos, aln_pos_to_seq_pos=aln_pos_to_seq_pos, mrf_pos_to_seq_pos=mrf_pos_to_seq_pos, **kwargs)
+
+
+    @classmethod
+    def from_sequence_with_blast(cls, potts_folder, sequence_file, blast_database, nb_sequences_blast=100000, blast_evalue=1, **kwargs):
+        unaligned_fasta = potts_folder/"unaligned_sequences.fasta"
+        blast_xml = potts_folder/"blast.xml"
+        blast_xml, unaligned_fasta = get_blast_xml_and_fasta_output_from_sequence_file(sequence_file, blast_database, blast_fasta=unaligned_fasta, blast_xml=blast_xml, n=nb_sequences_blast, evalue=blast_evalue)
+        return cls.from_blast_files(potts_folder, sequence_file, unaligned_fasta, blast_xml, **kwargs)
+
+
+    @classmethod
+    def from_blast_files(cls, potts_folder, sequence_file, unaligned_fasta, blast_xml=None, use_evalue_cutoff=False, use_less_sequences=True, max_nb_sequences=1000, **kwargs):
+
+
+        if (use_evalue_cutoff) or (use_less_sequences):
+            if use_evalue_cutoff:
+                if blast_xml is None:
+                    raise Exception("Need BLAST XML file to determine cutoff index")
+                max_nb_sequences = find_blast_cutoff_index(blast_xml)
+            less_file = potts_folder/("less.a3m")
+            fm.create_file_with_less_sequences(unaligned_fasta, less_file, max_nb_sequences)
+            unaligned_fasta = less_file
+
+        fm.add_sequence_to_fasta_file_if_missing(unaligned_fasta, sequence_file)
+        clean_unaligned_fasta = potts_folder/"clean_unaligned_sequences.fasta"
+        fm.remove_sequences_with_bad_characters(unaligned_fasta, clean_unaligned_fasta)
+        tmp_unaligned_fasta = potts_folder/"clean_unaligned_sequences_bis.fasta"
+        fm.copy(clean_unaligned_fasta, tmp_unaligned_fasta)
+        fm.create_file_with_less_sequences(tmp_unaligned_fasta, clean_unaligned_fasta, nb_sequences=10000, fileformat="fasta") # limit to 10000 sequences for MAFFT
+        tmp_unaligned_fasta.unlink()
+        aln_mafft = potts_folder/"aln_mafft.fasta"
+        call_mafft(clean_unaligned_fasta, aln_mafft)
+        aln_file = potts_folder/"aln_clean.fasta"
+        fm.remove_positions_with_gaps_in_first_sequence(aln_mafft, aln_file) #TODO -> insertions
+        return cls.from_aln_file(potts_folder, aln_file, sequence_file=sequence_file, **kwargs)
+
+
+
+    @classmethod
+    def from_sequence_with_hhblits(cls, potts_folder, sequence_file, hhblits_database, **kwargs):
+        aln_with_insertions = potts_folder/"hhblits_output.a3m"
+        hhr_file = call_hhblits(sequence_file, aln_with_insertions, hhblits_database, **kwargs)
+        #fm.remove_sequences_with_bad_characters(file_to_be_processed, seed_aln) # TODO CHECK OUTPUT .a3m
+        return cls.from_hhblits_files(potts_folder, aln_with_insertions, sequence_file=sequence_file, hhr_file=hhr_file, **kwargs)
 
 
 
 
     @classmethod
-    def from_files(cls, potts_folder=None, sequence_file=None, potts_model_file=None, aln_file=None, unaligned_fasta=None, fetch_sequences=False, sequences_fetcher='hhblits', database=None, use_evalue_cutoff=False, hhr_file=None, blast_xml=None, filter_alignment=True, hhfilter_threshold=80, use_less_sequences=True, max_nb_sequences=1000, min_nb_sequences=1, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, infer_potts_model=True, inference_type="standard", pc_single_count=1, reg_lambda_pair_factor=0.2, v_rescaling_function="identity", w_rescaling_function="identity", use_w=True, nb_sequences_blast=100000, blast_evalue=1, keep_tmp_files=False, max_potts_model_length=250, insert_null_at_trimmed=False, v_null_is_v0=True, insert_v_star_at_trimmed=False, **kwargs):
+    def from_hhblits_files(cls, potts_folder, aln_with_insertions, sequence_file=None, hhr_file=None, use_evalue_cutoff=False, use_less_sequences=True, max_nb_sequences=1000, filter_alignment=True, hhfilter_threshold=80, **kwargs):
 
-        potts_model=None
-        if potts_model_file is not None:
-            potts_model = Potts_Model.from_msgpack(potts_model_file)
-
-        # ALIGNMENT FOLDER
-        if potts_folder is None:
-            folder_name = str(uuid.uuid4())
-            potts_folder = pathlib.Path(folder_name)
-            print("No folder name specified, Potts folder will be created at "+str(potts_folder)) 
-
-        if not potts_folder.is_dir():
-            potts_folder.mkdir()
-
-        # FETCH SEQUENCES IF ASKED
-        if fetch_sequences:
-            if database is None:
-                raise Exception("You need to specify a database path (-d option)")
-            if sequence_file is None:
-                raise Exception("Sequence file missing !")
-            if sequences_fetcher=='hhblits':
-                aln_file = potts_folder/"aln_original.a3m"
-                hhr_file = call_hhblits(sequence_file, aln_file, database, **kwargs)
-            elif sequences_fetcher=='blast':
-                blast_fasta = potts_folder/"blast.fasta"
-                blast_xml = potts_folder/"blast.xml"
-                blast_xml, unaligned_fasta = get_blast_xml_and_fasta_output_from_sequence_file(sequence_file, database, blast_fasta=blast_fasta, blast_xml=blast_xml, n=nb_sequences_blast, evalue=blast_evalue)
-            else:
-                raise Exception(str(sequences_fetcher)+" call not implemented yet. Available options are hhblits or blast")
-
-        # IF EVALUE CUTOFF
-        if use_evalue_cutoff:
-            if hhr_file is not None:
-                cutoff_index = find_hhblits_cutoff_index(hhr_file)
-            elif blast_xml is not None:
-                cutoff_index = find_blast_cutoff_index(blast_xml)
-            else:
-                raise Exception("Need a BLAST XML file or .hhr file to find cutoff")
-
-
-        # ORIGINAL ALIGNMENT, AFTER CUTOFF IF ANY
-        if aln_file is not None: # if MSA file is provided
-            fm.check_if_file_ok(aln_file)
-            if fm.get_format(aln_file)=="fasta":
-                aln_original = aln_file
-            elif fm.get_format(aln_file)=="a3m": # convert to fasta
-                reformat = potts_folder/"reformat.fasta"
-                call_reformat(aln_file, reformat)
-                aln_original = reformat
-            else:
-                raise Exception("Unknown format : "+str(fm.get_format(aln_file))+" for "+str(aln_file))
-            aln_original_before_clean = aln_original
-            aln_original = potts_folder/"aln_original.fasta"
-            fm.remove_sequences_with_bad_characters_from_fasta_file_and_upper(aln_original_before_clean, aln_original)
+        if filter_alignment:
+            filtered = potts_folder/"filtered.a3m"
+            call_hhfilter(aln_with_insertions, filtered, hhfilter_threshold)
+            aln_with_insertions = filtered
+ 
+        if (use_evalue_cutoff) or (use_less_sequences):
             if use_evalue_cutoff:
-                cutoff_fasta = potts_folder/("cutoff_"+str(cutoff_index)+".fasta")
-                fm.create_fasta_file_with_less_sequences(aln_original, cutoff_fasta, cutoff_index)
-                aln_original = cutoff_fasta
-            fm.copy(aln_original, potts_folder/"aln_original.fasta")
+                if hhr_file is None:
+                    raise Exception("Need hhr file to determine cutoff index")
+                max_nb_sequences = find_hhblits_cutoff_index(hhr_file)
+            less_file = potts_folder/("less.a3m")
+            fm.create_file_with_less_sequences(aln_with_insertions, less_file, max_nb_sequences)
+            aln_with_insertions = less_file
 
-        elif unaligned_fasta is not None: # if unaligned sequences are provided
-            fm.check_if_file_ok(unaligned_fasta)
-            if use_evalue_cutoff:
-                cutoff_fasta = potts_folder/("cutoff_"+str(cutoff_index)+".fasta")
-                fm.create_fasta_file_with_less_sequences(unaligned_fasta, cutoff_fasta, cutoff_index)
-                unaligned_fasta = cutoff_fasta
-            if sequence_file is not None:
-                fm.add_sequence_to_fasta_file_if_missing(unaligned_fasta, sequence_file)
-            clean_unaligned_fasta = potts_folder/"clean_unaligned_sequences.fasta"
-            fm.remove_sequences_with_bad_characters_from_fasta_file_and_upper(unaligned_fasta, clean_unaligned_fasta)
-            tmp_unaligned_fasta = potts_folder/"clean_unaligned_sequences_bis.fasta"
-            fm.copy(clean_unaligned_fasta, tmp_unaligned_fasta)
-            fm.create_fasta_file_with_less_sequences(tmp_unaligned_fasta, clean_unaligned_fasta, nb_sequences=10000, fileformat="fasta") # limit to 10000 sequences for MAFFT
-            tmp_unaligned_fasta.unlink()
-            aln_mafft = potts_folder/"aln_mafft.fasta"
-            call_mafft(clean_unaligned_fasta, aln_mafft)
-            aln_original = potts_folder/"aln_original.fasta"
-            fm.remove_positions_with_gaps_in_first_sequence(aln_mafft, aln_original)
-            fm.copy(aln_original, potts_folder/"aln_original.fasta")
+        aln_file = potts_folder/"reformat.fasta"
+        call_reformat(aln_with_insertions, aln_file)
 
-        elif inference_type=='one_submat' or inference_type=='one_hot': # if Potts model is inferred from sequence, MSA is set to sequence
-            aln_original = sequence_file
 
+
+        # CREATE SEQUENCE FILE IF NONE
+        if sequence_file is None:
+            seq = fm.get_first_sequence_in_fasta_file(aln_with_insertions)
+            seq_name = fm.get_first_sequence_name(aln_with_insertions)
+            sequence_file = potts_folder/"sequence.fasta"
+            fm.create_seq_fasta(seq, sequence_file, seq_name=seq_name)
+
+        return cls.from_aln_file(potts_folder, aln_file, sequence_file=sequence_file, aln_with_insertions=aln_with_insertions, **kwargs)
+
+
+
+
+
+    @classmethod
+    def from_aln_file(cls, potts_folder, aln_file, sequence_file=None, trim_alignment=False, trimal_gt=0.8, trimal_cons=0, min_nb_sequences=1, max_potts_model_length=250, pc_single_count=1, aln_with_insertions=None, infer_potts_model=True, potts_model_file=None, **kwargs):
+
+        aln_train = aln_file
+
+        # TRIM IF NEEDED
+        if trim_alignment:
+            colnumbering_file = potts_folder/"colnumbering.csv"
+            trimmed_aln = potts_folder/("trim.fasta")
+            call_trimal(aln_train, trimmed_aln, trimal_gt, trimal_cons, colnumbering_file)
+            aln_train = trimmed_aln
+            mrf_pos_to_aln_pos = fm.get_trimal_ncol(colnumbering_file)
         else:
-            aln_original = None
+            nb_pos = fm.get_nb_columns_in_alignment(aln_train)
+            mrf_pos_to_aln_pos = [pos for pos in range(nb_pos)]
 
 
-
-        # ORIGINAL MSA TO TRAIN MSA
-        aln_train = aln_original
-
-        if (aln_train is not None):
-            fm.check_if_file_ok(aln_train)
-
-            if (inference_type=="standard"):
-                if filter_alignment: # filter alignment (default keep 80% sequence identity)
-                    filtered = potts_folder/"filtered.fasta"
-                    call_hhfilter(aln_train, filtered, hhfilter_threshold)
-                    aln_train = filtered
-                use_less_sequences = use_less_sequences and (not use_evalue_cutoff)
-                if use_less_sequences: # if alignment depth fixed arbitrarily (no E-value cutoff)
-                    less_fasta = potts_folder/("less_"+str(max_nb_sequences)+".fasta")
-                    fm.create_fasta_file_with_less_sequences(aln_train, less_fasta, max_nb_sequences)
-                    aln_train = less_fasta
-
-                # trimmed alignment
-                if trim_alignment:
-                    colnumbering_file = potts_folder/"colnumbering.csv"
-                    trimmed_aln = potts_folder/("trim_"+str(int(trimal_gt*100))+".fasta")
-                    msa_file_before_trim = aln_train
-                    call_trimal(aln_train, trimmed_aln, trimal_gt, trimal_cons, colnumbering_file)
-                    aln_train = trimmed_aln
-                    mrf_pos_to_aln_pos = fm.get_trimal_ncol(colnumbering_file) 
-                else:
-                    nb_pos = fm.get_nb_columns_in_alignment(aln_train)
-                    mrf_pos_to_aln_pos = [pos for pos in range(nb_pos)]
-
-            else:
-                nb_pos = fm.get_nb_columns_in_alignment(aln_train)
-                mrf_pos_to_aln_pos = [pos for pos in range(nb_pos)]
-
-            fm.copy(aln_train, potts_folder/"aln_train.fasta")
-
-            if fm.get_nb_sequences_in_fasta_file(aln_train)<min_nb_sequences:
+        # CHECK ALN TRAIN OK
+        if fm.get_nb_sequences_in_fasta_file(aln_train)<min_nb_sequences:
                 raise Exception("Less than "+str(min_nb_sequences)+" in the training set : "+str(fm.get_nb_sequences_in_fasta_file(aln_train)))
 
+        if fm.get_nb_columns_in_alignment(aln_train)>max_potts_model_length:
+            raise Exception("More than "+str(max_potts_model_length)+" columns in the alignment, won't infer the Potts model.")
+
+        # INFER POTTS MODEL
+        if infer_potts_model:
+            potts_model_file = potts_folder/"potts_model.mrf"
+            potts_model = Potts_Model.from_training_set(aln_train, potts_model_file, pc_single_count=pc_single_count, **kwargs)
 
 
-            # POTTS MODEL
-            if (potts_model_file is None) and (infer_potts_model):
-                potts_model_file = potts_folder/"potts_model.mrf"
-
-                if fm.get_nb_columns_in_alignment(aln_train)>max_potts_model_length:
-                    raise Exception("More than "+str(max_potts_model_length)+" columns in the alignment, won't infer the Potts model.")
-
-                if inference_type=="standard":
-                    potts_model = Potts_Model.from_training_set(aln_train, potts_model_file, pc_single_count=pc_single_count, reg_lambda_pair_factor=reg_lambda_pair_factor, **kwargs)
-
-                elif inference_type=="one_submat": # build Potts model from sequence using substitution matrix pseudo-counts on single frequencies
-                    potts_model = Potts_Model.from_sequence_file_with_submat(aln_train, filename=potts_model_file, **kwargs)
-                
-                elif inference_type=="one_hot": # build Potts model from sequence with one-hot encoding
-                    potts_model = Potts_Model.from_sequence_file_to_one_hot(aln_train, filename=potts_model_file, **kwargs)
-                else:
-                    raise Exception("Unknown inference type")
-
-
-        
-        if (potts_model_file is not None):
-            if "potts_model" not in locals():
-                potts_model = Potts_Model.from_msgpack(potts_model_file)
-            potts_model.to_msgpack(potts_model_file)
-
-        if (potts_model_file is not None) and (v_rescaling_function!="identity") and (w_rescaling_function!="identity"):
-            if "potts_model" not in locals():
-                potts_model = Potts_Model.from_msgpack(potts_model_file)
-            potts_model = get_rescaled_potts_model(potts_model, v_rescaling_function, w_rescaling_function, use_w=use_w, **kwargs)
-            potts_model.to_msgpack(potts_model_file)
-
-
-
-        # IF NO ALN, NO MRF_POS_TO_ALN_POS
-        if aln_original is None:
-            mrf_pos_to_aln_pos = None
-
-
-        # SEQUENCE FILE
+       # HANDLE SEQUENCE FILE
         if sequence_file is not None:
-            fm.copy(sequence_file, potts_folder/"sequence.fasta")
-            original_first_seq = fm.get_first_sequence_in_fasta_file(aln_original)
+            original_first_seq = fm.get_first_sequence_in_fasta_file(aln_file)
             seq = fm.get_first_sequence_in_fasta_file(sequence_file)
             mrf_pos_to_seq_pos = get_mrf_pos_to_seq_pos(original_first_seq, seq, mrf_pos_to_aln_pos)
             aln_pos_to_seq_pos = get_pos_first_seq_to_second_seq(original_first_seq, seq) 
-        elif aln_original is not None: # if no sequence file is provided, sequence is the first sequence of the MSA
-            seq = fm.get_first_sequence_in_fasta_file(aln_original)
-            seq_name = fm.get_first_sequence_name(aln_original)
-            fm.create_seq_fasta(seq, potts_folder/"sequence.fasta", seq_name=seq_name)
+        else: # if no sequence file is provided, sequence is the first sequence of the MSA
+            seq = fm.get_first_sequence_in_fasta_file(aln_file)
+            seq_name = fm.get_first_sequence_name(aln_file)
+            sequence_file = potts_folder/"sequence.fasta"
+            fm.create_seq_fasta(seq, sequence_file, seq_name=seq_name)
             mrf_pos_to_seq_pos = mrf_pos_to_aln_pos
             aln_pos_to_seq_pos = [pos for pos in range(len(seq))]
-        else:
-            mrf_pos_to_seq_pos = None
-            aln_pos_to_seq_pos = None
+
+        return cls.from_potts_model(potts_folder, potts_model_file, sequence_file=sequence_file, aln_train=aln_train, aln_before_trim=aln_file, aln_with_insertions=aln_with_insertions, aln_pos_to_seq_pos=aln_pos_to_seq_pos, mrf_pos_to_seq_pos=mrf_pos_to_seq_pos, mrf_pos_to_aln_pos=mrf_pos_to_aln_pos, **kwargs)
 
 
-        # RE-INSERT NULL COLUMNS
-        if ((insert_null_at_trimmed) or (insert_v_star_at_trimmed)) and (potts_model is not None):
-            if (insert_v_star_at_trimmed):
-                potts_model.insert_vi_star_gapped_to_complete_mrf_pos(mrf_pos_to_seq_pos, fm.get_nb_columns_in_alignment(aln_original), msa_file_before_trim)
-            elif (insert_null_at_trimmed):
-                if v_null_is_v0:
-                    v_null = np.tile(get_background_v0(v_rescaling_function, **kwargs), (1,1))
-                else:
-                    v_null = np.zeros((1,21)) 
-                potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_original), v_null=v_null)
-            mrf_pos_to_seq_pos = aln_pos_to_seq_pos
-            mrf_pos_to_aln_pos = [pos for pos in range(fm.get_nb_columns_in_alignment(aln_original))]
-            if (potts_model_file is not None):
+
+
+    @classmethod
+    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, rescale_removed_v0=True, use_insertion_penalties=False, keep_tmp_files=False, **kwargs):
+
+        if potts_model_file is not None:
+            potts_model = Potts_Model.from_msgpack(potts_model_file)
+
+            if (v_rescaling_function!="identity") and (w_rescaling_function!="identity"):
+                potts_model = get_rescaled_potts_model(potts_model, v_rescaling_function, w_rescaling_function, use_w=use_w, **kwargs)
                 potts_model.to_msgpack(potts_model_file)
+
+
+            if ((insert_null_at_trimmed) or (insert_v_star_at_trimmed)): # RE-INSERT NULL COLUMNS
+                if aln_before_trim is None:
+                    raise Exception("MSA before trim should be provided")
+                if mrf_pos_to_aln_pos is None:
+                    raise Exception("mrf_pos_to_aln_pos is None")
+                if (insert_v_star_at_trimmed):
+                    potts_model.insert_vi_star_gapped_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_before_trim), aln_before_trim)
+                elif (insert_null_at_trimmed):
+                    if v_null_is_v0:
+                        v_null = np.tile(get_background_v0(v_rescaling_function, rescale_removed_v0=rescale_removed_v0), (1,1))
+                    else:
+                        v_null = np.zeros((1,21)) 
+                    potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_before_trim), v_null=v_null)
+                mrf_pos_to_seq_pos = aln_pos_to_seq_pos
+                mrf_pos_to_aln_pos = [pos for pos in range(fm.get_nb_columns_in_alignment(aln_before_trim))]
+                potts_model.to_msgpack(potts_model_file)
+            elif use_insertion_penalties and ((aln_with_insertions is not None) or (aln_before_trim is not None)) and (mrf_pos_to_aln_pos is not None): # LOWER CASE FOR INSERTION PENALTIES
+                if aln_with_insertions is None:
+                    aln_with_insertions = aln_before_trim
+                aln_with_insertions_and_trim = potts_folder/"aln_with_insertions_and_trim.a3m"
+                lower_case_trimmed_columns(aln_with_insertions, aln_with_insertions_and_trim, mrf_pos_to_aln_pos)
+                aln_with_insertions = aln_with_insertions_and_trim
+
+
+        # INSERTION PENALTIES
+        if use_insertion_penalties:
+            if aln_with_insertions is None:
+                raise Exception("File with insertions as lower case is required")
+            insertions_file = potts_folder/"insertion_penalties.ins"
+            seed_length = potts_model.ncol
+            infer_insertion_penalties_in_file(aln_with_insertions, seed_length, insertions_file)
 
 
         # HANDLE CORRESPONDENCES BETWEEN POTTS MODEL POSITIONS AND SEQ/MSA POSITIONS
@@ -290,15 +291,26 @@ class Potts_Object:
             fm.write_list_to_csv(aln_pos_to_seq_pos, potts_folder/"aln_pos_to_seq_pos.csv")
 
 
-        # HANDLE FILES
+        # COPY FILES IN POTTS FOLDER
+        if sequence_file is not None:
+            fm.copy(sequence_file, potts_folder/"sequence.fasta")
+        if aln_train is not None:
+            fm.copy(aln_train, potts_folder/"aln_train.fasta")
+        if aln_before_trim is not None:
+            fm.copy(aln_train, potts_folder/"aln_before_trim.fasta")
+        if aln_with_insertions is not None:
+            fm.copy(aln_with_insertions, potts_folder/"aln_with_insertions.fasta")
         if potts_model_file is not None:
             fm.copy(potts_model_file, potts_folder/"potts_model.mrf")
-        if not keep_tmp_files:
-            for name in ["aln_original.a3m", "reformat.fasta", "filtered.fasta", "less_"+str(max_nb_sequences)+".fasta", "trim_80.fasta", "aln_mafft.fasta", "clean_unaligned_sequences.fasta"]:
-                if (potts_folder/name).is_file():
-                    (potts_folder/name).unlink()
 
-        return cls.from_folder(potts_folder, v_rescaling_function="identity", w_rescaling_function="identity")
+        # REMOVE TEMPORARY FILES
+        if not keep_tmp_files:
+            for fn in ["hhblits_output.a3m", "hhblits_output.hhr", "filtered.a3m", "less.a3m", "reformat.fasta", "trim.fasta", "colnumbering.csv", "aln_with_insertions_and_trim.a3m"]:
+                if (potts_folder/fn).is_file():
+                    fm.remove_file(potts_folder/fn)
+
+        return cls.from_folder(potts_folder, v_rescaling_function="identity", w_rescaling_function="identity", use_insertion_penalties=use_insertion_penalties)
+
 
 
 
@@ -307,17 +319,17 @@ class Potts_Object:
         """ create Potts object by merging two Potts objects aligned """
         if not potts_folder.is_dir():
             potts_folder.mkdir()
-        aln_original = potts_folder/"aln_original.fasta"
-        get_original_msas_aligned_from_aligned_positions(aligned_positions_dict, objects, aln_original)
-        return cls.from_files(potts_folder=potts_folder, aln_file=aln_original, use_less_sequences=use_less_sequences, **kwargs)
+        seed_aln = potts_folder/"seed_aln.fasta"
+        get_original_msas_aligned_from_aligned_positions(aligned_positions_dict, objects, seed_aln)
+        return cls.from_files(potts_folder=potts_folder, aln_file=seed_aln, use_less_sequences=use_less_sequences, **kwargs)
 
 
 
     def get_name(self):
         if self.sequence_file is not None:
             self.name = fm.get_first_sequence_name(self.sequence_file)
-        elif self.aln_original is not None:
-            self.name = fm.get_first_sequence_name(self.aln_original)
+        elif self.seed_aln is not None:
+            self.name = fm.get_first_sequence_name(self.seed_aln)
         elif self.aln_train is not None:
             self.name = fm.get_first_sequence_name(self.aln_train)
         elif self.potts_model is not None:
@@ -382,14 +394,14 @@ class Potts_Object:
         self.potts_model.insert_null_positions_to_complete_mrf_pos(self.mrf_pos_to_aln_pos, len(self.sequence), v_null=v_null)
         if change_mrf_pos_lists:
             self.mrf_pos_to_seq_pos = aln_pos_to_seq_pos
-            self.mrf_pos_to_aln_pos = [pos for pos in range(fm.get_nb_columns_in_alignment(aln_original))]
+            self.mrf_pos_to_aln_pos = [pos for pos in range(fm.get_nb_columns_in_alignment(seed_aln))]
 
 
     def to_folder(self, output_folder):
         if not output_folder.is_dir():
             output_folder.mkdir()
         self.potts_model.to_msgpack(output_folder/"potts_model.mrf")
-        fm.copy(self.aln_original, output_folder/"aln_original.fasta")
+        fm.copy(self.seed_aln, output_folder/"seed_aln.fasta")
         fm.copy(self.aln_train, output_folder/"aln_train.fasta")
         fm.create_seq_fasta(self.sequence, output_folder/"sequence.fasta", seq_name=self.get_name())
         fm.write_list_to_csv(self.mrf_pos_to_seq_pos, output_folder/"mrf_pos_to_seq_pos.csv")
@@ -402,61 +414,122 @@ class Potts_Object:
 def main(args=sys.argv[1:]):
     parser = argparse.ArgumentParser()
 
+
     # files
-    parser.add_argument('-f', '--potts_folder', help="Output feature folder", type=pathlib.Path, default=None)
-    parser.add_argument('-aln', '--aln_file', help="Alignment file", type=pathlib.Path)
-    parser.add_argument('-ualn', '--unaligned_fasta', help="Unaligned sequences in fasta format", type=pathlib.Path)
-    parser.add_argument('-s', '--sequence_file', help="Sequence file", type=pathlib.Path)
-    parser.add_argument('-p', '--potts_model_file', help="Potts model file", type=pathlib.Path)
+    file_args = parser.add_argument_group('file_args')
+    file_args.add_argument('-pf', '--potts_folder', help="Output feature folder", type=pathlib.Path, default=None)
+    file_args.add_argument('-aln', '--aln_file', help="Alignment file", type=pathlib.Path)
+    file_args.add_argument('-alni', '--aln_with_insertions', help="Alignment file with insertions as lower letters", type=pathlib.Path)
+    file_args.add_argument('-ualn', '--unaligned_fasta', help="Unaligned sequences in fasta format", type=pathlib.Path)
+    file_args.add_argument('-s', '--sequence_file', help="Sequence file", type=pathlib.Path)
+    file_args.add_argument('-p', '--potts_model_file', help="Potts model file", type=pathlib.Path)
+    file_args.add_argument('-hhr', '--hhr_file', help="HHblits .hhr output file (needed to find the E-value cutoff)", type=pathlib.Path)
 
-    # fetch sequences ?
-    parser.add_argument('-fetch', '--fetch_sequences', help="Fetch sequences in database ? (requires a sequence file) (default : False)", action='store_true', default=False)
-    parser.add_argument('-fetcher', '--sequences_fetcher', help="Fetch sequences with...? (hhblits or blast) (default : hhblits)", default='hhblits')
-    parser.add_argument('-d', '--database', help="Database path for HHblits or BLAST call", default=None)
-    parser.add_argument('--nb_sequences_blast', help="Nb sequences fetched by BLAST (default : 100000)", type=int, default=100000)
-    parser.add_argument('--blast_evalue', help="BLAST E-value parameter (default : 1)", type=float, default=1)
-    # E-value cutoff
-    parser.add_argument('-evcut', '--use_evalue_cutoff', help="Stop taking sequences in the alignment when we reach the elbow of the E-value curve (default : False)", action='store_true', default=False)
-    parser.add_argument('-hhr', '--hhr_file', help="HHblits .hhr output file (needed to find the E-value cutoff)", type=pathlib.Path)
-    parser.add_argument('-bxml', '--blast_xml', help="BLAST XML output file (needed to find the E-value cutoff)", type=pathlib.Path)
+    # hhblits
+    hhblits_args = parser.add_argument_group('hhblits_args')
+    hhblits_args.add_argument('--hhfilter_threshold', help="HHfilter threshold (default : 80)", type=float, default=80)
+    hhblits_args.add_argument('-hhblits', '--call_hhblits', help="Fetch sequences with HHblits", action='store_true', default=False)
+    hhblits_args.add_argument('-hd', '--hhblits_database', help="Database path for HHblits call", default=None)
+    
+    # BLAST
+    #parser.add_argument('--nb_sequences_blast', help="Nb sequences fetched by BLAST (default : 100000)", type=int, default=100000)
+    #parser.add_argument('--blast_evalue', help="BLAST E-value parameter (default : 1)", type=float, default=1)
+    #parser.add_argument('-bxml', '--blast_xml', help="BLAST XML output file (needed to find the E-value cutoff)", type=pathlib.Path)
 
-    # Alignment transformation
-    parser.add_argument('-nofilter', '--dont_filter_alignment', help="Don't filter alignment using HHfilter (default = do)", action='store_true', default=False)
-    parser.add_argument('--hhfilter_threshold', help="HHfilter threshold (default : 80)", type=float, default=80)
-    parser.add_argument('-whole', '--use_whole_alignment', help="Use the whole filtered alignment (default : don't : arbitrarily take the first @max_nb_sequences after HHfilter and before trimal)", action='store_true', default=False)
-    parser.add_argument('-maxnb', '--max_nb_sequences', help="Max. nb sequences in the alignment (if alignment has more sequences that @max_nb_sequences after filtering and before trimming, all sequences after n° @max_nb_sequences will be deleted from the alignment. Default : 1000)", type=int, default=1000)
-    parser.add_argument('-minnb', '--min_nb_sequences', help="Min. nb sequences in the alignment (if alignment has less than @min_nb_sequences, an exception will be raised and Potts model won't be inferred. Default : 1)", type=int, default=1)
-    parser.add_argument('-notrim', '--dont_trim_alignment', help="Don't trim alignment using trimal (default = do)", action='store_true', default=False)
-    parser.add_argument('--trimal_gt', help="trimal -gt parameter (default : 0.8)", type=float, default=0.8)
-    parser.add_argument('--trimal_cons', help="trimal -cons parameter (default : 0)", type=float, default=0)
-    parser.add_argument('--keep_tmp_files', help="keep temporary files (filtered alignments etc.) (default : false)", action='store_true', default=False)
-    parser.add_argument('--max_potts_model_length', help="for RAM considerations, won't try to make Potts Object if the train MSA is longer than this (default: 250)", type=int, default=250)
+    # aln files processing
+    aln_processing_args = parser.add_argument_group('aln_processing_args')
+    aln_processing_args.add_argument('-nofilter', '--dont_filter_alignment', help="Don't filter alignment using HHfilter (default = do)", action='store_true', default=False)
+    aln_processing_args.add_argument('-whole', '--use_whole_alignment', help="Use the whole filtered alignment (default : don't : arbitrarily take the first @max_nb_sequences after HHfilter and before trimal)", action='store_true', default=False)
+    aln_processing_args.add_argument('-maxnb', '--max_nb_sequences', help="Max. nb sequences in the alignment (if alignment has more sequences that @max_nb_sequences after filtering and before trimming, all sequences after n° @max_nb_sequences will be deleted from the alignment. Default : 1000)", type=int, default=1000)
+    aln_processing_args.add_argument('-evcut', '--use_evalue_cutoff', help="Stop taking sequences in the alignment when we reach the elbow of the E-value curve (default : False)", action='store_true', default=False)
+    aln_processing_args.add_argument('-notrim', '--dont_trim_alignment', help="Don't trim alignment using trimal (default = do)", action='store_true', default=False)
+    aln_processing_args.add_argument('--trimal_gt', help="trimal -gt parameter (default : 0.8)", type=float, default=0.8)
+    aln_processing_args.add_argument('--trimal_cons', help="trimal -cons parameter (default : 0)", type=float, default=0)
+    aln_processing_args.add_argument('--keep_tmp_files', help="keep temporary files (filtered alignments etc.) (default : false)", action='store_true', default=False)
 
-    # Potts model
-    parser.add_argument('-noinfer', '--dont_infer_potts_model', help="Don't infer a Potts model (default = do)", action='store_true', default=False)
-    parser.add_argument('--inference_type', help="Inference type (standard : Potts model inferred from an alignment, one_submat : Potts model inferred from a sequence using submatrix pseudocounts, one_hot : one-hot encoding of a sequence -> Potts model) (default : standard)", default="standard")
-    parser.add_argument('--v_rescaling_function', help="Rescaling function for the v parameters of the Potts model. (default : no rescaling (identity))", default="identity")
-    parser.add_argument('--w_rescaling_function', help="Rescaling function for the w parameters of the Potts model. (default : no rescaling (identity))", default="identity")
-    parser.add_argument('--v_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
-    parser.add_argument('-nw', '--dont_use_w', help="Speed up computations if we are not interested in w parameters (not recommended)", action='store_true', default=False)
-    parser.add_argument('--insert_null_at_trimmed', help="Insert background parameters at positions trimmed by trimal", action='store_true', default=False)
-    parser.add_argument('--insert_v_star_at_trimmed', help="Insert v parameters at positions trimmed by trimal (computed from frequencies)", action='store_true', default=False)
+    # limitations
+    limitation_args = parser.add_argument_group('limitation_args')
+    limitation_args.add_argument('-minnb', '--min_nb_sequences', help="Min. nb sequences in the alignment (if alignment has less than @min_nb_sequences, an exception will be raised and Potts model won't be inferred. Default : 1)", type=int, default=1)
+    limitation_args.add_argument('--max_potts_model_length', help="for RAM considerations, won't try to make Potts Object if the train MSA is longer than this (default: 250)", type=int, default=250)
+
 
     # CCMpredPy options
-    parser.add_argument('--pc_submat', help="CCMpred : Use substitution matrix single pseudocounts instead of uniform (default : False)", default=False, action='store_true')
-    parser.add_argument('--pc_single_count', help="CCMpred : Specify number of single pseudocounts (default : 1)", default=1)
-    parser.add_argument('--pc_pair_count', help="CCMpred : Specify number of pair pseudocounts (default : 1)", default=1)
-    parser.add_argument('--ofn_pll', help="CCMpred : Pseudo-likelihood inference (default : True)", default=True)
-    parser.add_argument('--ofn_cd', help="CCMpred : Contrastive Divergence inference (default : False)", default=False)
-    parser.add_argument('--reg_lambda_pair_factor', help="CCMpred : Regularization parameter for pair potentials (L2 regularization with lambda_pair = lambda_pair_factor * scaling) [CCMpred default: 0.2]", default=0.2)
+    ccmpred_args = parser.add_argument_group('ccmpred_args')
+    ccmpred_args.add_argument('--pc_submat', help="CCMpred : Use substitution matrix single pseudocounts instead of uniform (default : False)", default=False, action='store_true')
+    ccmpred_args.add_argument('--pc_single_count', help="CCMpred : Specify number of single pseudocounts (default : 1)", default=1)
+    ccmpred_args.add_argument('--pc_pair_count', help="CCMpred : Specify number of pair pseudocounts (default : 1)", default=1)
+    ccmpred_args.add_argument('--ofn_pll', help="CCMpred : Pseudo-likelihood inference (default : True)", default=True)
+    ccmpred_args.add_argument('--ofn_cd', help="CCMpred : Contrastive Divergence inference (default : False)", default=False)
+    ccmpred_args.add_argument('--reg_lambda_pair_factor', help="CCMpred : Regularization parameter for pair potentials (L2 regularization with lambda_pair = lambda_pair_factor * scaling) [CCMpred default: 0.2]", default=0.2)
+
+
+    # Potts model
+    potts_model_args = parser.add_argument_group('potts_model_args')
+    potts_model_args.add_argument('-noinfer', '--dont_infer_potts_model', help="Don't infer a Potts model (default = do)", action='store_true', default=False)
+    potts_model_args.add_argument('--inference_type', help="Inference type (standard : Potts model inferred from an alignment, one_submat : Potts model inferred from a sequence using submatrix pseudocounts, one_hot : one-hot encoding of a sequence -> Potts model) (default : standard)", choices=["standard","one_hot", "one_submat"], default="standard")
+    potts_model_args.add_argument('--use_insertion_penalties', help="use insertion penalties", action='store_true', default=False)
+    
+    # Potts model transformation post inference
+    post_inference_args = parser.add_argument_group('post_inference_args')
+    post_inference_args = parser.add_argument_group('post_inference_args')
+    post_inference_args.add_argument('--v_rescaling_function', help="Rescaling function for the v parameters of the Potts model. (default : no rescaling (identity))", default="identity")
+    post_inference_args.add_argument('--w_rescaling_function', help="Rescaling function for the w parameters of the Potts model. (default : no rescaling (identity))", default="identity")
+    post_inference_args.add_argument('--v_rescaling_tau', help="Tau parameter for rescaling function simulate_uniform_pc_on_v", type=float, default=0.5)
+    post_inference_args.add_argument('-nw', '--dont_use_w', help="Speed up computations if we are not interested in w parameters (not recommended)", action='store_true', default=False)
+    post_inference_args.add_argument('--insert_null_at_trimmed', help="Insert background parameters at positions trimmed by trimal", action='store_true', default=False)
+    post_inference_args.add_argument('--insert_v_star_at_trimmed', help="Insert v parameters at positions trimmed by trimal (computed from frequencies)", action='store_true', default=False)
+
 
 
 
     args = vars(parser.parse_args(args))
-    args["filter_alignment"] = not args["dont_filter_alignment"]
-    args["use_less_sequences"] = not args["use_whole_alignment"]
-    args["trim_alignment"] = not args["dont_trim_alignment"]
-    args["infer_potts_model"] = not args["dont_infer_potts_model"]
-    args["use_w"] = not args["dont_use_w"]
-    cf = Potts_Object.from_files(**args)
-    fm.write_readme(cf.folder, **args)
+
+    # get args in dict {group_name: args}
+#    arg_groups = {}
+#    for group in parser._action_groups:
+#        group_dict = {a.dest:getattr(args,a.dest,None) for a in group._group_actions}
+#        arg_groups[group.title]=vars(argparse.Namespace(**group_dict))
+#
+    #file_args = arg_groups["file_args"]
+    #other_args = {key: arg_groups[group_title][key] for group_title in ["aln_processing_args", "potts_model_args", "post_inference_args", "ccmpred_args", "limitation_args"] for key in arg_groups[group_title]}
+
+    file_arg_names = ["sequence_file", "aln_file", "aln_with_insertions", "potts_folder", "unaligned_fasta", "potts_model_file", "hhr_file"]
+    file_args = {key:args[key] for key in file_arg_names}
+    other_args = {key:args[key] for key in args if not key in file_arg_names}
+
+    other_args["filter_alignment"] = not other_args["dont_filter_alignment"]
+    other_args["use_less_sequences"] = not other_args["use_whole_alignment"]
+    other_args["trim_alignment"] = not other_args["dont_trim_alignment"]
+    other_args["infer_potts_model"] = not other_args["dont_infer_potts_model"]
+    other_args["use_w"] = not other_args["dont_use_w"]
+ 
+
+#    arg_groups["aln_processing_args"]["filter_alignment"] = not arg_groups["aln_processing_args"]["dont_filter_alignment"]
+#    arg_groups["aln_processing_args"]["use_less_sequences"] = not arg_groups["aln_processing_args"]["use_whole_alignment"]
+#    arg_groups["aln_processing_args"]["trim_alignment"] = not arg_groups["aln_processing_args"]["dont_trim_alignment"]
+#    arg_groups["potts_model_args"]["infer_potts_model"] = not arg_groups["potts_model_args"]["dont_infer_potts_model"]
+#    arg_groups["post_inference_args"]["use_w"] = not arg_groups["post_inference_args"]["dont_use_w"]
+# 
+
+    potts_folder = file_args["potts_folder"]
+    if potts_folder is None:
+        folder_name = str(uuid.uuid4())
+        potts_folder = pathlib.Path(folder_name)
+        print("No folder name specified, Potts folder will be created at "+str(potts_folder)) 
+    if not potts_folder.is_dir():
+        potts_folder.mkdir()
+
+    if other_args["call_hhblits"]:
+        potts_object = Potts_Object.from_sequence_with_hhblits(potts_folder, file_args["sequence_file"], **other_args)
+    elif file_args["aln_with_insertions"] is not None:
+        potts_object = Potts_Object.from_hhblits_files(potts_folder, file_args["aln_with_insertions"], sequence_file=file_args["sequence_file"], potts_model_file=file_args["potts_model_file"], hhr_file=file_args["hhr_file"], **other_args)
+    elif file_args["aln_file"] is not None:
+        potts_object = Potts_Object.from_aln_file(potts_folder, file_args["aln_file"], sequence_file=file_args["sequence_file"], aln_with_insertions=file_args["aln_with_insertions"], potts_model_file=file_args["potts_model_file"], **other_args)
+    elif (file_args["sequence_file"] is not None):
+        potts_object = Potts_Object.from_sequence_alone(potts_folder, file_args["sequence_file"], **other_args)
+    else:
+        raise Exception("TODO")
+    
+    fm.write_readme(potts_object.folder, **args)
+
+    return potts_object

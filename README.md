@@ -167,7 +167,6 @@ ppalign -f1 examples/1cc8_potts_folder -f2 4ydx_potts_folder -o 1cc8_4ydx_ppalig
 1cc8_4ydx_ppalign_output/ now contains :
 
 * aln.csv : contains the list of aligned positions in the two Potts models
-* aln_original.csv : contains the list of aligned positions of the original alignments (before trimming etc.)
 * aln_sequences.csv : contains the list of aligned positions of the original sequences
 * info.csv : contains information about the alignment made by PPalign (including similarity score and computing time)
 * aligned_training_sets.fasta (thanks to -oaln option) : a MSA made with the aligned columns of the two train MSAs

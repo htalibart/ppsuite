@@ -27,3 +27,6 @@ PDB_5JZR = FOLDER_5JZR/"5jzr.pdb"
 TEST_TS_MSA = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/ts_msa.fasta'))
 TEST_TS_SEQ = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/ts_seq.fasta'))
 TEST_TS_SEQ_TRIM = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/ts_seq_trim.fasta'))
+
+
+INSERTION_RESOURCES_FOLDER = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/insertion_resources/'))

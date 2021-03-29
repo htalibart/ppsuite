@@ -54,8 +54,14 @@ class dp_mat
         /**
          * The gap costs (>=0) (gap open and gap extension costs)
          */
-        double gap_open;
-        double gap_extend;
+        //double gap_open;
+        //double gap_extend;
+	
+
+	float * insert_open_row;
+	float * insert_open_col;
+	float * insert_extend_row;
+	float * insert_extend_col;
 
     public :
 

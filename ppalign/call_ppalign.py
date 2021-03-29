@@ -13,7 +13,7 @@ PPALIGN_CPP_LIBRARY = pkg_resources.resource_filename('ppalign', 'ppalign_solver
 PPALIGN_SOLVER = ctypes.CDLL(PPALIGN_CPP_LIBRARY)
 INFINITY = 1000000000
 
-def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, gap_open=8, gap_extend=0, sim_min=0.1, offset_v=0, remove_v0=False, **kwargs):
+def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, sim_min=0.1, offset_v=0, remove_v0=False, **kwargs):
    
     # handle output files and folder
     if not output_folder.is_dir():
@@ -58,9 +58,24 @@ def align_two_potts_models(mrfs, output_folder, n_limit_param=INFINITY, iter_lim
     c_edges_maps = [np.ascontiguousarray(edges_map.flatten(), dtype=np.int32).ctypes.data_as(c_int_p) for edges_map in edges_maps]
 
 
-    PPALIGN_SOLVER.call_from_python.argtypes=[c_float_p, c_float_p, c_float_p, c_float_p, ctypes.c_int, ctypes.c_int, c_int_p, c_int_p, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+    # INSERTIONS
+    #insert_open_A = np.ascontiguousarray(np.ones((mrfs[0].ncol))*gap_open)
+    #c_insert_open_A =  insert_open_A.astype(np.float32).ctypes.data_as(c_float_p)
+    #insert_opens = [np.ascontiguousarray(np.ones((mrfs[k].ncol))*gap_open) for k in range(2)]
+    if insert_costs is None:
+        print("insert costs is None, filling with gap open = 8 and gap extend = 0")
+        insert_opens = [np.ascontiguousarray(np.ones((mrfs[mrf_ind].ncol+1))*8) for mrf_ind in range(2)]
+        insert_extends = [np.ascontiguousarray(np.ones((mrfs[mrf_ind].ncol+1))*0) for mrf_ind in range(2)]
+    else:
+        insert_opens = [np.ascontiguousarray(insert_costs[mrf_ind]['open']) for mrf_ind in range(2)]
+        insert_extends = [np.ascontiguousarray(insert_costs[mrf_ind]['extend']) for mrf_ind in range(2)]
+    c_insert_opens = [insert_open.astype(np.float32).ctypes.data_as(c_float_p) for insert_open in insert_opens]
+    c_insert_extends = [insert_extend.astype(np.float32).ctypes.data_as(c_float_p) for insert_extend in insert_extends]
 
-    PPALIGN_SOLVER.call_from_python(*c_vs, *c_ws, *[ctypes.c_int(mrf.ncol) for mrf in mrfs], *c_edges_maps, *[ctypes.c_double(selfcomp) for selfcomp in selfcomps], ctypes.c_double(gap_open), ctypes.c_double(gap_extend), ctypes.c_char_p(str(aln_res_file).encode('utf-8')), ctypes.c_char_p(str(info_res_file).encode('utf-8')), ctypes.c_int(n_limit_param), ctypes.c_int(iter_limit_param), ctypes.c_double(t_limit), ctypes.c_int(disp_level), ctypes.c_double(epsilon), ctypes.c_double(gamma), ctypes.c_double(theta), ctypes.c_double(stepsize_min), ctypes.c_int(nb_non_increasing_steps_max), ctypes.c_double(score_min), ctypes.c_double(alpha_w), ctypes.c_double(offset_v))
+
+    PPALIGN_SOLVER.call_from_python.argtypes=[c_float_p, c_float_p, c_float_p, c_float_p, ctypes.c_int, ctypes.c_int, c_int_p, c_int_p, ctypes.c_double, ctypes.c_double, c_float_p, c_float_p, c_float_p, c_float_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double]
+
+    PPALIGN_SOLVER.call_from_python(*c_vs, *c_ws, *[ctypes.c_int(mrf.ncol) for mrf in mrfs], *c_edges_maps, *[ctypes.c_double(selfcomp) for selfcomp in selfcomps], *c_insert_opens, *c_insert_extends, ctypes.c_char_p(str(aln_res_file).encode('utf-8')), ctypes.c_char_p(str(info_res_file).encode('utf-8')), ctypes.c_int(n_limit_param), ctypes.c_int(iter_limit_param), ctypes.c_double(t_limit), ctypes.c_int(disp_level), ctypes.c_double(epsilon), ctypes.c_double(gamma), ctypes.c_double(theta), ctypes.c_double(stepsize_min), ctypes.c_int(nb_non_increasing_steps_max), ctypes.c_double(score_min), ctypes.c_double(alpha_w), ctypes.c_double(offset_v))
 
     total_computation_time = time.time()-time_start
 

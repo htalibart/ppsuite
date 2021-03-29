@@ -876,6 +876,11 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
         }
 	else
 	{
+		if(lb != ub && ub_score <= bound_ub_score)
+        	{
+            		cout <<"For FIP: Stop now.\n";
+            		status = APPROXIMATE;
+        	}
 		if (current_lb > lb)    // if current_lb > lb then increase the number of improving iteration, and number of non-improving iteration = 0.
 		{
 		    lb = current_lb;
@@ -894,16 +899,26 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 			 best_solution[ii] = solution[ii];
 		    }
 		}
-		else if (current_lb != lb && current_ub != ub)   // else, number of improving iteration = 0, and increase number of non-improving iteration
+		if (current_lb != lb && current_ub != ub)   // else, number of improving iteration = 0, and increase number of non-improving iteration
 		{
 		    cnt_non_increas++;
 		    cnt_break++;
 		    cnt_increas = 0;
 		}
+		if (cnt_non_increas > 5)   // after 20 non-improving iteration, reduce gamma
+		{
+		    gamma *= theta;
+		    cnt_non_increas = 0;
+		}
+		if (cnt_increas > 5)       // after 20 improving iteration, increase gamma
+		{
+		    gamma /= theta;
+		    cnt_increas = 0;
+		}
+
 		if (lb >= ub || ((int)lb >= ub && obj_is_int))
 		{
 			cout <<"Optimal. Stop now.\n";
-			cout << "lb=" << lb << " ub=" << ub << endl;
 		    status = OPTIMAL;
 		}
 		else if(solve_time >= params.my_time_limit)
@@ -951,17 +966,7 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 		    }
 		    update_lambda(step);
 		}
-		if (cnt_non_increas > 5)   // after 20 non-improving iteration, reduce gamma
-		{
-		    gamma *= theta;
-		    cnt_non_increas = 0;
-		}
-		if (cnt_increas > 5)       // after 20 improving iteration, increase gamma
-		{
-		    gamma /= theta;
-		    cnt_increas = 0;
-		}
-
+	
 	}
 	//cout << "UB-LB=" << ub - lb << endl;
     	tic2 = times(&end);

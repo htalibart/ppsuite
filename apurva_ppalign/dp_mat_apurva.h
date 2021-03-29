@@ -16,10 +16,17 @@ class dp_mat_apurva : public dp_mat
         /**
         * Constructors
         */
-        dp_mat_apurva(graph_apurva & g, double go = 0.0, double ge = 0.0): dp_mat()
+        dp_mat_apurva(graph_apurva & g, float * insert_open_row_, float * insert_open_col_, float * insert_extend_row_, float * insert_extend_col_): dp_mat()
             {
-        		gap_open = go;
-        		gap_extend = ge;
+        		//gap_open = go;
+        		//gap_extend = ge;
+
+		insert_open_row = insert_open_row_;
+		insert_open_col = insert_open_col_;
+		insert_extend_row = insert_extend_row_;
+		insert_extend_col = insert_extend_col_;
+
+
 
                 nb_col = g.get_nb_col();
                 nb_row = g.get_nb_row();
@@ -89,14 +96,16 @@ class dp_mat_apurva : public dp_mat
 
                 for(int j=1; j<nb_row+1; ++j)
                 {
-                	dp[0][j] = gap_open+(j-1)*gap_extend;
+                	//dp[0][j] = gap_open+(j-1)*gap_extend;
+                	dp[0][j] = get_insertion_open_after_row(-1)+(j-1)*get_insertion_extend_after_row(-1);
                 	dp_v[0][j] = INFINITY;
                 	dp_h[0][j] = INFINITY; //we also have to intialize this, because we allow an insertion followed by a deletion (although it's not initialized in the script)
                 }
 
                 for(int i=1; i<nb_col+1; ++i)
                 {
-                	dp[i][0] = gap_open+(i-1)*gap_extend;
+                	//dp[i][0] = gap_open+(i-1)*gap_extend;
+                	dp[i][0] = get_insertion_open_after_col(-1)+(i-1)*get_insertion_extend_after_col(-1);
                 	dp_v[i][0] = INFINITY; //we also have to intialize this, because we allow an insertion followed by a deletion (although it's not initialized in the script)
                 	dp_h[i][0] = INFINITY;
                 }
@@ -173,16 +182,18 @@ class dp_mat_apurva : public dp_mat
         * For a given node, find the best value of the best outgoing edges set, and fill dp_arc_out_col
         */
         void calc_arcs_out(int col1, int row1, graph_apurva & g, lambda_mat_apurva & lb_mat, int * lo, int * up);
-        /**
-         * Set the gap open and gap extension costs
-         */
-        inline void set_gap_open(double cost){ gap_open = cost; }
-        inline void set_gap_extend(double cost){ gap_extend = cost; }
+
         /**
          * Get the gap open and gap extension costs
          */
-        inline double get_gap_open(){ return gap_open; }
-        inline double get_gap_extend(){ return gap_extend; }
+        //inline double get_gap_open(){ return gap_open; }
+        //inline double get_gap_extend(){ return gap_extend; }
+	//inline float get_insertion_open_after_col(int col){cout << "after col " << col << " : " << insert_open_col[col+1] << endl; return insert_open_col[col+1];}
+	inline float get_insertion_open_after_col(int col){return insert_open_col[col+1];}
+	//inline float get_insertion_open_after_row(int row){cout << "after row " << row << " : " << insert_open_row[row+1] << endl; return insert_open_row[row+1];}
+	inline float get_insertion_open_after_row(int row){return insert_open_row[row+1];}
+	inline float get_insertion_extend_after_col(int col){return insert_extend_col[col+1];}
+	inline float get_insertion_extend_after_row(int row){return insert_extend_row[row+1];}
 
 
 
