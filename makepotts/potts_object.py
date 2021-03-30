@@ -76,8 +76,8 @@ class Potts_Object:
         if (feature.potts_model is not None):
             feature.potts_model = get_rescaled_potts_model(feature.potts_model, v_rescaling_function, w_rescaling_function, use_w=use_w, **kwargs)
 
-        if (potts_folder/"insertion_penalties.ins").is_file() and use_insertion_penalties:
-            feature.insertion_penalties = get_insertion_penalties_from_file(potts_folder/"insertion_penalties.ins")
+        if (potts_folder/"insertion_penalties.tsv").is_file() and use_insertion_penalties:
+            feature.insertion_penalties = get_insertion_penalties_from_file(potts_folder/"insertion_penalties.tsv")
             assert(len(feature.insertion_penalties['open']) == len(feature.insertion_penalties['extend']))
             assert(len(feature.insertion_penalties['open']) == feature.potts_model.ncol+1)
         else:
@@ -277,7 +277,7 @@ class Potts_Object:
         if use_insertion_penalties:
             if aln_with_insertions is None:
                 raise Exception("File with insertions as lower case is required")
-            insertions_file = potts_folder/"insertion_penalties.ins"
+            insertions_file = potts_folder/"insertion_penalties.tsv"
             seed_length = potts_model.ncol
             infer_insertion_penalties_in_file(aln_with_insertions, seed_length, insertions_file)
 
