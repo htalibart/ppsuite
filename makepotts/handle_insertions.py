@@ -38,7 +38,7 @@ def get_insertion_penalties_from_file(insertion_penalties_file):
 
 
 
-def lower_case_trimmed_columns(aln_with_insertions, output_file, list_of_trimmed_columns, fileformat='fasta'):
+def lower_case_trimmed_columns(aln_with_insertions, output_file, list_of_columns_not_trimmed, fileformat='fasta'):
     records = list(SeqIO.parse(str(aln_with_insertions),fileformat))
     output_records = []
     for record in records:
@@ -49,8 +49,11 @@ def lower_case_trimmed_columns(aln_with_insertions, output_file, list_of_trimmed
         for letter in sequence_str:
             if letter.isupper() or letter=='-':
                 upper_index+=1
-                if upper_index not in list_of_trimmed_columns:
-                    letter = letter.lower()
+                if upper_index not in list_of_columns_not_trimmed:
+                    if letter!='-':
+                        letter = letter.lower()
+                    else:
+                        letter='.'
             new_sequence_str+=letter
         new_record.seq = Seq(new_sequence_str, IUPAC.protein)
         output_records.append(new_record)

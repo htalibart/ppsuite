@@ -272,7 +272,8 @@ class Potts_Object:
                 if aln_with_insertions is None:
                     aln_with_insertions = aln_before_trim
                 aln_with_insertions_and_trim = potts_folder/"aln_with_insertions_and_trim.a3m"
-                lower_case_trimmed_columns(aln_with_insertions, aln_with_insertions_and_trim, mrf_pos_to_aln_pos)
+                columns_not_trimmed = mrf_pos_to_aln_pos
+                lower_case_trimmed_columns(aln_with_insertions, aln_with_insertions_and_trim, columns_not_trimmed)
                 aln_with_insertions = aln_with_insertions_and_trim
 
 

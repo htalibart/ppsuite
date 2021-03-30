@@ -105,13 +105,12 @@ class Test_MakePotts(unittest.TestCase):
        assert(po.insertion_penalties is not None)
 
 
-
     def test_lower_trimmed_columns_insertions(self):
         a3m_file = INSERTION_RESOURCES_FOLDER/'Ac-D.a3m'
         output_file = '/tmp/test_a3m_trim.a3m'
-        lower_case_trimmed_columns(a3m_file, output_file, [0,2,3])
+        lower_case_trimmed_columns(a3m_file, output_file, [0,2])
         records = list(SeqIO.parse(str(output_file), 'fasta'))
-        assert(str(records[1].seq)=='AcfD')
+        assert(str(records[2].seq)=='AcfD')
         os.remove(str(output_file))
 
     def test_lower_trimmed_columns_insertions_full_object(self):
