@@ -47,7 +47,7 @@ def lower_case_trimmed_columns(aln_with_insertions, output_file, list_of_trimmed
         sequence_str = str(record.seq)
         new_sequence_str=''
         for letter in sequence_str:
-            if letter.isupper():
+            if letter.isupper() or letter=='-':
                 upper_index+=1
                 if upper_index not in list_of_trimmed_columns:
                     letter = letter.lower()
