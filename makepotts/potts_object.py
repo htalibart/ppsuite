@@ -148,7 +148,6 @@ class Potts_Object:
     def from_sequence_with_hhblits(cls, potts_folder, sequence_file, hhblits_database, **kwargs):
         aln_with_insertions = potts_folder/"hhblits_output.a3m"
         hhr_file = call_hhblits(sequence_file, aln_with_insertions, hhblits_database, **kwargs)
-        #fm.remove_sequences_with_bad_characters(file_to_be_processed, seed_aln) # TODO CHECK OUTPUT .a3m
         return cls.from_hhblits_files(potts_folder, aln_with_insertions, sequence_file=sequence_file, hhr_file=hhr_file, **kwargs)
 
 
@@ -156,6 +155,10 @@ class Potts_Object:
 
     @classmethod
     def from_hhblits_files(cls, potts_folder, aln_with_insertions, sequence_file=None, hhr_file=None, use_evalue_cutoff=False, use_less_sequences=True, max_nb_sequences=1000, filter_alignment=True, hhfilter_threshold=80, **kwargs):
+
+        clean_file = potts_folder/"clean.a3m"
+        fm.remove_sequences_with_bad_characters(aln_with_insertions, clean_file)
+        aln_with_insertions = clean_file
 
         if filter_alignment:
             filtered = potts_folder/"filtered.a3m"
@@ -305,7 +308,7 @@ class Potts_Object:
 
         # REMOVE TEMPORARY FILES
         if not keep_tmp_files:
-            for fn in ["hhblits_output.a3m", "hhblits_output.hhr", "filtered.a3m", "less.a3m", "reformat.fasta", "trim.fasta", "colnumbering.csv", "aln_with_insertions_and_trim.a3m"]:
+            for fn in ["hhblits_output.a3m", "hhblits_output.hhr", "filtered.a3m", "less.a3m", "reformat.fasta", "trim.fasta", "colnumbering.csv", "aln_with_insertions_and_trim.a3m", "clean.a3m"]:
                 if (potts_folder/fn).is_file():
                     fm.remove_file(potts_folder/fn)
 
