@@ -9,7 +9,7 @@ from Bio.Alphabet import IUPAC
 
 
 import pkg_resources
-julia_script_insertions_file = pkg_resources.resource_filename(__package__, 'infer_insertion_penalties.jl')
+julia_script_insertions_file = pkg_resources.resource_filename('makepotts', 'infer_insertion_penalties.jl')
 
 def infer_insertion_penalties_in_file(seed_a3m_file, seed_length, output_file):
     fm.check_if_file_ok(seed_a3m_file)
