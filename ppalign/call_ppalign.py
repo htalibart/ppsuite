@@ -72,6 +72,12 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
     c_insert_opens = [insert_open.astype(np.float32).ctypes.data_as(c_float_p) for insert_open in insert_opens]
     c_insert_extends = [insert_extend.astype(np.float32).ctypes.data_as(c_float_p) for insert_extend in insert_extends]
 
+    
+    # CHECK IF OK
+    for mrf_ind in range(2):
+        assert(len(insert_opens[mrf_ind]==mrfs[mrf_ind].ncol+1))
+        assert(len(insert_extends[mrf_ind]==mrfs[mrf_ind].ncol+1))
+
 
     PPALIGN_SOLVER.call_from_python.argtypes=[c_float_p, c_float_p, c_float_p, c_float_p, ctypes.c_int, ctypes.c_int, c_int_p, c_int_p, ctypes.c_double, ctypes.c_double, c_float_p, c_float_p, c_float_p, c_float_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double]
 
