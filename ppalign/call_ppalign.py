@@ -13,7 +13,7 @@ PPALIGN_CPP_LIBRARY = pkg_resources.resource_filename('ppalign', 'ppalign_solver
 PPALIGN_SOLVER = ctypes.CDLL(PPALIGN_CPP_LIBRARY)
 INFINITY = 1000000000
 
-def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, sim_min=0.1, offset_v=0, remove_v0=False, **kwargs):
+def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, sim_min=0.1, offset_v=0, remove_v0=False, insertion_penalties_coefficient=1, **kwargs):
    
     # handle output files and folder
     if not output_folder.is_dir():
@@ -67,8 +67,8 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
         insert_opens = [np.ascontiguousarray(np.ones((mrfs[mrf_ind].ncol+1))*8) for mrf_ind in range(2)]
         insert_extends = [np.ascontiguousarray(np.ones((mrfs[mrf_ind].ncol+1))*0) for mrf_ind in range(2)]
     else:
-        insert_opens = [np.ascontiguousarray(insert_costs[mrf_ind]['open']) for mrf_ind in range(2)]
-        insert_extends = [np.ascontiguousarray(insert_costs[mrf_ind]['extend']) for mrf_ind in range(2)]
+        insert_opens = [np.multiply(np.ascontiguousarray(insert_costs[mrf_ind]['open']),insertion_penalties_coefficient) for mrf_ind in range(2)]
+        insert_extends = [np.multiply(np.ascontiguousarray(insert_costs[mrf_ind]['extend']),insertion_penalties_coefficient) for mrf_ind in range(2)]
     c_insert_opens = [insert_open.astype(np.float32).ctypes.data_as(c_float_p) for insert_open in insert_opens]
     c_insert_extends = [insert_extend.astype(np.float32).ctypes.data_as(c_float_p) for insert_extend in insert_extends]
 

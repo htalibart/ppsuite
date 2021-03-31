@@ -40,6 +40,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('-go', '--gap_open', help="gap open", default=14, type=float)
     parser.add_argument('-ge', '--gap_extend', help="gap extend", default=0, type=float)
     parser.add_argument('--use_insertion_penalties', help="use insertion penalties", action='store_true', default=False)
+    parser.add_argument('-ipc', '--insertion_penalties_coefficient', help="insertion penalties coefficient", default=1, type=float)
 
     # solver options
     parser.add_argument('-t', '--t_limit', help="solver : time limit in seconds (default : 36000)", type=float, default=36000)
