@@ -349,7 +349,6 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     			dp_v[i][j] = prev_gap_in_first; //make new gap in first
     			dp_v_from[i][j] = 0;
     		}
-		cout << "dp_v["<<i<<"]["<<j<<"]="<<dp_v[i][j] << endl;
 
     		// compute Q (alignment ends with gap in first sequence)
     		prev_aligned = dp[i][j-1] + get_insertion_open_after_col(i-1);
@@ -370,14 +369,12 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     			dp_h[i][j] = prev_gap_in_second; //make new gap in second
     			dp_h_from[i][j] = -1;
     		}
-		cout << "dp_h["<<i<<"]["<<j<<"]="<<dp_h[i][j] << endl;
 
 
     		// compute D (alignment ends with two aligned characters)
     		prev_aligned = dp[i-1][j-1] + dp_score[i-1][j-1];
     		prev_gap_in_second = dp_v[i-1][j-1] + dp_score[i-1][j-1];
     		prev_gap_in_first = dp_h[i-1][j-1] + dp_score[i-1][j-1];
-		cout << "i="<<i<<",j="<<j<<" dp_score="<<dp_score[i-1][j-1]<<" dp[i-1][j-1]="<<dp[i-1][j-1]<<" dp_v[i-1][j-1]="<<dp_v[i-1][j-1]<<" dp_h[i-1][j-1]="<<dp_h[i-1][j-1]<<endl;
     		//prev_aligned = dp[i-1][j-1] + dp_score[i-1][j-1];
     		//prev_gap_in_second = dp_v[i][j];
     		//prev_gap_in_first = dp_h[i][j];
@@ -396,7 +393,6 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     			dp[i][j] = prev_gap_in_second;
     			dp_from[i][j] = -1;
     		}
-		cout << "dp["<<i<<"]["<<j<<"]="<<dp[i][j] << endl;
 		
 	//	if (dp[i][j]<=dp_max)
 	//	{
@@ -454,7 +450,6 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
 //    	current_tr = "Q";
 //    }
 //
-    cout << "current_tr=" << current_tr << endl;
 
     //Traceback
     int i = nb_col;
@@ -463,12 +458,10 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     //int j = row_dp_max;
     while(i>0 && j>0)
     {
-	cout << "dp_from["<<i<<"]["<<j<<"]="<<dp_from[i][j]<<endl;
 
     	if(current_tr == "D") //the two characters are aligned
     	{
     		sol[i-1] = j-1;
-		cout << "sol[" << i-1 << "]=" << j-1 << endl;
 
     		if(dp_from[i][j] == 1) //previous two characters were also aligned
     		{
@@ -490,7 +483,6 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     	{
 
     		sol[i-1] = -1;
-		cout << "sol[" << i-1 << "]=" << -1 << endl;
 
     		if(dp_v_from[i][j] == 1) //previous characters were aligned
     		{
@@ -536,13 +528,13 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     }
 
     //Show solution
-    
+/*    
     cout << "Solution:" << endl;
     for(int i=0; i<nb_col; ++i)
     {
     	cout << i << " " << sol[i] << endl;
     }
-
+*/
 
     //add the constant factor that stems from the activation constraints
     return( dp_max - lb_mat.get_sum_lambda_act() );
