@@ -161,6 +161,8 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
     ub = min(ub,root.get_ub());
     lb = root.get_lb();
 
+    cout << "update BandB informations: ub="<< ub <<", lb="<<lb<<endl;
+
     int * root_solution = root.get_solution();
     for(int l(0); l != solution_size; ++l)
         best_solution[l] = root_solution[l];

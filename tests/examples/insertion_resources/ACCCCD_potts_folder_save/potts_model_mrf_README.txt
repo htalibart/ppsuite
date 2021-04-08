@@ -1,0 +1,1 @@
+"ccmpred /tmp/5ppr5nnh/reformat.fasta -b /tmp/5ppr5nnh/potts_model.mrf --pc-single-count 1 --pc-pair-count 1 --ofn-pll  --reg-lambda-pair-factor 0.2"

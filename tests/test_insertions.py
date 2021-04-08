@@ -53,35 +53,78 @@ class Test_Insertions(unittest.TestCase):
 
 
     def test_costly_open(self):
-        mrfs = [get_fake_model([0,1,2]), get_fake_model([3,4,1,2])]
-        insert_costs = [{"open":[0,1000,0,0],"extend":[0,0,0,0]}, {"open":[0,0,0,0,0],"extend":[0,0,0,0,0]}]
-        expected_aligned_positions = {"pos_ref":[1,2], "pos_2":[2,3]}
-        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001)
+        mrfs = [get_fake_model([0,1,2]), get_fake_model([0,3,4,1,2])]
+        insert_costs = [{"open":[0,1000,0,0],"extend":[0,0,0,0]}, {"open":[0,0,0,0,0,0],"extend":[0,0,0,0,0,0]}]
+        expected_aligned_positions = {"pos_ref":[1,2], "pos_2":[3,4]}
+        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001, t_limit=1, n_limit_param=1)
         self.assertEqual(aligned_positions, expected_aligned_positions)
 
 
-    def test_costly_extend(self):
+    def test_not_costly_open(self):
+        mrfs = [get_fake_model([0,1,2]), get_fake_model([0,3,4,1,2])]
+        insert_costs = [{"open":[0,0,0,0],"extend":[0,0,0,0]}, {"open":[0,0,0,0,0,0],"extend":[0,0,0,0,0,0]}]
+        expected_aligned_positions = {"pos_ref":[0,1,2], "pos_2":[0,3,4]}
+        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001, t_limit=1)
+        self.assertEqual(aligned_positions, expected_aligned_positions)
+
+
+
+    def test_costly_open_other_model(self):
+        mrfs = [get_fake_model([0,1,2]), get_fake_model([0,3,4,1,2])]
+        insert_costs = [{"open":[0,0,0,0],"extend":[0,0,0,0]}, {"open":[1000,1000,1000,1000,1000,1000],"extend":[0,0,0,0,0,0]}]
+        expected_aligned_positions = {"pos_ref":[0,1,2], "pos_2":[0,3,4]}
+        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001, t_limit=1)
+        self.assertEqual(aligned_positions, expected_aligned_positions)
+
+
+    def test_costly_extend_1(self):
+       mrfs = [get_fake_model([0,1,2]), get_fake_model([0,3,4,1,2])]
+       insert_costs = [{"open":[0,0,0,0],"extend":[0,1000,0,0]}, {"open":[0,0,0,0,0,0],"extend":[0,0,0,0,0,0]}]
+       expected_aligned_positions = {"pos_ref":[1,2], "pos_2":[3,4]}
+       aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001, t_limit=1, n_limit_param=1)
+       self.assertEqual(aligned_positions, expected_aligned_positions)
+
+
+
+
+    def test_costly_extend_other_model(self):
+       mrfs = [get_fake_model([0,1,2]), get_fake_model([0,3,4,1,2])]
+       insert_costs = [{"open":[0,0,0,0],"extend":[0,0,0,0]}, {"open":[0,0,0,0,0,0],"extend":[1000,1000,1000,1000,1000,1000]}]
+       expected_aligned_positions = {"pos_ref":[0,1,2], "pos_2":[0,3,4]}
+       aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001, t_limit=1)
+       self.assertEqual(aligned_positions, expected_aligned_positions)
+
+
+
+    def test_costly_extend_2(self):
         mrfs = [get_fake_model([0,1,2,3]), get_fake_model([0,4,5,6,1,2,3])]
-        insert_costs = [{"open":[0,1,0,0,0],"extend":[0,0.5,0,0,0]}, {"open":[0,0,0,0,0,0,0,0],"extend":[0,0,0,0,0,0,0,0]}]
+        insert_costs = [{"open":[0,0,0,0,0],"extend":[0,1000,0,0,0]}, {"open":[0,0,0,0,0,0,0,0],"extend":[0,0,0,0,0,0,0,0]}]
         expected_aligned_positions = {"pos_ref":[1,2,3], "pos_2":[4,5,6]}
         aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001)
         self.assertEqual(aligned_positions, expected_aligned_positions)
 
     def test_no_external_cost(self):
-        nb_before = 50
-        nb_after = 50
-        internal_open_1=100
-        internal_extend_1=10
-        internal_open_2=100
-        internal_extend_2=10
+        nb_before = 1
+        nb_after = 1
         mrfs = [get_fake_model([0]*nb_before+[1,2]+[0]*nb_after), get_fake_model([1,2])]
-        insert_costs = [{"open":[0]+[internal_open_1]*(nb_before+2+nb_after-1)+[0], "extend":[0]+[internal_extend_1]*(nb_before+2+nb_after-1)+[0]},
-                        {"open":[0,internal_open_2,0], "extend":[0,internal_extend_2,0]}
+        insert_costs = [{"open":[0]*(mrfs[0].ncol+1), "extend":[0]+[0]*(mrfs[0].ncol+1)},
+                        {"open":[0,1000,0], "extend":[0,0,0]}
                         ]
         expected_aligned_positions = {"pos_ref":[nb_before,nb_before+1], "pos_2":[0,1]}
         aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001)
-        print(aligned_positions)
         self.assertEqual(aligned_positions, expected_aligned_positions)
+
+    def test_external_cost(self):
+        nb_before = 1
+        nb_after = 1
+        mrfs = [get_fake_model([0]*nb_before+[1,2]+[0]*nb_after), get_fake_model([1,2])]
+        insert_costs = [{"open":[0]*(mrfs[0].ncol+1), "extend":[0]+[0]*(mrfs[0].ncol+1)},
+                        {"open":[1000,0,300], "extend":[0,0,0]}
+                        ]
+        expected_aligned_positions = {"pos_ref":[nb_before,nb_before+1], "pos_2":[0,1]}
+        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001, n_limit_param=1)
+        self.assertNotEqual(aligned_positions,expected_aligned_positions)
+
 
 
 if __name__=='__main__':

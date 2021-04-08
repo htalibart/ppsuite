@@ -445,7 +445,7 @@ double problem_apurva :: get_correct_value(int * sol)
     }
 
     // gaps at the end
-    if(nb_row - last_row > 1) // count the row symbols aligned to a gap
+    if( (nb_row - last_row > 1) && (last_row > -1) ) // count the row symbols aligned to a gap
     {
 		score += dp.get_insertion_open_after_col(nb_col-1);
 		gap_cost += dp.get_insertion_open_after_col(nb_col-1);
@@ -857,6 +857,7 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
         double current_ub(get_correct_value(solution));
 
         int sub_gr_norm(get_nz_sub_gr(solution));
+	cout << "sub_gr_norm before loop:" << sub_gr_norm << endl;
 
 
 		double ub_score = -2*current_lb/(self1+self2);
@@ -867,6 +868,8 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
     	solve_time += ((double)tic2 - (double)tic1) / (double)tic_per_sec;
     	tic1 = times(&start);
 
+	cout << "status before loop:" << status << endl;
+
 
         if(lb != ub && -lb <= params.score_min)
         {
@@ -876,6 +879,11 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
         }
 	else
 	{
+		if(lb != ub && ub_score <= bound_ub_score)
+        	{
+            		cout <<"For FIP: Stop now.\n";
+            		status = APPROXIMATE;
+        	}
 		if (current_lb > lb)    // if current_lb > lb then increase the number of improving iteration, and number of non-improving iteration = 0.
 		{
 		    lb = current_lb;
@@ -894,16 +902,26 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 			 best_solution[ii] = solution[ii];
 		    }
 		}
-		else if (current_lb != lb && current_ub != ub)   // else, number of improving iteration = 0, and increase number of non-improving iteration
+		if (current_lb != lb && current_ub != ub)   // else, number of improving iteration = 0, and increase number of non-improving iteration
 		{
 		    cnt_non_increas++;
 		    cnt_break++;
 		    cnt_increas = 0;
 		}
+		if (cnt_non_increas > 5)   // after 20 non-improving iteration, reduce gamma
+		{
+		    gamma *= theta;
+		    cnt_non_increas = 0;
+		}
+		if (cnt_increas > 5)       // after 20 improving iteration, increase gamma
+		{
+		    gamma /= theta;
+		    cnt_increas = 0;
+		}
+
 		if (lb >= ub || ((int)lb >= ub && obj_is_int))
 		{
 			cout <<"Optimal. Stop now.\n";
-			cout << "lb=" << lb << " ub=" << ub << endl;
 		    status = OPTIMAL;
 		}
 		else if(solve_time >= params.my_time_limit)
@@ -951,21 +969,15 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 		    }
 		    update_lambda(step);
 		}
-		if (cnt_non_increas > 5)   // after 20 non-improving iteration, reduce gamma
-		{
-		    gamma *= theta;
-		    cnt_non_increas = 0;
-		}
-		if (cnt_increas > 5)       // after 20 improving iteration, increase gamma
-		{
-		    gamma /= theta;
-		    cnt_increas = 0;
-		}
-
+		cout << "status: " << status << endl;
+	
 	}
 	//cout << "UB-LB=" << ub - lb << endl;
     	tic2 = times(&end);
     	solve_time += ((double)tic2 - (double)tic1) / (double)tic_per_sec;
+
+	cout << "lb after loop: " << lb << endl;
+	cout << "ub after loop: " << ub << endl;
 
     }
     //Prohibited edges are reallowed

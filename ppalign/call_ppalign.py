@@ -72,6 +72,7 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
     c_insert_opens = [insert_open.astype(np.float32).ctypes.data_as(c_float_p) for insert_open in insert_opens]
     c_insert_extends = [insert_extend.astype(np.float32).ctypes.data_as(c_float_p) for insert_extend in insert_extends]
 
+
     
     # CHECK IF OK
     for mrf_ind in range(2):

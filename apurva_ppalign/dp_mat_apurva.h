@@ -96,21 +96,37 @@ class dp_mat_apurva : public dp_mat
 
                 for(int j=1; j<nb_row+1; ++j)
                 {
-                	//dp[0][j] = gap_open+(j-1)*gap_extend;
-                	dp[0][j] = get_insertion_open_after_row(-1)+(j-1)*get_insertion_extend_after_row(-1);
+                	dp[0][j] = INFINITY;
                 	dp_v[0][j] = INFINITY;
-                	dp_h[0][j] = INFINITY; //we also have to intialize this, because we allow an insertion followed by a deletion (although it's not initialized in the script)
+                	dp_h[0][j] = get_insertion_open_after_col(-1)+(j-1)*get_insertion_extend_after_col(-1);
                 }
+
 
                 for(int i=1; i<nb_col+1; ++i)
                 {
-                	//dp[i][0] = gap_open+(i-1)*gap_extend;
-                	dp[i][0] = get_insertion_open_after_col(-1)+(i-1)*get_insertion_extend_after_col(-1);
-                	dp_v[i][0] = INFINITY; //we also have to intialize this, because we allow an insertion followed by a deletion (although it's not initialized in the script)
+                	dp[i][0] = INFINITY;
                 	dp_h[i][0] = INFINITY;
+                	dp_v[i][0] = get_insertion_open_after_row(-1)+(i-1)*get_insertion_extend_after_row(-1);
                 }
 
-
+//		for(int j=1; j<nb_row+1; ++j)
+//                {
+//                	//dp[0][j] = gap_open+(j-1)*gap_extend;
+//                	dp[0][j] = get_insertion_open_after_col(-1)+(j-1)*get_insertion_extend_after_col(-1);
+//                	dp_v[0][j] = INFINITY;
+//                	dp_h[0][j] = INFINITY; //we also have to intialize this, because we allow an insertion followed by a deletion (although it's not initialized in the script)
+//                }
+//
+//
+//                for(int i=1; i<nb_col+1; ++i)
+//                {
+//                	//dp[i][0] = gap_open+(i-1)*gap_extend;
+//                	dp[i][0] = get_insertion_open_after_row(-1)+(i-1)*get_insertion_extend_after_row(-1);
+//                	dp_v[i][0] = INFINITY; //we also have to intialize this, because we allow an insertion followed by a deletion (although it's not initialized in the script)
+//                	dp_h[i][0] = INFINITY;
+//                }
+//
+//
             };
 
         /**
@@ -189,11 +205,42 @@ class dp_mat_apurva : public dp_mat
         //inline double get_gap_open(){ return gap_open; }
         //inline double get_gap_extend(){ return gap_extend; }
 	//inline float get_insertion_open_after_col(int col){cout << "after col " << col << " : " << insert_open_col[col+1] << endl; return insert_open_col[col+1];}
-	inline float get_insertion_open_after_col(int col){return insert_open_col[col+1];}
+	inline float get_insertion_open_after_col(int col)
+	{
+		if (col<-1 || col>nb_col)
+		{
+			cout << "insertion_open_after_col" << col << endl;
+		}
+		return insert_open_col[col+1];
+	}
 	//inline float get_insertion_open_after_row(int row){cout << "after row " << row << " : " << insert_open_row[row+1] << endl; return insert_open_row[row+1];}
-	inline float get_insertion_open_after_row(int row){return insert_open_row[row+1];}
-	inline float get_insertion_extend_after_col(int col){return insert_extend_col[col+1];}
-	inline float get_insertion_extend_after_row(int row){return insert_extend_row[row+1];}
+	inline float get_insertion_open_after_row(int row)
+	{
+		if (row<-1 || row>nb_row)
+		{
+			cout << "insertion_open_after_row" << row << endl;
+		}
+
+		return insert_open_row[row+1];
+	}
+	inline float get_insertion_extend_after_col(int col)
+	{
+		if (col<-1 || col>nb_col)
+		{
+			cout << "insertion_extend_after_col" << col << endl;
+		}
+
+		return insert_extend_col[col+1];
+	}
+	inline float get_insertion_extend_after_row(int row)
+	{
+		if (row<-1 || row>nb_row)
+		{
+			cout << "insertion_extend_after_row" << row << endl;
+		}
+
+		return insert_extend_row[row+1];
+	}
 
 
 

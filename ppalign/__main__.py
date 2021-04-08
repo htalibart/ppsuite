@@ -112,8 +112,15 @@ def main(args=sys.argv[1:]):
 
 
     # INSERT COSTS
-    insert_costs = [{'open': np.ones((objects[mrf_ind].potts_model.ncol))*args["gap_open"],
-                                'extend': np.ones((objects[mrf_ind].potts_model.ncol))*args["gap_extend"]}
+    if args['use_insertion_penalties']:
+        insert_costs = []
+        for mrf_ind in range(2):
+            if objects[mrf_ind].insertion_penalties is None:
+                raise Exception("Insertion penalties undefined")
+            insert_costs.append(objects[mrf_ind].insertion_penalties)
+    else:
+        insert_costs = [{'open': np.ones((objects[mrf_ind].potts_model.ncol+1))*args["gap_open"],
+                                'extend': np.ones((objects[mrf_ind].potts_model.ncol+1))*args["gap_extend"]}
                                     for mrf_ind in range(2)]
 
     # ALIGNMENT
