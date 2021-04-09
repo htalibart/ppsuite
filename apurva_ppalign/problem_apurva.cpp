@@ -857,7 +857,6 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
         double current_ub(get_correct_value(solution));
 
         int sub_gr_norm(get_nz_sub_gr(solution));
-	cout << "sub_gr_norm before loop:" << sub_gr_norm << endl;
 
 
 		double ub_score = -2*current_lb/(self1+self2);
@@ -868,7 +867,6 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
     	solve_time += ((double)tic2 - (double)tic1) / (double)tic_per_sec;
     	tic1 = times(&start);
 
-	cout << "status before loop:" << status << endl;
 
 
         if(lb != ub && -lb <= params.score_min)
@@ -969,7 +967,6 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 		    }
 		    update_lambda(step);
 		}
-		cout << "status: " << status << endl;
 	
 	}
 	//cout << "UB-LB=" << ub - lb << endl;
