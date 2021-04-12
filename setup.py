@@ -9,7 +9,7 @@ setup(
     install_requires=['numpy', 'pandas', 'biopython', 'msgpack==0.6.1', 'msgpack-python==0.5.6', 'scipy', 'matplotlib', 'seaborn', 'sklearn', 'kneebow'],
     package_data={
         'ppalign':['ppalign_solver.so'],
-        'tests':['examples/*'],
+        'tests':['examples/*', 'examples/*/*'],
         'makepotts':['infer_insertion_penalties.jl'],
         },
     entry_points={
