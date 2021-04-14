@@ -375,9 +375,6 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     		prev_aligned = dp[i-1][j-1] + dp_score[i-1][j-1];
     		prev_gap_in_second = dp_v[i-1][j-1] + dp_score[i-1][j-1];
     		prev_gap_in_first = dp_h[i-1][j-1] + dp_score[i-1][j-1];
-    		//prev_aligned = dp[i-1][j-1] + dp_score[i-1][j-1];
-    		//prev_gap_in_second = dp_v[i][j];
-    		//prev_gap_in_first = dp_h[i][j];
     		if(prev_aligned <= prev_gap_in_first && prev_aligned <= prev_gap_in_second && lo[i-1] <= j-1 && up[i-1] >= j-1 && node_to_ind[i-1][j-1] >= 0) //if values are identical, priority is to align
     		{
     			dp[i][j] = prev_aligned;
@@ -394,17 +391,9 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     			dp_from[i][j] = -1;
     		}
 		
-	//	if (dp[i][j]<=dp_max)
-	//	{
-	//		dp_max = dp[i][j];
-	//		col_dp_max = i;
-	//		row_dp_max = j;
-	//	}
     	}
     }
 
-    //int row_dp_max=nb_row;
-    //int col_dp_max=nb_col;
 
     string current_tr;
     double dp_max;
@@ -430,32 +419,9 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
 
 
 
-    //double dp_max = dp[nb_col][nb_row];
-    //double dp_max = dp[col_dp_max][row_dp_max];
-    //cout << "dp_max=" << dp_max << endl;
-    //cout << "col_dp_max="<< col_dp_max <<", row_dp_max="<< row_dp_max << endl;
-
-
-//    string current_tr="D";
-//    if(dp_from[col_dp_max][row_dp_max] == 1)
-//    {
-//    	current_tr = "D";
-//    }
-//    else if(dp_from[col_dp_max][row_dp_max] == -1)
-//    {
-//    	current_tr = "P";
-//    }
-//    else
-//    {
-//    	current_tr = "Q";
-//    }
-//
-
     //Traceback
     int i = nb_col;
     int j = nb_row;
-    //int i = col_dp_max;
-    //int j = row_dp_max;
     while(i>0 && j>0)
     {
 
@@ -463,11 +429,7 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     	{
     		sol[i-1] = j-1;
 
-    		if(dp_from[i][j] == 1) //previous two characters were also aligned
-    		{
-    			//sol[i-1] = j-1;
-    		}
-    		else if(dp_from[i][j] == -1) //previous there was a gap in the second sequence
+    		if(dp_from[i][j] == -1) //previous there was a gap in the second sequence
     		{
     			current_tr = "P";
     		}
@@ -528,13 +490,13 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     }
 
     //Show solution
-/*    
-    cout << "Solution:" << endl;
+    
+    /*cout << "Solution:" << endl;
     for(int i=0; i<nb_col; ++i)
     {
     	cout << i << " " << sol[i] << endl;
-    }
-*/
+    }*/
+
 
     //add the constant factor that stems from the activation constraints
     return( dp_max - lb_mat.get_sum_lambda_act() );
