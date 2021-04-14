@@ -12,6 +12,8 @@ from tests.resources_manager import *
 
 import comutils.create_fake_data as crfake
 
+from vizpotts import vizpotts #TEMP
+
 
 def are_templates_aligned(template2, aligned_positions):
     good_alignment = True
@@ -32,9 +34,12 @@ def get_vi_conserved_letter(conserved_letter):
     return vi
 
 
-def get_fake_model(conserved_letters_list):
+def get_fake_model(conserved_letters_list, ijabs=[]):
     v = np.array([get_vi_conserved_letter(c) for c in conserved_letters_list])
     w = np.zeros((len(conserved_letters_list), len(conserved_letters_list), 21, 21))
+    for ijab in ijabs:
+        w[ijab] = 10
+        w[ijab[1],ijab[0],ijab[2],ijab[3]] = 10
     return Potts_Model.from_parameters(v,w)
 
 
@@ -126,6 +131,46 @@ class Test_Insertions(unittest.TestCase):
         self.assertNotEqual(aligned_positions,expected_aligned_positions)
 
 
+    def test_external_cost_after(self):
+        open_after = 1
+        mrfs = [get_fake_model([0,1]), get_fake_model([0])]
+        insert_costs = [{"open":[0]*(mrfs[0].ncol+1), "extend":[0]*(mrfs[0].ncol+1)},
+                        {"open":[0,open_after], "extend":[0]*(mrfs[1].ncol+1)}
+                        ]
+        expected_aligned_positions = {"pos_ref":[0], "pos_2":[0]}
+        expected_LB = scalar_product(mrfs[0].v[0],mrfs[1].v[0])-open_after
+        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001, n_limit_param=1)
+        self.assertEqual(aligned_positions, expected_aligned_positions)
+        assert(abs(infos_solver['LB']-expected_LB)<=0.001)
+
+
+    def test_external_cost_before(self):
+        open_before = 1
+        mrfs = [get_fake_model([1,0]), get_fake_model([0])]
+        insert_costs = [{"open":[0]*(mrfs[0].ncol+1), "extend":[0]*(mrfs[0].ncol+1)},
+                        {"open":[open_before,0], "extend":[0]*(mrfs[1].ncol+1)}
+                        ]
+        expected_aligned_positions = {"pos_ref":[1], "pos_2":[0]}
+        expected_LB = scalar_product(mrfs[1].v[0],mrfs[1].v[0])-open_before
+        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001, n_limit_param=1)
+        self.assertEqual(aligned_positions, expected_aligned_positions)
+        print(expected_LB, infos_solver['LB'])
+        assert(abs(infos_solver['LB']-expected_LB)<=0.001)
+
+
+
+#    def test_w_score_open_gap(self): # WILL NOT CONVERGE
+#        gap_open=1000
+#        gap_extend=0
+#        mrf1 = get_fake_model([0,1,2], ijabs=[(0,2,0,0)])
+#        mrf2 = get_fake_model([0,2], ijabs=[(0,1,0,0)])
+#        insert_costs = [{"open":[0]*(mrf1.ncol+1), "extend":[0]*(mrf1.ncol+1)},
+#                        {"open":[0,gap_open,0], "extend":[0,gap_extend,0]}
+#                        ]
+#        aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001)
+#
+
+       
 
 if __name__=='__main__':
     unittest.main()
