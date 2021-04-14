@@ -56,7 +56,7 @@ class Test_Call_ComPotts(unittest.TestCase):
         fastafnames = [self.output_folder/("fake_"+str(i)+".fasta") for i in range(2)]
         crfake.main(templates, alnfnames, fastafnames)
         mrfs = [Potts_Model.from_training_set(fastafnames[i], self.output_folder/("fake_"+str(i)+".mrf")) for i in range(2)]
-        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder)
+        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, gap_open=8, gap_extend=0, epsilon_sim=0.0001)
         self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
 
     def test_align_different_sizes(self):

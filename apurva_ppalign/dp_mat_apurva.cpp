@@ -428,8 +428,11 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     	if(current_tr == "D") //the two characters are aligned
     	{
     		sol[i-1] = j-1;
-
-    		if(dp_from[i][j] == -1) //previous there was a gap in the second sequence
+		
+		if (dp_from[i][j]==1)
+		{
+		}
+		else if(dp_from[i][j] == -1) //previous there was a gap in the second sequence
     		{
     			current_tr = "P";
     		}
