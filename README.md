@@ -63,6 +63,10 @@ To visualize predicted contacts using VizContacts, you also need to install :
 * PyMOL : https://pymol.org/ (this package was developped for Pymol 2.1.0)
 * Circos : http://www.circos.ca/
 
+### If you want to use position-specific gap costs (EXPERIMENTAL)
+* Install DCAlign and DCAbuild: https://github.com/infernet-h2020/DCAlign
+* Install JuliaPy: https://github.com/JuliaPy/pyjulia
+
 ## Installation
 
 ### Compile the C++ solver library
