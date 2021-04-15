@@ -14,6 +14,7 @@ julia_script_insertions_file = pkg_resources.resource_filename('makepotts', 'inf
 
 
 def get_insertion_penalties_from_file(insertion_penalties_file):
+    """ reads insertion penalties files in DCAbuild .tsv format into a dictionary {"open":[list of gap open penalties], "extend":[list of gap extend penalties]}"""
     fm.check_if_file_ok(insertion_penalties_file)
     insertion_penalties = {'open':[], 'extend':[]}
 
@@ -28,6 +29,7 @@ def get_insertion_penalties_from_file(insertion_penalties_file):
 
 
 def write_insertion_penalties_in_file(insertion_penalties, output_file):
+    """ writes dictionary of insertion penalties {"open":[list of gap open penalties], "extend":[list of gap extend penalties]} in .tsv file in DCAbuild format """
     nb_inser = len(insertion_penalties['open'])
     with open(str(output_file), 'w') as tsv_file:
         csv_writer = csv.writer(tsv_file, delimiter='\t')
@@ -37,6 +39,7 @@ def write_insertion_penalties_in_file(insertion_penalties, output_file):
 
 
 def infer_insertion_penalties_in_file(seed_a3m_file, seed_length, output_file):
+    """ calls DCAbuild function to infer insertion penalties from MSA @seed_a3m_file with insertions indicated as lower case letters wrt MSA of length @seed_length, output .tsv file in DCAbuild format @output_file"""
     fm.check_if_file_ok(seed_a3m_file)
     call_dcabuild_infer_ins = Main.include(julia_script_insertions_file)
     call_dcabuild_infer_ins(str(seed_a3m_file), seed_length, str(output_file))
@@ -49,10 +52,8 @@ def infer_insertion_penalties_in_file(seed_a3m_file, seed_length, output_file):
 
 
 
-
-
-
 def lower_case_trimmed_columns(aln_with_insertions, output_file, list_of_columns_not_trimmed, fileformat='fasta'):
+    """ lowers letters of columns in @aln_with_insertions that are not in @list_of_columns_not_trimmed, writes result in @output_file """
     records = list(SeqIO.parse(str(aln_with_insertions),fileformat))
     output_records = []
     for record in records:
