@@ -488,15 +488,6 @@ def main(args=sys.argv[1:]):
 
     args = vars(parser.parse_args(args))
 
-    # get args in dict {group_name: args}
-#    arg_groups = {}
-#    for group in parser._action_groups:
-#        group_dict = {a.dest:getattr(args,a.dest,None) for a in group._group_actions}
-#        arg_groups[group.title]=vars(argparse.Namespace(**group_dict))
-#
-    #file_args = arg_groups["file_args"]
-    #other_args = {key: arg_groups[group_title][key] for group_title in ["aln_processing_args", "potts_model_args", "post_inference_args", "ccmpred_args", "limitation_args"] for key in arg_groups[group_title]}
-
     file_arg_names = ["sequence_file", "aln_file", "aln_with_insertions", "potts_folder", "unaligned_fasta", "potts_model_file", "hhr_file"]
     file_args = {key:args[key] for key in file_arg_names}
     other_args = {key:args[key] for key in args if not key in file_arg_names}
@@ -507,14 +498,6 @@ def main(args=sys.argv[1:]):
     other_args["infer_potts_model"] = not other_args["dont_infer_potts_model"]
     other_args["use_w"] = not other_args["dont_use_w"]
  
-
-#    arg_groups["aln_processing_args"]["filter_alignment"] = not arg_groups["aln_processing_args"]["dont_filter_alignment"]
-#    arg_groups["aln_processing_args"]["use_less_sequences"] = not arg_groups["aln_processing_args"]["use_whole_alignment"]
-#    arg_groups["aln_processing_args"]["trim_alignment"] = not arg_groups["aln_processing_args"]["dont_trim_alignment"]
-#    arg_groups["potts_model_args"]["infer_potts_model"] = not arg_groups["potts_model_args"]["dont_infer_potts_model"]
-#    arg_groups["post_inference_args"]["use_w"] = not arg_groups["post_inference_args"]["dont_use_w"]
-# 
-
     potts_folder = file_args["potts_folder"]
     if potts_folder is None:
         folder_name = str(uuid.uuid4())
