@@ -471,7 +471,7 @@ def main(args=sys.argv[1:]):
     potts_model_args = parser.add_argument_group('potts_model_args')
     potts_model_args.add_argument('-noinfer', '--dont_infer_potts_model', help="Don't infer a Potts model (default = do)", action='store_true', default=False)
     potts_model_args.add_argument('--inference_type', help="Inference type (standard : Potts model inferred from an alignment, one_submat : Potts model inferred from a sequence using submatrix pseudocounts, one_hot : one-hot encoding of a sequence -> Potts model) (default : standard)", choices=["standard","one_hot", "one_submat"], default="standard")
-    potts_model_args.add_argument('--use_insertion_penalties', help="use insertion penalties", action='store_true', default=False)
+    potts_model_args.add_argument('--use_insertion_penalties', help="use insertion penalties (WARNING: EXPERIMENTAL)", action='store_true', default=False)
     
     # Potts model transformation post inference
     post_inference_args = parser.add_argument_group('post_inference_args')
