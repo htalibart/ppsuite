@@ -2,7 +2,6 @@ import pandas as pd
 from Bio import SeqIO, pairwise2
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
-from Bio.Alphabet import IUPAC
 from Bio.Align import MultipleSeqAlignment
 
 import comutils.files_management as fm
@@ -119,7 +118,7 @@ def get_seqs_aligned(aligned_positions, objects):
 def get_seqs_aligned_in_fasta_file(aligned_positions, objects, output_file):
     """ (positions aligned by solver + objects) -> sequences aligned -> in output_file """
     seqs_aligned = get_seqs_aligned(aligned_positions, objects)
-    seq_records = [SeqRecord(Seq(s, IUPAC.protein), id=o.get_name(), description='') for s,o in zip(seqs_aligned, objects)]
+    seq_records = [SeqRecord(Seq(s), id=o.get_name(), description='') for s,o in zip(seqs_aligned, objects)]
     with open(str(output_file), 'w') as f:
         SeqIO.write(seq_records, f, "fasta")
     print("output can be found at "+str(output_file))
@@ -135,7 +134,7 @@ def aln_sequences_csv_to_aln_fasta(aln_sequences_file, objects, output_file):
     aligned_positions = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_sequences_file)
     alignment_with_gaps = get_alignment_with_gaps(aligned_positions)
     aligned_sequences = aligned_positions_to_aligned_sequences(alignment_with_gaps, [obj.sequence for obj in objects])
-    seq_records = [SeqRecord(Seq(s, IUPAC.protein), id=o.get_name(), description='') for s,o in zip(aligned_sequences, objects)]
+    seq_records = [SeqRecord(Seq(s), id=o.get_name(), description='') for s,o in zip(aligned_sequences, objects)]
     with open(str(output_file), 'w') as f:
         SeqIO.write(seq_records, f, "fasta")
     print("output can be found at "+str(output_file))
@@ -147,7 +146,7 @@ def aln_sequences_csv_to_aln_fasta_using_sequences_only(aln_sequences_file, sequ
     alignment_with_gaps = get_alignment_with_gaps(aligned_positions_without_None)
     records = [list(SeqIO.parse(seq_file, 'fasta'))[0] for seq_file in sequence_files]
     aligned_sequences = aligned_positions_to_aligned_sequences(alignment_with_gaps, [str(rec.seq) for rec in records])
-    seq_records = [SeqRecord(Seq(s, IUPAC.protein), id=rec.id, description='') for s,rec in zip(aligned_sequences, records)]
+    seq_records = [SeqRecord(Seq(s), id=rec.id, description='') for s,rec in zip(aligned_sequences, records)]
     with open(str(output_file), 'w') as f:
         SeqIO.write(seq_records, f, "fasta")
     print("output can be found at "+str(output_file))
