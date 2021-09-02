@@ -23,7 +23,7 @@ class Test_Rescaling(unittest.TestCase):
         pass
 
     def test_rescaling(self):
-        cf = Potts_Object.from_files(self.potts_folder, aln_file=SMALL_ALN_1CC8, trim_alignment=False, max_nb_sequences=250, v_rescaling_function="original_rescaling", w_rescaling_function="original_rescaling") 
+        cf = Potts_Object.from_folder(self.potts_folder, aln_file=SMALL_ALN_1CC8, trim_alignment=False, max_nb_sequences=250, v_rescaling_function="original_rescaling", w_rescaling_function="original_rescaling") 
        
     def test_simulate_uniform_pc_on_v(self):
         tau = 0.2

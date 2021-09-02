@@ -325,7 +325,7 @@ class Potts_Object:
             potts_folder.mkdir()
         seed_aln = potts_folder/"seed_aln.fasta"
         get_original_msas_aligned_from_aligned_positions(aligned_positions_dict, objects, seed_aln)
-        return cls.from_files(potts_folder=potts_folder, aln_file=seed_aln, use_less_sequences=use_less_sequences, **kwargs)
+        return cls.from_folder(potts_folder=potts_folder, aln_file=seed_aln, use_less_sequences=use_less_sequences, **kwargs)
 
 
 
