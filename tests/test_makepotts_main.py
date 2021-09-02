@@ -19,10 +19,10 @@ class Test_MakePotts_Main(unittest.TestCase):
         #shutil.rmtree(self.potts_folder)
         pass
 
-    def test_call_hhblits(self):
-        makepotts_args = ["--potts_folder", str(self.potts_folder), "--sequence_file", str(SEQ_1CC8), "--call_hhblits", "--hhblits_database", str(self.hhblits_database)]
-        potts_object = main(makepotts_args)
-        assert(potts_object.potts_model_file.is_file())
+#    def test_call_hhblits(self):
+#        makepotts_args = ["--potts_folder", str(self.potts_folder), "--sequence_file", str(SEQ_1CC8), "--call_hhblits", "--hhblits_database", str(self.hhblits_database)]
+#        potts_object = main(makepotts_args)
+#        assert(potts_object.potts_model_file.is_file())
 
 
     def test_from_hhblits_files_a3m_only(self):
