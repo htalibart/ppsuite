@@ -5,7 +5,8 @@ import sys
 import csv
 import pathlib
 from Bio import AlignIO
-from Bio.Alphabet.IUPAC import ExtendedIUPACProtein
+#from Bio.Alphabet.IUPAC import ExtendedIUPACProtein
+ExtendedIUPACProtein='ACDEFGHIKLMNPQRSTVWYBXZJUO'
 from makepotts.potts_object import *
 
 

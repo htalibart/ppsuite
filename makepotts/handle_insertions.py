@@ -1,3 +1,5 @@
+from julia.api import Julia
+jl = Julia(compiled_modules=False)
 from julia import Main
 import csv
 
@@ -5,7 +7,6 @@ from comutils import files_management as fm
 from Bio import SeqIO
 from Bio.Seq import Seq
 from Bio.SeqRecord import SeqRecord
-from Bio.Alphabet import IUPAC
 
 
 import pkg_resources
@@ -70,6 +71,6 @@ def lower_case_trimmed_columns(aln_with_insertions, output_file, list_of_columns
                     else:
                         letter='.'
             new_sequence_str+=letter
-        new_record.seq = Seq(new_sequence_str, IUPAC.protein)
+        new_record.seq = Seq(new_sequence_str)
         output_records.append(new_record)
     SeqIO.write(output_records, str(output_file), 'fasta')
