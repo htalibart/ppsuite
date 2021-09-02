@@ -81,8 +81,8 @@ class Test_MakePotts(unittest.TestCase):
        cf = Potts_Object.from_hhblits_files(self.potts_folder, A3M_1CC8, insert_null_at_trimmed=True)
        assert(cf.potts_model.ncol==len(cf.sequence))
 
-    def test_from_file_calling_hhblits_and_evalue_cutoff(self):
-        cf = Potts_Object.from_sequence_with_hhblits(self.potts_folder, SEQ_1CC8, '~/data/uniclust30_2018_08/uniclust30_2018_08', use_evalue_cutoff=True) 
+    #def test_from_file_calling_hhblits_and_evalue_cutoff(self):
+    #    cf = Potts_Object.from_sequence_with_hhblits(self.potts_folder, SEQ_1CC8, '~/data/uniclust30_2018_08/uniclust30_2018_08', use_evalue_cutoff=True) 
 
 
     def test_cutoff_blast(self):
