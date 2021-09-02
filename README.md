@@ -14,7 +14,7 @@ PPalign was developped with Python3.6 and requires the following packages, which
 
 * numpy (1.16.2)
 * pandas (0.23.4)
-* biopython (1.73)
+* biopython (1.79)
 * msgpack (0.6.1)
 * scipy (1.2.1)
 * matplotlib (2.0.0)
