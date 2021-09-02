@@ -26,9 +26,6 @@ class Test_BLAST_Utils(unittest.TestCase):
         assert(blast_fasta.exists())
         assert(fm.get_nb_sequences_in_fasta_file(blast_fasta)==nb_sequences)
 
-    def test_get_potts_object_blast_call(self):
-        cf = Potts_Object.from_files(sequence_file=SEQ_1CC8, fetch_sequences=True, sequences_fetcher='blast', database=self.db_path, potts_folder=pathlib.Path('/tmp/'+next(tempfile._get_candidate_names())))
-
 
 if __name__=='__main__':
     unittest.main()
