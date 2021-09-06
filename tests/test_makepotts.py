@@ -120,7 +120,12 @@ class Test_MakePotts(unittest.TestCase):
         assert(po.insertion_penalties['open'][1]<po.insertion_penalties['open'][2])
  
         
-
+    def test_zero_fill(self):
+        L=3
+        p = Potts_Model.zero_fill(L)
+        assert(p.ncol==L)
+        assert(p.get_v_norm()==0)
+        assert(p.get_w_norm()==0)
 
 if __name__=='__main__':
     unittest.main()

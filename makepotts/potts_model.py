@@ -193,6 +193,10 @@ class Potts_Model:
         return mrf
 
 
+    @classmethod
+    def zero_fill(cls, length, q=21, **kwargs):
+        return cls.from_parameters(v=np.zeros((length,q)), w=np.zeros((length,length,q,q)), **kwargs)
+
     def to_msgpack(self, filename=None):
         if filename is None:
             filename = self.name.replace('/','-')
