@@ -379,25 +379,6 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
 	insert_extend_B = insert_extend_B_;
 
 
-    	// TEMP
-//	insert_open_A = new float[LA];
-//	insert_extend_A = new float[LA];
-//	for (int i=0; i<LA; i++)
-//	{
-//		insert_open_A[i] = gap_open_;
-//		insert_extend_A[i] = gap_extend_;
-//	}
-//
-//
-//	insert_open_B = new float[LB];
-//	insert_extend_B = new float[LB];
-//	for (int i=0; i<LB; i++)
-//	{
-//		insert_open_B[i] = gap_open_;
-//		insert_extend_B[i] = gap_extend_;
-//	}
-
-
 
 
 	// computation time
