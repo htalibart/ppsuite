@@ -6,7 +6,7 @@ setup(
     name='PPSuite',
     version='1.0',
     packages=find_packages(),
-    install_requires=['numpy', 'pandas', 'biopython', 'msgpack==0.6.1', 'msgpack-python==0.5.6', 'scipy', 'matplotlib', 'seaborn', 'sklearn', 'kneebow'],
+    install_requires=['numpy', 'pandas', 'biopython>=1.78', 'msgpack==0.6.1', 'msgpack-python==0.5.6', 'scipy', 'matplotlib', 'seaborn', 'sklearn', 'kneebow'],
     package_data={
         'ppalign':['ppalign_solver.so'],
         'tests':['examples/*', 'examples/*/*'],
