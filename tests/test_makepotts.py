@@ -128,5 +128,12 @@ class Test_MakePotts(unittest.TestCase):
         assert(p.get_w_norm()==0)
 
 
+
+    def test_infer_with_adabmdca(self):
+       aln_file = pathlib.Path(LARGER_SMALL_ALN_1CC8)
+       po_ada = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, inference_method='adabmDCA')
+       po_ccm = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, inference_method='CCMpredPy')
+       assert(po_ada.potts_model.ncol==po_ccm.potts_model.ncol)
+
 if __name__=='__main__':
     unittest.main()

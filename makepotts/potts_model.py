@@ -14,6 +14,7 @@ import ccmpred.counts
 from comutils.util import *
 from comutils import files_management as fm
 from comutils import pseudocounts
+from comutils.adabmdca_to_ccmpredpy import *
 
 POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff", "reg-lambda-single", "reg-lambda-pair-factor", "reg-L2", "reg-noscaling", "reg-scale-by-L", "v-center", "v-zero", "max-gap-pos", "max-gap_seq", "pc-uniform", "pc-submat", "pc-constant", "pc-none", "pc-single-count", "pc-pair-count", "maxit", "ofn-pll", "ofn-cd", "pc-pair-submat", "persistent", "no-decay", "nr-markov-chains"]
 
@@ -65,34 +66,77 @@ class Potts_Model:
         mrf.binary_file = binary_file
         return mrf
 
+    @classmethod
+    def from_adabmdca_file(cls, adabmdca_file, binary_file=None, **kwargs):
+        with open(str(adabmdca_file), 'r') as adaf:
+            csv_reader = csv.reader(adaf, delimiter=' ')
+            J_lines = []
+            h_lines = []
+            for line in csv_reader:
+                if line[0]=='J':
+                    J_lines.append([int(ind) for ind in line[1:5]]+[float(line[5])])
+                else:
+                    h_lines.append([int(ind) for ind in line[1:3]]+[float(line[3])])
+            ncol = len(h_lines)//21
+            v = np.zeros((ncol, 21))
+            for h_line in h_lines:
+                v[h_line[0]][h_line[1]] = h_line[2]
+            w = np.zeros((ncol, ncol, 21, 21))
+            for J_line in J_lines:
+                w[J_line[0],J_line[1],J_line[2],J_line[3]]=J_line[4]
+        mrf = cls.from_parameters(v, w, **kwargs)
+        if binary_file is not None:
+            mrf.to_msgpack(binary_file)
+        return mrf
+
+
 
     @classmethod
-    def from_training_set(cls, aln_file, binary_file, write_readme=True, readme_file=None, **kwargs):
+    def from_training_set(cls, aln_file, binary_file, write_readme=True, readme_file=None, inference_method='CCMpredPy', **kwargs):
         """
             initialize Potts model from train MSA file
         """
         fm.check_if_file_ok(aln_file)
-        call = "ccmpred "+str(aln_file)+ " -b "+str(binary_file)
-        for key_arg in kwargs:
-            arg_ccm = key_arg.replace('_', '-')
-            if arg_ccm in POSSIBLE_CCMPRED_OPTIONS:
-                if isinstance(kwargs[key_arg], bool):
-                    if kwargs[key_arg] is True:
-                        arg_value=""
+
+        if inference_method=='CCMpredPy':
+            call = "ccmpred "+str(aln_file)+ " -b "+str(binary_file)
+            for key_arg in kwargs:
+                arg_ccm = key_arg.replace('_', '-')
+                if arg_ccm in POSSIBLE_CCMPRED_OPTIONS:
+                    if isinstance(kwargs[key_arg], bool):
+                        if kwargs[key_arg] is True:
+                            arg_value=""
+                            call+=" --"+arg_ccm+" "+arg_value
+                    else:
+                        arg_value=str(kwargs[key_arg])
                         call+=" --"+arg_ccm+" "+arg_value
-                else:
-                    arg_value=str(kwargs[key_arg])
-                    call+=" --"+arg_ccm+" "+arg_value
-        if write_readme:
-            if readme_file is None:
-                readme_file = pathlib.Path(str(binary_file)[:-len(".mrf")]+"_mrf_README.txt")
-            with readme_file.open(mode='w') as f:
-                json.dump(call, f, default=str)
-        print(call)
-        subprocess.Popen(call, shell=True).wait()
-        if not os.path.exists(str(binary_file)):
-            raise Exception("CCMpredPy wasn't able to infer the MRF. Protein is probably too long ?")
-        mrf = cls.from_msgpack(binary_file)
+            if write_readme:
+                if readme_file is None:
+                    readme_file = pathlib.Path(str(binary_file)[:-len(".mrf")]+"_mrf_README.txt")
+                with readme_file.open(mode='w') as f:
+                    json.dump(call, f, default=str)
+            print(call)
+            subprocess.Popen(call, shell=True).wait()
+            if not os.path.exists(str(binary_file)):
+                raise Exception("CCMpredPy wasn't able to infer the MRF. Protein is probably too long ?")
+            mrf = cls.from_msgpack(binary_file)
+
+        elif inference_method=='adabmDCA':
+            adabmDCA_output_folder = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
+            adabmDCA_output_folder.mkdir()
+            #call = "adabmDCA -f "+str(aln_file)+" -z 1 -m 500 -c 1e-2"
+            call = "adabmDCA -f "+str(aln_file)+" -z 1 -m 500 -c 1e-2 -i 1"
+            subprocess.Popen(call, shell=True, cwd=str(adabmDCA_output_folder)).wait()
+            weights_file = adabmDCA_output_folder/'Parameters_conv_zerosum_nolabel.dat'
+            if not os.path.exists(weights_file):
+                raise Exception("No adabmDCA output file "+str(weights_file))
+            mrf = cls.from_adabmdca_file(weights_file, binary_file=binary_file)
+            shutil.rmtree(adabmDCA_output_folder)
+            
+
+        else:
+            raise Exception("Cannot infer Potts models with "+inference_method+" (available: CCMpredPy, adabmDCA)")
+
         mrf.training_set = pathlib.Path(aln_file)
         return mrf
 
