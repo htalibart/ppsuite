@@ -180,17 +180,6 @@ void dp_mat_apurva :: fill(graph_apurva & g, lambda_mat_apurva & lb_mat, int * l
                 dp_score[col1][row1] = 0.;
         }
     }
-
-	//print dp_score
-	for (int col_print=0; col_print<nb_col; col_print++)
-	{
-		for (int row_print=0; row_print<nb_row; row_print++)
-		{
-			cout << col_print << row_print << " " << dp_score[col_print][row_print] << endl;
-		}
-	}
-
-
     /*
     int tic2 = times(&end);
     double solve_time = ((double)tic2 - (double)tic1) / (double)tic_per_sec;
@@ -336,36 +325,50 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     double prev_aligned;
     double prev_gap_in_second;
     double prev_gap_in_first;
-    for(int i=1; i<=nb_col; ++i) // second sequence
+    for(int i=1; i<=nb_col; ++i)
     {
-    	for(int j=1; j<=nb_row; ++j) // first sequence
+    	for(int j=1; j<=nb_row; ++j)
     	{
-    		// compute P (alignment ends with gap in second sequence) (actually first???) 
-    		prev_aligned = dp[i-1][j] + get_insertion_open_after_row(j-1) + get_insertion_extend_after_row(j-1);
+    		// compute P (alignment ends with gap in second sequence)
+    		prev_aligned = dp[i-1][j] + get_insertion_open_after_row(j-1);
     		prev_gap_in_second = dp_v[i-1][j] + get_insertion_extend_after_row(j-1);
-    		if(prev_aligned <= prev_gap_in_second && lo[i-1] <= j-1 && up[i-1] >= j-1 && node_to_ind[i-1][j-1] >= 0) //if values are identical, priority is to align
+    		prev_gap_in_first = dp_h[i-1][j] + get_insertion_open_after_row(j-1);
+    		if(prev_aligned <= prev_gap_in_first && prev_aligned <= prev_gap_in_second && lo[i-1] <= j-1 && up[i-1] >= j-1 && node_to_ind[i-1][j-1] >= 0) //if values are identical, priority is to align
     		{
     			dp_v[i][j] = prev_aligned;
     			dp_v_from[i][j] = 1;
     		}
-    		else
+    		else if(prev_gap_in_second <= prev_gap_in_first) //if values are identical, priority is to extend a gap
     		{
     			dp_v[i][j] = prev_gap_in_second; //extend gap in second
     			dp_v_from[i][j] = -1;
     		}
-    		// compute Q (alignment ends with gap in first sequence) (second??)
-    		prev_aligned = dp[i][j-1] + get_insertion_open_after_col(i-1) + get_insertion_extend_after_col(i-1);
+    		else
+    		{
+    			dp_v[i][j] = prev_gap_in_first; //make new gap in first
+    			dp_v_from[i][j] = 0;
+    		}
+
+    		// compute Q (alignment ends with gap in first sequence)
+    		prev_aligned = dp[i][j-1] + get_insertion_open_after_col(i-1);
+    		prev_gap_in_second = dp_v[i][j-1] + get_insertion_open_after_col(i-1);
     		prev_gap_in_first = dp_h[i][j-1] + get_insertion_extend_after_col(i-1);
-    		if(prev_aligned <= prev_gap_in_first && lo[i-1] <= j-1 && up[i-1] >= j-1 && node_to_ind[i-1][j-1] >= 0) //if values are identical, priority is to align
+    		if(prev_aligned <= prev_gap_in_first && prev_aligned <= prev_gap_in_second && lo[i-1] <= j-1 && up[i-1] >= j-1 && node_to_ind[i-1][j-1] >= 0) //if values are identical, priority is to align
     		{
     			dp_h[i][j] = prev_aligned;
     			dp_h_from[i][j] = 1;
     		}
-    		else
+    		else if(prev_gap_in_first < prev_gap_in_second) //if values are identical, priority is to put a gap in the second sequence
     		{
     			dp_h[i][j] = prev_gap_in_first; //extend gap in first
     			dp_h_from[i][j] = 0;
     		}
+    		else
+    		{
+    			dp_h[i][j] = prev_gap_in_second; //make new gap in second
+    			dp_h_from[i][j] = -1;
+    		}
+
 
     		// compute D (alignment ends with two aligned characters)
     		prev_aligned = dp[i-1][j-1] + dp_score[i-1][j-1];
@@ -386,13 +389,11 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     			dp[i][j] = prev_gap_in_second;
     			dp_from[i][j] = -1;
     		}
-		
+
     	}
     }
 
-
- 
-    double dp_max = dp[nb_col][nb_row]; // ends with aligned residues
+    double dp_max = dp[nb_col][nb_row];
 
 
     string current_tr;
@@ -410,15 +411,11 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     }
 
 
-    cout << "dp_max=" << dp_max << " current_tr=" << current_tr << endl;
-
-
     //Traceback
     int i = nb_col;
     int j = nb_row;
     while(i>0 && j>0)
     {
-	    cout << current_tr << " ";
 
     	if(current_tr == "D") //the two characters are aligned
     	{
@@ -486,19 +483,14 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     	--i;
     }
 
-
-	cout << endl;
-
     //Show solution
-    
-    cout << "Solution UB:" << endl;
+    /*
+    cout << "Solution:" << endl;
     for(int i=0; i<nb_col; ++i)
     {
     	cout << i << " " << sol[i] << endl;
     }
-
-
-    //TODO solution ensuite
+	*/
 
 
     //add the constant factor that stems from the activation constraints

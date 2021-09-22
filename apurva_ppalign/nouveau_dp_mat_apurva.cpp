@@ -180,17 +180,6 @@ void dp_mat_apurva :: fill(graph_apurva & g, lambda_mat_apurva & lb_mat, int * l
                 dp_score[col1][row1] = 0.;
         }
     }
-
-	//print dp_score
-	for (int col_print=0; col_print<nb_col; col_print++)
-	{
-		for (int row_print=0; row_print<nb_row; row_print++)
-		{
-			cout << col_print << row_print << " " << dp_score[col_print][row_print] << endl;
-		}
-	}
-
-
     /*
     int tic2 = times(&end);
     double solve_time = ((double)tic2 - (double)tic1) / (double)tic_per_sec;

@@ -414,19 +414,19 @@ double problem_apurva :: get_correct_value(int * sol)
                 }
             }
 
-            if((row - last_row > 1) && (last_row > -1)) // count the row symbols aligned to a gap except if nothing was aligned yet
+            if(row - last_row > 1) // count the row symbols aligned to a gap
             {
-			score += dp.get_insertion_open_after_col(col-1) + dp.get_insertion_extend_after_col(col-1);
-			gap_cost += dp.get_insertion_open_after_col(col-1) + dp.get_insertion_extend_after_col(col-1);
-        		score += (row-last_row-2)*dp.get_insertion_extend_after_col(col-1);
-        		gap_cost +=  (row-last_row-2)*dp.get_insertion_extend_after_col(col-1);
+			score += dp.get_insertion_open_after_col(col-1);
+			gap_cost += dp.get_insertion_open_after_col(col-1);
+        		score += (row-last_row-1)*dp.get_insertion_extend_after_col(col-1);
+        		gap_cost +=  (row-last_row-1)*dp.get_insertion_extend_after_col(col-1);
 			//cout << row << "-" << last_row << " " << col << " " << gap_cost << endl;
             }
 
             extend_gap = false;
             last_row = row;
         }
-        else if (col < nb_col-1) // count the col symbols aligned to a gap if not at the end
+        else // count the col symbols aligned to a gap
         {
         	if(extend_gap)
         	{
@@ -445,16 +445,15 @@ double problem_apurva :: get_correct_value(int * sol)
     }
 
     // gaps at the end
-/*    if( (nb_row - last_row > 1) && (last_row > -1) ) // count the row symbols aligned to a gap
+    if( (nb_row - last_row > 1) && (last_row > -1) ) // count the row symbols aligned to a gap
     {
-		score += dp.get_insertion_open_after_col(nb_col-1) + dp.get_insertion_extend_after_col(nb_col-1);
-		gap_cost += dp.get_insertion_open_after_col(nb_col-1) + dp.get_insertion_extend_after_col(nb_col-1);
-		score += (nb_row-last_row-2)*dp.get_insertion_extend_after_col(nb_col-1);
-		gap_cost +=  (nb_row-last_row-2)*dp.get_insertion_extend_after_col(nb_col-1);
+		score += dp.get_insertion_open_after_col(nb_col-1);
+		gap_cost += dp.get_insertion_open_after_col(nb_col-1);
+		score += (nb_row-last_row-1)*dp.get_insertion_extend_after_col(nb_col-1);
+		gap_cost +=  (nb_row-last_row-1)*dp.get_insertion_extend_after_col(nb_col-1);
     }
-*/
-    return(score);
 
+    return(score);
 }
 
 /**************************************************
@@ -882,7 +881,6 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
         }
 	else
 	{
-		cout << "sub_gr_norm=" << sub_gr_norm << endl;
 		if(lb != ub && ub_score <= bound_ub_score)
         	{
             		cout <<"For FIP: Stop now.\n";
@@ -966,7 +964,6 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 		else
 		{
 		    step = gamma * (current_ub - lb) / sub_gr_norm;
-		    cout << "step=" << step << endl;
 		    if(step <= 0.)
 		    {
 			cout << "Error in step value (negative step are not allowed)\n";

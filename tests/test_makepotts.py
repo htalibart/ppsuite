@@ -127,5 +127,6 @@ class Test_MakePotts(unittest.TestCase):
         assert(p.get_v_norm()==0)
         assert(p.get_w_norm()==0)
 
+
 if __name__=='__main__':
     unittest.main()

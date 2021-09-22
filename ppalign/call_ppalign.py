@@ -14,7 +14,7 @@ PPALIGN_SOLVER = ctypes.CDLL(PPALIGN_CPP_LIBRARY)
 INFINITY = 1000000000
 
 def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, sim_min=0.1, offset_v=0, remove_v0=False, insertion_penalties_coefficient=1, gap_open=8, gap_extend=0, **kwargs):
-   
+
     # handle output files and folder
     if not output_folder.is_dir():
         fm.create_folder(output_folder)
@@ -50,7 +50,7 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
         edges_maps = [np.zeros((mrf.w.shape[0:2])) for mrf in mrfs]
         w_flats = [np.ascontiguousarray(np.zeros(mrf.w.shape)).flatten() for mrf in mrfs]
     c_ws = [wflat.astype(np.float32).ctypes.data_as(c_float_p) for wflat in w_flats]
-    
+
     selfcomps = [compute_selfscore(mrf, edges_map, alpha_w=alpha_w, remove_v0=remove_v0, offset_v=offset_v, use_v=use_v, use_w=use_w, **kwargs) for mrf, edges_map in zip(mrfs, edges_maps)] #s(A,A) and s(B,B)
     epsilon = get_epsilon(epsilon_sim, selfcomps) # epsilon so that 2*s(A,B)/(s(A,A)+s(B,B)) < @epsilon_sim
     score_min = (1/2)*sim_min*sum(selfcomps); # stop computation if LB < score_min 
@@ -60,9 +60,9 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
 
     # INSERTIONS
     if insert_costs is None:
-        print("insert costs is None, filling with gap open = ",gap_open," and gap extend = ", gap_extend)
-        insert_opens = [np.ascontiguousarray(np.ones((mrfs[mrf_ind].ncol+1))*gap_open) for mrf_ind in range(2)]
-        insert_extends = [np.ascontiguousarray(np.ones((mrfs[mrf_ind].ncol+1))*gap_extend) for mrf_ind in range(2)]
+        print("insert costs is None, filling with gap open = ",gap_open," and gap extend = ", gap_extend, " (extern gap costs = 0)")
+        insert_opens = [np.ascontiguousarray(np.hstack((np.zeros((1)), np.ones((mrfs[mrf_ind].ncol-1))*gap_open, np.zeros(1)))) for mrf_ind in range(2)]
+        insert_extends = [np.ascontiguousarray(np.hstack((np.zeros((1)), np.ones((mrfs[mrf_ind].ncol-1))*gap_extend, np.zeros(1)))) for mrf_ind in range(2)]
     else:
         insert_opens = [np.multiply(np.ascontiguousarray(insert_costs[mrf_ind]['open']),insertion_penalties_coefficient) for mrf_ind in range(2)]
         insert_extends = [np.multiply(np.ascontiguousarray(insert_costs[mrf_ind]['extend']),insertion_penalties_coefficient) for mrf_ind in range(2)]

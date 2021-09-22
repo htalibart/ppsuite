@@ -30,3 +30,7 @@ TEST_TS_SEQ_TRIM = pathlib.Path(pkg_resources.resource_filename(__name__,'exampl
 
 
 INSERTION_RESOURCES_FOLDER = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/insertion_resources/'))
+
+
+POTTS_FROM_MSA1 = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/msa1.mrf'))
+POTTS_FROM_MSA2 = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/msa2.mrf'))

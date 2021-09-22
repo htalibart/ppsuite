@@ -96,17 +96,23 @@ class dp_mat_apurva : public dp_mat
 
                 for(int j=1; j<nb_row+1; ++j)
                 {
-                	dp[0][j] = INFINITY;
+                	//dp[0][j] = INFINITY;
+                	//dp_v[0][j] = INFINITY;
+                	dp_h[0][j] = get_insertion_open_after_col(-1)+j*get_insertion_extend_after_col(-1);
+                	//dp_h[0][j] = INFINITY;
                 	dp_v[0][j] = INFINITY;
-                	dp_h[0][j] = get_insertion_open_after_col(-1)+(j-1)*get_insertion_extend_after_col(-1);
+                	dp[0][j] = get_insertion_open_after_col(-1)+j*get_insertion_extend_after_col(-1);
                 }
 
 
                 for(int i=1; i<nb_col+1; ++i)
                 {
-                	dp[i][0] = INFINITY;
+                	//dp[i][0] = INFINITY;
+                	//dp_h[i][0] = INFINITY;
+                	dp_v[i][0] = get_insertion_open_after_row(-1)+i*get_insertion_extend_after_row(-1);
+                	//dp_v[i][0] = INFINITY;
                 	dp_h[i][0] = INFINITY;
-                	dp_v[i][0] = get_insertion_open_after_row(-1)+(i-1)*get_insertion_extend_after_row(-1);
+                	dp[i][0] = get_insertion_open_after_row(-1)+i*get_insertion_extend_after_row(-1);
                 }
 
 //		for(int j=1; j<nb_row+1; ++j)

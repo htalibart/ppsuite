@@ -115,7 +115,6 @@ void branch_and_bound :: update_lb(problem * local_problem)
     	}
     }
 
-   
     if(MIN(stack_lb, local_lb) > lb)
     {
         lb = MIN(stack_lb, local_lb);
@@ -246,6 +245,9 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
         *                                     *
         **************************************/
 
+
+	cout << "solution_status=" << solution_status << endl;
+
         my_param.limit_lb = ub;     //to avoid spending too much time into useless subproblems
 	cout << "limit_lb was set to ub=" << ub << endl;
         my_param.my_time_limit = my_param.time_limit - solve_time;
@@ -266,6 +268,7 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
         **************************************/
         if( (ub-lb) > my_param.epsilon && (current_problem->get_lb() < ub) && (current_problem->get_status() != OPTIMAL)  && (current_problem->get_status() != NOT_SIMILAR))
         {
+	    cout << "Dividing into subproblems" << endl;
             current_problem->split(lo1, up1, lo2, up2);
             if(!current_problem->is_splitted())
             {
