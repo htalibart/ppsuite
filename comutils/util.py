@@ -3,7 +3,7 @@ import shutil
 import numpy as np
 
 from Bio import pairwise2, AlignIO
-from Bio.SubsMat import MatrixInfo as matlist
+#from Bio.SubsMat import MatrixInfo as matlist
 
 from comutils.tool_wrapper import *
 from comutils import files_management as fm
