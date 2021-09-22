@@ -7,6 +7,7 @@ from tests.resources_manager import *
 
 from comutils.util import *
 from comutils import files_management as fm
+from comutils.adabmdca_to_ccmpredpy import *
 
 
 class Test_Util(unittest.TestCase):
@@ -48,5 +49,8 @@ class Test_Util(unittest.TestCase):
                 assert(pdb_seq[d[pos_in_real_seq]]==real_seq[pos_in_real_seq])
 
 
+    def test_adabmdca_to_ccmpredpy(self):
+        pm = adabmdca_to_ccmpredpy(ADABMDCA_FILE)
+        assert(pm.ncol==60)
 if __name__=='__main__':
     unittest.main()

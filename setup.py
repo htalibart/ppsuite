@@ -13,7 +13,7 @@ setup(
         'makepotts':['infer_insertion_penalties.jl'],
         },
     entry_points={
-        'console_scripts':['ppalign = ppalign.__main__:main', 'vizpotts = vizpotts.__main__:main', 'makepotts = makepotts.potts_object:main', 'vizpymol = vizcontacts.vizpymol:main', 'vizcircos = vizcontacts.vizcircos:main', 'vizmap = vizcontacts.vizmap:main', 'fasta2csv = comutils.fasta2indices:main']
+        'console_scripts':['ppalign = ppalign.__main__:main', 'vizpotts = vizpotts.__main__:main', 'makepotts = makepotts.potts_object:main', 'vizpymol = vizcontacts.vizpymol:main', 'vizcircos = vizcontacts.vizcircos:main', 'vizmap = vizcontacts.vizmap:main', 'fasta2csv = comutils.fasta2indices:main', 'adaccm = comutils.adabmdca_to_ccmpredpy:main']
         },
     test_suite="tests",
 )

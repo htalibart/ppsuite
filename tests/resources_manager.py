@@ -34,3 +34,5 @@ INSERTION_RESOURCES_FOLDER = pathlib.Path(pkg_resources.resource_filename(__name
 
 POTTS_FROM_MSA1 = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/msa1.mrf'))
 POTTS_FROM_MSA2 = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/msa2.mrf'))
+
+ADABMDCA_FILE = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/adabmdca_format.dat'))
