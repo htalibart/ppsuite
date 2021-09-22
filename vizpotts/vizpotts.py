@@ -73,7 +73,7 @@ def visualize_parameters(v, v_norm, w_norm, name, alphabet=ALPHABET, start_at_1=
     xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
 
     fig, ax = plt.subplots(nrows=3, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,4,1]})
-    plt.text(0, 1.5, name)
+    plt.text(0, 2.5, '...'+name[-50:])
 
     v = get_reordered_v(v, alphabet)
     sns.heatmap(np.transpose(v), yticklabels=alphabet, xticklabels=xticklabels, cmap="RdBu", ax=ax[0], center=0)
