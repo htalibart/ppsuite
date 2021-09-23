@@ -181,6 +181,7 @@ void dp_mat_apurva :: fill(graph_apurva & g, lambda_mat_apurva & lb_mat, int * l
         }
     }
 
+    /*
 	//print dp_score
 	for (int col_print=0; col_print<nb_col; col_print++)
 	{
@@ -189,6 +190,7 @@ void dp_mat_apurva :: fill(graph_apurva & g, lambda_mat_apurva & lb_mat, int * l
 			cout << col_print << row_print << " " << dp_score[col_print][row_print] << endl;
 		}
 	}
+*/
 
 
     /*
@@ -490,15 +492,14 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
 	cout << endl;
 
     //Show solution
-    
+/*    
     cout << "Solution UB:" << endl;
     for(int i=0; i<nb_col; ++i)
     {
     	cout << i << " " << sol[i] << endl;
     }
+*/
 
-
-    //TODO solution ensuite
 
 
     //add the constant factor that stems from the activation constraints
