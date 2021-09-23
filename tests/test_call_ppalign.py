@@ -65,29 +65,29 @@ class Test_Call_PPalign(unittest.TestCase):
         v_score = sum([scalar_product(p.v[i],p.v[i]) for i in range(p.ncol)])
         assert(infos_solver['UB'] - v_score < 1)
 
-#    def test_align_small_fake_mrfs(self):
-#        templates = [["1", "0", "3", "2"],["[0]", "y", "[1]", "[2]"]]
-#        alnfnames = [self.output_folder/("fake_"+str(i)+".aln") for i in range(2)]
-#        fastafnames = [self.output_folder/("fake_"+str(i)+".fasta") for i in range(2)]
-#        crfake.main(templates, alnfnames, fastafnames)
-#        mrfs = [Potts_Model.from_training_set(fastafnames[i], self.output_folder/("fake_"+str(i)+".mrf")) for i in range(2)]
-#        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, gap_open=8, gap_extend=0, epsilon_sim=0.0001)
-#        self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
-#
-#    def test_align_different_sizes(self):
-#        templates = [["y", "y", "y"],["[0]", "y", "[1]", "[2]"]]
-#        alnfnames = [self.output_folder/("fake_"+str(i)+".aln") for i in range(2)]
-#        fastafnames = [self.output_folder/("fake_"+str(i)+".fasta") for i in range(2)]
-#        crfake.main(templates, alnfnames, fastafnames)
-#        mrfs = [Potts_Model.from_training_set(fastafnames[i], self.output_folder/("fake_diff_size_"+str(i)+".mrf")) for i in range(2)]
-#        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, epsilon_sim=-100)
-#        self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
-#        self.assertEqual(infos_solver['UB'], infos_solver['LB'])
-#        mrfs.reverse()
-#        templates.reverse()
-#        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, epsilon_sim=-100)
-#        self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
-#        self.assertEqual(infos_solver['UB'], infos_solver['LB'])
+    def test_align_small_fake_mrfs(self):
+        templates = [["1", "0", "3", "2"],["[0]", "y", "[1]", "[2]"]]
+        alnfnames = [self.output_folder/("fake_"+str(i)+".aln") for i in range(2)]
+        fastafnames = [self.output_folder/("fake_"+str(i)+".fasta") for i in range(2)]
+        crfake.main(templates, alnfnames, fastafnames)
+        mrfs = [Potts_Model.from_training_set(fastafnames[i], self.output_folder/("fake_"+str(i)+".mrf")) for i in range(2)]
+        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, gap_open=8, gap_extend=0, epsilon_sim=0.0001)
+        self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
+
+    def test_align_different_sizes(self):
+        templates = [["y", "y", "y"],["[0]", "y", "[1]", "[2]"]]
+        alnfnames = [self.output_folder/("fake_"+str(i)+".aln") for i in range(2)]
+        fastafnames = [self.output_folder/("fake_"+str(i)+".fasta") for i in range(2)]
+        crfake.main(templates, alnfnames, fastafnames)
+        mrfs = [Potts_Model.from_training_set(fastafnames[i], self.output_folder/("fake_diff_size_"+str(i)+".mrf")) for i in range(2)]
+        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, epsilon_sim=-100)
+        self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
+        self.assertEqual(infos_solver['UB'], infos_solver['LB'])
+        mrfs.reverse()
+        templates.reverse()
+        aligned_positions, infos_solver = align_two_potts_models(mrfs, self.output_folder, epsilon_sim=-100)
+        self.assertTrue(are_templates_aligned(templates[1], aligned_positions))
+        self.assertEqual(infos_solver['UB'], infos_solver['LB'])
 
     def test_identity_rescaling_dimensions(self):
         for x in [12, [1, 2, 3], np.ones((3,3))]:
@@ -131,7 +131,7 @@ class Test_Call_PPalign(unittest.TestCase):
         mrf2 = get_fake_model([0,3], ijabs=[(0,1,0,0)])
         aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=0, gap_extend=1000, sim_min=-100, epsilon_sim=0.0001)
         self.assertEqual(infos_solver['UB'], infos_solver['LB'])
-        possible_expected_aligned_positions = [{"pos_ref":[0,1], "pos_2":[0,1]}, {"pos_ref":[2,3], "pos_2":[0,1]}]
+        possible_expected_aligned_positions = [{"pos_ref":[0], "pos_2":[0]}, {"pos_ref":[3], "pos_2":[1]}]
         assert((aligned_positions==possible_expected_aligned_positions[0]) or (aligned_positions==possible_expected_aligned_positions[1]))
 
 
@@ -142,7 +142,7 @@ class Test_Call_PPalign(unittest.TestCase):
         mrf2 = get_fake_model([0,3])
         aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=gap_open, gap_extend=gap_extend, sim_min=-100, epsilon_sim=0.0001)
         self.assertEqual(infos_solver['UB'], infos_solver['LB'])
-        possible_expected_aligned_positions = [{"pos_ref":[0,1], "pos_2":[0,1]}, {"pos_ref":[2,3], "pos_2":[0,1]}]
+        possible_expected_aligned_positions = [{"pos_ref":[0], "pos_2":[0]}, {"pos_ref":[3], "pos_2":[1]}]
         assert((aligned_positions==possible_expected_aligned_positions[0]) or (aligned_positions==possible_expected_aligned_positions[1]))
 
 
