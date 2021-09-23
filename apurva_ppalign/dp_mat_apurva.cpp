@@ -420,7 +420,7 @@ double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat
     int j = nb_row;
     while(i>0 && j>0)
     {
-	    cout << current_tr << " ";
+	   // cout << current_tr << " ";
 
     	if(current_tr == "D") //the two characters are aligned
     	{
