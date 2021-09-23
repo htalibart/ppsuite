@@ -21,10 +21,9 @@ class Test_Integration(unittest.TestCase):
 
     def tearDown(self):
         pass
-        shutil.rmtree(self.output_folder)
-        shutil.rmtree(self.potts_folder_1)
-        shutil.rmtree(self.potts_folder_2)
-        shutil.rmtree(self.potts_folder_3)
+        for folder in [self.output_folder, self.potts_folder_1, self.potts_folder_2, self.potts_folder_3]:
+            if folder.is_dir():
+                shutil.rmtree(folder)
 
     def test_insertion(self):
         potts_main(["--potts_folder", str(self.potts_folder_1), "--aln_with_insertions", str(INSERTION_RESOURCES_FOLDER/'ACCCD.a3m'), "--use_insertion_penalties", "--dont_trim_alignment"])
@@ -34,6 +33,16 @@ class Test_Integration(unittest.TestCase):
         res_ppalign_1 = ppalign_main(["--potts_folder_1", str(self.potts_folder_1), "--potts_folder_2", str(self.potts_folder_2), "--output_folder", str(self.output_folder), "--get_sequences_fasta_aln", "--use_insertion_penalties", "--t_limit", str(1)])
         res_ppalign_2 = ppalign_main(["--potts_folder_1", str(self.potts_folder_1), "--potts_folder_2", str(self.potts_folder_3), "--output_folder", str(self.output_folder), "--get_sequences_fasta_aln", "--use_insertion_penalties"])
         assert(res_ppalign_1['infos_solver']['UB']>res_ppalign_2['infos_solver']['UB'])
+
+
+    def test_insertion_coeff(self):
+        potts_main(["--potts_folder", str(self.potts_folder_1), "--aln_with_insertions", str(INSERTION_RESOURCES_FOLDER/'ACCCD.a3m'), "--use_insertion_penalties", "--dont_trim_alignment"])
+        potts_main(["--potts_folder", str(self.potts_folder_2), "--aln_with_insertions", str(INSERTION_RESOURCES_FOLDER/'AiD.a3m'), "--use_insertion_penalties", "--dont_trim_alignment", "--dont_filter_alignment"])
+        res_ppalign_1 = ppalign_main(["--potts_folder_1", str(self.potts_folder_1), "--potts_folder_2", str(self.potts_folder_2), "--output_folder", str(self.output_folder), "--get_sequences_fasta_aln", "--use_insertion_penalties", "--t_limit", str(1)])
+        res_ppalign_2 = ppalign_main(["--potts_folder_1", str(self.potts_folder_1), "--potts_folder_2", str(self.potts_folder_2), "--output_folder", str(self.output_folder), "--get_sequences_fasta_aln", "--use_insertion_penalties", "--t_limit", str(1), "--insertion_penalties_coefficient", str(10)])
+
+        assert(res_ppalign_1['infos_solver']['LB']>res_ppalign_2['infos_solver']['LB'])
+
 
 
 
