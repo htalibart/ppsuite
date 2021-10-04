@@ -24,6 +24,9 @@ def get_info_res_file_name(output_folder):
 def get_aln_res_file_name(output_folder):
     return output_folder/"aln.csv"
 
+def get_aligned_solver_file(output_folder):
+    return output_folder/"aligned_by_solver.fasta"
+
 def get_aligned_positions_dict_from_ppalign_output_file(aln_res_file):
     """ get {"pos_ref":list of aligned positions in first Potts model, "pos_2":  list of aligned positions in second Potts model} from PPalign output .csv file """
     check_if_file_ok(aln_res_file)

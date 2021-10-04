@@ -210,7 +210,7 @@ void display_aligned_nodes(int *res_alignment, int** row_map, int** col_map, cha
 
 
 
-void display_alignment_with_gaps(int* res_alignment, int* res_alignment_insert_before)
+void display_alignment_with_gaps(int* res_alignment, int* res_alignment_insert_before, char* output_fname)
 {
 	cout << "DISPLAY ALIGNMENT WITH GAPS" << endl;
 	char seqA[LA+LB+1]="";
@@ -252,6 +252,14 @@ void display_alignment_with_gaps(int* res_alignment, int* res_alignment_insert_b
 	}
 	cout << seqA << endl;
 	cout << seqB << endl;
+	
+	ofstream output_file;
+  	output_file.open(output_fname);
+	output_file << ">0" << endl;
+	output_file << seqA << endl;
+	output_file << ">1" << endl;
+	output_file << seqB << endl;
+	output_file.close();
 }
 
 
@@ -269,7 +277,7 @@ int count_edges(int** edges_map, int L)
 }
 
 
-void display_results_and_print_to_files(int** row_map, int** col_map, double self1, double self2, double res_lb, double res_ub, double total_time, double res_alloc_time, double res_solve_time, int nb_bb_nodes, int* res_alignment, int* res_alignment_insert_before, int disp_level, char* aln_fname, char* info_fname, int status)
+void display_results_and_print_to_files(int** row_map, int** col_map, double self1, double self2, double res_lb, double res_ub, double total_time, double res_alloc_time, double res_solve_time, int nb_bb_nodes, int* res_alignment, int* res_alignment_insert_before, int disp_level, char* aln_fname, char* info_fname, char* aligned_fasta_fname, int status)
 {
 	if (status!=NOT_SIMILAR)
 	{
@@ -294,7 +302,7 @@ void display_results_and_print_to_files(int** row_map, int** col_map, double sel
 
 		display_alignment(res_alignment);
 		display_aligned_nodes(res_alignment, row_map, col_map, aln_fname);
-		display_alignment_with_gaps(res_alignment, res_alignment_insert_before);
+		display_alignment_with_gaps(res_alignment, res_alignment_insert_before, aligned_fasta_fname);
 
 		ofstream output_file;
 		output_file.open(info_fname);
@@ -402,7 +410,7 @@ void free_2d_int_array(int** array_2d, int length)
 }
 
 
-extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_B_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, float* insert_open_A_, float* insert_open_B_, float*insert_extend_A_, float* insert_extend_B_, char* aln_fname, char* info_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min, double alpha_w_, double offset_v_)
+extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_B_, int LA_, int LB_, int* edges_mapA, int* edges_mapB, double self1, double self2, float* insert_open_A_, float* insert_open_B_, float*insert_extend_A_, float* insert_extend_B_, char* aln_fname, char* info_fname, char* aligned_fasta_fname, int n_limit_param, int iter_limit_param, double t_limit, int disp_level, double epsilon, double gamma, double theta, double stepsize_min, int nb_non_increasing_steps_max, double score_min, double alpha_w_, double offset_v_)
 {
 	int status(0);
 
@@ -472,7 +480,7 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
 	total_time = ((double)tic2 - (double)tic1) / (double)tic_per_sec;
 
 
-	display_results_and_print_to_files(row_map, col_map, self1, self2, res_lb, res_ub, total_time, res_alloc_time, res_solve_time, nb_bb_nodes, res_alignment, res_alignment_insert_before, disp_level, aln_fname, info_fname, status);
+	display_results_and_print_to_files(row_map, col_map, self1, self2, res_lb, res_ub, total_time, res_alloc_time, res_solve_time, nb_bb_nodes, res_alignment, res_alignment_insert_before, disp_level, aln_fname, info_fname, aligned_fasta_fname, status);
 
 
 	for(int col(0); col != LB; ++col)
