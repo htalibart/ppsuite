@@ -210,6 +210,51 @@ void display_aligned_nodes(int *res_alignment, int** row_map, int** col_map, cha
 
 
 
+void display_alignment_with_gaps(int* res_alignment, int* res_alignment_insert_before)
+{
+	cout << "DISPLAY ALIGNMENT WITH GAPS" << endl;
+	char seqA[LA+LB+1]="";
+	char seqB[LA+LB+1]="";
+	int row=0;
+	for (int col=0; col<LB+1; col++)
+	{
+		for (int insertion=0; insertion<res_alignment_insert_before[col]; insertion++)
+		{
+			char appendA[4];
+			sprintf(appendA, "%d", row);
+			strcat(seqA, appendA);
+			char appendB[] ="-";
+			strcat(seqB, appendB);
+			row+=1;
+		}
+		if (col<LB)
+		{
+			if (res_alignment[col]!=-1)
+			{
+				row=res_alignment[col];
+				char appendA[4];
+				sprintf(appendA, "%d", row);
+				strcat(seqA, appendA);
+				char appendB[4];
+				sprintf(appendB, "%d", col);
+				strcat(seqB, appendB);
+			}
+			else
+			{
+				char appendA[] = "-";
+				strcat(seqA, appendA);
+				char appendB[4];
+				sprintf(appendB, "%d", col);
+				strcat(seqB, appendB);
+			}
+		}
+
+	}
+	cout << seqA << endl;
+	cout << seqB << endl;
+}
+
+
 int count_edges(int** edges_map, int L)
 {
 	int nb_edges=0;
@@ -224,7 +269,7 @@ int count_edges(int** edges_map, int L)
 }
 
 
-void display_results_and_print_to_files(int** row_map, int** col_map, double self1, double self2, double res_lb, double res_ub, double total_time, double res_alloc_time, double res_solve_time, int nb_bb_nodes, int* res_alignment, int disp_level, char* aln_fname, char* info_fname, int status)
+void display_results_and_print_to_files(int** row_map, int** col_map, double self1, double self2, double res_lb, double res_ub, double total_time, double res_alloc_time, double res_solve_time, int nb_bb_nodes, int* res_alignment, int* res_alignment_insert_before, int disp_level, char* aln_fname, char* info_fname, int status)
 {
 	if (status!=NOT_SIMILAR)
 	{
@@ -240,7 +285,6 @@ void display_results_and_print_to_files(int** row_map, int** col_map, double sel
 			cout << "      Similarity_global = " << 2.0*-res_ub/(self1+self2) <<"\n";
 			cout << "      Similarity_global_ub = " << 2.0*-res_lb/(self1+self2) <<"\n";
 			cout << "      Similarity_local = " << -res_ub/MIN(self1,self2) <<"\n";
-			cout << "      Test_Similarity = " << 2.0*-res_ub/(self1+self2) <<"\n";
 			cout << "      T(sec) = " << total_time <<"\n";
 			cout << "      Allocation (sec) = " << res_alloc_time << endl;
 			cout << "      Solving (sec) = " << res_solve_time << endl;
@@ -250,6 +294,7 @@ void display_results_and_print_to_files(int** row_map, int** col_map, double sel
 
 		display_alignment(res_alignment);
 		display_aligned_nodes(res_alignment, row_map, col_map, aln_fname);
+		display_alignment_with_gaps(res_alignment, res_alignment_insert_before);
 
 		ofstream output_file;
 		output_file.open(info_fname);
@@ -427,11 +472,7 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
 	total_time = ((double)tic2 - (double)tic1) / (double)tic_per_sec;
 
 
-	for (int ii=0; ii!=LB; ii++)
-	{
-		cout << ii << " " << res_alignment[ii] << endl;
-	}
-	display_results_and_print_to_files(row_map, col_map, self1, self2, res_lb, res_ub, total_time, res_alloc_time, res_solve_time, nb_bb_nodes, res_alignment, disp_level, aln_fname, info_fname, status);
+	display_results_and_print_to_files(row_map, col_map, self1, self2, res_lb, res_ub, total_time, res_alloc_time, res_solve_time, nb_bb_nodes, res_alignment, res_alignment_insert_before, disp_level, aln_fname, info_fname, status);
 
 
 	for(int col(0); col != LB; ++col)
@@ -439,10 +480,6 @@ extern "C" int call_from_python(float* v_A_, float* v_B_, float* w_A_, float* w_
 		delete[] forbidden_res[col];
     	}
     	delete[] forbidden_res;
-	for (int ii(0); ii!=LB; ++ii)
-	{
-		cout << ii << " " << res_alignment[ii] << endl;
-	}
     	delete[] res_alignment;
 
 	free_2d_int_array(row_map, LA);
