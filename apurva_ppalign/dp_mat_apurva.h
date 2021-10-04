@@ -54,34 +54,34 @@ class dp_mat_apurva : public dp_mat
                     }
                 }
 
-                dp = new double* [nb_col+1];
-                dp_v = new double* [nb_col+1];
-                dp_h = new double* [nb_col+1];
+                dp_M = new double* [nb_col+1];
+                dp_GA = new double* [nb_col+1];
+                dp_GB = new double* [nb_col+1];
                 dp_score = new double* [nb_col+1];
-                dp_from = new int* [nb_col+1];
-                dp_v_from = new int* [nb_col+1];
-                dp_h_from = new int* [nb_col+1];
+                dp_M_from = new int* [nb_col+1];
+                dp_GA_from = new int* [nb_col+1];
+                dp_GB_from = new int* [nb_col+1];
                 for (int i(0); i != nb_col+1; ++i)
                 {
-                    dp[i] = new double [nb_row+1];
+                    dp_M[i] = new double [nb_row+1];
                     //fill_n(dp[i], nb_row+1, static_cast<double>(0.));
 
-                    dp_v[i] = new double [nb_row+1];
+                    dp_GA[i] = new double [nb_row+1];
                     //fill_n(dp_v[i], nb_row+1, static_cast<double>(0.));
 
-                    dp_h[i] = new double [nb_row+1];
+                    dp_GB[i] = new double [nb_row+1];
                     //fill_n(dp_h[i], nb_row+1, static_cast<double>(0.));
 
                     dp_score[i] = new double [nb_row+1];
                     fill_n(dp_score[i], nb_row+1, static_cast<double>(0.));
 
-                    dp_from[i] = new int [nb_row+1];
+                    dp_M_from[i] = new int [nb_row+1];
                     //fill_n(dp_from[i], nb_row+1, static_cast<int>(0));
 
-                    dp_v_from[i] = new int [nb_row+1];
+                    dp_GA_from[i] = new int [nb_row+1];
                     //fill_n(dp_v_from[i], nb_row+1, static_cast<int>(0));
 
-                    dp_h_from[i] = new int [nb_row+1];
+                    dp_GB_from[i] = new int [nb_row+1];
                     //fill_n(dp_h_from[i], nb_row+1, static_cast<int>(0));
                 }
 
@@ -90,49 +90,25 @@ class dp_mat_apurva : public dp_mat
                 //horizontal: dp_h (gap in first sequence), Q
                 //vertical: dp_v (gap in second sequence), P
 
-                dp[0][0] = 0.0;
-                dp_v[0][0] = 0.0;
-                dp_h[0][0] = 0.0;
+                dp_M[0][0] = 0.0;
+                dp_GB[0][0] = 0.0;
+                dp_GA[0][0] = 0.0;
 
-                for(int j=1; j<nb_row+1; ++j)
+                for(int i=1; i<=nb_row; ++i)
                 {
-                	//dp[0][j] = INFINITY;
-                	//dp_v[0][j] = INFINITY;
-                	dp_h[0][j] = get_insertion_open_after_col(-1)+j*get_insertion_extend_after_col(-1);
-                	//dp_h[0][j] = INFINITY;
-                	dp_v[0][j] = INFINITY;
-                	dp[0][j] = get_insertion_open_after_col(-1)+j*get_insertion_extend_after_col(-1);
+			dp_M[0][i]=INFINITY;
+			dp_GA[0][i]=INFINITY;
+			dp_GB[0][i]=get_insertion_open_after_col(-1)+(i-1)*get_insertion_extend_after_col(-1);
                 }
 
 
-                for(int i=1; i<nb_col+1; ++i)
+                for(int k=1; k<=nb_col; ++k)
                 {
-                	//dp[i][0] = INFINITY;
-                	//dp_h[i][0] = INFINITY;
-                	dp_v[i][0] = get_insertion_open_after_row(-1)+i*get_insertion_extend_after_row(-1);
-                	//dp_v[i][0] = INFINITY;
-                	dp_h[i][0] = INFINITY;
-                	dp[i][0] = get_insertion_open_after_row(-1)+i*get_insertion_extend_after_row(-1);
+			dp_M[k][0]=INFINITY;
+			dp_GB[k][0]=INFINITY;
+			dp_GA[k][0]=get_insertion_open_after_row(-1)+(k-1)*get_insertion_extend_after_row(-1);
                 }
 
-//		for(int j=1; j<nb_row+1; ++j)
-//                {
-//                	//dp[0][j] = gap_open+(j-1)*gap_extend;
-//                	dp[0][j] = get_insertion_open_after_col(-1)+(j-1)*get_insertion_extend_after_col(-1);
-//                	dp_v[0][j] = INFINITY;
-//                	dp_h[0][j] = INFINITY; //we also have to intialize this, because we allow an insertion followed by a deletion (although it's not initialized in the script)
-//                }
-//
-//
-//                for(int i=1; i<nb_col+1; ++i)
-//                {
-//                	//dp[i][0] = gap_open+(i-1)*gap_extend;
-//                	dp[i][0] = get_insertion_open_after_row(-1)+(i-1)*get_insertion_extend_after_row(-1);
-//                	dp_v[i][0] = INFINITY; //we also have to intialize this, because we allow an insertion followed by a deletion (although it's not initialized in the script)
-//                	dp_h[i][0] = INFINITY;
-//                }
-//
-//
             };
 
         /**
@@ -160,21 +136,21 @@ class dp_mat_apurva : public dp_mat
 
             for (int i(0); i != nb_col+1; ++i)
             {
-                delete [] dp[i];
+                delete [] dp_M[i];
                 delete [] dp_score[i];
-                delete [] dp_from[i];
-                delete [] dp_h[i];
-                delete [] dp_h_from[i];
-                delete [] dp_v[i];
-                delete [] dp_v_from[i];
+                delete [] dp_M_from[i];
+                delete [] dp_GA[i];
+                delete [] dp_GA_from[i];
+                delete [] dp_GB[i];
+                delete [] dp_GB_from[i];
             }
-            delete [] dp;
+            delete [] dp_M;
             delete [] dp_score;
-            delete [] dp_from;
-            delete [] dp_h;
-            delete [] dp_h_from;
-            delete [] dp_v;
-            delete [] dp_v_from;
+            delete [] dp_M_from;
+            delete [] dp_GA;
+            delete [] dp_GA_from;
+            delete [] dp_GB;
+            delete [] dp_GB_from;
         };
 
         /**
@@ -189,7 +165,7 @@ class dp_mat_apurva : public dp_mat
         * Find the node set having the best outgoing edges values
         */
         double solve(graph_apurva & g, int * sol, lambda_mat_apurva &, int * lo, int * up);
-        double solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat_apurva & lb_mat, int * lo, int * up);
+        double solve_w_gapcosts(graph_apurva & g, int * sol, int * sol_insert_before, lambda_mat_apurva & lb_mat, int * lo, int * up);
 
         /**
         * For a given node N_{col1,row1} and a given next column (define by a next_col indice ind), return

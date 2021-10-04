@@ -26,11 +26,18 @@ class problem
         * Current feasible solution
         */
         int * solution;
-
+	/**
+	 * Insertions in current feasible solution
+	 */
+	int * solution_insert_before;
 	/**
         * Current best feasible solution, associated with ub
         */
 	int * best_solution;
+	/*
+	 * Insertion in current best feasible solution
+	 */
+	int * best_solution_insert_before;
         /**
         * Current best upperbound of the problem, associated with best solution
         */
@@ -98,6 +105,10 @@ class problem
 		best_solution = new int [nb_col];
                 fill_n(solution, nb_col, static_cast <int> (-1));
                 fill_n(best_solution, nb_col, static_cast <int> (-1));
+                solution_insert_before = new int [nb_col+1];
+		best_solution_insert_before = new int [nb_col+1];
+                fill_n(solution_insert_before, nb_col+1, static_cast <int> (0));
+                fill_n(best_solution_insert_before, nb_col, static_cast <int> (0));
             };
 
         /**
@@ -117,14 +128,18 @@ class problem
                 up = new int [size];
                 lo = new int [size];
                 solution = new int [size];
+                solution_insert_before = new int [size+1];
 		best_solution = new int [size];
+		best_solution_insert_before = new int [size+1];
                 for(int i(0); i != size; ++i)
                 {
                     up[i] = up1[i];
                     lo[i] = lo1[i];
                 }
                 fill_n(solution, size, static_cast <int> (-1));
+                fill_n(solution_insert_before, size+1, static_cast <int> (0));
 		fill_n(best_solution, size, static_cast <int> (-1));
+		fill_n(best_solution_insert_before, size+1, static_cast <int> (0));
             };
 
         /**
@@ -135,7 +150,9 @@ class problem
             delete [] up;
             delete [] lo;
             delete [] solution;
+            delete [] solution_insert_before;
 	    delete [] best_solution;
+	    delete [] best_solution_insert_before;
         };
 
         /**
@@ -158,6 +175,10 @@ class problem
         * Return the best feasible solution of the problem.
         */
         inline int * get_solution(){ return best_solution; };
+	/**
+	 * Returns insertion positions for the best feasible solution of the problem
+	 */
+	inline int * get_solution_insert_before() { return best_solution_insert_before; };
         /**
         * Return the current upperbound of the problem.
         */

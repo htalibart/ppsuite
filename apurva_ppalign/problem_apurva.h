@@ -38,7 +38,7 @@ class problem_apurva : public problem
         /**
         * Return the value of the solution for the Primal problem.
         */
-        double get_correct_value(int * sol);
+        double get_correct_value(int * sol, int * sol_insert_before);
 
         /**
         * Return the nb of non-zero component of the subgradient vector,
@@ -73,7 +73,7 @@ class problem_apurva : public problem
         */
         inline int check_cst_row_node(int row1, int col2, int row2, int * sol);
         
-        void recursive_brut_solve(int *sol, int col, int cur_row, int nb_row, int &checked);
+        void recursive_brut_solve(int *sol, int * sol_insert_before, int col, int cur_row, int nb_row, int &checked);
 
     public :
 

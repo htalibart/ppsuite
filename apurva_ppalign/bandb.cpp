@@ -7,10 +7,13 @@ using namespace std;
  ***************************************/
 double branch_and_bound :: get_ub(){ return(ub); }
 double branch_and_bound :: get_lb(){ return(lb); }
-void branch_and_bound :: get_solution(int * my_solution)
+void branch_and_bound :: get_solution(int * my_solution, int * my_solution_insert_before)
 {
     for(int s(0); s != solution_size; ++s)
         my_solution[s] = best_solution[s];
+
+    for (int s(0); s != solution_size+1; ++s)
+	    my_solution_insert_before[s] = best_solution_insert_before[s];
 }
 
 int branch_and_bound :: get_status(){ return(status); }
@@ -66,6 +69,7 @@ void branch_and_bound :: update_ub(problem * local_problem)
 {
     double local_ub(local_problem->get_ub());
     int * local_solution = local_problem->get_solution();
+    int * local_solution_insert_before = local_problem->get_solution_insert_before();
 
     //If the subproblem contain a better solution
     if(local_ub < ub)
@@ -73,8 +77,13 @@ void branch_and_bound :: update_ub(problem * local_problem)
         //Save the new best solution
         ub = local_ub;
         for(int s(0); s != solution_size; ++s)
+	{
             best_solution[s] = local_solution[s];
-
+	}
+        for(int s(0); s != solution_size+1; ++s)
+	{
+	    best_solution_insert_before[s] = local_solution_insert_before[s];
+	}
     }
 }
 
@@ -141,6 +150,15 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
     solution_size = root.get_size();
     best_solution = new int [solution_size];
     fill_n(best_solution, solution_size, static_cast<int>(-1));
+    best_solution_insert_before = new int [solution_size+1];
+    fill_n(best_solution_insert_before, solution_size+1, static_cast<int>(0));
+
+    cout << "test print best_solution_insert_before au début de solve" << endl;
+    for (int ind=0; ind<solution_size+1; ind++)
+    {
+	    cout << ind << best_solution_insert_before[ind] << endl;
+    }
+    cout << "fini" << endl;
 
     if(status == 3)
     {
@@ -154,7 +172,10 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
     **************************************/
 
     my_param.my_time_limit = my_param.time_limit;
+
+    cout << "print before root.lr_sgd_solve(my_param)" << endl;
     root.lr_sgd_solve(my_param);
+    cout << "print after root.lr_sgd_solve(my_param)" << endl;
 
     //update BandB informations
     ub = min(ub,root.get_ub());
@@ -259,8 +280,8 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
         //update upper_bound (and possibly get a new best solution) and lower_bound
         update_ub(current_problem);
         update_lb(current_problem);
-	cout << "lb was updated to " << lb << endl;
-	cout << "ub was updated to " << ub << endl;
+	//cout << "lb was updated to " << lb << endl;
+	//cout << "ub was updated to " << ub << endl;
 
         /**************************************
         * Step 2.2 : Divide into subproblem   *

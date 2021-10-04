@@ -66,6 +66,8 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
     else:
         insert_opens = [np.multiply(np.ascontiguousarray(insert_costs[mrf_ind]['open']),insertion_penalties_coefficient) for mrf_ind in range(2)]
         insert_extends = [np.multiply(np.ascontiguousarray(insert_costs[mrf_ind]['extend']),insertion_penalties_coefficient) for mrf_ind in range(2)]
+    # !! AN INSERTION OF 1 NOW COSTS GAP_OPEN+GAP_EXTEND IN THE SOLVER !!! ADJUSTED HERE
+    #insert_opens = [insert_opens[mrf_ind]-insert_extends[mrf_ind] for mrf_ind in range(2)]
     c_insert_opens = [insert_open.astype(np.float32).ctypes.data_as(c_float_p) for insert_open in insert_opens]
     c_insert_extends = [insert_extend.astype(np.float32).ctypes.data_as(c_float_p) for insert_extend in insert_extends]
 

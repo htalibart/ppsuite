@@ -379,83 +379,89 @@ inline int problem_apurva :: check_cst_row_node(int row1, int col2, int row2, in
 /**************************************************
  * GET_CORRECT_VALUE                              *
  **************************************************/
-double problem_apurva :: get_correct_value(int * sol)
+double problem_apurva :: get_correct_value(int * sol, int * sol_insert_before)
 {
+	double score(0.);
+	int nb_col(g.get_nb_col());
+	int nb_row(g.get_nb_row());
+	double vertex_score = 0.0;
+	double edge_score = 0.0;
+	bool extend_gap = false;
+	int last_row = -1;
 
-    double score(0.);
-    int nb_col(g.get_nb_col());
-    int nb_row(g.get_nb_row());
-    double vertex_score = 0.0;
-    double edge_score = 0.0;
-    double gap_cost = 0.0;
-    bool extend_gap = false;
-    int last_row = -1;;
 
-    for (int col(0); col != nb_col; ++col)
-    {
-        int row(sol[col]);
-        if(row >= 0)
-        {
-            int nb_next_col(g.get_nb_next_col(col, row));
-            score -= g.get_node_coef(col,row);
-            vertex_score -= g.get_node_coef(col,row);
+	/*
+	cout << "print sol_insert_before" << endl;
+	for (int col(0); col!=nb_col+1; ++col)
+	{
+		cout << col << " " << sol_insert_before[col] << endl;
+	}
+	*/
 
-            for (int ind_ncol(0); ind_ncol != nb_next_col; ++ind_ncol)
-            {
-                int ncol(g.get_next_col(col, row, ind_ncol));
-                int nrow(sol[ncol]);
-                if(nrow >=0)
-                {
-                    if(g.is_an_edge(col,row,ncol,nrow))
-                    {
-                    	score += g.get_edge_coef(col,row,ncol,nrow);
-                    	edge_score += g.get_edge_coef(col,row,ncol,nrow);
-                    }
-                }
-            }
+	for (int col(0); col!=nb_col; ++col)
+	{
+		if (sol_insert_before[col]!=0)
+		{
+			score += dp.get_insertion_open_after_col(col-1);
+			score += (sol_insert_before[col]-1)*dp.get_insertion_extend_after_col(col-1);
+			last_row += sol_insert_before[col];
+			extend_gap=false;
+		}
 
-            if((row - last_row > 1) && (last_row > -1)) // count the row symbols aligned to a gap except if nothing was aligned yet
-            {
-			score += dp.get_insertion_open_after_col(col-1) + dp.get_insertion_extend_after_col(col-1);
-			gap_cost += dp.get_insertion_open_after_col(col-1) + dp.get_insertion_extend_after_col(col-1);
-        		score += (row-last_row-2)*dp.get_insertion_extend_after_col(col-1);
-        		gap_cost +=  (row-last_row-2)*dp.get_insertion_extend_after_col(col-1);
-			//cout << row << "-" << last_row << " " << col << " " << gap_cost << endl;
-            }
 
-            extend_gap = false;
-            last_row = row;
-        }
-        else if (col < nb_col-1) // count the col symbols aligned to a gap if not at the end
-        {
-        	if(extend_gap)
-        	{
-			score += dp.get_insertion_extend_after_row(last_row);
-			gap_cost += dp.get_insertion_extend_after_row(last_row);
-        	}
-        	else
-        	{
-			score += dp.get_insertion_open_after_row(last_row) + dp.get_insertion_extend_after_row(last_row);
-			gap_cost += dp.get_insertion_open_after_row(last_row) + dp.get_insertion_extend_after_row(last_row);
-        		extend_gap = true;
-        	}
-		//cout << row << "-" << last_row << " " << col << " " << gap_cost << endl;
-        }
-			//cout << score << " ";
-    }
+		int row(sol[col]);
+		if(row >= 0)
+		{
+		    int nb_next_col(g.get_nb_next_col(col, row));
+		    score -= g.get_node_coef(col,row);
+		    vertex_score -= g.get_node_coef(col,row);
 
-    // gaps at the end
-/*    if( (nb_row - last_row > 1) && (last_row > -1) ) // count the row symbols aligned to a gap
-    {
-		score += dp.get_insertion_open_after_col(nb_col-1) + dp.get_insertion_extend_after_col(nb_col-1);
-		gap_cost += dp.get_insertion_open_after_col(nb_col-1) + dp.get_insertion_extend_after_col(nb_col-1);
-		score += (nb_row-last_row-2)*dp.get_insertion_extend_after_col(nb_col-1);
-		gap_cost +=  (nb_row-last_row-2)*dp.get_insertion_extend_after_col(nb_col-1);
-    }
-*/
-    return(score);
+		    for (int ind_ncol(0); ind_ncol != nb_next_col; ++ind_ncol)
+		    {
+			int ncol(g.get_next_col(col, row, ind_ncol));
+			int nrow(sol[ncol]);
+			if(nrow >=0)
+			{
+			    if(g.is_an_edge(col,row,ncol,nrow))
+			    {
+				score += g.get_edge_coef(col,row,ncol,nrow);
+				edge_score += g.get_edge_coef(col,row,ncol,nrow);
+			    }
+			}
+		    }
+		    last_row = row;
+		    extend_gap = false;
+		}
+		else
+		{
+		//	cout << "col=" << col << ", row=" << row << ", extend_gap=" << extend_gap << ", last_row=" << last_row << ", current score=" << score << endl;
+			if(extend_gap)
+			{
+				score += dp.get_insertion_extend_after_row(last_row);
+			}
+			else
+			{
+				score += dp.get_insertion_open_after_row(last_row);
+				extend_gap = true;
+			}
+			//cout << "score after=" << score << endl;
+		}
+
+	}
+
+	// gaps at the end
+	if (sol_insert_before[nb_col]!=0)
+	{
+		score += dp.get_insertion_open_after_col(nb_col-1);
+		score += (sol_insert_before[nb_col]-1)*dp.get_insertion_extend_after_col(nb_col-1);
+	}
+	
+	
+	return(score);
 
 }
+
+
 
 /**************************************************
  * GET_SUB_GR_NORM                                *
@@ -846,8 +852,21 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
     int tic2 = times(&end);
     solve_time = ((double)tic2 - (double)tic1) / (double)tic_per_sec;
 
+    /*
     cout << "status in lr_sgd_solve = " << endl;
 
+    cout << "print best_solution before loop in lr_sgd_solve" << endl;
+    for(int ii(0); ii < size ;ii++)
+	{
+		cout << "best solution " << ii << " " <<  best_solution[ii] << endl;
+	}
+    cout << "print best_solution_insert_before before loop in lr_sgd_solve" << endl;
+    for(int ii(0); ii < size+1 ;ii++)
+	{
+		cout << "best solution insert before " << ii << " " <<  best_solution_insert_before[ii] << endl;
+	}
+	*/
+    //cout << "bound_ub_score=" << bound_ub_score << " before loop in lr_sgd_solve" << endl;
     while(status == 1)
     {
     	tic1 = times(&start);
@@ -855,11 +874,11 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
         ++iter;
         dp.fill(g,lb_mat,lo,up);
 
-        double current_lb(dp.solve_w_gapcosts(g,solution,lb_mat,lo,up));
-	cout << "current_lb in lr_sgd_solve = " << current_lb <<endl;
+        double current_lb(dp.solve_w_gapcosts(g,solution,solution_insert_before,lb_mat,lo,up));
+	//cout << "current_lb in lr_sgd_solve = " << current_lb <<endl;
 
-        double current_ub(get_correct_value(solution));
-	cout << "current_ub in lr_sgd_solve = " << current_ub <<endl;
+        double current_ub(get_correct_value(solution,solution_insert_before));
+	//cout << "current_ub in lr_sgd_solve = " << current_ub <<endl;
 
         int sub_gr_norm(get_nz_sub_gr(solution));
 
@@ -873,7 +892,6 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
     	tic1 = times(&start);
 
 
-
         if(lb != ub && -lb <= params.score_min)
         {
 	    cout << -lb << " < " << params.score_min << endl;
@@ -882,6 +900,7 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
         }
 	else
 	{
+		//cout << "ub_score=" << ub_score << ", bound_ub_score=" << bound_ub_score << endl;
 		cout << "sub_gr_norm=" << sub_gr_norm << endl;
 		if(lb != ub && ub_score <= bound_ub_score)
         	{
@@ -904,6 +923,10 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 		    for(int ii(0); ii < size ;ii++)
 		    {
 			 best_solution[ii] = solution[ii];
+		    }
+		    for(int ii(0); ii < size+1 ;ii++)
+		    {
+			    best_solution_insert_before[ii] = solution_insert_before[ii];
 		    }
 		}
 		if (current_lb != lb && current_ub != ub)   // else, number of improving iteration = 0, and increase number of non-improving iteration
@@ -974,7 +997,7 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 		    }
 		    update_lambda(step);
 		}
-	
+	cout << "end else 1 " << endl;	
 	}
 	//cout << "UB-LB=" << ub - lb << endl;
     	tic2 = times(&end);
@@ -982,7 +1005,7 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 
 	cout << "lb after loop: " << lb << endl;
 	cout << "ub after loop: " << ub << endl;
-	cout << "status: " << status << endl;
+	//cout << "status: " << status << endl;
 
     }
     //Prohibited edges are reallowed
@@ -996,7 +1019,7 @@ void problem_apurva :: lr_sgd_solve(parameters & params)
 }
 
 
-void problem_apurva :: recursive_brut_solve(int *brut_sol, int col, int cur_row, int nb_row, int &checked)
+void problem_apurva :: recursive_brut_solve(int *brut_sol, int * brut_sol_insert_before, int col, int cur_row, int nb_row, int &checked)
 {
     /*
     *  End of recurence
@@ -1004,7 +1027,7 @@ void problem_apurva :: recursive_brut_solve(int *brut_sol, int col, int cur_row,
     if( cur_row >= nb_row || col >= size )
     {
         //evaluate solution :
-        double value = get_correct_value(brut_sol);
+        double value = get_correct_value(brut_sol, brut_sol_insert_before);
         checked++;
         //
         if(value < ub)
@@ -1033,11 +1056,11 @@ void problem_apurva :: recursive_brut_solve(int *brut_sol, int col, int cur_row,
             if(g.is_a_node(col, row))
             {
                 brut_sol[col] = row;
-                recursive_brut_solve(brut_sol, col+1, row+1, nb_row, checked);
+                recursive_brut_solve(brut_sol, brut_sol_insert_before, col+1, row+1, nb_row, checked);
             }
         }
         brut_sol[col] = -1;
-        recursive_brut_solve(brut_sol, col+1, cur_row, nb_row, checked);
+        recursive_brut_solve(brut_sol, brut_sol_insert_before, col+1, cur_row, nb_row, checked);
     }
 }
 
@@ -1047,6 +1070,7 @@ void problem_apurva :: recursive_brut_solve(int *brut_sol, int col, int cur_row,
 void problem_apurva :: brut_solve()
 {
     int *brut_sol = new int[size];
+    int *brut_sol_insert_before = new int[size+1];
 
     ub = 0.;
     lb = -INFINITY;
@@ -1071,7 +1095,12 @@ void problem_apurva :: brut_solve()
     {
         brut_sol[col] = -1;
     }
-    recursive_brut_solve(brut_sol, 0, -1, nb_row, checked);
+    for(int col(0); col < size+1; ++col)
+    {
+        brut_sol_insert_before[col] = 0;
+    }
+
+    recursive_brut_solve(brut_sol, brut_sol_insert_before, 0, -1, nb_row, checked);
 
     lb = ub;
 

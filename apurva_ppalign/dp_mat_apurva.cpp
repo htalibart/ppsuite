@@ -200,308 +200,182 @@ void dp_mat_apurva :: fill(graph_apurva & g, lambda_mat_apurva & lb_mat, int * l
     */
 }
 
-/**************************************************
- * SOLVE                                          *
- **************************************************/
-
-double dp_mat_apurva :: solve(graph_apurva & g, int * sol, lambda_mat_apurva & lb_mat, int * lo, int * up)
-{
-    int nb_col(g.get_nb_col());
-    int nb_row(g.get_nb_row());
-    int ** node_to_ind(g.get_node_to_ind());
-
-    double horiz, diag, vert;
-
-    // First node, col0.row0
-    if(dp_score[0][0] <= 0. && lo[0] <= 0 && up[0] >= 0 && node_to_ind[0][0] >= 0) //before dp_score[0][0] < 0.
-    {
-        dp[0][0] = dp_score[0][0];
-        dp_from[0][0] = 1;
-    }
-    else
-    {
-        dp[0][0] = 0.;
-        dp_from[0][0] = 0;
-    }
-
-    // First row
-    for(int col(1); col != nb_col; ++col)
-    {
-        horiz = dp[col-1][0];
-        diag = dp_score[col][0];
-        if(diag <= horiz && lo[col] <= 0 && up[col] >= 0 && node_to_ind[col][0] >= 0) //was diag < horiz before 04/01/2012
-        {
-            dp[col][0] = diag;
-            dp_from[col][0] = 1;
-        }
-        else
-        {
-            dp[col][0] = horiz;
-            dp_from[col][0] = 0;
-        }
-    }
-
-    // First col
-    for(int row(1); row != nb_row; ++row)
-    {
-        vert = dp[0][row-1];
-        diag = dp_score[0][row];
-        if(diag <= vert && lo[0] <= row && up[0] >= row && node_to_ind[0][row] >= 0) //was diag < vert before 04/01/2012
-        {
-            dp[0][row] = diag;
-            dp_from[0][row] = 1;
-        }
-        else
-        {
-            dp[0][row] = vert;
-            dp_from[0][row] = -1;
-        }
-    }
-
-    // Dynamic programming
-    for(int col(1); col != nb_col; ++col)
-    {
-        for(int row(1); row != nb_row; ++row)
-        {
-            horiz = dp[col-1][row];
-            vert = dp[col][row-1];
-            diag = dp[col-1][row-1] + dp_score[col][row];
-
-            if (vert < horiz)
-            {
-                dp[col][row] = vert;
-                dp_from[col][row] = -1;
-            }
-            else
-            {
-                dp[col][row] = horiz;
-                dp_from[col][row] = 0;
-            }
-
-            if(diag <= dp[col][row] && lo[col] <= row && up[col] >= row && node_to_ind[col][row] >= 0) //was diag < dp[col][row]
-            {
-                dp[col][row] = diag;
-                dp_from[col][row] = 1;
-            }
-        }
-    }
-
-    //clear sol
-    for(int i(0); i != nb_col; ++i)
-        sol[i] = -1;
-
-    //save sol
-    int row(nb_row - 1), col(nb_col - 1), from;
-    while(row >= 0 && col >= 0)
-    {
-        from = dp_from[col][row];
-        if(from == -1)
-            --row;
-        else if(from == 0)
-        {
-            sol[col] = -1;
-            --col;
-        }
-        else
-        {
-        	sol[col] = row;
-            --col;
-            --row;
-        }
-    }
-
-    /*
-    cout << "Relaxed solution : " << dp[nb_col - 1][nb_row - 1] << "\n";
-    */
-    //add the constant factor that stems from the activation constraints
-    return( dp[nb_col - 1][nb_row - 1] - lb_mat.get_sum_lambda_act() );
-}
 
 
 
-
-double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, lambda_mat_apurva & lb_mat, int * lo, int * up)
+double dp_mat_apurva :: solve_w_gapcosts(graph_apurva & g, int * sol, int * sol_insert_before, lambda_mat_apurva & lb_mat, int * lo, int * up)
 {
 
     int nb_col(g.get_nb_col());
     int nb_row(g.get_nb_row());
     int ** node_to_ind(g.get_node_to_ind());
 
-    // Initialization
+    double prev_M;
+    double prev_GA;
+    double prev_GB;
 
-    //Traceback symbols
-    //diagonal: 1 (symbols aligned)
-    //horizontal: 0 (gap in first sequence), Q (=dp_h)
-    //vertical: -1 (gap in second sequence), P (=dp_v)
+    for (int i=1; i<=nb_row; ++i)
+	{
+		for (int k=1; k<=nb_col; ++k)
+		{
+			// compute M
+			prev_M = dp_M[k-1][i-1]+dp_score[k-1][i-1];
+			prev_GA = dp_GA[k-1][i-1]+dp_score[k-1][i-1];
+			prev_GB = dp_GB[k-1][i-1]+dp_score[k-1][i-1];
 
-    //Dynamic programming
-    double prev_aligned;
-    double prev_gap_in_second;
-    double prev_gap_in_first;
-    for(int i=1; i<=nb_col; ++i) // second sequence
-    {
-    	for(int j=1; j<=nb_row; ++j) // first sequence
-    	{
-    		// compute P (alignment ends with gap in second sequence) (actually first???) 
-    		prev_aligned = dp[i-1][j] + get_insertion_open_after_row(j-1) + get_insertion_extend_after_row(j-1);
-    		prev_gap_in_second = dp_v[i-1][j] + get_insertion_extend_after_row(j-1);
-    		if(prev_aligned <= prev_gap_in_second && lo[i-1] <= j-1 && up[i-1] >= j-1 && node_to_ind[i-1][j-1] >= 0) //if values are identical, priority is to align
-    		{
-    			dp_v[i][j] = prev_aligned;
-    			dp_v_from[i][j] = 1;
-    		}
-    		else
-    		{
-    			dp_v[i][j] = prev_gap_in_second; //extend gap in second
-    			dp_v_from[i][j] = -1;
-    		}
-    		// compute Q (alignment ends with gap in first sequence) (second??)
-    		prev_aligned = dp[i][j-1] + get_insertion_open_after_col(i-1) + get_insertion_extend_after_col(i-1);
-    		prev_gap_in_first = dp_h[i][j-1] + get_insertion_extend_after_col(i-1);
-    		if(prev_aligned <= prev_gap_in_first && lo[i-1] <= j-1 && up[i-1] >= j-1 && node_to_ind[i-1][j-1] >= 0) //if values are identical, priority is to align
-    		{
-    			dp_h[i][j] = prev_aligned;
-    			dp_h_from[i][j] = 1;
-    		}
-    		else
-    		{
-    			dp_h[i][j] = prev_gap_in_first; //extend gap in first
-    			dp_h_from[i][j] = 0;
-    		}
-
-    		// compute D (alignment ends with two aligned characters)
-    		prev_aligned = dp[i-1][j-1] + dp_score[i-1][j-1];
-    		prev_gap_in_second = dp_v[i][j];
-    		prev_gap_in_first = dp_h[i][j];
-    		if(prev_aligned <= prev_gap_in_first && prev_aligned <= prev_gap_in_second && lo[i-1] <= j-1 && up[i-1] >= j-1 && node_to_ind[i-1][j-1] >= 0) //if values are identical, priority is to align
-    		{
-    			dp[i][j] = prev_aligned;
-    			dp_from[i][j] = 1;
-    		}
-    		else if(prev_gap_in_first < prev_gap_in_second) //close gap in first seq; if values are identical, priority is to put gap in second
-    		{
-    			dp[i][j] = prev_gap_in_first;
-    			dp_from[i][j] = 0;
-    		}
-    		else //close gap in second seq
-    		{
-    			dp[i][j] = prev_gap_in_second;
-    			dp_from[i][j] = -1;
-    		}
-		
-    	}
-    }
+			if ( (prev_M<=prev_GA) && (prev_M<=prev_GB) && (lo[k-1] <= i-1 && up[k-1] >= i-1 && node_to_ind[k-1][i-1] >= 0) )
+			{
+				dp_M[k][i] = prev_M;
+				dp_M_from[k][i] = 1;
+			}
+			else if ( (prev_GA<=prev_M) && (prev_GA<=prev_GB) )
+			{
+				dp_M[k][i] = prev_GA;
+				dp_M_from[k][i] = -1;
+			}
+			else
+			{
+				dp_M[k][i] = prev_GB;
+				dp_M_from[k][i] = 0;
+			}
 
 
- 
-    double dp_max = dp[nb_col][nb_row]; // ends with aligned residues
+			// compute GA
+			prev_M = dp_M[k-1][i]+get_insertion_open_after_row(i-1);
+			prev_GA = dp_GA[k-1][i]+get_insertion_extend_after_row(i-1);
+			prev_GB = dp_GB[k-1][i]+get_insertion_open_after_row(i-1);
+
+			if ( (prev_M<=prev_GA) && (prev_M<=prev_GB) && (lo[k-1] <= i-1 && up[k-1] >= i-1 && node_to_ind[k-1][i-1] >= 0) )
+			{
+				dp_GA[k][i] = prev_M;
+				dp_GA_from[k][i] = 1;
+			}
+			else if ( (prev_GA<=prev_M) && (prev_GA<=prev_GB) )
+			{
+				dp_GA[k][i] = prev_GA;
+				dp_GA_from[k][i] = -1;
+			}
+			else
+			{
+				dp_GA[k][i] = prev_GB;
+				dp_GA_from[k][i] = 0;
+			}
 
 
-    string current_tr;
-    if(dp_from[nb_col][nb_row] == 1)
-    {
-    	current_tr = "D";
-    }
-    else if(dp_from[nb_col][nb_row] == -1)
-    {
-    	current_tr = "P";
-    }
-    else
-    {
-    	current_tr = "Q";
-    }
+			// compute GB
+			prev_M = dp_M[k][i-1]+get_insertion_open_after_col(k-1);
+			prev_GA = dp_GA[k][i-1]+get_insertion_open_after_col(k-1);
+			prev_GB = dp_GB[k][i-1]+get_insertion_extend_after_col(k-1);
+
+			if ( (prev_M<=prev_GA) && (prev_M<=prev_GB) && (lo[k-1] <= i-1 && up[k-1] >= i-1 && node_to_ind[k-1][i-1] >= 0) )
+			{
+				dp_GB[k][i] = prev_M;
+				dp_GB_from[k][i] = 1;
+			}
+			else if ( (prev_GB<=prev_M) && (prev_GB <= prev_GA) )
+			{
+				dp_GB[k][i] = prev_GB;
+				dp_GB_from[k][i] = 0;
+			}
+			else
+			{
+				dp_GB[k][i] = prev_GA;
+				dp_GB_from[k][i] = -1;
+			}
+
+			/*
+			cout << "dp_M["<<k<<"]["<<i<<"]="<<dp_M[k][i]<<endl;
+			cout << "dp_GA["<<k<<"]["<<i<<"]="<<dp_GA[k][i]<<endl;
+			cout << "dp_GB["<<k<<"]["<<i<<"]="<<dp_GB[k][i]<<endl;
+			*/
+		}
+	}
+
+    	double dp_max;
+	int current_tr;
+	if ((dp_M[nb_col][nb_row]<=dp_GA[nb_col][nb_row]) && (dp_M[nb_col][nb_row]<=dp_GB[nb_col][nb_row]))
+	{
+		dp_max=dp_M[nb_col][nb_row];
+		current_tr=1;
+	}
+	else if ((dp_GA[nb_col][nb_row]<=dp_M[nb_col][nb_row]) && (dp_GA[nb_col][nb_row]<=dp_GB[nb_col][nb_row]))
+	{
+		dp_max=dp_GA[nb_col][nb_row];
+		current_tr=-1;
+	}
+	else
+	{
+		dp_max=dp_GB[nb_col][nb_row];
+		current_tr=0;
+	}
+
+	//cout << "dp_max=" << dp_max << endl;
 
 
-    cout << "dp_max=" << dp_max << " current_tr=" << current_tr << endl;
+	// reset sol_insert_before
+	for (int col=0; col<nb_col+1; col++)
+	{
+		sol_insert_before[col]=0;
+	}
+
+	//Traceback
+	int i=nb_row;
+	int k=nb_col;
+
+	while ( (i>0) && (k>0) )
+	{
+		//cout << "i="<<i<<",k="<<k<<endl;
+		//cout << "current_tr=" << current_tr << endl;
+		if (current_tr==1)
+		{
+			sol[k-1]=i-1;
+			current_tr=dp_M_from[k][i];
+			i--;
+			k--;
+		}
+		else if (current_tr==0)
+		{
+			sol_insert_before[k]+=1;
+			current_tr=dp_GB_from[k][i];
+			i--;
+		}
+		else
+		{
+			sol[k-1]=-1;
+			current_tr=dp_GA_from[k][i];
+			k--;
+		}
+	}
 
 
-    //Traceback
-    int i = nb_col;
-    int j = nb_row;
-    while(i>0 && j>0)
-    {
-	   // cout << current_tr << " ";
+	    // gaps in the beginning
+	    while(i>0)
+	    {
+		sol_insert_before[k]+=1;
+		--i;
+	    }
+	    while(k>0)
+	    {
+		sol[k-1] = -1;
+		--k;
+	    }
 
-    	if(current_tr == "D") //the two characters are aligned
-    	{
-
-    		if(dp_from[i][j] == 1) //previous two characters were also aligned
-    		{
-    			sol[i-1] = j-1;
-    			--i;
-    			--j;
-    		}
-    		else if(dp_from[i][j] == -1) //previous there was a gap in the second sequence
-    		{
-    			current_tr = "P";
-    		}
-    		else //previous there was a gap in the first sequence
-    		{
-    			current_tr = "Q";
-    		}
-    	}
-    	else  if(current_tr == "P") //there is a gap in the second sequence
-    	{
-
-    		sol[i-1] = -1;
-
-    		if(dp_v_from[i][j] == 1) //previous characters were aligned
-    		{
-    			current_tr = "D";
-    		}
-    		else if(dp_v_from[i][j] == -1) //previous there was a gap in the second sequence that was extended
-    		{
-    		}
-    		else //previous there was a gap in the first sequence (an insertion followed by a deletion)
-    		{
-    			current_tr = "Q";
-    		}
-    		--i;
-    	}
-    	else if(current_tr == "Q") //there is a gap in the first sequence
-    	{
-
-    		if(dp_h_from[i][j] == 1) //previous two characters were aligned
-    		{
-    			current_tr = "D";
-    		}
-    		else if(dp_h_from[i][j] == 0) //previous there was also a gap in the first sequence (gap extension)
-    		{
-    		}
-    		else //prevous there was a gap in the second sequence (an insertion followed by a deletion)
-    		{
-    			current_tr = "P";
-    		}
-    		--j;
-    	}
-
-    }
-    //gaps in the beginning in first sequence
-    while(j>0)
-    {
-    	--j;
-    }
-    //gaps in the beginning in second sequence
-    while(i>0)
-    {
-    	sol[i-1] = -1;
-    	--i;
-    }
+	    //Show solution
+	    /*
+	    cout << "Solution UB:" << endl;
+	    for(int i=0; i<nb_col; ++i)
+	    {
+		cout << i << " " << sol[i] << endl;
+	    }
+	    cout << "Solution insert before UB:" << endl;
+	    for(int i=0; i<nb_col+1; ++i)
+	    {
+		cout << i << " " << sol_insert_before[i] << endl;
+	    }
+	    */
 
 
-	cout << endl;
-
-    //Show solution
-/*    
-    cout << "Solution UB:" << endl;
-    for(int i=0; i<nb_col; ++i)
-    {
-    	cout << i << " " << sol[i] << endl;
-    }
-*/
-
-
-
-    //add the constant factor that stems from the activation constraints
-    return( dp_max - lb_mat.get_sum_lambda_act() );
+	//cout << "( dp_max - lb_mat.get_sum_lambda_act() ) = " << ( dp_max - lb_mat.get_sum_lambda_act() ) <<endl;
+	return( dp_max - lb_mat.get_sum_lambda_act() );
 }
+

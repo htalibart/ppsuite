@@ -58,6 +58,7 @@ class branch_and_bound
         * best feasible solution obtained during the Branch and Bound process.
         */
         int * best_solution;
+        int * best_solution_insert_before;
 
         /**
         * private functions
@@ -90,6 +91,7 @@ class branch_and_bound
         */
         branch_and_bound()
         {
+		cout << "calling branch_and_bound()" << endl;
             solution_size = 0;
             status = NOT_INITIALIZED;
             solution_status = NOT_INITIALIZED;
@@ -99,6 +101,7 @@ class branch_and_bound
             ub =  INFINITY;
             lb = -INFINITY;
             best_solution = 0;
+		best_solution_insert_before = 0;
         };
 
         /**
@@ -107,6 +110,7 @@ class branch_and_bound
         ~branch_and_bound()
         {
             delete [] best_solution;
+            delete [] best_solution_insert_before;
             //should clear the list also ;-)
         };
 
@@ -125,7 +129,7 @@ class branch_and_bound
         /**
         * Return the best feasible solution found during the Branch and Bound process
         */
-        void get_solution(int * my_solution);
+        void get_solution(int * my_solution, int * my_solution_insert_before);
         /**
         *
         */

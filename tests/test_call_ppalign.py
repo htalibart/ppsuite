@@ -121,7 +121,7 @@ class Test_Call_PPalign(unittest.TestCase):
     def test_case_ub_lb_pb(self):
         p1 = Potts_Model.from_msgpack(POTTS_FROM_MSA1)
         p2 = Potts_Model.from_msgpack(POTTS_FROM_MSA2)
-        aligned_positions, infos_solver = align_two_potts_models([p1,p2], self.output_folder, epsilon_sim=-100, gap_open=0, gap_extend=0)
+        aligned_positions, infos_solver = align_two_potts_models([p1,p2], self.output_folder, epsilon_sim=-100000, gap_open=0, gap_extend=0)
         self.assertEqual(infos_solver['UB'], infos_solver['LB'])
 
     def test_big_extension_with_wij(self):
@@ -131,7 +131,7 @@ class Test_Call_PPalign(unittest.TestCase):
         mrf2 = get_fake_model([0,3], ijabs=[(0,1,0,0)])
         aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=0, gap_extend=1000, sim_min=-100, epsilon_sim=0.0001)
         self.assertEqual(infos_solver['UB'], infos_solver['LB'])
-        possible_expected_aligned_positions = [{"pos_ref":[0], "pos_2":[0]}, {"pos_ref":[3], "pos_2":[1]}]
+        possible_expected_aligned_positions = [{"pos_ref":[0,1], "pos_2":[0,1]}, {"pos_ref":[0], "pos_2":[0]}]
         assert((aligned_positions==possible_expected_aligned_positions[0]) or (aligned_positions==possible_expected_aligned_positions[1]))
 
 
@@ -142,7 +142,7 @@ class Test_Call_PPalign(unittest.TestCase):
         mrf2 = get_fake_model([0,3])
         aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=gap_open, gap_extend=gap_extend, sim_min=-100, epsilon_sim=0.0001)
         self.assertEqual(infos_solver['UB'], infos_solver['LB'])
-        possible_expected_aligned_positions = [{"pos_ref":[0], "pos_2":[0]}, {"pos_ref":[3], "pos_2":[1]}]
+        possible_expected_aligned_positions = [{"pos_ref":[0,1], "pos_2":[0,1]}, {"pos_ref":[0], "pos_2":[0]}]
         assert((aligned_positions==possible_expected_aligned_positions[0]) or (aligned_positions==possible_expected_aligned_positions[1]))
 
 

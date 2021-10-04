@@ -35,9 +35,9 @@ class dp_mat
         * 2D table used to compute by dynamic programming the best set of nodes.
         * Contains values of path made in DP_score.
         */
-        double ** dp;
-        double ** dp_v;
-        double ** dp_h;
+        double ** dp_M;
+        double ** dp_GA;
+        double ** dp_GB;
         /**
         * 2D table used to compute by dynamic programming the best set of nodes.
         * Contains score of each node, based on there coeficient and best outgoing edge value.
@@ -47,9 +47,9 @@ class dp_mat
         * 2D table used to compute by dynamic programming the best set of nodes.
         * Contain moves made to obtain values in dp_score.
         */
-        int ** dp_from;
-        int ** dp_v_from;
-        int ** dp_h_from;
+        int ** dp_M_from;
+        int ** dp_GA_from;
+        int ** dp_GB_from;
 
         /**
          * The gap costs (>=0) (gap open and gap extension costs)
@@ -75,9 +75,9 @@ class dp_mat
             dp_arc_out_col = 0;
             dp_arc = 0;
             arc_from = 0;
-            dp = 0;
+            dp_M = 0;
             dp_score = 0;
-            dp_from = 0;
+            dp_M_from = 0;
         };
         /**
         * Destructor
