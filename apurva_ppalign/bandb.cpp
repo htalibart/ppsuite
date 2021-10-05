@@ -180,6 +180,9 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
     int * root_solution = root.get_solution();
     for(int l(0); l != solution_size; ++l)
         best_solution[l] = root_solution[l];
+    int * root_solution_insert_before = root.get_solution_insert_before();
+    for(int l(0); l != solution_size+1; ++l)
+        best_solution_insert_before[l] = root_solution_insert_before[l];
 
     int tic2 = times(&end);
     solve_time = ((double)tic2 - (double)tic1) / (double)tic_per_sec;

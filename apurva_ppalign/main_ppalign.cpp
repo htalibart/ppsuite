@@ -361,7 +361,6 @@ int solve_prb(int ** forbidden, int * sol, int * sol_insert_before, double &allo
     nb_bb_nodes = bandb.get_nb_visited_nodes();
 
     return(status);
-
 }
 
 
