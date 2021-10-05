@@ -91,7 +91,6 @@ class branch_and_bound
         */
         branch_and_bound()
         {
-		cout << "calling branch_and_bound()" << endl;
             solution_size = 0;
             status = NOT_INITIALIZED;
             solution_status = NOT_INITIALIZED;
