@@ -153,12 +153,6 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
     best_solution_insert_before = new int [solution_size+1];
     fill_n(best_solution_insert_before, solution_size+1, static_cast<int>(0));
 
-    cout << "test print best_solution_insert_before au début de solve" << endl;
-    for (int ind=0; ind<solution_size+1; ind++)
-    {
-	    cout << ind << best_solution_insert_before[ind] << endl;
-    }
-    cout << "fini" << endl;
 
     if(status == 3)
     {
