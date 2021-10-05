@@ -121,7 +121,7 @@ class Test_Call_PPalign(unittest.TestCase):
     def test_case_ub_lb_pb(self):
         p1 = Potts_Model.from_msgpack(POTTS_FROM_MSA1)
         p2 = Potts_Model.from_msgpack(POTTS_FROM_MSA2)
-        aligned_positions, infos_solver = align_two_potts_models([p1,p2], self.output_folder, epsilon_sim=-100000, gap_open=0, gap_extend=0)
+        aligned_positions, infos_solver = align_two_potts_models([p1,p2], self.output_folder, epsilon_sim=-100000, gap_open=0, gap_extend=0, free_end_gaps=True, sim_min=-100)
         self.assertEqual(infos_solver['UB'], infos_solver['LB'])
 
     def test_big_extension_with_wij(self):
@@ -129,7 +129,7 @@ class Test_Call_PPalign(unittest.TestCase):
         gap_extend=1000
         mrf1 = get_fake_model([0,1,2,3], ijabs=[(0,3,0,0)])
         mrf2 = get_fake_model([0,3], ijabs=[(0,1,0,0)])
-        aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=0, gap_extend=1000, sim_min=-100, epsilon_sim=0.0001)
+        aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=0, gap_extend=1000, sim_min=-100, epsilon_sim=0.0001, free_end_gaps=True, theta=2)
         self.assertEqual(infos_solver['UB'], infos_solver['LB'])
         possible_expected_aligned_positions = [{"pos_ref":[0,1], "pos_2":[0,1]}, {"pos_ref":[0], "pos_2":[0]}]
         assert((aligned_positions==possible_expected_aligned_positions[0]) or (aligned_positions==possible_expected_aligned_positions[1]))
@@ -140,7 +140,7 @@ class Test_Call_PPalign(unittest.TestCase):
         gap_extend=1000
         mrf1 = get_fake_model([0,1,2,3])
         mrf2 = get_fake_model([0,3])
-        aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=gap_open, gap_extend=gap_extend, sim_min=-100, epsilon_sim=0.0001)
+        aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=gap_open, gap_extend=gap_extend, sim_min=-100, epsilon_sim=0.0001, free_end_gaps=True)
         self.assertEqual(infos_solver['UB'], infos_solver['LB'])
         possible_expected_aligned_positions = [{"pos_ref":[0,1], "pos_2":[0,1]}, {"pos_ref":[0], "pos_2":[0]}]
         assert((aligned_positions==possible_expected_aligned_positions[0]) or (aligned_positions==possible_expected_aligned_positions[1]))
@@ -149,7 +149,7 @@ class Test_Call_PPalign(unittest.TestCase):
     def test_end_gaps(self):
         mrf1 = get_fake_model([0,1,2])
         mrf2 = get_fake_model([0])
-        aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=0, gap_extend=1000, sim_min=-100, epsilon_sim=0.0001)
+        aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=0, gap_extend=1000, sim_min=-100, epsilon_sim=0.0001, free_end_gaps=True)
         self.assertEqual(infos_solver['UB'], infos_solver['LB'])
         expected_aligned_positions = {"pos_ref":[0], "pos_2":[0]}
         self.assertEqual(aligned_positions, expected_aligned_positions)
@@ -158,7 +158,7 @@ class Test_Call_PPalign(unittest.TestCase):
     def test_begin_gaps(self):
         mrf1 = get_fake_model([0,1,2])
         mrf2 = get_fake_model([2])
-        aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=0, gap_extend=1000, sim_min=-100, epsilon_sim=0.0001)
+        aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=0, gap_extend=1000, sim_min=-100, epsilon_sim=0.0001, free_end_gaps=True)
         self.assertEqual(infos_solver['UB'], infos_solver['LB'])
         expected_aligned_positions = {"pos_ref":[2], "pos_2":[0]}
         self.assertEqual(aligned_positions, expected_aligned_positions)
@@ -167,7 +167,7 @@ class Test_Call_PPalign(unittest.TestCase):
     def test_middle_gaps(self):
         mrf1 = get_fake_model([0,1,2])
         mrf2 = get_fake_model([0,2])
-        aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=1000, gap_extend=0, sim_min=-100, epsilon_sim=0.0001)
+        aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=1000, gap_extend=0, sim_min=-100, epsilon_sim=0.0001, free_end_gaps=True)
         self.assertEqual(infos_solver['UB'], infos_solver['LB'])
         not_expected_aligned_positions = {"pos_ref":[0,2], "pos_2":[0,1]}
         self.assertNotEqual(aligned_positions, not_expected_aligned_positions)
@@ -178,7 +178,7 @@ class Test_Call_PPalign(unittest.TestCase):
         gap_open=0.3333
         aligned_positions_eg, infos_solver_eg = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=gap_open, gap_extend=0, sim_min=-100, epsilon_sim=0.0001, free_end_gaps=True)
         aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=gap_open, gap_extend=0, sim_min=-100, epsilon_sim=0.0001, free_end_gaps=False)
-        assert(infos_solver_eg['LB']==infos_solver['LB']-gap_open)
+        assert(infos_solver['LB']-(infos_solver_eg['LB']-gap_open)<=0.001)
 
 
 
