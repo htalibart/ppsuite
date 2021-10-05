@@ -13,14 +13,14 @@ PPALIGN_CPP_LIBRARY = pkg_resources.resource_filename('ppalign', 'ppalign_solver
 PPALIGN_SOLVER = ctypes.CDLL(PPALIGN_CPP_LIBRARY)
 INFINITY = 1000000000
 
-def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, sim_min=0.1, offset_v=0, remove_v0=False, insertion_penalties_coefficient=1, gap_open=8, gap_extend=0, **kwargs):
+def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, sim_min=0.1, offset_v=0, remove_v0=False, insertion_penalties_coefficient=1, gap_open=8, gap_extend=0, free_end_gaps=True, **kwargs):
 
     # handle output files and folder
     if not output_folder.is_dir():
         fm.create_folder(output_folder)
     aln_res_file = fm.get_aln_res_file_name(output_folder)
     info_res_file = fm.get_info_res_file_name(output_folder)
-    aligned_fasta_solver_file = fm.get_aligned_solver_file(output_folder)
+    insert_before_res_file = fm.get_insert_before_res_file(output_folder)
 
     # total PPalign time starts now
     time_start = time.time()
@@ -61,14 +61,17 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
 
     # INSERTIONS
     if insert_costs is None:
-        print("insert costs is None, filling with gap open = ",gap_open," and gap extend = ", gap_extend, " (extern gap costs = 0)")
-        insert_opens = [np.ascontiguousarray(np.hstack((np.zeros((1)), np.ones((mrfs[mrf_ind].ncol-1))*gap_open, np.zeros(1)))) for mrf_ind in range(2)]
-        insert_extends = [np.ascontiguousarray(np.hstack((np.zeros((1)), np.ones((mrfs[mrf_ind].ncol-1))*gap_extend, np.zeros(1)))) for mrf_ind in range(2)]
+        if free_n_gaps:
+            print("insert costs is None, filling with gap open = ",gap_open," and gap extend = ", gap_extend, " (external gap costs = 0)")
+            insert_opens = [np.ascontiguousarray(np.hstack((np.zeros((1)), np.ones((mrfs[mrf_ind].ncol-1))*gap_open, np.zeros(1)))) for mrf_ind in range(2)]
+            insert_extends = [np.ascontiguousarray(np.hstack((np.zeros((1)), np.ones((mrfs[mrf_ind].ncol-1))*gap_extend, np.zeros(1)))) for mrf_ind in range(2)]
+        else:
+            print("insert costs is None, filling with gap open = ",gap_open," and gap extend = ", gap_extend)
+            insert_opens = [np.ascontiguousarray(np.ones((mrfs[mrf_ind].ncol+1))*gap_open) for mrf_ind in range(2)]
+            insert_extends = [np.ascontiguousarray(np.ones((mrfs[mrf_ind].ncol+1))*gap_extend) for mrf_ind in range(2)]
     else:
         insert_opens = [np.multiply(np.ascontiguousarray(insert_costs[mrf_ind]['open']),insertion_penalties_coefficient) for mrf_ind in range(2)]
         insert_extends = [np.multiply(np.ascontiguousarray(insert_costs[mrf_ind]['extend']),insertion_penalties_coefficient) for mrf_ind in range(2)]
-    # !! AN INSERTION OF 1 NOW COSTS GAP_OPEN+GAP_EXTEND IN THE SOLVER !!! ADJUSTED HERE
-    #insert_opens = [insert_opens[mrf_ind]-insert_extends[mrf_ind] for mrf_ind in range(2)]
     c_insert_opens = [insert_open.astype(np.float32).ctypes.data_as(c_float_p) for insert_open in insert_opens]
     c_insert_extends = [insert_extend.astype(np.float32).ctypes.data_as(c_float_p) for insert_extend in insert_extends]
 
@@ -82,7 +85,7 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
 
     PPALIGN_SOLVER.call_from_python.argtypes=[c_float_p, c_float_p, c_float_p, c_float_p, ctypes.c_int, ctypes.c_int, c_int_p, c_int_p, ctypes.c_double, ctypes.c_double, c_float_p, c_float_p, c_float_p, c_float_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_char_p, ctypes.c_int, ctypes.c_int, ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_double, ctypes.c_int, ctypes.c_double, ctypes.c_double, ctypes.c_double]
 
-    PPALIGN_SOLVER.call_from_python(*c_vs, *c_ws, *[ctypes.c_int(mrf.ncol) for mrf in mrfs], *c_edges_maps, *[ctypes.c_double(selfcomp) for selfcomp in selfcomps], *c_insert_opens, *c_insert_extends, ctypes.c_char_p(str(aln_res_file).encode('utf-8')), ctypes.c_char_p(str(info_res_file).encode('utf-8')), ctypes.c_char_p(str(aligned_fasta_solver_file).encode('utf-8')), ctypes.c_int(n_limit_param), ctypes.c_int(iter_limit_param), ctypes.c_double(t_limit), ctypes.c_int(disp_level), ctypes.c_double(epsilon), ctypes.c_double(gamma), ctypes.c_double(theta), ctypes.c_double(stepsize_min), ctypes.c_int(nb_non_increasing_steps_max), ctypes.c_double(score_min), ctypes.c_double(alpha_w), ctypes.c_double(offset_v))
+    PPALIGN_SOLVER.call_from_python(*c_vs, *c_ws, *[ctypes.c_int(mrf.ncol) for mrf in mrfs], *c_edges_maps, *[ctypes.c_double(selfcomp) for selfcomp in selfcomps], *c_insert_opens, *c_insert_extends, ctypes.c_char_p(str(aln_res_file).encode('utf-8')), ctypes.c_char_p(str(info_res_file).encode('utf-8')), ctypes.c_char_p(str(insert_before_res_file).encode('utf-8')), ctypes.c_int(n_limit_param), ctypes.c_int(iter_limit_param), ctypes.c_double(t_limit), ctypes.c_int(disp_level), ctypes.c_double(epsilon), ctypes.c_double(gamma), ctypes.c_double(theta), ctypes.c_double(stepsize_min), ctypes.c_int(nb_non_increasing_steps_max), ctypes.c_double(score_min), ctypes.c_double(alpha_w), ctypes.c_double(offset_v))
 
     total_computation_time = time.time()-time_start
 

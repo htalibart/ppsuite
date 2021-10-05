@@ -172,6 +172,15 @@ class Test_Call_PPalign(unittest.TestCase):
         not_expected_aligned_positions = {"pos_ref":[0,2], "pos_2":[0,1]}
         self.assertNotEqual(aligned_positions, not_expected_aligned_positions)
 
+    def test_free_end_gaps(self):
+        mrf1 = get_fake_model([0,1,2])
+        mrf2 = get_fake_model([2])
+        gap_open=0.3333
+        aligned_positions_eg, infos_solver_eg = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=gap_open, gap_extend=0, sim_min=-100, epsilon_sim=0.0001, free_end_gaps=True)
+        aligned_positions, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, gap_open=gap_open, gap_extend=0, sim_min=-100, epsilon_sim=0.0001, free_end_gaps=False)
+        assert(infos_solver_eg['LB']==infos_solver['LB']-gap_open)
+
+
 
 
 

@@ -39,6 +39,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--rescale_removed_v0', help="rescale background v0", action='store_true', default=False)
     parser.add_argument('-go', '--gap_open', help="gap open", default=14, type=float)
     parser.add_argument('-ge', '--gap_extend', help="gap extend", default=0, type=float)
+    parser.add_argument('--free_end_gaps', help="set end gap penalties to 0 (if not using position-specific insertion penalties)", action='store_true', default=False)
     parser.add_argument('--use_insertion_penalties', help="use insertion penalties (WARNING: EXPERIMENTAL)", action='store_true', default=False)
     parser.add_argument('-ipc', '--insertion_penalties_coefficient', help="insertion penalties coefficient", default=1, type=float)
 
