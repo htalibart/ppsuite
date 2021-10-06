@@ -125,7 +125,7 @@ def main(args=sys.argv[1:]):
                                     for mrf_ind in range(2)]
 
     # ALIGNMENT
-    aligned_positions, infos_solver = align_two_objects(objects, output_folder, insert_costs=insert_costs, **args)
+    aligned_positions, aligned_positions_with_gaps, infos_solver = align_two_objects(objects, output_folder, insert_costs=insert_costs, **args)
     print("Total time : "+str(infos_solver["total_time"]))
 
 
@@ -137,11 +137,15 @@ def main(args=sys.argv[1:]):
         if all((o.mrf_pos_to_seq_pos is not None) for o in objects):
             sequence_positions = get_initial_positions(aligned_positions, {"pos_ref":objects[0].mrf_pos_to_seq_pos, "pos_2":objects[1].mrf_pos_to_seq_pos})
             fm.write_positions_to_csv(sequence_positions, output_folder/("aln_sequences.csv"))
+            sequence_positions_with_gaps = get_initial_positions(aligned_positions_with_gaps, {"pos_ref":objects[0].mrf_pos_to_seq_pos, "pos_2":objects[1].mrf_pos_to_seq_pos})
+            fm.write_positions_to_csv(sequence_positions_with_gaps, output_folder/("aln_with_gaps_sequences.csv"))
  
 
         if all((o.sequence is not None) for o in objects) and args["get_sequences_fasta_aln"]:
+            output_fasta_file = output_folder/("aligned_sequences_using_aln.fasta")
+            get_seqs_aligned_in_fasta_file_using_aln(aligned_positions, objects, output_fasta_file)
             output_fasta_file = output_folder/("aligned_sequences.fasta")
-            get_seqs_aligned_in_fasta_file(aligned_positions, objects, output_fasta_file)
+            get_seqs_aligned_in_fasta_file(aligned_positions_with_gaps, objects, output_fasta_file)
 
 
        # REMOVE TEMPORARY FOLDERS
@@ -149,7 +153,7 @@ def main(args=sys.argv[1:]):
             if temp_folder.is_dir():
                 shutil.rmtree(str(temp_folder))
 
-        return {"objects": objects, "aligned_positions":aligned_positions, "infos_solver":infos_solver}
+        return {"objects": objects, "aligned_positions":aligned_positions, "aligned_positions_with_gaps":aligned_positions_with_gaps, "infos_solver":infos_solver}
 
 
 

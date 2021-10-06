@@ -232,6 +232,7 @@ void display_alignment_with_gaps(int* res_alignment, int* res_alignment_insert_b
 				row=res_alignment[col];
 				cout << row << " " << col << endl;
 				output_file << row << "," << col << endl;
+				row+=1;
 			}
 			else
 			{

@@ -56,8 +56,8 @@ class Test_ManagePositions(unittest.TestCase):
             seq_file = FAKE_SEQS_FOLDER/("fake_seq_"+str(k)+".fasta")
             potts_folder = pathlib.Path(tempfile.mkdtemp())
             objs.append(Potts_Object.from_sequence_alone(potts_folder=potts_folder, sequence_file=seq_file, inference_type="one_hot"))
-        aligned_positions = {"pos_ref":[4,5,7,8,9,10], "pos_2":[0,1,2,3,4,5]}
-        seqs_aligned = get_seqs_aligned(aligned_positions, objs)
+        aligned_positions_with_gaps = {"pos_ref":[0,1,2,3,4,5,6,7,8,9,10], "pos_2":['-','-','-','-',0,1,'-',2,3,4,5]}
+        seqs_aligned = get_seqs_aligned(aligned_positions_with_gaps, objs)
         self.assertEqual(seqs_aligned[0], 'YFYFMAEIKEH')
         self.assertEqual(seqs_aligned[1], '----MA-IKDH')
 

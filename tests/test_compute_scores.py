@@ -26,7 +26,7 @@ class Test_Compute_Scores(unittest.TestCase):
         w_score_function = scalar_product
         edges_map = get_edges_map(self.mrf, 100)
         selfcomp = compute_selfscore(self.mrf, edges_map, use_v=True, use_w=False)
-        aln_dict, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=False)
+        aln_dict, aln_dict_with_gaps, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=False)
         UB = infos_solver['UB']
         self.assertTrue(abs(selfcomp-UB)<1)
 
@@ -34,7 +34,7 @@ class Test_Compute_Scores(unittest.TestCase):
     def test_selfscore_no_v(self):
         edges_map = get_edges_map(self.mrf, 100)
         selfcomp = compute_selfscore(self.mrf, edges_map, use_v=False, use_w=True)
-        aln_dict, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_v=False)
+        aln_dict, aln_dict_with_gaps, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_v=False)
         UB = infos_solver['UB']
         self.assertTrue(abs(selfcomp-UB)<1)
 
@@ -44,7 +44,7 @@ class Test_Compute_Scores(unittest.TestCase):
         w_score_function = scalar_product
         edges_map = get_edges_map(self.mrf, 100)
         selfcomp = compute_selfscore(self.mrf, edges_map, use_v=True, use_w=True)
-        aln_dict, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=True)
+        aln_dict, aln_dict_with_gaps, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=True)
         UB = infos_solver['UB']
         self.assertTrue(abs(selfcomp-UB)<1)
 
@@ -71,7 +71,7 @@ class Test_Compute_Scores(unittest.TestCase):
 
     def test_get_total_score(self):
         params = {'alpha_w':1, 'remove_v0':True, 'offset_v':1, 'gap_open':10, 'v_rescaling_function':'identity'}
-        aln_dict, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=False, **params)
+        aln_dict, aln_dict_with_gaps, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=False, **params)
         LB = infos_solver['LB']
         total_score = get_score_for_alignment([self.mrf, self.mrf], aln_dict, **params)
         assert((LB-total_score)<0.1)

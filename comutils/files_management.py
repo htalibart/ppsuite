@@ -44,6 +44,27 @@ def get_aligned_positions_dict_from_ppalign_output_file(aln_res_file):
     assert(len(aln_dict['pos_ref'])==len(aln_dict['pos_2']))
     return aln_dict
 
+
+def get_aligned_positions_with_gaps_dict_from_ppalign_output_file(aln_with_gaps_res_file):
+    """ get {"pos_ref":list of aligned positions with gaps in first Potts model, "pos_2":  list of aligned positions with gaps in second Potts model} from PPalign output .csv file """
+    check_if_file_ok(aln_with_gaps_res_file)
+    with open(str(aln_with_gaps_res_file), 'r') as csv_file:
+        csv_reader = csv.reader(csv_file)
+        header = next(csv_reader)
+        aln_with_gaps_dict = {name:[] for name in header}
+        for row in csv_reader:
+            for k in range(2):
+                if (row[k]=='-'):
+                    value='-'
+                else:
+                    try:
+                        value = int(row[k])
+                    except Exception as e:
+                        value = None
+                aln_with_gaps_dict[header[k]].append(value)
+    assert(len(aln_with_gaps_dict['pos_ref'])==len(aln_with_gaps_dict['pos_2']))
+    return aln_with_gaps_dict
+
 def get_infos_solver_dict_from_ppalign_output_file(infos_res_file):
     df = pd.read_csv(infos_res_file)
     return df.loc[0].to_dict()

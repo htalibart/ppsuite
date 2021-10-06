@@ -77,15 +77,14 @@ def aligned_positions_to_aligned_sequences(seq_positions, sequences):
             else:
                 car=sequences[k][pos]
             seqs_aligned[k]+=car
-
-    if (len(sequences[0])-seq_positions['pos_ref'][-1]+1>0):
-        for pos_in_ref in range(seq_positions['pos_ref'][-1]+1,len(sequences[0])):
-            seqs_aligned[0]+=sequences[0][pos_in_ref]
-            seqs_aligned[1]+='-'
-    if (len(sequences[1])-seq_positions['pos_2'][-1]+1>0):
-        for pos_in_2 in range(seq_positions['pos_2'][-1]+1, len(sequences[1])):
-            seqs_aligned[1]+=sequences[1][pos_in_2]
-            seqs_aligned[0]+='-'
+   # if (len(sequences[0])-seq_positions['pos_ref'][-1]+1>0):
+   #     for pos_in_ref in range(seq_positions['pos_ref'][-1]+1,len(sequences[0])):
+   #         seqs_aligned[0]+=sequences[0][pos_in_ref]
+   #         seqs_aligned[1]+='-'
+   # if (len(sequences[1])-seq_positions['pos_2'][-1]+1>0):
+   #     for pos_in_2 in range(seq_positions['pos_2'][-1]+1, len(sequences[1])):
+   #         seqs_aligned[1]+=sequences[1][pos_in_2]
+   #         seqs_aligned[0]+='-'
     return seqs_aligned
 
 
@@ -107,7 +106,7 @@ def remove_None_positions(positions_dict):
     return new_positions_dict
 
 
-def get_seqs_aligned(aligned_positions, objects):
+def get_seqs_aligned_using_aln(aligned_positions, objects):
     """ aligned positions in the model to aligned sequences """
     seq_positions_from_objects = get_seq_positions(aligned_positions, objects)
     seq_positions_without_None = remove_None_positions(seq_positions_from_objects)
@@ -115,9 +114,25 @@ def get_seqs_aligned(aligned_positions, objects):
     return aligned_positions_to_aligned_sequences(seq_positions, [obj.sequence for obj in objects]) 
 
             
-def get_seqs_aligned_in_fasta_file(aligned_positions, objects, output_file):
+def get_seqs_aligned_in_fasta_file_using_aln(aligned_positions, objects, output_file):
     """ (positions aligned by solver + objects) -> sequences aligned -> in output_file """
-    seqs_aligned = get_seqs_aligned(aligned_positions, objects)
+    seqs_aligned = get_seqs_aligned_using_aln(aligned_positions, objects)
+    seq_records = [SeqRecord(Seq(s), id=o.get_name(), description='') for s,o in zip(seqs_aligned, objects)]
+    with open(str(output_file), 'w') as f:
+        SeqIO.write(seq_records, f, "fasta")
+    print("output can be found at "+str(output_file))
+
+
+def get_seqs_aligned(aligned_positions_with_gaps, objects):
+    """ aligned positions in the model with gaps to aligned sequences """
+    seq_positions_from_objects = get_seq_positions(aligned_positions_with_gaps, objects)
+    seq_positions_without_None = remove_None_positions(seq_positions_from_objects)
+    return aligned_positions_to_aligned_sequences(seq_positions_without_None, [obj.sequence for obj in objects]) 
+
+
+def get_seqs_aligned_in_fasta_file(aligned_positions_with_gaps, objects, output_file):
+    """ (positions aligned by solver with gaps + objects) -> sequences aligned -> in output_file """
+    seqs_aligned = get_seqs_aligned(aligned_positions_with_gaps, objects)
     seq_records = [SeqRecord(Seq(s), id=o.get_name(), description='') for s,o in zip(seqs_aligned, objects)]
     with open(str(output_file), 'w') as f:
         SeqIO.write(seq_records, f, "fasta")
@@ -168,7 +183,13 @@ def get_initial_positions(aligned_positions, mrf_pos_to_initial_pos_dict):
         outputs dict of aligned positions in the original sequences """
     initial_positions = {}
     for key in aligned_positions:
-        initial_positions[key] = [mrf_pos_to_initial_pos_dict[key][pos] for pos in aligned_positions[key]]
+        initial_positions[key]=[]
+        for pos in aligned_positions[key]:
+            if pos=='-':
+                init_pos='-'
+            else:
+                init_pos = mrf_pos_to_initial_pos_dict[key][pos]
+            initial_positions[key].append(init_pos)
     return initial_positions
 
 

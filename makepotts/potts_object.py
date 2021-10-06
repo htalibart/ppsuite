@@ -92,6 +92,9 @@ class Potts_Object:
     @classmethod
     def from_sequence_alone(cls, potts_folder, sequence_file, inference_type, **kwargs):
 
+        if not potts_folder.is_dir():
+            potts_folder.mkdir()
+
         potts_model_file = potts_folder/"potts_model.mrf"
         if inference_type=="one_submat":
             potts_model = Potts_Model.from_sequence_file_with_submat(sequence_file, filename=potts_model_file, **kwargs)
@@ -352,6 +355,8 @@ class Potts_Object:
         for pos in positions:
             if pos is None:
                 seq_positions.append(None)
+            elif pos is '-':
+                seq_positions.append('-')
             else:
                 seq_positions.append(self.mrf_pos_to_seq_pos[pos])
         return seq_positions

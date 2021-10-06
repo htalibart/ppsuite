@@ -36,3 +36,7 @@ POTTS_FROM_MSA1 = pathlib.Path(pkg_resources.resource_filename(__name__,'example
 POTTS_FROM_MSA2 = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/msa2.mrf'))
 
 ADABMDCA_FILE = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/adabmdca_format.dat'))
+
+
+DUMMY_SEQUENCE_FILE_1 = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/dummy_sequence_1.fasta'))
+DUMMY_SEQUENCE_FILE_2 = pathlib.Path(pkg_resources.resource_filename(__name__,'examples/dummy_sequence_2.fasta'))

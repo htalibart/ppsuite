@@ -96,10 +96,12 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
     
     if not math.isnan(df['similarity_global']):
         aligned_positions_dict = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_res_file)
+        aligned_positions_with_gaps_dict = fm.get_aligned_positions_with_gaps_dict_from_ppalign_output_file(aln_with_gaps_res_file)
     else:
         aligned_positions_dict = {}
+        aligned_positions_with_gaps_dict = {}
 
-    return aligned_positions_dict, infos_solver
+    return aligned_positions_dict, aligned_positions_with_gaps_dict, infos_solver
 
 
 def align_two_objects(objects, output_folder, **kwargs):
