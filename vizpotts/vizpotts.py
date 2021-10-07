@@ -41,6 +41,15 @@ def plot_heatmap(matrix, center=0, **kwargs):
     end_visual(**kwargs)
 
 
+def visualize_insertion_penalties(insertion_penalties, **kwargs):
+    fig, ax = plt.subplots(nrows=2, ncols=1, sharex=False, sharey=False, gridspec_kw={'height_ratios':[1,1]})
+    sns.heatmap([insertion_penalties["open"]], ax=ax[0])
+    ax[0].collections[0].colorbar.set_label("gap open")
+    sns.heatmap([insertion_penalties["extend"]], ax=ax[1])
+    ax[1].collections[0].colorbar.set_label("gap extend")
+    end_visual(**kwargs)
+
+
 def visualize_v_parameters(v, alphabet=ALPHABET, start_at_1=True, tick_space=3, figsize=(10,2), **kwargs):
     xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
     v = get_reordered_v(v, alphabet)

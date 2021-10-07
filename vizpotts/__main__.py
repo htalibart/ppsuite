@@ -23,6 +23,7 @@ def main():
     parser.add_argument('-v', '--v_only', help="Only plot vi parameters", action='store_true', default=False), 
     parser.add_argument('-vn', '--v_norms_only', help="Only plot vi norms", action='store_true', default=False), 
     parser.add_argument('-wn', '--w_norms_only', help="Only plot wij norms", action='store_true', default=False), 
+    parser.add_argument('-ip', '--insertion_penalties_only', help="Only plot insertion penalties", action='store_true', default=False), 
     parser.add_argument('-alph', '--alphabetical', help="Use alphabetical amino acid order", action='store_true', default=False), 
     args = vars(parser.parse_args())
 
@@ -37,7 +38,7 @@ def main():
     potts_models = [Potts_Model.from_msgpack(potts_model_file) for potts_model_file in args["potts_models"]]
     potts_objects = []
     for potts_folder in args["potts_folders"]:
-        po = Potts_Object.from_folder(potts_folder)
+        po = Potts_Object.from_folder(potts_folder, use_insertion_penalties=True)
         potts_objects.append(po)
         potts_models.append(po.potts_model)
 
@@ -88,6 +89,11 @@ def main():
                     visualize_v_norms(mrf.get_v_norms(), start_at_1=start_at_1, show_figure=False)
                 elif args["w_norms_only"]:
                     visualize_w_norms(mrf.get_w_norms(), start_at_1=start_at_1, show_figure=True)
+                elif args["insertion_penalties_only"]:
+                    insertion_penalties = po.get_insertion_penalties()
+                    if insertion_penalties is None:
+                        raise Exception("no insertion penalties found")
+                    visualize_insertion_penalties(insertion_penalties, show_figure=False)
                 else:
                     visualize_mrf(mrf, start_at_1=start_at_1, show_figure=False, alphabet=alphabet)
         plt.show()

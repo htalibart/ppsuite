@@ -418,6 +418,10 @@ class Potts_Object:
         fm.write_list_to_csv(self.aln_pos_to_seq_pos, output_folder/"aln_pos_to_seq_pos.csv")
 
 
+    def get_insertion_penalties(self):
+        return self.insertion_penalties
+
+
 
 
 def main(args=sys.argv[1:]):
