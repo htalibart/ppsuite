@@ -23,7 +23,6 @@ class Test_Infer_Insertion_Penalties(unittest.TestCase):
        ins = count_insertions(a3m_file)
        assert(np.array_equiv(ins,np.array([[0,0,0,0],[0,1,0,0],[0,3,0,0]])))
 
-
     def test_infer_insertion_penalties(self):
         a3m_file = pathlib.Path(INSERTION_RESOURCES_FOLDER/"count_insertions_example.a3m")
         insertion_penalties = infer_insertion_penalties(a3m_file)
@@ -42,6 +41,15 @@ class Test_Infer_Insertion_Penalties(unittest.TestCase):
         assert(po.potts_model.ncol==2)
         assert(po.insertion_penalties['open'][1]<po.insertion_penalties['open'][2])
  
+    def test_infer_insertion_penalties_with_pseudocounts(self):
+        a3m_file = pathlib.Path(INSERTION_RESOURCES_FOLDER/"count_insertions_example.a3m")
+        insertion_penalties = infer_insertion_penalties(a3m_file, pc_insertions_tau=0)
+        insertion_penalties_with_pseudocounts = infer_insertion_penalties(a3m_file, pc_insertions_tau=0.5)
+        print(insertion_penalties)
+        print(insertion_penalties_with_pseudocounts)
+        assert(insertion_penalties["open"][1]<insertion_penalties_with_pseudocounts["open"][1])
+        assert(insertion_penalties["extend"][1]<insertion_penalties_with_pseudocounts["extend"][1])
+
 
 
 if __name__=='__main__':

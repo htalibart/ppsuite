@@ -15,7 +15,8 @@ def get_length_ins_file(input_file):
 
 
 def count_insertions(input_file):
-    """ returns delta_ins[nb sequences, msa length] where delta_ins[n,k] = length of gap at pos k for sequence n """
+    """ returns delta_ins[nb sequences, msa length] where delta_ins[n,k] = length of gap at pos k for sequence n 
+    @pc_insertions_tau is the pseudo-count coefficient (the higher tau, the more gap lengths are close to background probabilities for gap lengths)"""
     with open(input_file, 'r') as f:
         records = list(SeqIO.parse(str(input_file), 'fasta'))
         L = get_length_ins_file(input_file)
@@ -40,13 +41,16 @@ def count_insertions(input_file):
                 else:
                     in_gap=False
                     index_in_msa+=1
-
+            
         return delta_ins
 
 
-def maximize_likelihood(delta_ins, L, maxit_infer_insertions=1e8, tol_infer_insertions=1e-6, learning_coeff_insertions=1e-3, freq_insert_min=1e-3, **kwargs):
+def maximize_likelihood(delta_ins, L, maxit_infer_insertions=1e8, tol_infer_insertions=1e-6, learning_coeff_insertions=1e-3, freq_insert_min=1e-3, pc_insertions_tau=0, delta_n_max=100, **kwargs):
     """ maximizes log-likelihood to compute optimal gap open and gap extend penalties for each position
     returns a dictionary {"open":[list of gap open penalties], "extend":[list of gap extend penallties]}"""
+    
+    expected_Nt = sum([delta_n*get_background_gap_probability(delta_n) for delta_n in range(delta_n_max)])
+    expected_No = sum([get_background_gap_probability(delta_n) for delta_n in range(delta_n_max)])
 
     insertion_penalties = {"open":[0]*(L+1), "extend":[0]*(L+1)}
 
@@ -59,12 +63,15 @@ def maximize_likelihood(delta_ins, L, maxit_infer_insertions=1e8, tol_infer_inse
         le=1.0
         it=1
 
-        No =  sum(delta_ins[:,pos]>0) # nb gap opens at pos (TODO vectorize)
+        No = sum(delta_ins[:,pos]>=1) # nb gap opens at pos (TODO vectorize) # >=1 ?? TODO réfléchir
         Nt = sum(delta_ins[:,pos]) # sum of lengths of gaps at pos (TODO vectorize)
 
         if (No==0):
             No=freq_insert_min*nseq
             Nt=freq_insert_min*nseq
+
+        No = (1-pc_insertions_tau)*No+pc_insertions_tau*expected_No
+        Nt = (1-pc_insertions_tau)*Nt+pc_insertions_tau*expected_Nt
 
     
         while ( (eps > tol_infer_insertions) and (it < maxit_infer_insertions) ):
@@ -82,10 +89,16 @@ def maximize_likelihood(delta_ins, L, maxit_infer_insertions=1e8, tol_infer_inse
 
 
 
-def infer_insertion_penalties(input_file, free_end_gaps=True, **kwargs):
+def get_background_gap_probability(delta_n):
+    # from Qian & Goldstein, 2001
+    return 1.027e-2*np.exp(-delta_n/0.96)+3.031e-3*np.exp(-delta_n/3.13)+6.141e-4*np.exp(-delta_n/14.3)+2.090e-5*np.exp(-delta_n/81.7)
+
+
+
+def infer_insertion_penalties(input_file, free_end_gaps=True, pc_insertions_tau=0, **kwargs):
     delta_ins = count_insertions(input_file)
     L = get_length_ins_file(input_file)
-    insertion_penalties = maximize_likelihood(delta_ins, L, **kwargs)
+    insertion_penalties = maximize_likelihood(delta_ins, L, pc_insertions_tau=pc_insertions_tau, **kwargs)
     if free_end_gaps:
         for insertion_type in ['open', 'extend']:
             insertion_penalties[insertion_type][0] = 0
