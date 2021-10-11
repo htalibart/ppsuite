@@ -57,7 +57,7 @@ def lower_case_trimmed_columns(aln_with_insertions, output_file, list_of_columns
     """ lowers letters of columns in @aln_with_insertions that are not in @list_of_columns_not_trimmed, writes result in @output_file """
     records = list(SeqIO.parse(str(aln_with_insertions),fileformat))
     output_records = []
-    for record in records:
+    for record_index, record in enumerate(records):
         upper_index=-1
         new_record = record
         sequence_str = str(record.seq)
@@ -69,7 +69,7 @@ def lower_case_trimmed_columns(aln_with_insertions, output_file, list_of_columns
                     if letter!='-':
                         letter = letter.lower()
                     else:
-                        letter='.'
+                        letter=''
             new_sequence_str+=letter
         new_record.seq = Seq(new_sequence_str)
         output_records.append(new_record)

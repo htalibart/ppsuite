@@ -14,8 +14,8 @@ class Test_MakePotts(unittest.TestCase):
         self.potts_folder = pathlib.Path(tempfile.mkdtemp())
 
     def tearDown(self):
-        #shutil.rmtree(self.potts_folder)
-        pass
+        shutil.rmtree(self.potts_folder)
+        #pass
 
     def test_makepotts_with_potts_model_only(self):
        potts_model_file = pathlib.Path(MRF_1CC8)
@@ -98,27 +98,6 @@ class Test_MakePotts(unittest.TestCase):
        cf = Potts_Object.from_sequence_alone(self.potts_folder, SEQ_1CC8, inference_type="one_hot")
        assert(cf.potts_model_file.is_file())
 
-
-    def test_insertion_penalties(self):
-       a3m_file = pathlib.Path(A3M_5JZR)
-       po = Potts_Object.from_hhblits_files(self.potts_folder, aln_with_insertions=a3m_file, use_insertion_penalties=True)
-       assert(po.insertion_penalties is not None)
-
-
-    def test_lower_trimmed_columns_insertions(self):
-        a3m_file = INSERTION_RESOURCES_FOLDER/'Ac-D.a3m'
-        output_file = '/tmp/test_a3m_trim.a3m'
-        lower_case_trimmed_columns(a3m_file, output_file, [0,2])
-        records = list(SeqIO.parse(str(output_file), 'fasta'))
-        assert(str(records[2].seq)=='AcfD')
-        os.remove(str(output_file))
-
-    def test_lower_trimmed_columns_insertions_full_object(self):
-        a3m_file = INSERTION_RESOURCES_FOLDER/'Ac-D.a3m'
-        po = Potts_Object.from_hhblits_files(self.potts_folder, aln_with_insertions=a3m_file, use_insertion_penalties=True, filter_alignment=False, trim_alignment=True, trimal_gt=0.9)
-        assert(po.potts_model.ncol==2)
-        assert(po.insertion_penalties['open'][1]<po.insertion_penalties['open'][2])
- 
         
     def test_zero_fill(self):
         L=3
@@ -126,7 +105,6 @@ class Test_MakePotts(unittest.TestCase):
         assert(p.ncol==L)
         assert(p.get_v_norm()==0)
         assert(p.get_w_norm()==0)
-
 
 
     def test_infer_with_adabmdca(self):

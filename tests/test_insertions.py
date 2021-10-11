@@ -284,7 +284,5 @@ class Test_Insertions(unittest.TestCase):
         assert((aligned_positions==possible_expected_aligned_positions[0]) or (aligned_positions==possible_expected_aligned_positions[1]))
 
 
-      
-
 if __name__=='__main__':
     unittest.main()
