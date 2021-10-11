@@ -285,8 +285,7 @@ class Potts_Object:
             if aln_with_insertions is None:
                 raise Exception("File with insertions as lower case is required")
             insertions_file = potts_folder/"insertion_penalties.tsv"
-            seed_length = potts_model.ncol
-            infer_insertion_penalties_in_file(aln_with_insertions, seed_length, insertions_file)
+            infer_insertion_penalties_in_file(aln_with_insertions, insertions_file)
 
 
         # HANDLE CORRESPONDENCES BETWEEN POTTS MODEL POSITIONS AND SEQ/MSA POSITIONS
