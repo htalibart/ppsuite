@@ -45,16 +45,18 @@ def count_insertions(input_file):
         return delta_ins
 
 
+
+
 def maximize_likelihood(delta_ins, L, maxit_infer_insertions=1e8, tol_infer_insertions=1e-6, learning_coeff_insertions=1e-3, freq_insert_min=1e-3, pc_insertions_tau=0, delta_n_max=100, **kwargs):
     """ maximizes log-likelihood to compute optimal gap open and gap extend penalties for each position
     returns a dictionary {"open":[list of gap open penalties], "extend":[list of gap extend penallties]}"""
     
-    expected_Nt = sum([delta_n*get_background_gap_probability(delta_n) for delta_n in range(delta_n_max)])
-    expected_No = sum([get_background_gap_probability(delta_n) for delta_n in range(delta_n_max)])
+    nseq = delta_ins.shape[0]
+    expected_Nt = nseq*sum([delta_n*get_background_gap_probability(delta_n) for delta_n in range(delta_n_max)])
+    expected_No = nseq*sum([get_background_gap_probability(delta_n) for delta_n in range(delta_n_max)])
 
     insertion_penalties = {"open":[0]*(L+1), "extend":[0]*(L+1)}
 
-    nseq = delta_ins.shape[0]
 
     for pos in range(L+1):
 

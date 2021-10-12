@@ -44,7 +44,7 @@ class Test_Infer_Insertion_Penalties(unittest.TestCase):
     def test_infer_insertion_penalties_with_pseudocounts(self):
         a3m_file = pathlib.Path(INSERTION_RESOURCES_FOLDER/"count_insertions_example.a3m")
         insertion_penalties = infer_insertion_penalties(a3m_file, pc_insertions_tau=0)
-        insertion_penalties_with_pseudocounts = infer_insertion_penalties(a3m_file, pc_insertions_tau=0.5)
+        insertion_penalties_with_pseudocounts = infer_insertion_penalties(a3m_file, pc_insertions_tau=0.1)
         print(insertion_penalties)
         print(insertion_penalties_with_pseudocounts)
         assert(insertion_penalties["open"][1]<insertion_penalties_with_pseudocounts["open"][1])
