@@ -1,3 +1,8 @@
+/* Original algorithm by Anna Paola Muntoni, Andrea Pagnani, Martin Weigt and Francesco Zamponi
+ * for DCAlign: https://github.com/infernet-h2020/DCAlign
+ * ref: Muntoni, A. P., Pagnani, A., Weigt, M., & Zamponi, F. (2020). Aligning biological sequences by exploiting residue conservation and coevolution. Physical Review E, 102(6), 062409.
+ */
+
 #include "main_infer_insertion_penalties.h"
 
 double compute_No(double* delta_ins, int pos, int L, int nseq)
