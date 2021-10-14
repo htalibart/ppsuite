@@ -246,7 +246,7 @@ class Potts_Object:
 
 
     @classmethod
-    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, rescale_removed_v0=True, use_insertion_penalties=False, keep_tmp_files=False, **kwargs):
+    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, rescale_removed_v0=True, use_insertion_penalties=False, keep_tmp_files=False, pc_insertions_tau=0, **kwargs):
 
         if potts_model_file is not None:
             potts_model = Potts_Model.from_msgpack(potts_model_file)
@@ -286,7 +286,7 @@ class Potts_Object:
             if aln_with_insertions is None:
                 raise Exception("File with insertions as lower case is required")
             insertions_file = potts_folder/"insertion_penalties.tsv"
-            infer_insertion_penalties_in_file(aln_with_insertions, insertions_file)
+            infer_insertion_penalties_in_file(aln_with_insertions, insertions_file, pc_insertions_tau=pc_insertions_tau)
 
 
         # HANDLE CORRESPONDENCES BETWEEN POTTS MODEL POSITIONS AND SEQ/MSA POSITIONS
@@ -481,6 +481,7 @@ def main(args=sys.argv[1:]):
     potts_model_args.add_argument('-noinfer', '--dont_infer_potts_model', help="Don't infer a Potts model (default = do)", action='store_true', default=False)
     potts_model_args.add_argument('--inference_type', help="Inference type (standard : Potts model inferred from an alignment, one_submat : Potts model inferred from a sequence using submatrix pseudocounts, one_hot : one-hot encoding of a sequence -> Potts model) (default : standard)", choices=["standard","one_hot", "one_submat"], default="standard")
     potts_model_args.add_argument('--use_insertion_penalties', help="use insertion penalties (WARNING: EXPERIMENTAL)", action='store_true', default=False)
+    potts_model_args.add_argument('--pc_insertions_tau', help="pseudo-count rate for position-specific insertion penalties (WARNING: EXPERIMENTAL)", type=float, default=0)
     
     # Potts model transformation post inference
     post_inference_args = parser.add_argument_group('post_inference_args')
