@@ -13,7 +13,8 @@ from ppalign.compute_scores import *
 
 from makepotts.rescaling import *
 from makepotts.potts_model import *
-from makepotts.handle_insertions import *
+#from makepotts.handle_insertions import *
+from infer_insertion_penalties.__main__ import *
 
 class Potts_Object:
 

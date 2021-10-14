@@ -10,6 +10,8 @@ setup(
     package_data={
         'ppalign':['ppalign_solver.so'],
         'tests':['examples/*', 'examples/*/*'],
+        'makepotts':['infer_insertion_penalties.jl'],
+        'infer_insertion_penalties':['inference_lib.so'],
         },
     entry_points={
         'console_scripts':['ppalign = ppalign.__main__:main', 'vizpotts = vizpotts.__main__:main', 'makepotts = makepotts.potts_object:main', 'vizpymol = vizcontacts.vizpymol:main', 'vizcircos = vizcontacts.vizcircos:main', 'vizmap = vizcontacts.vizmap:main', 'fasta2csv = comutils.fasta2indices:main', 'adaccm = comutils.adabmdca_to_ccmpredpy:main']
