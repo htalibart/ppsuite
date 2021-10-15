@@ -144,10 +144,12 @@ def aln_csv_to_aln_fasta(aln_file, objects, output_file):
     get_seqs_aligned_in_fasta_file(fm.get_aligned_positions_dict_from_ppalign_output_file(aln_file), objects, output_file)
 
 
+
 def aln_sequences_csv_to_aln_fasta(aln_sequences_file, objects, output_file):
     """ @aln_file: csv file of positions in sequences aligned + @objects (Potts objects aligned) -> output fasta file of sequences aligned """
     aligned_positions = fm.get_aligned_positions_dict_from_ppalign_output_file(aln_sequences_file)
-    alignment_with_gaps = get_alignment_with_gaps(aligned_positions)
+    #alignment_with_gaps = get_alignment_with_gaps(aligned_positions)
+    alignment_with_gaps = aligned_positions
     aligned_sequences = aligned_positions_to_aligned_sequences(alignment_with_gaps, [obj.sequence for obj in objects])
     seq_records = [SeqRecord(Seq(s), id=o.get_name(), description='') for s,o in zip(aligned_sequences, objects)]
     with open(str(output_file), 'w') as f:

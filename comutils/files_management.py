@@ -36,10 +36,13 @@ def get_aligned_positions_dict_from_ppalign_output_file(aln_res_file):
         aln_dict = {name:[] for name in header}
         for row in csv_reader:
             for k in range(2):
-                try:
-                    value = int(row[k])
-                except Exception as e:
-                    value = None
+                if (row[k]=='-'):
+                    value='-'
+                else:
+                    try:
+                        value = int(row[k])
+                    except Exception as e:
+                        value = None
                 aln_dict[header[k]].append(value)
     assert(len(aln_dict['pos_ref'])==len(aln_dict['pos_2']))
     return aln_dict
