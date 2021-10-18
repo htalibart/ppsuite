@@ -25,44 +25,44 @@ def get_length_ins_file(input_file):
     return sum([1 for letter in first_sequence if not letter.islower()])
 
 
+#def count_insertions(input_file): # from DCAbuild
+#    with open(input_file, 'r') as f:
+#        records = list(SeqIO.parse(str(input_file), 'fasta'))
+#        L = get_length_ins_file(input_file)
+#        nseq = len(records)
+#
+#        ins = np.zeros((nseq,L+1))
+#        
+#        pointseq = 0
+#
+#        for rec in records:
+#                s = str(rec.seq)
+#                pointseq += 1
+#                pos = L
+#                for k in range(0,len(s)-1):
+#                        if (s[len(s)-k-1].isupper()) or (s[len(s)-k-1] == '-'):
+#                                go = True
+#                                j = 1
+#                                delta = 0
+#                                while go:
+#                                        if (len(s)-k-j <= 0):
+#                                                go = False
+#                                        elif  (s[len(s)-k-j-1].isupper()) or (s[len(s)-k-j-1] == '-'):
+#                                                go = False
+#                                        elif s[len(s)-k-j-1] == '.':
+#                                                j += 1
+#                                        elif s[len(s)-k-j-1].islower():
+#                                                delta += 1
+#                                                j += 1
+#                                ins[pointseq-1,pos-1] = delta
+#                                pos -= 1
+#
+#        return ins
+#
+
+
+
 def count_insertions(input_file):
-    with open(input_file, 'r') as f:
-        records = list(SeqIO.parse(str(input_file), 'fasta'))
-        L = get_length_ins_file(input_file)
-        nseq = len(records)
-
-        ins = np.zeros((nseq,L+1))
-        
-        pointseq = 0
-
-        for rec in records:
-                s = str(rec.seq)
-                pointseq += 1
-                pos = L
-                for k in range(0,len(s)-1):
-                        if (s[len(s)-k-1].isupper()) or (s[len(s)-k-1] == '-'):
-                                go = True
-                                j = 1
-                                delta = 0
-                                while go:
-                                        if (len(s)-k-j <= 0):
-                                                go = False
-                                        elif  (s[len(s)-k-j-1].isupper()) or (s[len(s)-k-j-1] == '-'):
-                                                go = False
-                                        elif s[len(s)-k-j-1] == '.':
-                                                j += 1
-                                        elif s[len(s)-k-j-1].islower():
-                                                delta += 1
-                                                j += 1
-                                ins[pointseq-1,pos-1] = delta
-                                pos -= 1
-
-        return ins
-
-
-
-
-def old_count_insertions(input_file):
     """ returns delta_ins[nb sequences, msa length] where delta_ins[n,k] = length of gap at pos k for sequence n""" 
     with open(input_file, 'r') as f:
         records = list(SeqIO.parse(str(input_file), 'fasta'))
