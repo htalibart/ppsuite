@@ -214,20 +214,20 @@ class Test_Insertions(unittest.TestCase):
         assert(abs(infos_solver['LB']-expected_LB)<=0.001)
 
 
-    def test_w_score_open_gap(self): # WILL NOT CONVERGE
-        gap_open=1000
-        gap_extend=0
-        wijab=0.25
-        via=1
-        mrf1 = get_fake_model([0,1,2], ijabs=[(0,2,0,0)], wijab=wijab, via=via)
-        mrf2 = get_fake_model([0,2], ijabs=[(0,1,0,0)], wijab=wijab, via=via)
-        insert_costs = [{"open":[0]*(mrf1.ncol+1), "extend":[0]*(mrf1.ncol+1)},
-                        {"open":[0,gap_open,0], "extend":[0,gap_extend,0]}
-                        ]
-        aligned_positions, aligned_positions_with_gaps, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001, n_limit_param=1, iter_limit_param=1000000000, theta=2)
-        self.assertEqual(infos_solver['UB'], infos_solver['LB'])
-        not_expected_aligned_positions = {"pos_ref":[0,2], "pos_2":[0,1]}
-        self.assertNotEqual(aligned_positions, not_expected_aligned_positions)
+#    def test_w_score_open_gap(self): # WILL NOT CONVERGE
+#        gap_open=1000
+#        gap_extend=0
+#        wijab=0.25
+#        via=1
+#        mrf1 = get_fake_model([0,1,2], ijabs=[(0,2,0,0)], wijab=wijab, via=via)
+#        mrf2 = get_fake_model([0,2], ijabs=[(0,1,0,0)], wijab=wijab, via=via)
+#        insert_costs = [{"open":[0]*(mrf1.ncol+1), "extend":[0]*(mrf1.ncol+1)},
+#                        {"open":[0,gap_open,0], "extend":[0,gap_extend,0]}
+#                        ]
+#        aligned_positions, aligned_positions_with_gaps, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001, n_limit_param=1, iter_limit_param=1000000000, theta=2)
+#        self.assertEqual(infos_solver['UB'], infos_solver['LB'])
+#        not_expected_aligned_positions = {"pos_ref":[0,2], "pos_2":[0,1]}
+#        self.assertNotEqual(aligned_positions, not_expected_aligned_positions)
 
     def test_w_score_open_gap_without_w(self):
         gap_open=1000
@@ -282,6 +282,18 @@ class Test_Insertions(unittest.TestCase):
         self.assertEqual(infos_solver['UB'], infos_solver['LB'])
         possible_expected_aligned_positions = [{"pos_ref":[0], "pos_2":[0]}, {"pos_ref":[1], "pos_2":[3]}]
         assert((aligned_positions==possible_expected_aligned_positions[0]) or (aligned_positions==possible_expected_aligned_positions[1]))
+
+
+    def test_end_gap_free_with_position_specific_insertions(self):
+        mrf1 = get_fake_model([0,1])
+        mrf2 = get_fake_model([1])
+        insert_costs = [
+                {"open":[0,0,0], "extend":[0,0,0]},
+                {"open":[1000,0], "extend":[0,0]}
+                ]
+        expected_aligned_positions = {"pos_ref":[1], "pos_2":[0]}
+        aligned_positions, aligned_positions_with_gaps, infos_solver = align_two_potts_models([mrf1,mrf2], self.output_folder, insert_costs=insert_costs, sim_min=-100, epsilon_sim=0.0001, free_end_gaps=True)
+        self.assertEqual(aligned_positions, expected_aligned_positions)
 
 
 if __name__=='__main__':

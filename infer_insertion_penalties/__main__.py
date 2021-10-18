@@ -151,11 +151,6 @@ def infer_insertion_penalties_in_file(input_file, output_file, pc_insertions_tau
     delta_ins = count_insertions(input_file)
     L = get_length_ins_file(input_file)
     maximize_likelihood(delta_ins, L, output_file, learning_coeff_insertions=learning_coeff_insertions, pc_insertions_tau=pc_insertions_tau, **kwargs)
-#    if free_end_gaps:
-#        for insertion_type in ['open', 'extend']:
-#            insertion_penalties[insertion_type][0] = 0
-#            insertion_penalties[insertion_type][-1] = 0
-#    return insertion_penalties
 
 
 
