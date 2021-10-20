@@ -10,7 +10,7 @@ setup(
     package_data={
         'ppalign':['ppalign_solver.so'],
         'tests':['examples/*', 'examples/*/*'],
-        'makepotts':['infer_insertion_penalties.jl'],
+        'makepotts':['infer_insertion_penalties.jl', 'cpp_rescale_lib.so'],
         'infer_insertion_penalties':['inference_lib.so'],
         },
     entry_points={

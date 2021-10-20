@@ -4,6 +4,12 @@ import numpy as np
 from comutils.util import *
 from makepotts.potts_model import *
 
+import pkg_resources
+import ctypes
+CPP_RESCALE_LIBRARY_PATH = pkg_resources.resource_filename('makepotts', 'cpp_rescale_lib.so')
+CPP_RESCALE_LIB = ctypes.CDLL(CPP_RESCALE_LIBRARY_PATH)
+
+
 VECTORIZABLE_FUNCTIONS = ["identity", "original_rescaling", "exponential"]
 USEFUL_KWARGS =  ["alpha_rescaling", "v_rescaling_tau", "w_rescaling_tau", "v_back_to_scale", "w_back_to_scale", "beta_softmax_w"] # because Python won't accept too many parameters in kwargs
 
@@ -24,6 +30,8 @@ def get_rescaled_potts_model(potts_model, v_rescaling_function, w_rescaling_func
         else:
             t_w = np.zeros_like(potts_model.w)
         return Potts_Model.from_parameters(t_v, t_w, name=potts_model.name+'_'+v_rescaling_function+'_'+w_rescaling_function)
+
+
 
 
 
@@ -95,7 +103,12 @@ def simulate_uniform_pc_on_wij(w, rescaling_tau=0.5, beta=10, w_back_to_scale=Fa
     return resc_unflat
 
 
-def simulate_uniform_pc_on_w(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=False, **kwargs):
+
+def simulate_uniform_pc_on_w(w, w_rescaling_tau=0.5, beta_softmax_w=10, **kwargs):
+    return simulate_uniform_pc_on_w_with_cpp(w, w_rescaling_tau=w_rescaling_tau, beta_softmax_w=beta_softmax_w, **kwargs)
+
+
+def simulate_uniform_pc_on_w_with_python(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=False, **kwargs):
     resc_w = np.zeros_like(w)
     for i in range(len(resc_w)-1):
         for j in range(i+1,len(resc_w)):
@@ -103,6 +116,40 @@ def simulate_uniform_pc_on_w(w, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_t
                                                             w_back_to_scale=w_back_to_scale)
             resc_w[j,i]=resc_w[i,j]
     return resc_w
+
+
+def simulate_uniform_pc_on_w_with_cpp(w, w_rescaling_tau=0.5, beta_softmax_w=10, **kwargs):
+
+    c_float_p = ctypes.POINTER(ctypes.c_float) # pointer to float
+    w_flat = np.ascontiguousarray(w.flatten())
+    c_w_flat = w_flat.astype(np.float32).ctypes.data_as(c_float_p)
+
+    w_rescaled_flat = np.zeros_like(w_flat)
+    c_w_rescaled_flat = w_rescaled_flat.astype(np.float32).ctypes.data_as(c_float_p)
+
+
+    CPP_RESCALE_LIB.cpp_rescale_w.argtypes=[
+            c_float_p, # w (flat)
+            c_float_p, # result w (flat)
+            ctypes.c_int, # L
+            ctypes.c_int, # q
+            ctypes.c_float, # w_rescaling_tau
+            ctypes.c_float # beta_softmax_w
+            ]
+
+    CPP_RESCALE_LIB.cpp_rescale_w(
+            c_w_flat,
+            c_w_rescaled_flat,
+            ctypes.c_int(w.shape[0]),
+            ctypes.c_int(w.shape[2]),
+            ctypes.c_float(w_rescaling_tau),
+            ctypes.c_float(beta_softmax_w)
+            )
+    
+    rescaled_w_flat = np.ctypeslib.as_array(c_w_rescaled_flat, shape=w_rescaled_flat.shape)
+    rescaled_w = rescaled_w_flat.reshape(w.shape)
+
+    return rescaled_w
 
 
 def remove_negative_couplings(w, **kwargs):
