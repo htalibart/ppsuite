@@ -107,7 +107,7 @@ def maximize_likelihood(delta_ins, length, output_insertions_file, maxit_infer_i
     expected_Nt = nseq*sum([delta_n*get_background_gap_probability(delta_n) for delta_n in range(delta_n_max)])
 
 
-    freq_insert_min=min(freq_insert_min,1/nseq)
+    #freq_insert_min=min(freq_insert_min,1/nseq)
 
     INFERENCE_LIB.call_infer_insertion_penalties_from_python.argtypes=[
             c_double_p, # delta_ins
