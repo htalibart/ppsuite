@@ -224,6 +224,12 @@ class Potts_Object:
         if infer_potts_model:
             potts_model_file = potts_folder/"potts_model.mrf"
             potts_model = Potts_Model.from_training_set(aln_train, potts_model_file, pc_single_count=pc_single_count, **kwargs)
+        elif potts_model_file is not None:
+            # if Potts model is not inferred and from elsewhere, copy file
+            new_potts_model_file = potts_folder/"potts_model.mrf"
+            if not new_potts_model_file.is_file():
+                fm.copy(potts_model_file, new_potts_model_file)
+            potts_model_file = new_potts_model_file
 
 
        # HANDLE SEQUENCE FILE
