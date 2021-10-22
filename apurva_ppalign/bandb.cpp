@@ -167,9 +167,7 @@ void branch_and_bound :: solve(problem & root, parameters & my_param)
 
     my_param.my_time_limit = my_param.time_limit;
 
-    cout << "print before root.lr_sgd_solve(my_param)" << endl;
     root.lr_sgd_solve(my_param);
-    cout << "print after root.lr_sgd_solve(my_param)" << endl;
 
     //update BandB informations
     ub = min(ub,root.get_ub());
