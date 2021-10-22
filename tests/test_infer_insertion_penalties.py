@@ -97,9 +97,11 @@ class Test_Infer_Insertion_Penalties(unittest.TestCase):
 #        print(insertion_penalties)
 #        print(insertion_penalties_julia)
 #
+#        precision=1e-4
 #        for gap_type in ['open','extend']:
 #            insertion_penalties_julia[gap_type].append(0)
-#            print([insertion_penalties[gap_type][pos]-insertion_penalties_julia[gap_type][pos] for pos in range(len(insertion_penalties[gap_type]))])
+#            for pos in range(len(insertion_penalties[gap_type])-1):
+#                assert(insertion_penalties[gap_type][pos]-insertion_penalties_julia[gap_type][pos]<precision)
 #        output_julia_file.unlink()
 
 
