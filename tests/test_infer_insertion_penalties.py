@@ -28,7 +28,7 @@ class Test_Infer_Insertion_Penalties(unittest.TestCase):
 
 
     def test_infer_insertion_penalties_at_the_end(self):
-        a3m_file = pathlib.Path(INSERTION_RESOURCES_FOLDER/"count_end_insertions.a3m ")
+        a3m_file = INSERTION_RESOURCES_FOLDER/"count_end_insertions.a3m"
         output_file = pathlib.Path('/tmp/test_inference.tsv')
         infer_insertion_penalties_in_file(a3m_file, output_file)
         insertion_penalties = get_insertion_penalties_from_file(output_file)
