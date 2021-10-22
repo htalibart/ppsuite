@@ -32,7 +32,7 @@ class Test_Infer_Insertion_Penalties(unittest.TestCase):
         output_file = pathlib.Path('/tmp/test_inference.tsv')
         infer_insertion_penalties_in_file(a3m_file, output_file)
         insertion_penalties = get_insertion_penalties_from_file(output_file)
-        assert(insertion_penalties['open'][-1]>insertion_penalties['open'][0])
+        assert(insertion_penalties['open'][1]<insertion_penalties['open'][0])
         output_file.unlink()
        
 

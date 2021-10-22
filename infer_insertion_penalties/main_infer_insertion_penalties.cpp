@@ -86,7 +86,27 @@ extern "C" int call_infer_insertion_penalties_from_python(double* delta_ins, int
 
 		bool is_pos_without_gap;
 
-		//if (No==0)
+
+		// if no insertion, lo and le can't be computed...
+		if (No==0)
+		{
+			No = 1;
+			is_pos_without_gap=true;
+		}
+		else
+		{
+			is_pos_without_gap=false;
+		}
+
+
+		// if all insertions are of length 1, le becomes very large
+		if (Nt <= 1)
+		{
+			Nt = 2;
+		}
+
+
+		/*
 		if (No<freq_insert_min*nseq)
 		{
 			No=freq_insert_min*nseq;
@@ -97,7 +117,7 @@ extern "C" int call_infer_insertion_penalties_from_python(double* delta_ins, int
 		{
 			is_pos_without_gap=false;
 		}
-
+		*/
 
 		// pseudo-counts
 		No = (1-pc_insertions_tau)*No+pc_insertions_tau*expected_No;
