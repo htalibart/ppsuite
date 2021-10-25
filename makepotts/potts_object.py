@@ -246,6 +246,8 @@ class Potts_Object:
             mrf_pos_to_seq_pos = mrf_pos_to_aln_pos
             aln_pos_to_seq_pos = [pos for pos in range(len(seq))]
 
+        
+
         return cls.from_potts_model(potts_folder, potts_model_file, sequence_file=sequence_file, aln_train=aln_train, aln_before_trim=aln_file, aln_with_insertions=aln_with_insertions, aln_pos_to_seq_pos=aln_pos_to_seq_pos, mrf_pos_to_seq_pos=mrf_pos_to_seq_pos, mrf_pos_to_aln_pos=mrf_pos_to_aln_pos, **kwargs)
 
 
@@ -273,7 +275,7 @@ class Potts_Object:
                     if v_null_is_v0:
                         v_null = np.tile(get_background_v0(v_rescaling_function, rescale_removed_v0=rescale_removed_v0), (1,1))
                     else:
-                        v_null = np.zeros((1,21)) 
+                        v_null = np.zeros((1,21))
                     potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_before_trim), v_null=v_null)
                 mrf_pos_to_seq_pos = aln_pos_to_seq_pos
                 mrf_pos_to_aln_pos = [pos for pos in range(fm.get_nb_columns_in_alignment(aln_before_trim))]
@@ -310,7 +312,7 @@ class Potts_Object:
         if aln_train is not None:
             fm.copy(aln_train, potts_folder/"aln_train.fasta")
         if aln_before_trim is not None:
-            fm.copy(aln_train, potts_folder/"aln_before_trim.fasta")
+            fm.copy(aln_before_trim, potts_folder/"aln_before_trim.fasta")
         if aln_with_insertions is not None:
             fm.copy(aln_with_insertions, potts_folder/"aln_with_insertions.fasta")
         if potts_model_file is not None:
