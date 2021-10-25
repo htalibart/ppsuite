@@ -254,14 +254,10 @@ class Potts_Object:
 
 
     @classmethod
-    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, rescale_removed_v0=True, use_insertion_penalties=False, keep_tmp_files=False, pc_insertions_tau=0, **kwargs):
+    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, use_insertion_penalties=False, keep_tmp_files=False, pc_insertions_tau=0, **kwargs):
 
         if potts_model_file is not None:
             potts_model = Potts_Model.from_msgpack(potts_model_file)
-
-            if (v_rescaling_function!="identity") and (w_rescaling_function!="identity"):
-                potts_model = get_rescaled_potts_model(potts_model, v_rescaling_function, w_rescaling_function, use_w=use_w, **kwargs)
-                potts_model.to_msgpack(potts_model_file)
 
 
             if ((insert_null_at_trimmed) or (insert_v_star_at_trimmed)): # RE-INSERT NULL COLUMNS
@@ -273,7 +269,7 @@ class Potts_Object:
                     potts_model.insert_vi_star_gapped_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_before_trim), aln_before_trim)
                 elif (insert_null_at_trimmed):
                     if v_null_is_v0:
-                        v_null = np.tile(get_background_v0(v_rescaling_function, rescale_removed_v0=rescale_removed_v0), (1,1))
+                        v_null = np.tile(get_background_v0("identity", rescale_removed_v0=False), (1,1))
                     else:
                         v_null = np.zeros((1,21))
                     potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_before_trim), v_null=v_null)
@@ -287,6 +283,10 @@ class Potts_Object:
                 columns_not_trimmed = mrf_pos_to_aln_pos
                 lower_case_trimmed_columns(aln_with_insertions, aln_with_insertions_and_trim, columns_not_trimmed)
                 aln_with_insertions = aln_with_insertions_and_trim
+
+            if (v_rescaling_function!="identity") and (w_rescaling_function!="identity"):
+                potts_model = get_rescaled_potts_model(potts_model, v_rescaling_function, w_rescaling_function, use_w=use_w, **kwargs)
+                potts_model.to_msgpack(potts_model_file)
 
 
         # INSERTION PENALTIES
