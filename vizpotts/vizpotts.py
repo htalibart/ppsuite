@@ -251,7 +251,7 @@ def visualize_v_w_scores_alignment(aligned_mrfs, aln_res_file, show_figure=True,
 
 
 
-def plot_one_vi(vi, alphabet=ALPHABET, **kwargs):
+def plot_one_vi(vi, alphabet=ALPHABET, show_figure=True, **kwargs):
     if alphabet in kwargs:
         idx = [ALPHABET.find(a) for a in alphabet]
         new_vi = vi[idx]
@@ -261,7 +261,8 @@ def plot_one_vi(vi, alphabet=ALPHABET, **kwargs):
     sns.heatmap(vi.reshape(vi.shape[0], 1), square=True, cmap="RdBu", center=0, yticklabels=alphabet, xticklabels=[], **kwargs)
     plt.margins(0,0)
     plt.tight_layout()
-    plt.show()
+    if show_figure:
+        plt.show()
 
 
 def plot_one_wij(wij, alphabet=ALPHABET, center=0, show_figure=True, **kwargs):
