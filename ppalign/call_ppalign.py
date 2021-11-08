@@ -13,7 +13,7 @@ PPALIGN_CPP_LIBRARY = pkg_resources.resource_filename('ppalign', 'ppalign_solver
 PPALIGN_SOLVER = ctypes.CDLL(PPALIGN_CPP_LIBRARY)
 INFINITY = 1000000000
 
-def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, sim_min=-100, offset_v=0, remove_v0=False, insertion_penalties_coefficient=1, gap_open=8, gap_extend=0, free_end_gaps=False, **kwargs):
+def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, w_norm_min=0, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, sim_min=-100, offset_v=0, remove_v0=False, insertion_penalties_coefficient=1, gap_open=8, gap_extend=0, free_end_gaps=False, **kwargs):
 
     # handle output files and folder
     if not output_folder.is_dir():
@@ -45,7 +45,7 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
 
     # COUPLINGS
     if use_w:
-        edges_maps = [get_edges_map(mrf, w_percent) for mrf in mrfs]
+        edges_maps = [get_edges_map(mrf, w_percent, w_norm_min) for mrf in mrfs]
         w_flats = [np.ascontiguousarray(mrf.w.flatten()) for mrf in mrfs]
     else: # if no coupling: edge map where edges are all 0
         edges_maps = [np.zeros((mrf.w.shape[0:2])) for mrf in mrfs]

@@ -66,6 +66,11 @@ class Test_PPalign_Main(unittest.TestCase):
         res_ppalign = main(ppalign_args)
         print(res_ppalign)
 
+    def test_w_min(self):
+        ppalign_args = ["--potts_model_file_1", str(self.potts_folder_1/"potts_model.mrf"), "--potts_model_file_2", str(self.potts_folder_1/"potts_model.mrf"), "--output_folder", str(self.output_folder), "--w_norm_min", str(0.3)]
+        res_ppalign = main(ppalign_args)
+        print(res_ppalign)
+
 
 
 if __name__=='__main__':

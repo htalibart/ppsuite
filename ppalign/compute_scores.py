@@ -23,10 +23,11 @@ def get_w_threshold(mrf, w_percent):
     return np.percentile(mrf.get_w_norms(), p)
 
 
-def get_edges_map(mrf, w_percent):
+def get_edges_map(mrf, w_percent, w_norm_min):
     """ returns a 2D array where array[i][j] if edge (i,j) should be considered by PPalign and 0 otherwise when considering the first @w_percent % strongest couplings """
     w_threshold = get_w_threshold(mrf, w_percent)
-    return 1*(mrf.get_w_norms()>w_threshold)
+    edges_map = 1*(mrf.get_w_norms()>w_threshold)
+    return 1*(edges_map>=w_norm_min)
 
 
 def get_vi_vk_score(vi, vk, remove_v0=False, offset_v=0, v_score_function=scalar_product, rescale_removed_v0=False, **kwargs):
