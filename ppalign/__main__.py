@@ -22,6 +22,7 @@ def main(args=sys.argv[1:]):
     # options to pre-process potts models
     parser.add_argument('--w_percent', help="%% couplings considered (wij with lowest norms are set to 0)", default=100, type=float)
     parser.add_argument('--w_norm_min', help="Couplings with norms lower than w_norm_min are set to 0", default=0, type=float)
+    parser.add_argument('--remove_w_where_conserved', help="Couplings ij where column i or j has only one conserved amino acid are removed", default=False, action='store_true')
     parser.add_argument('--v_rescaling_function', help=argparse.SUPPRESS, default="identity")
     parser.add_argument('--v_rescaling_tau', help="Tau parameter for field smoothing", type=float, default=0.4)
     parser.add_argument('--v_back_to_scale', help=argparse.SUPPRESS, default=False, action='store_true')

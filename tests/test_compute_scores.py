@@ -24,7 +24,7 @@ class Test_Compute_Scores(unittest.TestCase):
     def test_selfscore_no_w(self):
         v_score_function = scalar_product
         w_score_function = scalar_product
-        edges_map = get_edges_map(self.mrf, 100)
+        edges_map = get_edges_map(self.mrf, 100, 0, False)
         selfcomp = compute_selfscore(self.mrf, edges_map, use_v=True, use_w=False)
         aln_dict, aln_dict_with_gaps, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=False)
         UB = infos_solver['UB']
@@ -32,7 +32,7 @@ class Test_Compute_Scores(unittest.TestCase):
 
 
     def test_selfscore_no_v(self):
-        edges_map = get_edges_map(self.mrf, 100)
+        edges_map = get_edges_map(self.mrf, 100, 0, False)
         selfcomp = compute_selfscore(self.mrf, edges_map, use_v=False, use_w=True)
         aln_dict, aln_dict_with_gaps, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_v=False)
         UB = infos_solver['UB']
@@ -42,7 +42,7 @@ class Test_Compute_Scores(unittest.TestCase):
     def test_selfscore(self):
         v_score_function = scalar_product
         w_score_function = scalar_product
-        edges_map = get_edges_map(self.mrf, 100)
+        edges_map = get_edges_map(self.mrf, 100, 0, False)
         selfcomp = compute_selfscore(self.mrf, edges_map, use_v=True, use_w=True)
         aln_dict, aln_dict_with_gaps, infos_solver = align_two_potts_models([self.mrf, self.mrf], self.output_folder, use_w=True)
         UB = infos_solver['UB']
@@ -50,7 +50,7 @@ class Test_Compute_Scores(unittest.TestCase):
 
 
     def test_selfscore_alpha_w(self):
-        edges_map = get_edges_map(self.mrf, 100)
+        edges_map = get_edges_map(self.mrf, 100, 0, False)
         selfcomp_normal = compute_selfscore(self.mrf, edges_map, use_v=False, use_w=True)
         alpha_w = 2
         selfcomp_alpha = compute_selfscore(self.mrf, edges_map, use_v=False, use_w=True, alpha_w=alpha_w)
@@ -75,6 +75,16 @@ class Test_Compute_Scores(unittest.TestCase):
         LB = infos_solver['LB']
         total_score = get_score_for_alignment([self.mrf, self.mrf], aln_dict, **params)
         assert((LB-total_score)<0.1)
+
+    
+    def test_get_edges_map_remove_w_where_conserved(self):
+        normal_edges_map = get_edges_map(self.mrf, 100, 0, False)
+        edges_map = get_edges_map(self.mrf, 100, 0, True)
+        nb_normal = sum(normal_edges_map.flatten())
+        nb = sum(edges_map.flatten())
+        L = self.mrf.ncol
+        theoretical_nb = nb_normal - ((L-1) + (L-2))*2
+        assert(nb==theoretical_nb)
 
 
 

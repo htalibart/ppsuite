@@ -23,11 +23,24 @@ def get_w_threshold(mrf, w_percent):
     return np.percentile(mrf.get_w_norms(), p)
 
 
-def get_edges_map(mrf, w_percent, w_norm_min):
+def set_edges_to_0_where_conserved_columns(mrf, edges_map):
+    resc_mrf = get_rescaled_potts_model(mrf, v_rescaling_function="simulate_uniform_pc_on_v", v_rescaling_tau=0.9, w_rescaling_function="identity")
+    for i in range(mrf.ncol-1):
+        for j in range(i+1, mrf.ncol):
+            if sum(resc_mrf.v[i]>0)==1 or sum(resc_mrf.v[j]>0)==1:
+                edges_map[i,j]=0
+                edges_map[j,i]=edges_map[i,j]
+
+
+
+def get_edges_map(mrf, w_percent, w_norm_min, remove_w_where_conserved):
     """ returns a 2D array where array[i][j] if edge (i,j) should be considered by PPalign and 0 otherwise when considering the first @w_percent % strongest couplings """
     w_threshold = get_w_threshold(mrf, w_percent)
     edges_map = 1*(mrf.get_w_norms()>w_threshold)
-    return 1*(edges_map>=w_norm_min)
+    edges_map = 1*(edges_map>=w_norm_min)
+    if remove_w_where_conserved:
+        set_edges_to_0_where_conserved_columns(mrf, edges_map)
+    return edges_map
 
 
 def get_vi_vk_score(vi, vk, remove_v0=False, offset_v=0, v_score_function=scalar_product, rescale_removed_v0=False, **kwargs):
