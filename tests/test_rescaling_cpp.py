@@ -44,5 +44,25 @@ class Test_Rescaling_CPP(unittest.TestCase):
         assert(np.allclose(rescaled_w_cpp, rescaled_w_python, atol=1e-5))
 
 
+    def test_rescale_v_cpp(self):
+        v = self.potts_model.v
+
+        initial_v = v.copy()
+        start = time.time()
+        rescaled_v_cpp = simulate_uniform_pc_on_v_with_cpp(v)
+        end = time.time()
+        time_cpp = end-start
+        assert(np.array_equal(v, initial_v))
+
+        start = time.time()
+        rescaled_v_python = simulate_uniform_pc_on_v_with_python(v)
+        end = time.time()
+        time_python = end-start
+
+        print("time C++:", time_cpp, "time Python:", time_python)
+    
+        assert(np.allclose(rescaled_v_cpp, rescaled_v_python, atol=1e-5))
+
+
 if __name__=='__main__':
     unittest.main()

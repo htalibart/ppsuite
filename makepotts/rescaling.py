@@ -58,7 +58,42 @@ def exponential(x, **kwargs):
     return np.exp(x)
 
 
-def simulate_uniform_pc_on_v(v, v_rescaling_tau=1/2, v_back_to_scale=False, **kwargs):
+def simulate_uniform_pc_on_v_with_cpp(v, v_rescaling_tau=0.5, **kwargs):
+
+    c_float_p = ctypes.POINTER(ctypes.c_float) # pointer to float
+    v_flat = np.ascontiguousarray(v.flatten())
+    c_v_flat = v_flat.astype(np.float32).ctypes.data_as(c_float_p)
+
+    v_rescaled_flat = np.zeros_like(v_flat)
+    c_v_rescaled_flat = v_rescaled_flat.astype(np.float32).ctypes.data_as(c_float_p)
+
+
+    CPP_RESCALE_LIB.cpp_rescale_v.argtypes=[
+            c_float_p, # v (flat)
+            c_float_p, # result v (flat)
+            ctypes.c_int, # L
+            ctypes.c_int, # q (21)
+            ctypes.c_int, # considered q (20)
+            ctypes.c_float # v_rescaling_tau
+            ]
+
+    CPP_RESCALE_LIB.cpp_rescale_v(
+            c_v_flat,
+            c_v_rescaled_flat,
+            ctypes.c_int(v.shape[0]),
+            ctypes.c_int(v.shape[1]),
+            20,
+            ctypes.c_float(v_rescaling_tau)
+            )
+    
+    rescaled_v_flat = np.ctypeslib.as_array(c_v_rescaled_flat, shape=v_rescaled_flat.shape)
+    rescaled_v = rescaled_v_flat.reshape(v.shape)
+
+    return rescaled_v
+
+
+
+def simulate_uniform_pc_on_v_with_python(v, v_rescaling_tau=0.5, v_back_to_scale=False, **kwargs):
     resc_v = np.zeros_like(v)
     for i in range(len(v)):
         vi = v[i]
@@ -80,6 +115,12 @@ def simulate_uniform_pc_on_v(v, v_rescaling_tau=1/2, v_back_to_scale=False, **kw
             resc_vi = euclidean_norm(vi)/euclidean_norm(resc_vi)*resc_vi
         resc_v[i] = resc_vi
     return resc_v
+
+
+
+def simulate_uniform_pc_on_v(v, v_rescaling_tau=0.5, **kwargs):
+    return simulate_uniform_pc_on_v_with_cpp(v, v_rescaling_tau=v_rescaling_tau, **kwargs)
+
 
 
 def simulate_uniform_pc_on_wij(w, rescaling_tau=0.5, beta=10, w_back_to_scale=False, **kwargs):
