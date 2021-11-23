@@ -55,6 +55,11 @@ class Test_MakePotts_Main(unittest.TestCase):
         potts_object = main(makepotts_args)
         assert(potts_object.potts_model_file.is_file())
 
+    def test_light(self):
+        makepotts_args = ["--potts_folder", str(self.potts_folder), "--sequence_file", str(SEQ_1CC8), "--aln_with_insertions", str(A3M_1CC8), "--light"]
+        potts_object = main(makepotts_args)
+        assert(potts_object.potts_model_file.is_file())
+
 
 
 if __name__=='__main__':

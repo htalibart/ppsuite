@@ -254,7 +254,7 @@ class Potts_Object:
 
 
     @classmethod
-    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, use_insertion_penalties=False, keep_tmp_files=False, pc_insertions_tau=0, **kwargs):
+    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, use_insertion_penalties=False, keep_tmp_files=False, pc_insertions_tau=0, light=False, **kwargs):
 
         if potts_model_file is not None:
             potts_model = Potts_Model.from_msgpack(potts_model_file)
@@ -321,6 +321,11 @@ class Potts_Object:
         # REMOVE TEMPORARY FILES
         if not keep_tmp_files:
             for fn in ["hhblits_output.a3m", "hhblits_output.hhr", "filtered.a3m", "less.a3m", "reformat.fasta", "trim.fasta", "colnumbering.csv", "aln_with_insertions_and_trim.a3m", "clean.a3m"]:
+                if (potts_folder/fn).is_file():
+                    fm.remove_file(potts_folder/fn)
+
+        if light:
+            for fn in ["aln_train.fasta", "aln_with_insertions.fasta", "aln_before_trim.fasta", "potts_model_mrf_README.txt"]:
                 if (potts_folder/fn).is_file():
                     fm.remove_file(potts_folder/fn)
 
@@ -467,6 +472,7 @@ def main(args=sys.argv[1:]):
     aln_processing_args.add_argument('--trimal_gt', help="trimal -gt parameter (default : 0.8)", type=float, default=0.8)
     aln_processing_args.add_argument('--trimal_cons', help="trimal -cons parameter (default : 0)", type=float, default=0)
     aln_processing_args.add_argument('--keep_tmp_files', help="keep temporary files (filtered alignments etc.) (default : false)", action='store_true', default=False)
+    aln_processing_args.add_argument('--light', help="keep only Potts model, original sequence and csv files to map positions (default : false)", action='store_true', default=False)
 
     # limitations
     limitation_args = parser.add_argument_group('limitation_args')
