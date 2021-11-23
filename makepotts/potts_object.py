@@ -489,6 +489,7 @@ def main(args=sys.argv[1:]):
     ccmpred_args.add_argument('--ofn_cd', help="CCMpred : Contrastive Divergence inference (default : False)", default=False)
     ccmpred_args.add_argument('--reg_lambda_pair_factor', help="CCMpred : Regularization parameter for pair potentials (L2 regularization with lambda_pair = lambda_pair_factor * scaling) [CCMpred default: 0.2]", default=0.2)
     ccmpred_args.add_argument('--reg_lambda_single', help="CCMpred : Regularization coefficient for single potentials (L2 regularization) [CCMpred default: 10]", default=10)
+    ccmpred_args.add_argument('--wt_cutoff', help="CCMpred : Sequence identity threshold. [CCMpred default: 0.8]", default=0.8)
 
 
     # Potts model
