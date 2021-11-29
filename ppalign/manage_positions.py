@@ -72,7 +72,8 @@ def aligned_positions_to_aligned_sequences(seq_positions, sequences):
     for k in range(2):
         ck = c_names[k]
         for pos in seq_positions[ck]:
-            if (pos=='-'):
+            #if (pos=='-'):
+            if not isinstance(pos,int):
                 car='-'
             else:
                 car=sequences[k][pos]
