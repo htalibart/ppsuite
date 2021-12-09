@@ -50,11 +50,11 @@ def visualize_insertion_penalties(insertion_penalties, **kwargs):
     end_visual(**kwargs)
 
 
-def visualize_v_parameters(v, alphabet=ALPHABET, start_at_1=True, tick_space=3, figsize=(10,2), **kwargs):
+def visualize_v_parameters(v, alphabet=ALPHABET, start_at_1=True, tick_space=3, figsize=(10,2), center=0, **kwargs):
     xticklabels = [str(i+start_at_1) if (i%tick_space==0) else " " for i in range(0,v.shape[0])]
     v = get_reordered_v(v, alphabet)
     plt.figure(figsize=figsize)
-    sns.heatmap(np.transpose(v), yticklabels=alphabet, xticklabels=xticklabels, cmap="RdBu", center=0, cbar_kws={'label': r'$v_i(a)$'})
+    sns.heatmap(np.transpose(v), yticklabels=alphabet, xticklabels=xticklabels, cmap="RdBu", center=center, cbar_kws={'label': r'$v_i(a)$'})
     plt.tick_params(labelsize='xx-small')
     end_visual(**kwargs)
 
