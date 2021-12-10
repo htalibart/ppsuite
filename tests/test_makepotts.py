@@ -113,5 +113,9 @@ class Test_MakePotts(unittest.TestCase):
        po_ccm = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, inference_method='CCMpredPy')
        assert(po_ada.potts_model.ncol==po_ccm.potts_model.ncol)
 
+    def test_infer_with_mfDCA(self):
+       aln_file = pathlib.Path(LARGER_SMALL_ALN_1CC8)
+       po_mf = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, inference_method='mfDCA')
+
 if __name__=='__main__':
     unittest.main()

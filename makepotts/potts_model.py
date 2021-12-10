@@ -16,6 +16,8 @@ from comutils import files_management as fm
 from comutils import pseudocounts
 from comutils.adabmdca_to_ccmpredpy import *
 
+from makepotts import mfdca_wrapper
+
 POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff", "reg-lambda-single", "reg-lambda-pair-factor", "reg-L2", "reg-noscaling", "reg-scale-by-L", "v-center", "v-zero", "max-gap-pos", "max-gap_seq", "pc-uniform", "pc-submat", "pc-constant", "pc-none", "pc-single-count", "pc-pair-count", "maxit", "ofn-pll", "ofn-cd", "pc-pair-submat", "persistent", "no-decay", "nr-markov-chains"]
 
 class Potts_Model:
@@ -132,10 +134,16 @@ class Potts_Model:
                 raise Exception("No adabmDCA output file "+str(weights_file))
             mrf = cls.from_adabmdca_file(weights_file, binary_file=binary_file)
             shutil.rmtree(adabmDCA_output_folder)
+
+
+        elif inference_method=='mfDCA':
+            v, w = mfdca_wrapper.infer_parameters(aln_file, **kwargs)
+            mrf = cls.from_parameters(v, w)
+            mrf.to_msgpack(binary_file)
             
 
         else:
-            raise Exception("Cannot infer Potts models with "+inference_method+" (available: CCMpredPy, adabmDCA)")
+            raise Exception("Cannot infer Potts models with "+inference_method+" (available: CCMpredPy, adabmDCA, mfDCA)")
 
         mrf.training_set = pathlib.Path(aln_file)
         return mrf

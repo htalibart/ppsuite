@@ -489,13 +489,14 @@ def main(args=sys.argv[1:]):
     ccmpred_args.add_argument('--ofn_cd', help="CCMpred : Contrastive Divergence inference (default : False)", default=False)
     ccmpred_args.add_argument('--reg_lambda_pair_factor', help="CCMpred : Regularization parameter for pair potentials (L2 regularization with lambda_pair = lambda_pair_factor * scaling) [CCMpred default: 0.2]", default=0.2)
     ccmpred_args.add_argument('--reg_lambda_single', help="CCMpred : Regularization coefficient for single potentials (L2 regularization) [CCMpred default: 10]", default=10)
-    ccmpred_args.add_argument('--wt_cutoff', help="CCMpred : Sequence identity threshold. [CCMpred default: 0.8]", default=0.8)
+    ccmpred_args.add_argument('--wt_cutoff', help="Sequence identity threshold. [CCMpred and mfDCA default: 0.8]", default=0.8)
 
 
     # Potts model
     potts_model_args = parser.add_argument_group('potts_model_args')
     potts_model_args.add_argument('-noinfer', '--dont_infer_potts_model', help="Don't infer a Potts model (default = do)", action='store_true', default=False)
     potts_model_args.add_argument('--inference_type', help="Inference type (standard : Potts model inferred from an alignment, one_submat : Potts model inferred from a sequence using submatrix pseudocounts, one_hot : one-hot encoding of a sequence -> Potts model) (default : standard)", choices=["standard","one_hot", "one_submat"], default="standard")
+    potts_model_args.add_argument('--inference_method', help="Inference method (default: CCMpredPy)", choices=["CCMpredPy", "adabmDCA", "mfDCA"], default="CCMpredPy")
     potts_model_args.add_argument('--use_insertion_penalties', help="use insertion penalties (WARNING: EXPERIMENTAL)", action='store_true', default=False)
     potts_model_args.add_argument('--pc_insertions_tau', help="pseudo-count rate for position-specific insertion penalties (WARNING: EXPERIMENTAL)", type=float, default=0)
     
