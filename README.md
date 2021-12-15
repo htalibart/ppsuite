@@ -73,6 +73,14 @@ bash compile.bash
 cd ..
 ```
 
+### Compile the C++ rescaling library
+```
+cd makepotts/
+make
+cd ..
+```
+
+
 ### Install Python modules
 
 ```
