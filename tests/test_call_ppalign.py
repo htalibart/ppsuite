@@ -94,7 +94,7 @@ class Test_Call_PPalign(unittest.TestCase):
             self.assertTrue(np.array_equal(identity(x), x))
 
     def test_get_edges_map(self):
-        edges_map = get_edges_map(self.potts_model, 100)
+        edges_map = get_edges_map(self.potts_model, 100, 0, False)
         self.assertEqual(edges_map.shape, self.potts_model.w.shape[0:2])
         self.assertEqual(sum([abs(edges_map[i][i]) for i in range(self.potts_model.ncol)]), 0)
 
