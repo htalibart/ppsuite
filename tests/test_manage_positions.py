@@ -48,7 +48,7 @@ class Test_ManagePositions(unittest.TestCase):
         sequences = ["ARND","ARND"]
         seq_positions = get_alignment_with_gaps(aligned_positions)
         aligned_sequences = aligned_positions_to_aligned_sequences(seq_positions, sequences)
-        self.assertEqual(aligned_sequences, ["ARND-","AR-ND"])
+        self.assertEqual(aligned_sequences, ["ARND","AR-N"])
 
     def test_get_seqs_aligned(self):
         objs = []
