@@ -26,11 +26,12 @@ def get_reordered_v(v, alphabet):
 
 def get_reordered_wij(wij, alphabet):
     """ reorders all wij for a given alphabet """
-    idx = [ALPHABET.find(a) for a in alphabet]
+    q = wij.shape[0]
+    idx = [ALPHABET[:q].find(a) for a in alphabet[:q]]
     new_wij = np.zeros_like(wij)
-    for i in range(len(alphabet)):
-        for j in range(len(alphabet)):
-            new_wij[i][j] = wij[idx[i]][idx[j]]
+    for a in range(len(alphabet)):
+        for b in range(len(alphabet)):
+            new_wij[a][b] = wij[idx[a]][idx[b]]
     return new_wij
 
 
@@ -267,6 +268,8 @@ def plot_one_vi(vi, alphabet=ALPHABET, show_figure=True, **kwargs):
 
 
 def plot_one_wij(wij, alphabet=ALPHABET, center=0, show_figure=True, **kwargs):
+    q = wij.shape[0]
+    alphabet=alphabet[:q]
     wij = get_reordered_wij(wij, alphabet)
     plt.figure()
     sns.heatmap(wij, cmap="RdBu", center=center, xticklabels=alphabet, yticklabels=alphabet, **kwargs)
