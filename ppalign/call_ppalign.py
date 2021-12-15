@@ -37,19 +37,31 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
             vs = [mrf.v-np.tile(get_background_v0(**kwargs),(mrf.ncol,1)) for mrf in mrfs]
         else:
             vs = [mrf.v for mrf in mrfs]
-        v_flats = [np.ascontiguousarray(v.flatten()) for v in vs] # flatten for ctypes
+        # always give C++ program field vectors with q=21 => add zeroes if necessary
+        vs_after_pad = []
+        for v in vs:
+            new_v = np.zeros((v.shape[0],21))
+            new_v[:,:v.shape[1]]=v
+            vs_after_pad.append(new_v)
+        v_flats = [np.ascontiguousarray(v.flatten()) for v in vs_after_pad] # flatten for ctypes
     else:
-        v_flats = [np.ascontiguousarray(np.zeros(mrf.v.shape)).flatten() for mrf in mrfs]
+        v_flats = [np.ascontiguousarray(np.zeros((mrf.v.shape[0],21))).flatten() for mrf in mrfs]
     c_vs = [vflat.astype(np.float32).ctypes.data_as(c_float_p) for vflat in v_flats]
 
 
     # COUPLINGS
     if use_w:
         edges_maps = [get_edges_map(mrf, w_percent, w_norm_min, remove_w_where_conserved) for mrf in mrfs]
-        w_flats = [np.ascontiguousarray(mrf.w.flatten()) for mrf in mrfs]
+        # always give C++ program coupling matrices 21x21 => add zeroes if necessary
+        ws = []
+        for mrf in mrfs:
+            new_w = np.zeros((mrf.w.shape[0],mrf.w.shape[1],21,21))
+            new_w[:,:,:mrf.w.shape[2],:mrf.w.shape[3]]=mrf.w
+            ws.append(new_w)
+        w_flats = [np.ascontiguousarray(w.flatten()) for w in ws]
     else: # if no coupling: edge map where edges are all 0
         edges_maps = [np.zeros((mrf.w.shape[0:2])) for mrf in mrfs]
-        w_flats = [np.ascontiguousarray(np.zeros(mrf.w.shape)).flatten() for mrf in mrfs]
+        w_flats = [np.ascontiguousarray(np.zeros((mrf.w.shape[0],mrf.w.shape[1],21,21))).flatten() for mrf in mrfs]
     c_ws = [wflat.astype(np.float32).ctypes.data_as(c_float_p) for wflat in w_flats]
 
     selfcomps = [compute_selfscore(mrf, edges_map, alpha_w=alpha_w, remove_v0=remove_v0, offset_v=offset_v, use_v=use_v, use_w=use_w, **kwargs) for mrf, edges_map in zip(mrfs, edges_maps)] #s(A,A) and s(B,B)
