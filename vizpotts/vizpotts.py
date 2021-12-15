@@ -19,7 +19,8 @@ def end_visual(tight_layout=True, show_figure=True, **kwargs):
 
 def get_reordered_v(v, alphabet):
     """ reorders all vi for a given alphabet """
-    idx = [ALPHABET.find(a) for a in alphabet]
+    q = v.shape[1]
+    idx = [ALPHABET[:q].find(a) for a in alphabet[:q]]
     return v[:,idx]
 
 

@@ -34,7 +34,7 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
     # FIELDS
     if use_v:
         if remove_v0: # remove v0 from every field if necessary
-            vs = [mrf.v-np.tile(get_background_v0(**kwargs),(mrf.ncol,1)) for mrf in mrfs]
+            vs = [mrf.v-np.tile(get_background_v0(q=mrf.v.shape[1],**kwargs),(mrf.ncol,1)) for mrf in mrfs]
         else:
             vs = [mrf.v for mrf in mrfs]
         # always give C++ program field vectors with q=21 => add zeroes if necessary

@@ -259,6 +259,7 @@ class Potts_Object:
         if potts_model_file is not None:
             potts_model = Potts_Model.from_msgpack(potts_model_file)
 
+            q = potts_model.v.shape[1]
 
             if ((insert_null_at_trimmed) or (insert_v_star_at_trimmed)): # RE-INSERT NULL COLUMNS
                 if aln_before_trim is None:
@@ -269,9 +270,9 @@ class Potts_Object:
                     potts_model.insert_vi_star_gapped_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_before_trim), aln_before_trim)
                 elif (insert_null_at_trimmed):
                     if v_null_is_v0:
-                        v_null = np.tile(get_background_v0("identity", rescale_removed_v0=False), (1,1))
+                        v_null = np.tile(get_background_v0("identity", q=q, rescale_removed_v0=False), (1,1))
                     else:
-                        v_null = np.zeros((1,21))
+                        v_null = np.zeros((1,q))
                     potts_model.insert_null_positions_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_before_trim), v_null=v_null)
                 mrf_pos_to_seq_pos = aln_pos_to_seq_pos
                 mrf_pos_to_aln_pos = [pos for pos in range(fm.get_nb_columns_in_alignment(aln_before_trim))]
@@ -409,10 +410,11 @@ class Potts_Object:
 
     def insert_null_at_trimmed(self, remove_v0=False, change_mrf_pos_lists=False, **kwargs):
         """ inserts null columns at positions trimmed by trimal """
+        q = self.potts_model.v.shape[1]
         if remove_v0:
-            v_null = np.tile(get_background_v0(**kwargs), (1,1))
+            v_null = np.tile(get_background_v0(q=q, **kwargs), (1,1))
         else:
-            v_null = np.zeros((1,21)) 
+            v_null = np.zeros((1,q)) 
         self.potts_model.insert_null_positions_to_complete_mrf_pos(self.mrf_pos_to_aln_pos, len(self.sequence), v_null=v_null)
         if change_mrf_pos_lists:
             self.mrf_pos_to_seq_pos = aln_pos_to_seq_pos

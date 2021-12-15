@@ -66,8 +66,8 @@ class Test_MakePotts(unittest.TestCase):
        L = potts_model.ncol
        potts_model.insert_null_position_at(pos)
        assert(potts_model.ncol==L+1)
-       assert(potts_model.v.shape==(L+1,21))
-       assert(potts_model.w.shape==(L+1,L+1,21,21))
+       assert(potts_model.v.shape==(L+1,20))
+       assert(potts_model.w.shape==(L+1,L+1,20,20))
        assert(potts_model.v[pos][5]==0)
        assert(potts_model.w[0,pos][1,7]==0)
 
@@ -107,11 +107,11 @@ class Test_MakePotts(unittest.TestCase):
         assert(p.get_w_norm()==0)
 
 
-    def test_infer_with_adabmdca(self):
-       aln_file = pathlib.Path(LARGER_SMALL_ALN_1CC8)
-       po_ada = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, inference_method='adabmDCA')
-       po_ccm = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, inference_method='CCMpredPy')
-       assert(po_ada.potts_model.ncol==po_ccm.potts_model.ncol)
+#    def test_infer_with_adabmdca(self):
+#       aln_file = pathlib.Path(LARGER_SMALL_ALN_1CC8)
+#       po_ada = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, inference_method='adabmDCA')
+#       po_ccm = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, inference_method='CCMpredPy')
+#       assert(po_ada.potts_model.ncol==po_ccm.potts_model.ncol)
 
     def test_infer_with_mfDCA(self):
        aln_file = pathlib.Path(LARGER_SMALL_ALN_1CC8)

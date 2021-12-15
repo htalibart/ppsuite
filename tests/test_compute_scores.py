@@ -57,7 +57,7 @@ class Test_Compute_Scores(unittest.TestCase):
         assert(selfcomp_alpha==alpha_w*selfcomp_normal)
 
     def test_background_v0(self):
-        v0 = get_background_v0("identity")
+        v0 = get_background_v0("identity", q=21)
         assert(sum(v0)<0.00001)
 
 

@@ -6,12 +6,15 @@ import math
 from numpy import linalg as LA
 
 
-def get_background_v0(v_rescaling_function, rescale_removed_v0=False, **kwargs):
+def get_background_v0(v_rescaling_function, q, rescale_removed_v0=False, **kwargs): #TODO fix
     """ returns background v0 vector field, rescaled with @v_rescaling_function if @rescaled_removed_v0 """
     f0 = np.array(AA_BACKGROUND_FREQUENCIES)
     logf0 = np.log(f0)
     vaa = logf0-(1/len(f0))*np.sum(logf0)
-    v0 = np.append(vaa, [0])
+    if q==21:
+        v0 = np.append(vaa, [0])
+    else:
+        v0 = vaa
     tiled_v0 = np.tile(v0, (1,1))
     if rescale_removed_v0:
         v0 = get_rescaled_parameters(tiled_v0, v_rescaling_function, **kwargs)
@@ -45,7 +48,7 @@ def get_edges_map(mrf, w_percent, w_norm_min, remove_w_where_conserved):
 def get_vi_vk_score(vi, vk, remove_v0=False, offset_v=0, v_score_function=scalar_product, rescale_removed_v0=False, **kwargs):
     """ returns the similarity score of field vectors @vi and @vk """
     if remove_v0:
-        v_bg = get_background_v0(rescale_removed_v0=rescale_removed_v0, **kwargs)
+        v_bg = get_background_v0(q=len(vi), rescale_removed_v0=rescale_removed_v0, **kwargs)
     else:
         v_bg=0
     return v_score_function(vi-v_bg,vk-v_bg)-offset_v

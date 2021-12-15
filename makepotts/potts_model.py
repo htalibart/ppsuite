@@ -35,12 +35,12 @@ class Potts_Model:
     @classmethod
     def from_msgpack(cls, binary_file, **kwargs):
         """
-            initialize MRF from msgpack file given by CCMpredPy
+            initialize MRF from msgpack file
         """
         with open(str(binary_file), 'rb') as data_file:
             df = msgpack.unpackb(data_file.read())
             """
-            df est un dictionnaire :
+            CCMpredPy: df is a dictionary
                 b'format'
                 b'ncol'
                 b'x_single': np.array(ncol, 20)) 
@@ -50,16 +50,16 @@ class Potts_Model:
         print("getting Potts model from "+str(binary_file))
         fm.check_if_file_ok(binary_file)
         ncol = df[b'ncol']
-        v_20 = np.array(df[b'x_single']).reshape((ncol,20))
-        v = np.zeros((ncol,21))
-        v[:,:-1] = v_20
-        w = np.zeros((ncol, ncol, 21, 21))
+        q = int(len(df[b'x_single'])/ncol) # real q is considered to be v.shape[1]
+        v = np.array(df[b'x_single']).reshape((ncol,q))
+        w = np.zeros((ncol, ncol, q, q))
         for p in df[b'x_pair'].values():
             i = p[b'i']
             j = p[b'j']
-            mat = np.array(p[b'x']).reshape((21, 21))
-            w[i, j, :, :] = mat
-            w[j, i, :, :] = mat.T
+            q_w = int(np.sqrt(len(p[b'x'])))# CCMpredPy gives 21x21 w matrices even though q=20...
+            mat = np.array(p[b'x']).reshape((q_w,q_w))
+            w[i, j, :, :] = mat[:q,:q]
+            w[j, i, :, :] = mat.T[:q,:q]
         if 'name' not in kwargs:
             kwargs['name'] = str(binary_file).replace('/','-')
             if kwargs['name'].startswith('-'):
@@ -150,13 +150,13 @@ class Potts_Model:
 
 
     @classmethod
-    def from_sequence_to_one_hot(cls, seq, seq_file=None, **kwargs):
+    def from_sequence_to_one_hot(cls, seq, seq_file=None, q=21, **kwargs):
         """ one hot encoding """
         x = code_whole_seq(seq)
         v = np.zeros((len(x),q))
         for i in range(len(x)):
             v[i,x[i]]=1
-        w = np.zeros((len(x),len(x),q,q,))
+        w = np.zeros((len(x),len(x),q,q))
         for i in range(len(x)):
             for j in range(len(x)):
                 w[i,j,x[i],x[j]] = 1
@@ -165,15 +165,15 @@ class Potts_Model:
         return obj
 
     @classmethod
-    def from_sequence_file_to_one_hot(cls, seq_file, **kwargs):
+    def from_sequence_file_to_one_hot(cls, seq_file, q=21, **kwargs):
         """ one hot encoding """
         fm.check_if_file_ok(seq_file)
         seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
-        return cls.from_sequence_to_one_hot(seq, seq_file=seq_file, **kwargs)
+        return cls.from_sequence_to_one_hot(seq, seq_file=seq_file, q=q, **kwargs)
 
 
     @classmethod
-    def from_sequence_with_submat_freq(cls, seq, seq_file=None, tau=0.5, **kwargs):
+    def from_sequence_with_submat_freq(cls, seq, seq_file=None, tau=0.5, q=21, **kwargs):
         """ substitution matrix pseudocounts to frequencies"""
         x = code_whole_seq(seq)
         
@@ -191,15 +191,15 @@ class Potts_Model:
         return obj
 
     @classmethod
-    def from_sequence_file_with_submat_freq(cls, seq_file, tau=0.5, **kwargs):
+    def from_sequence_file_with_submat_freq(cls, seq_file, tau=0.5, q=21, **kwargs):
         """ substitution matrix pseudocounts to frequencies"""
         fm.check_if_file_ok(seq_file)
         seq = fm.get_first_sequence_in_fasta_file(seq_file).upper()
-        return cls.from_sequence_with_submat_freq(seq, seq_file, **kwargs)
+        return cls.from_sequence_with_submat_freq(seq, seq_file, tau=tau, q=q, **kwargs)
 
 
     @classmethod
-    def from_sequence_with_submat(cls, seq, seq_file=None, tau=0.5, **kwargs):
+    def from_sequence_with_submat(cls, seq, seq_file=None, tau=0.5, q=21, **kwargs): #TODO check
         """ substitution matrix pseudocounts """
         x = code_whole_seq(seq)
         v = np.zeros((len(x),q))
@@ -249,17 +249,19 @@ class Potts_Model:
     def zero_fill(cls, length, q=21, **kwargs):
         return cls.from_parameters(v=np.zeros((length,q)), w=np.zeros((length,length,q,q)), **kwargs)
 
+
     def to_msgpack(self, filename=None):
         if filename is None:
             filename = self.name.replace('/','-')
+        q = self.v.shape[1]
         with open(str(filename), 'wb') as f:
-            x_single = self.v[:,:20].reshape(self.ncol*20).tolist()
+            x_single = self.v.reshape(self.ncol*q).tolist()
             x_pair = {}
             for i in range(self.ncol):
                 for j in range(i + 1, self.ncol):
                     x_pair["{0}/{1}".format(i, j)] = {
                         "i": i,
-                        "x": self.w[i, j, :, :].reshape(21 * 21).tolist(),
+                        "x": self.w[i, j, :, :].reshape(q * q).tolist(),
                         "j": j
                         }
 
@@ -331,11 +333,11 @@ class Potts_Model:
         return s1+s2
 
 
-    def Zi(self, x, i):
+    def Zi(self, x, i, q=21):
         """ pseudo-likelihood constant Zi at position i for sequence x """
         n = self.ncol
         Zi = 0
-        for a in range(21):
+        for a in range(q):
             sw=0
             for j in range(i+1,n):
                 sw+=self.w[i, j, a, code(x[j])]
@@ -356,23 +358,29 @@ class Potts_Model:
         return p
 
 
-    def insert_null_position_at(self, pos, v_null=np.zeros((1,21))):
+    def insert_null_position_at(self, pos, v_null=None):
         """ insert null column at position @pos where the field vector is @v_null and all w coupled with @pos are 0 """
+        q = self.v.shape[1]
+        if v_null is None:
+            v_null = np.zeros((1,q))
         self.ncol = self.ncol+1
         self.v = np.concatenate((self.v[:pos],v_null,self.v[pos:]))
-        new_w = np.zeros((self.ncol,self.ncol,21,21))
+        new_w = np.zeros((self.ncol,self.ncol,q,q))
         for i in range(self.ncol-1):
             for j in range(i+1,self.ncol):
                 if (i==pos) or (j==pos):
-                    new_w[i,j]=np.zeros((21,21))
+                    new_w[i,j]=np.zeros((q,q))
                 else:
                     new_w[i,j]=self.w[i-(i>pos),j-(j>pos)]
                 new_w[j,i] = new_w[i,j]
         self.w = new_w
 
 
-    def insert_null_positions_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, v_null=np.zeros((1,21))):
+    def insert_null_positions_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, v_null=None):
         """ insert null column at each position in the sequence which is not in the Potts model """
+        q = self.v.shape[1]
+        if v_null is None:
+            v_null = np.zeros((1,q))
         for pos_in_seq in range(sequence_length):
             if not pos_in_seq in mrf_pos_to_seq_pos:
                 self.insert_null_position_at(pos_in_seq, v_null)
@@ -380,6 +388,7 @@ class Potts_Model:
 
     def insert_vi_star_gapped_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, msa_file_before_trim, nb_pc_for_v_star=1):
         """ insert v* column at each position in the sequence which is not in the Potts model """
+        q = self.v.shape[1]
         msa_ccmpred = ccmpred.io.read_msa(msa_file_before_trim, 'fasta')
         weights = ccmpred.weighting.weights_simple(msa_ccmpred, cutoff=0.8)
         single_counts, double_counts = ccmpred.counts.both_counts(msa_ccmpred, weights)
@@ -393,8 +402,9 @@ class Potts_Model:
         single_freqs = (1-tau)*single_freqs+tau*uniform_pc
         lsingle_freqs = np.log(single_freqs)
         v_star = lsingle_freqs - np.mean(lsingle_freqs[:, :21], axis=1)[:, np.newaxis]
-        v_star[:, 20]=0
+        if (q==21):
+            v_star[:, 20]=0 # TODO fix
         for pos_in_seq in range(sequence_length):
             if not pos_in_seq in mrf_pos_to_seq_pos:
-                v_i = v_star[pos_in_seq].reshape((1,21))
+                v_i = v_star[pos_in_seq].reshape((1,q))
                 self.insert_null_position_at(pos_in_seq, v_null=v_i)

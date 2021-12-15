@@ -24,7 +24,7 @@ def get_rescaled_potts_model(potts_model, v_rescaling_function, w_rescaling_func
     else:
         print("rescaling Potts model")
         t_v = get_rescaled_parameters(potts_model.v, v_rescaling_function, **useful_kwargs)
-        t_v[:,20]=0 # keep gap parameter to 0
+        #t_v[:,20]=0 # keep gap parameter to 0
         if use_w:
             t_w = get_rescaled_parameters(potts_model.w, w_rescaling_function, **useful_kwargs)
         else:
@@ -73,7 +73,6 @@ def simulate_uniform_pc_on_v_with_cpp(v, v_rescaling_tau=0.5, **kwargs):
             c_float_p, # result v (flat)
             ctypes.c_int, # L
             ctypes.c_int, # q (21)
-            ctypes.c_int, # considered q (20)
             ctypes.c_float # v_rescaling_tau
             ]
 
@@ -82,7 +81,6 @@ def simulate_uniform_pc_on_v_with_cpp(v, v_rescaling_tau=0.5, **kwargs):
             c_v_rescaled_flat,
             ctypes.c_int(v.shape[0]),
             ctypes.c_int(v.shape[1]),
-            20,
             ctypes.c_float(v_rescaling_tau)
             )
     
@@ -93,12 +91,12 @@ def simulate_uniform_pc_on_v_with_cpp(v, v_rescaling_tau=0.5, **kwargs):
 
 
 
-def simulate_uniform_pc_on_v_with_python(v, v_rescaling_tau=0.5, v_back_to_scale=False, **kwargs):
+def simulate_uniform_pc_on_v_with_python(v, v_rescaling_tau=0.5, v_back_to_scale=False, **kwargs): #TODO numpify
+    q = v.shape[1]
     resc_v = np.zeros_like(v)
     for i in range(len(v)):
         vi = v[i]
         resc_vi = np.zeros_like(vi)
-        q=20
         S = 0
         for b in range(q):
             S+=exp(vi[b])

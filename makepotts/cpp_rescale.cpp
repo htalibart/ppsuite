@@ -68,26 +68,26 @@ extern "C" int cpp_rescale_w(float* w_flat, float* w_rescaled_flat, int L, int q
 }
 
 
-float get_sum_over_a(float* v_flat, int q, int considered_q, int i)
+float get_sum_over_a(float* v_flat, int q, int i)
 {
 	float sum=0;
-	for (int a=0; a<considered_q; a++)
+	for (int a=0; a<q; a++)
 	{
 		sum+=v_flat[a+i*q];
 	}
 	return sum;
 }
 
-void expvi_to_fi(float* v_flat, int q, int considered_q, int i, float t, float sum_expvi)
+void expvi_to_fi(float* v_flat, int q, int i, float t, float sum_expvi)
 {
-	for (int a=0; a<considered_q; a++)
+	for (int a=0; a<q; a++)
 	{
-		v_flat[a+i*q] = log((1-t)*v_flat[a+i*q]/sum_expvi + t/considered_q);
+		v_flat[a+i*q] = log((1-t)*v_flat[a+i*q]/sum_expvi + t/q);
 	}
 }
 
 
-extern "C" int cpp_rescale_v(float* v_flat, float* v_rescaled_flat, int L, int q, int considered_q, float v_rescaling_tau) // q=21 but actually only 20
+extern "C" int cpp_rescale_v(float* v_flat, float* v_rescaled_flat, int L, int q, float v_rescaling_tau)
 {
 	int status = 0;
 	
@@ -96,16 +96,12 @@ extern "C" int cpp_rescale_v(float* v_flat, float* v_rescaled_flat, int L, int q
 
 	for (int i=0; i<L; i++)
 	{
-		float sum_expvi = get_sum_over_a(v_flat, q, considered_q, i);
-		expvi_to_fi(v_flat, q, considered_q, i, v_rescaling_tau, sum_expvi);
-		float sum_fi = get_sum_over_a(v_flat, q, considered_q, i);
-		for (int a=0; a<considered_q; a++)
+		float sum_expvi = get_sum_over_a(v_flat, q, i);
+		expvi_to_fi(v_flat, q, i, v_rescaling_tau, sum_expvi);
+		float sum_fi = get_sum_over_a(v_flat, q, i);
+		for (int a=0; a<q; a++)
 		{
-			v_rescaled_flat[a+i*q] = v_flat[a+i*q]-sum_fi/considered_q;
-		}
-		for (int a=considered_q; a<q; a++)
-		{
-			v_rescaled_flat[a+i*q] = 0;
+			v_rescaled_flat[a+i*q] = v_flat[a+i*q]-sum_fi/q;
 		}
 	}
 
