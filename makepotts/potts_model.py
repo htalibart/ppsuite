@@ -68,6 +68,8 @@ class Potts_Model:
         mrf.binary_file = binary_file
         return mrf
 
+
+
     @classmethod
     def from_adabmdca_file(cls, adabmdca_file, binary_file=None, **kwargs):
         with open(str(adabmdca_file), 'r') as adaf:
@@ -333,10 +335,11 @@ class Potts_Model:
         return s1+s2
 
 
-    def Zi(self, x, i, q=21):
+    def Zi(self, x, i):
         """ pseudo-likelihood constant Zi at position i for sequence x """
         n = self.ncol
         Zi = 0
+        q = self.v.shape[1]
         for a in range(q):
             sw=0
             for j in range(i+1,n):
@@ -349,11 +352,12 @@ class Potts_Model:
         """ log pseudo-likelihood of sequence @x """
         n = self.ncol
         p = 0
-        for i in range(n-1):
+        for i in range(n):
             Zi = self.Zi(x, i)
             sw=0
             for j in range(i+1,n):
-                sw+=self.w[i, j, code(x[i]), code(x[j])]
+                if j<n:
+                    sw+=self.w[i, j, code(x[i]), code(x[j])]
             p+=self.v[i,code(x[i])]+sw-math.log(Zi)
         return p
 
