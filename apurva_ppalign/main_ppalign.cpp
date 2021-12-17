@@ -53,7 +53,41 @@ float f_vertex_mrf(int k, int i)
 }
 
 
+
+
 // similarity function for wA_ij and wB_kl
+float f_edge_mrf(int k, int i, int l, int j)
+{
+
+	float score_wijwkl=0;
+	for (int a=0; a<q; a++)
+	{
+		for (int b=0; b<q; b++)
+		{
+			if ((k<=l) && (i<=j))
+			{
+				score_wijwkl+=w_A[b+a*q+j*q*q+i*q*q*LA]*w_B[b+a*q+l*q*q+k*q*q*LB];
+			}
+			else if ((k<=l) && (i>j))
+			{
+				score_wijwkl+=w_A[a+b*q+i*q*q+j*q*q*LA]*w_B[b+a*q+l*q*q+k*q*q*LB];
+			}
+			else if ((k>l) && (i<=j))
+			{
+				score_wijwkl+=w_A[b+a*q+j*q*q+i*q*q*LA]*w_B[a+b*q+k*q*q+l*q*q*LB];
+			}
+			else
+			{
+				score_wijwkl+=w_A[a+b*q+i*q*q+j*q*q*LA]*w_B[a+b*q+k*q*q+l*q*q*LB];
+			}
+		}
+	}
+	return alpha_w*score_wijwkl;
+
+}
+
+
+/*
 float f_edge_mrf(int k, int i, int l, int j)
 {
 	if (l<=k)
@@ -80,7 +114,7 @@ float f_edge_mrf(int k, int i, int l, int j)
 		return f_edge_mrf(l,i,k,j);
 	}
 }
-
+*/
 
 //display the alignment
 void display_alignment(int *res_alignment)
