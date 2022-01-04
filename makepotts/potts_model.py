@@ -390,25 +390,21 @@ class Potts_Model:
                 self.insert_null_position_at(pos_in_seq, v_null)
 
 
-    def insert_vi_star_gapped_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, msa_file_before_trim, nb_pc_for_v_star=1):
+    def insert_vi_star_gapped_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, msa_file_before_trim, nb_pc_for_v_star=1, wt_cutoff=0.8):
         """ insert v* column at each position in the sequence which is not in the Potts model """
+        v_star = compute_v_star(msa_file_before_trim, wt_cutoff, nb_pc_for_v_star)
         q = self.v.shape[1]
-        msa_ccmpred = ccmpred.io.read_msa(msa_file_before_trim, 'fasta')
-        weights = ccmpred.weighting.weights_simple(msa_ccmpred, cutoff=0.8)
-        single_counts, double_counts = ccmpred.counts.both_counts(msa_ccmpred, weights)
-        neff = np.sum(weights)
-        single_freqs = single_counts/neff
-        #eps = 1e-10 # hack from CCMpredPy
-        #single_freqs[single_freqs<eps]=eps
-        tau = nb_pc_for_v_star/(neff+nb_pc_for_v_star)
-        uniform_pc = np.zeros_like(single_freqs)
-        uniform_pc.fill(1. / single_freqs.shape[1])
-        single_freqs = (1-tau)*single_freqs+tau*uniform_pc
-        lsingle_freqs = np.log(single_freqs)
-        v_star = lsingle_freqs - np.mean(lsingle_freqs[:, :21], axis=1)[:, np.newaxis]
         if (q==21):
             v_star[:, 20]=0 # TODO fix
         for pos_in_seq in range(sequence_length):
             if not pos_in_seq in mrf_pos_to_seq_pos:
                 v_i = v_star[pos_in_seq].reshape((1,q))
                 self.insert_null_position_at(pos_in_seq, v_null=v_i)
+
+
+#    def change_gauge_l2_zero_to_l2_center(reg_lambda_single=None, reg_lambda_pair_factor=None):
+#        if (reg_lambda_single is None) or (reg_lambda_pair_factor is None):
+#            reg_ratio = np.sum(self.w[0,1,0])/self.v[0,0]
+#        else:
+#            reg_ratio = reg_lambda_single/(reg_lambda_pair_factor*self.ncol)
+#
