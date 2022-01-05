@@ -153,7 +153,7 @@ def simulate_uniform_pc_on_w_with_python(w, w_rescaling_tau=0.5, beta_softmax_w=
         for j in range(i+1,len(resc_w)):
             resc_w[i,j] = simulate_uniform_pc_on_wij(w[i][j], rescaling_tau=w_rescaling_tau, beta=beta_softmax_w,
                                                             w_back_to_scale=w_back_to_scale)
-            resc_w[j,i]=resc_w[i,j]
+            resc_w[j,i]=np.transpose(resc_w[i,j])
     return resc_w
 
 

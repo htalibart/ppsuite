@@ -402,9 +402,13 @@ class Potts_Model:
                 self.insert_null_position_at(pos_in_seq, v_null=v_i)
 
 
-#    def change_gauge_l2_zero_to_l2_center(reg_lambda_single=None, reg_lambda_pair_factor=None):
+#    def change_gauge_l2_zero_to_l2_center(v_star, reg_lambda_single=None, reg_lambda_pair_factor=None):
+#        q = self.v.shape[1]
 #        if (reg_lambda_single is None) or (reg_lambda_pair_factor is None):
 #            reg_ratio = np.sum(self.w[0,1,0])/self.v[0,0]
 #        else:
 #            reg_ratio = reg_lambda_single/(reg_lambda_pair_factor*self.ncol)
+#        new_w = np.zeros_like(self.w)
+#        for i in range(self.ncol):
 #
+

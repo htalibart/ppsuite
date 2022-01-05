@@ -42,5 +42,11 @@ class Test_Rescaling(unittest.TestCase):
         my_kwargs = {str_[i]:i for i in range(len(str_))}
         resc = get_rescaled_potts_model(self.potts_model, "identity", "simulate_uniform_pc_on_w", use_w=True, w_rescaling_tau=0.5, beta_softmax_w=10, w_back_to_scale=True, **my_kwargs)
 
+
+    def test_w_symmetry(self):
+        resc = get_rescaled_potts_model(self.potts_model, "identity", "simulate_uniform_pc_on_w", use_w=True, w_rescaling_tau=0.5, beta_softmax_w=10)
+        w_sym = np.transpose(resc.w, [1,0,3,2])
+        assert(np.array_equal(resc.w, w_sym))
+
 if __name__=='__main__':
     unittest.main()
