@@ -56,7 +56,8 @@ extern "C" int cpp_rescale_w(float* w_flat, float* w_rescaled_flat, int L, int q
 				for (int b=0; b<q; b++)
 				{
 					w_rescaled_flat[b+a*q+j*q*q+i*q*q*L] = (1/beta_softmax_w)*(w_flat[b+a*q+j*q*q+i*q*q*L] - sum_fij/(q*q));
-					w_rescaled_flat[a+b*q+i*q*q+j*q*q*L] = w_rescaled_flat[b+a*q+j*q*q+i*q*q*L];
+					//w_rescaled_flat[a+b*q+i*q*q+j*q*q*L] = w_rescaled_flat[b+a*q+j*q*q+i*q*q*L];
+					w_rescaled_flat[b+a*q+i*q*q+j*q*q*L] = w_rescaled_flat[b+a*q+j*q*q+i*q*q*L];
 				}
 			}
 

@@ -15,6 +15,7 @@ RES_TO_INT_MFDCA = {
 
 INT_TO_RES_MFDCA = { RES_TO_INT_MFDCA[res]-1 : res for res in RES_TO_INT_MFDCA}
 
+
 def get_ccmpredpy_index(mfdca_index):
     return ALPHABET.find(INT_TO_RES_MFDCA[mfdca_index])
 
@@ -23,7 +24,7 @@ def fields_list_to_v(fields_list):
     v = np.zeros((L,21))
     for c in fields_list:
         for a in range(20):
-            v[c[0],get_ccmpredpy_index(a)] = -c[1][a]
+            v[c[0],get_ccmpredpy_index(a)] = c[1][a]
     return v
 
 def couplings_list_to_w(couplings_list, L):
@@ -32,6 +33,7 @@ def couplings_list_to_w(couplings_list, L):
         for a in range(20):
             for b in range(20):
                 w[c[0][0],c[0][1],get_ccmpredpy_index(a),get_ccmpredpy_index(b)] = c[1][a*20+b]
+                w[c[0][1],c[0][0],get_ccmpredpy_index(b),get_ccmpredpy_index(a)] = w[c[0][0],c[0][1],get_ccmpredpy_index(a),get_ccmpredpy_index(b)]
     return w
 
 

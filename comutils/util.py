@@ -14,6 +14,7 @@ import ccmpred.weighting
 import ccmpred.io
 import ccmpred.counts
 
+
 def code(c):
     """ gives number code in [0,21] for letter @c"""
     return ALPHABET.find(c.upper())
@@ -98,7 +99,7 @@ def get_pos_first_seq_to_second_seq(first_seq, second_seq):
     return pos_dict_first_seq_to_second_seq
 
 
-def compute_v_star(msa_file, wt_cutoff, pc_single_count):
+def compute_v_star(msa_file, wt_cutoff, pc_single_count, q=21):
     msa_ccmpred = ccmpred.io.read_msa(msa_file, 'fasta')
     weights = ccmpred.weighting.weights_simple(msa_ccmpred, cutoff=wt_cutoff)
     single_counts, double_counts = ccmpred.counts.both_counts(msa_ccmpred, weights)
@@ -109,5 +110,7 @@ def compute_v_star(msa_file, wt_cutoff, pc_single_count):
     uniform_pc.fill(1. / single_freqs.shape[1])
     single_freqs = (1-tau)*single_freqs+tau*uniform_pc
     lsingle_freqs = np.log(single_freqs)
-    v_star = lsingle_freqs - np.mean(lsingle_freqs, axis=1)[:, np.newaxis]
-    return v_star
+    v_star = lsingle_freqs - np.mean(lsingle_freqs[:,:q], axis=1)[:, np.newaxis]
+    return v_star[:,:q]
+
+

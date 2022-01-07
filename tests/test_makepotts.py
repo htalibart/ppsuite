@@ -117,5 +117,7 @@ class Test_MakePotts(unittest.TestCase):
        aln_file = pathlib.Path(LARGER_SMALL_ALN_1CC8)
        po_mf = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, inference_method='mfDCA')
 
+
+
 if __name__=='__main__':
     unittest.main()
