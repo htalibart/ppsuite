@@ -330,7 +330,7 @@ class Potts_Model:
 
         s2=0
         for i in range(n):
-            if a[i]!='-':
+            if (a[i]!='-') or (self.v.shape[1]==21):
                 s2+=self.v[i, code(a[i])]
         return s1+s2
 
