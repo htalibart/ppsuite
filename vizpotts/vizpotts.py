@@ -17,24 +17,6 @@ def end_visual(tight_layout=True, show_figure=True, **kwargs):
     if show_figure:
         plt.show()
 
-def get_reordered_v(v, alphabet):
-    """ reorders all vi for a given alphabet """
-    q = v.shape[1]
-    idx = [ALPHABET[:q].find(a) for a in alphabet[:q]]
-    return v[:,idx]
-
-
-def get_reordered_wij(wij, alphabet):
-    """ reorders all wij for a given alphabet """
-    q = wij.shape[0]
-    idx = [ALPHABET[:q].find(a) for a in alphabet[:q]]
-    new_wij = np.zeros_like(wij)
-    for a in range(len(alphabet)):
-        for b in range(len(alphabet)):
-            new_wij[a][b] = wij[idx[a]][idx[b]]
-    return new_wij
-
-
 def plot_heatmap(matrix, center=0, **kwargs):
     """ plots a heatmap with seaborn """
     plt.figure()

@@ -24,6 +24,34 @@ def code_whole_seq(sequence):
     return [code(c) for c in sequence]
 
 
+def get_reordered_v(v, alphabet_to, alphabet_from=ALPHABET):
+    """ reorders all vi for a given alphabet """
+    q = v.shape[1]
+    idx = [alphabet_from[:q].find(a) for a in alphabet_to[:q]]
+    return v[:,idx]
+
+
+def get_reordered_wij(wij, alphabet_to, alphabet_from=ALPHABET):
+    """ reorders all wij for a given alphabet """
+    q = wij.shape[0]
+    idx = [alphabet_from[:q].find(a) for a in alphabet_to[:q]]
+    new_wij = np.zeros_like(wij)
+    for a in range(len(alphabet_to)):
+        for b in range(len(alphabet_to)):
+            new_wij[a][b] = wij[idx[a]][idx[b]]
+    return new_wij
+
+def get_reordered_w(w, alphabet_to, alphabet_from=ALPHABET):
+    new_w = np.zeros_like(w)
+    L = w.shape[0]
+    for i in range(L-1):
+        for j in range(i+1,L):
+            new_w[i,j] = get_reordered_wij(w[i,j])
+            new_w[j,i] = np.transpose(new_w[i,j])
+    return new_w
+
+
+
 def euclidean_norm(vector):
     return np.linalg.norm(vector)
 
