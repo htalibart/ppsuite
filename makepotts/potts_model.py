@@ -16,9 +16,13 @@ from comutils import files_management as fm
 from comutils import pseudocounts
 from comutils.adabmdca_to_ccmpredpy import *
 
-from makepotts import mfdca_wrapper
+
+from pydca.meanfield_dca import meanfield_dca
 
 POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff", "reg-lambda-single", "reg-lambda-pair-factor", "reg-L2", "reg-noscaling", "reg-scale-by-L", "v-center", "v-zero", "max-gap-pos", "max-gap_seq", "pc-uniform", "pc-submat", "pc-constant", "pc-none", "pc-single-count", "pc-pair-count", "maxit", "ofn-pll", "ofn-cd", "pc-pair-submat", "persistent", "no-decay", "nr-markov-chains"]
+
+MFDCA_ALPHABET="ACDEFGHIKLMNPQRSTVWY-"
+
 
 class Potts_Model:
 
@@ -96,7 +100,7 @@ class Potts_Model:
 
 
     @classmethod
-    def from_training_set(cls, aln_file, binary_file, write_readme=True, readme_file=None, inference_method='CCMpredPy', **kwargs):
+    def from_training_set(cls, aln_file, binary_file, write_readme=True, readme_file=None, inference_method='CCMpredPy', mfdca_pseudocount=0.5, wt_cutoff=0.8, apply_zero_sum_gauge_if_mfdca=True, **kwargs):
         """
             initialize Potts model from train MSA file
         """
@@ -139,8 +143,19 @@ class Potts_Model:
 
 
         elif inference_method=='mfDCA':
-            v, w = mfdca_wrapper.infer_parameters(aln_file, **kwargs)
+            mfdca_inst = meanfield_dca.MeanFieldDCA(
+                str(aln_file),
+                'protein',
+                pseudocount=mfdca_pseudocount,
+                seqid = wt_cutoff,
+            )
+            fields_mf, couplings_mf = mfdca_inst.compute_params_in_arrays()
+            L = len(fields_mf)
+            v = get_reordered_v(fields_mf, alphabet_to=ALPHABET, alphabet_from=MFDCA_ALPHABET)
+            w = get_reordered_w(couplings_mf, alphabet_to=ALPHABET, alphabet_from=MFDCA_ALPHABET)
             mrf = cls.from_parameters(v, w)
+            if apply_zero_sum_gauge_if_mfdca:
+                mrf = mrf.apply_zero_sum_gauge()
             mrf.to_msgpack(binary_file)
             
 
@@ -325,8 +340,10 @@ class Potts_Model:
         n = self.ncol
         s1=0
         for i in range(n-1):
-            for j in range(i+1,n):
-                s1+=self.w[i, j, code(a[i]), code(a[j])]
+            if (a[i]!='-') or (self.w.shape[2]==21):
+                for j in range(i+1,n):
+                    if (a[j]!='-') or (self.w.shape[2]==21):
+                        s1+=self.w[i, j, code(a[i]), code(a[j])]
 
         s2=0
         for i in range(n):
@@ -400,3 +417,75 @@ class Potts_Model:
             if not pos_in_seq in mrf_pos_to_seq_pos:
                 v_i = v_star[pos_in_seq].reshape((1,q))
                 self.insert_null_position_at(pos_in_seq, v_null=v_i)
+
+
+    def change_gauge_l2_zero_to_l2_center(self, v_star, reg_lambda_single=None, reg_lambda_pair_factor=None):
+        q = self.v.shape[1]
+        if (reg_lambda_single is None) or (reg_lambda_pair_factor is None):
+            reg_ratio = np.sum(self.w[0,1,0])/self.v[0,0]
+        else:
+            reg_ratio = reg_lambda_single/(reg_lambda_pair_factor*(self.ncol-1))
+        new_w = np.zeros_like(self.w)
+        for i in range(self.ncol-1):
+            for j in range(i+1,self.ncol):
+                for a in range(q):
+                    for b in range(q):
+                        new_w[i,j,a,b] = self.w[i,j,a,b] - (reg_ratio/q)*(v_star[i,a] + v_star[j,b])
+                        new_w[j,i,b,a] = new_w[i,j,a,b]
+        new_v = self.v + ((self.ncol-1)*reg_ratio/q)*v_star
+        return Potts_Model.from_parameters(new_v, new_w)
+
+
+    def change_gauge_l2_center_to_l2_zero(self, v_star, reg_lambda_single=None, reg_lambda_pair_factor=None):
+        q = self.v.shape[1]
+        if (reg_lambda_single is None) or (reg_lambda_pair_factor is None):
+            reg_ratio = np.sum(self.w[0,1,0])/(self.v[0,0]-v_star[0,0])
+        else:
+            reg_ratio = reg_lambda_single/(reg_lambda_pair_factor*(self.ncol-1))
+        new_w = np.zeros_like(self.w)
+        for i in range(self.ncol-1):
+            for j in range(i+1,self.ncol):
+                for a in range(q):
+                    for b in range(q):
+                        new_w[i,j,a,b] = self.w[i,j,a,b] + (reg_ratio/q)*(v_star[i,a] + v_star[j,b])
+                        new_w[j,i,b,a] = new_w[i,j,a,b]
+        new_v = self.v - ((self.ncol-1)*reg_ratio/q)*v_star
+        return Potts_Model.from_parameters(new_v, new_w)
+
+
+    def change_gauge_zero_sum_to_l2_center(self, v_star, lv=1, lw=1):
+        q = self.v.shape[1]
+        reg_ratio = lv/lw
+        new_w = np.zeros_like(self.w)
+        for i in range(self.ncol-1):
+            for j in range(i+1,self.ncol):
+                for a in range(q):
+                    for b in range(q):
+                        new_w[i,j,a,b] = self.w[i,j,a,b] + (reg_ratio/q)*(self.v[i,a]-v_star[i,a] + self.v[j,b]-v_star[j,b])
+                        new_w[j,i,b,a] = new_w[i,j,a,b]
+        new_v = self.v - ((self.ncol-1)*reg_ratio/q)*(self.v-v_star)
+        return Potts_Model.from_parameters(new_v, new_w)
+
+
+    def apply_zero_sum_gauge(self):
+        v = self.v
+        w = self.w
+        zv = np.zeros_like(v)
+        zw = np.zeros_like(w)
+        L = v.shape[0]
+        q = v.shape[1]
+        average_v = np.mean(v, axis=1)
+        average_w = np.mean(w, axis=(2,3))
+        average_w_a = np.mean(w, axis=2)
+        average_w_b = np.mean(w, axis=3)
+        for i in range(L):
+            for a in range(q):
+                zv[i,a] = v[i,a]-average_v[i]+np.sum([average_w_b[i,j,a]-average_w[i,j] for j in range(L) if j!=i])
+        for i in range(L-1):
+            for j in range(i+1,L):
+                for a in range(q):
+                    for b in range(q):
+                        zw[i,j,a,b] = w[i,j,a,b]-average_w_b[i,j,a]-average_w_a[i,j,b]+average_w[i,j]
+        return Potts_Model.from_parameters(zv, zw)
+
+
