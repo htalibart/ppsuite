@@ -16,8 +16,8 @@ from comutils import files_management as fm
 from comutils import pseudocounts
 from comutils.adabmdca_to_ccmpredpy import *
 
-
 from pydca.meanfield_dca import meanfield_dca
+
 
 POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff", "reg-lambda-single", "reg-lambda-pair-factor", "reg-L2", "reg-noscaling", "reg-scale-by-L", "v-center", "v-zero", "max-gap-pos", "max-gap_seq", "pc-uniform", "pc-submat", "pc-constant", "pc-none", "pc-single-count", "pc-pair-count", "maxit", "ofn-pll", "ofn-cd", "pc-pair-submat", "persistent", "no-decay", "nr-markov-chains"]
 
@@ -150,7 +150,6 @@ class Potts_Model:
                 seqid = wt_cutoff,
             )
             fields_mf, couplings_mf = mfdca_inst.compute_params_in_arrays()
-            L = len(fields_mf)
             v = get_reordered_v(fields_mf, alphabet_to=ALPHABET, alphabet_from=MFDCA_ALPHABET)
             w = get_reordered_w(couplings_mf, alphabet_to=ALPHABET, alphabet_from=MFDCA_ALPHABET)
             mrf = cls.from_parameters(v, w)
