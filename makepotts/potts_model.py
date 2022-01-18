@@ -16,8 +16,7 @@ from comutils import files_management as fm
 from comutils import pseudocounts
 from comutils.adabmdca_to_ccmpredpy import *
 
-from pydca.meanfield_dca import meanfield_dca
-
+from rmfdca import __main__ as rmfdca_main
 
 POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff", "reg-lambda-single", "reg-lambda-pair-factor", "reg-L2", "reg-noscaling", "reg-scale-by-L", "v-center", "v-zero", "max-gap-pos", "max-gap_seq", "pc-uniform", "pc-submat", "pc-constant", "pc-none", "pc-single-count", "pc-pair-count", "maxit", "ofn-pll", "ofn-cd", "pc-pair-submat", "persistent", "no-decay", "nr-markov-chains"]
 
@@ -100,7 +99,7 @@ class Potts_Model:
 
 
     @classmethod
-    def from_training_set(cls, aln_file, binary_file, write_readme=True, readme_file=None, inference_method='CCMpredPy', mfdca_pseudocount=0.5, wt_cutoff=0.8, apply_zero_sum_gauge_if_mfdca=True, **kwargs):
+    def from_training_set(cls, aln_file, binary_file, write_readme=True, readme_file=None, inference_method='CCMpredPy', mfdca_pseudocount=0.5, wt_cutoff=0.8, apply_zero_sum_gauge_if_mfdca=True, reg_lambda_w_mfdca=0.1, **kwargs):
         """
             initialize Potts model from train MSA file
         """
@@ -143,18 +142,8 @@ class Potts_Model:
 
 
         elif inference_method=='mfDCA':
-            mfdca_inst = meanfield_dca.MeanFieldDCA(
-                str(aln_file),
-                'protein',
-                pseudocount=mfdca_pseudocount,
-                seqid = wt_cutoff,
-            )
-            fields_mf, couplings_mf = mfdca_inst.compute_params_in_arrays()
-            v = get_reordered_v(fields_mf, alphabet_to=ALPHABET, alphabet_from=MFDCA_ALPHABET)
-            w = get_reordered_w(couplings_mf, alphabet_to=ALPHABET, alphabet_from=MFDCA_ALPHABET)
+            v, w = rmfdca_main.infer_parameters_for_msa(aln_file, reg_lambda_w=reg_lambda_w_mfdca, pc_tau=mfdca_pseudocount, lattice=not(apply_zero_sum_gauge_if_mfdca)) 
             mrf = cls.from_parameters(v, w)
-            if apply_zero_sum_gauge_if_mfdca:
-                mrf = mrf.apply_zero_sum_gauge()
             mrf.to_msgpack(binary_file)
             
 
