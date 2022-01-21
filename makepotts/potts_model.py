@@ -474,6 +474,7 @@ class Potts_Model:
                 for a in range(q):
                     for b in range(q):
                         zw[i,j,a,b] = w[i,j,a,b]-average_w_b[i,j,a]-average_w_a[i,j,b]+average_w[i,j]
+                zw[j,i] = np.transpose(zw[i,j])
         return Potts_Model.from_parameters(zv, zw)
 
 
