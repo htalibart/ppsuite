@@ -9,8 +9,20 @@ from makepotts.potts_object import *
 from comutils.util import *
 from vizcontacts import top_couplings
 
+
 def get_contact_scores_for_aln_train(potts_object):
     """ returns an ordered dictionary of contact scores for positions in the train MSA """
+    pm = Potts_Model.from_msgpack(potts_object.potts_model_file)
+    pm.w = pm.w[:,:,:20,:20]
+    w_norms = pm.get_w_norms()
+    top_ind1, top_ind2 = top_couplings.get_top_pairs(w_norms, reverse_order=False)
+    contact_scores = OrderedDict()
+    for ind1, ind2 in zip(top_ind1, top_ind2):
+        contact_scores[(ind1, ind2)] = w_norms[ind1, ind2]
+    return contact_scores
+
+def get_contact_scores_for_aln_train_via_ccmpredpy(potts_object):
+    """ returns an ordered dictionary of contact scores for positions in the train MSA by calling CCMpredPy (deprecated)"""
 
     # Get contact scores in a csv file
     mat_file = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
