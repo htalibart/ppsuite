@@ -287,10 +287,10 @@ class Potts_Model:
             return self.w_norms
         else:
             w_norms = np.zeros((self.ncol, self.ncol))
-            for i in range(0, self.ncol-1):
-                for j in range(i+1, self.ncol):
+            for i in range(0, self.ncol):
+                for j in range(0, self.ncol):
                     w_norms[i][j] = self.get_w_norm_at_pos(i,j)
-                    w_norms[j][i] = w_norms[i][j]
+                    #w_norms[j][i] = w_norms[i][j]
             self.w_norms = w_norms
             return w_norms
 
@@ -469,12 +469,12 @@ class Potts_Model:
         for i in range(L):
             for a in range(q):
                 zv[i,a] = v[i,a]-average_v[i]+np.sum([average_w_b[i,j,a]-average_w[i,j] for j in range(L) if j!=i])
-        for i in range(L-1):
-            for j in range(i+1,L):
+        for i in range(L):
+            for j in range(L):
                 for a in range(q):
                     for b in range(q):
                         zw[i,j,a,b] = w[i,j,a,b]-average_w_b[i,j,a]-average_w_a[i,j,b]+average_w[i,j]
-                zw[j,i] = np.transpose(zw[i,j])
+                #zw[j,i] = np.transpose(zw[i,j])
         return Potts_Model.from_parameters(zv, zw)
 
 
