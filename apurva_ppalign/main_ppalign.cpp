@@ -20,7 +20,7 @@ double total_time(0.);
 // scores and lengths are global variables because of f_vertex_mrf and f_edge_mrf
 int LA;
 int LB;
-int q=21;
+int q=20;
 
 double alpha_w;
 double offset_v;
