@@ -494,6 +494,12 @@ def main(args=sys.argv[1:]):
     ccmpred_args.add_argument('--wt_cutoff', help="Sequence identity threshold. [CCMpred and mfDCA default: 0.8]", default=0.8)
 
 
+    mfdca_args = parser.add_argument_group('mfdca_args')
+    mfdca_args.add_argument('--pc_tau_mfdca', help="Uniform pseudo-count tau for rmfDCA. [mfDCA default: 0.5]", default=0.5)
+    mfdca_args.add_argument('--reg_lambda_w_mfdca', help="Regularization factor for rmfDCA.", default=1)
+    mfdca_args.add_argument('--shrinkage_coeff', help="Shrinkage coefficient for rmfDCA.", default=0.5)
+
+
     # Potts model
     potts_model_args = parser.add_argument_group('potts_model_args')
     potts_model_args.add_argument('-noinfer', '--dont_infer_potts_model', help="Don't infer a Potts model (default = do)", action='store_true', default=False)
