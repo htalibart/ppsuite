@@ -495,9 +495,9 @@ def main(args=sys.argv[1:]):
 
 
     mfdca_args = parser.add_argument_group('mfdca_args')
-    mfdca_args.add_argument('--pc_tau_mfdca', help="Uniform pseudo-count tau for rmfDCA. [mfDCA default: 0.5]", default=0.5)
-    mfdca_args.add_argument('--reg_lambda_w_mfdca', help="Regularization factor for rmfDCA.", default=1)
-    mfdca_args.add_argument('--shrinkage_coeff', help="Shrinkage coefficient for rmfDCA.", default=0.5)
+    mfdca_args.add_argument('--pc_tau_mfdca', help="Uniform pseudo-count tau for rmfDCA. [mfDCA default: 0.5]", type=float, default=0.5)
+    mfdca_args.add_argument('--reg_lambda_w_mfdca', help="Regularization factor for rmfDCA.", type=float, default=1)
+    mfdca_args.add_argument('--shrinkage_coeff', help="Shrinkage coefficient for rmfDCA.", type=float, default=0.5)
 
 
     # Potts model
