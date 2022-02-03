@@ -127,6 +127,14 @@ def get_pos_first_seq_to_second_seq(first_seq, second_seq):
     return pos_dict_first_seq_to_second_seq
 
 
+def f_to_v_star(f):
+    """ input: single frequencies (Lxq) array
+        output: fields of an independent-site Potts model"""
+    lf = np.log(f)
+    v_star = lf - np.tile(np.mean(lf, axis=1), (f.shape[1],1)).T
+    return v_star
+
+
 def compute_v_star(msa_file, wt_cutoff, pc_single_count, q=21):
     msa_ccmpred = ccmpred.io.read_msa(msa_file, 'fasta')
     weights = ccmpred.weighting.weights_simple(msa_ccmpred, cutoff=wt_cutoff)
