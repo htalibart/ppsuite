@@ -254,19 +254,21 @@ class Potts_Object:
 
 
     @classmethod
-    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, use_insertion_penalties=False, keep_tmp_files=False, pc_insertions_tau=0, light=False, **kwargs):
+    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_blosum_pc_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, use_insertion_penalties=False, keep_tmp_files=False, pc_insertions_tau=0, light=False, freq_gap_min=0.25, pc_tau=0.5, **kwargs):
 
         if potts_model_file is not None:
             potts_model = Potts_Model.from_msgpack(potts_model_file)
 
             q = potts_model.v.shape[1]
 
-            if ((insert_null_at_trimmed) or (insert_v_star_at_trimmed)): # RE-INSERT NULL COLUMNS
+            if ((insert_null_at_trimmed) or (insert_v_star_at_trimmed) or (insert_v_blosum_pc_at_trimmed)): # RE-INSERT NULL COLUMNS
                 if aln_before_trim is None:
                     raise Exception("MSA before trim should be provided")
                 if mrf_pos_to_aln_pos is None:
                     raise Exception("mrf_pos_to_aln_pos is None")
-                if (insert_v_star_at_trimmed):
+                if (insert_v_blosum_pc_at_trimmed):
+                    potts_model.insert_vi_with_blosum_pseudocounts_to_complete_mrf_pos(mrf_pos_to_seq_pos, fm.get_nb_columns_in_alignment(aln_before_trim), aln_before_trim, freq_gap_min, pc_tau)
+                elif (insert_v_star_at_trimmed):
                     potts_model.insert_vi_star_gapped_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_before_trim), aln_before_trim)
                 elif (insert_null_at_trimmed):
                     if v_null_is_v0:
@@ -517,6 +519,8 @@ def main(args=sys.argv[1:]):
     post_inference_args.add_argument('-nw', '--dont_use_w', help="Speed up computations if we are not interested in w parameters (not recommended)", action='store_true', default=False)
     post_inference_args.add_argument('--insert_null_at_trimmed', help="Insert background parameters at positions trimmed by trimal", action='store_true', default=False)
     post_inference_args.add_argument('--insert_v_star_at_trimmed', help="Insert v parameters at positions trimmed by trimal (computed from frequencies)", action='store_true', default=False)
+    post_inference_args.add_argument('--insert_v_blosum_pc_at_trimmed', help="Insert v parameters computed with BLOSUM pseudo-counts for each gap symbol at positions trimmed by trimal, keeping freq_gap_min gaps", action='store_true', default=False)
+    post_inference_args.add_argument('--freq_gap_min', help="Minimum gap frequency kept when applying insertion of columns with BLOSUM pseudocounts to replace gap symbols", type=float, default=0.25)
 
 
 

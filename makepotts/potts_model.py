@@ -394,17 +394,27 @@ class Potts_Model:
             if not pos_in_seq in mrf_pos_to_seq_pos:
                 self.insert_null_position_at(pos_in_seq, v_null)
 
+    def insert_vi_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, v_fill):
+        """ insert appropriate column of v_fill at each position in the sequence which is not in the Potts model """
+        for pos_in_seq in range(sequence_length):
+            if not pos_in_seq in mrf_pos_to_seq_pos:
+                v_i = v_fill[pos_in_seq].reshape((1,q))
+                self.insert_null_position_at(pos_in_seq, v_null=v_i)
+
 
     def insert_vi_star_gapped_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, msa_file_before_trim, nb_pc_for_v_star=1, wt_cutoff=0.8):
         """ insert v* column at each position in the sequence which is not in the Potts model """
         v_star = compute_v_star(msa_file_before_trim, wt_cutoff, nb_pc_for_v_star)
         q = self.v.shape[1]
         if (q==21):
-            v_star[:, 20]=0 # TODO fix
-        for pos_in_seq in range(sequence_length):
-            if not pos_in_seq in mrf_pos_to_seq_pos:
-                v_i = v_star[pos_in_seq].reshape((1,q))
-                self.insert_null_position_at(pos_in_seq, v_null=v_i)
+            v_star[:, 20]=0
+        self.insert_vi_to_complete_mrf_pos(mrf_pos_to_seq_pos, sequence_length, v_star)
+
+
+    def insert_vi_with_blosum_pseudocounts_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, msa_file_before_trim, freq_gap_min, pc_tau):
+        v_fill = compute_v_with_blosum_pseudocounts_for_gaps(msa_file_before_trim, freq_gap_min, pc_tau)
+        self.insert_vi_to_complete_mrf_pos(mrf_pos_to_seq_pos, sequence_length, v_fill)
+
 
 
     def change_gauge_l2_zero_to_l2_center(self, v_star, reg_lambda_single=None, reg_lambda_pair_factor=None):
