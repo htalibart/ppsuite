@@ -8,12 +8,16 @@ from Bio import pairwise2, AlignIO
 from comutils.tool_wrapper import *
 from comutils import files_management as fm
 from comutils.global_variables import ALPHABET
+from comutils.pseudocounts import *
 q = len(ALPHABET)
 
 import ccmpred.weighting
 import ccmpred.io
 import ccmpred.counts
 
+
+from rmfdca.io_functions import *
+from rmfdca.msa_statistics import *
 
 def code(c):
     """ gives number code in [0,21] for letter @c"""
@@ -150,3 +154,8 @@ def compute_v_star(msa_file, wt_cutoff, pc_single_count, q=21):
     return v_star[:,:q]
 
 
+def compute_v_with_blosum_pseudocounts_for_gaps(msa_file, freq_gap_min, pc_tau):
+    msa = get_int_msa_array(msa_file) 
+    fi = compute_single_frequencies(msa)
+    fi_pc = apply_uniform_pseudocounts_on_single_frequencies(get_blosum_pseudocounts_for_gaps(fi, freq_gap_min), pc_tau)
+    return f_to_v_star(fi_pc)
