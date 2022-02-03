@@ -88,3 +88,22 @@ P_BLOSUM = np.array([[0.29014845, 0.03103914, 0.02564103, 0.02968961, 0.02159244
 
 def get_cond_proba(a, knowing):
     return P_BLOSUM[knowing, a]
+
+
+def get_submat_pc(fi, submat_p_knowing):
+    fi_pc = np.zeros_like(fi)
+    fi_pc[:,:-1] = np.matmul(fi[:,:-1], submat_p_knowing)
+    return fi_pc
+
+def get_blosum_pseudocounts_for_gaps(fi, freq_gap_min):
+    """ add Npc pseudocounts where the number of pseudocounts Npc is N*fi(q)-N*freq_gap_min 
+        i.e. gap symbol frequency is at least freq_gap_min """
+    fi_pc_blosum = get_submat_pc(fi, P_BLOSUM)
+    fi_pc = np.zeros_like(fi)
+    fi_pc[:,:-1] = fi[:,:-1] + np.tile((fi[:,-1]-freq_gap_min)/(1-fi[:,-1]),(20,1)).T*fi_pc_blosum[:,:-1]
+    fi_pc[:,-1]=freq_gap_min
+    return fi_pc
+
+def apply_uniform_pseudocounts_on_single_frequencies(fi, tau):
+    q = fi.shape[1]
+    return (1-tau)*fi + tau*np.full_like(fi, 1/q)
