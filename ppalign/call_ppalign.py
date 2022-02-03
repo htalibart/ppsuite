@@ -13,7 +13,7 @@ PPALIGN_CPP_LIBRARY = pkg_resources.resource_filename('ppalign', 'ppalign_solver
 PPALIGN_SOLVER = ctypes.CDLL(PPALIGN_CPP_LIBRARY)
 INFINITY = 1000000000
 
-def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, w_norm_min=0, remove_w_where_conserved=False, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, sim_min=-100, offset_v=0, remove_v0=False, insertion_penalties_coefficient=1, gap_open=8, gap_extend=0, free_end_gaps=False, **kwargs):
+def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, w_norm_min=0, remove_w_where_conserved=False, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, sim_min=-100, offset_v=0, remove_v0=False, insertion_penalties_coefficient=1, gap_open=8, gap_extend=0, free_end_gaps=False, ignore_gap_symbol=True, **kwargs):
 
     # handle output files and folder
     if not output_folder.is_dir():
@@ -41,7 +41,10 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
         vs_after_pad = []
         for v in vs:
             new_v = np.zeros((v.shape[0],21))
-            new_v[:,:v.shape[1]]=v
+            if ignore_gap_symbol: # ignore gap symbol in similarity score
+                new_v[:,:20]=v[:,:20]
+            else:
+                new_v[:,:v.shape[1]]=v
             vs_after_pad.append(new_v)
         v_flats = [np.ascontiguousarray(v.flatten()) for v in vs_after_pad] # flatten for ctypes
     else:
@@ -56,7 +59,10 @@ def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param
         ws = []
         for mrf in mrfs:
             new_w = np.zeros((mrf.w.shape[0],mrf.w.shape[1],21,21))
-            new_w[:,:,:mrf.w.shape[2],:mrf.w.shape[3]]=mrf.w
+            if ignore_gap_symbol:
+                new_w[:,:,:20,:20] = mrf.w[:,:,:20,:20]
+            else:
+                new_w[:,:,:mrf.w.shape[2],:mrf.w.shape[3]]=mrf.w
             ws.append(new_w)
         w_flats = [np.ascontiguousarray(w.flatten()) for w in ws]
     else: # if no coupling: edge map where edges are all 0
