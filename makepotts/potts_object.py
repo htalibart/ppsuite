@@ -254,7 +254,7 @@ class Potts_Object:
 
 
     @classmethod
-    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_blosum_pc_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, use_insertion_penalties=False, keep_tmp_files=False, pc_insertions_tau=0, light=False, freq_gap_min=0.25, pc_tau=0.5, **kwargs):
+    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_blosum_pc_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, use_insertion_penalties=False, keep_tmp_files=False, pc_insertions_tau=0, light=False, freq_gap_min=0.25, pc_tau=0.5, mfdca_pc=False, **kwargs):
 
         if potts_model_file is not None:
             potts_model = Potts_Model.from_msgpack(potts_model_file)
@@ -500,6 +500,7 @@ def main(args=sys.argv[1:]):
     mfdca_args.add_argument('--pc_tau_mfdca', help="Uniform pseudo-count tau for rmfDCA. [mfDCA default: 0.5]", type=float, default=0.5)
     mfdca_args.add_argument('--reg_lambda_w_mfdca', help="Regularization factor for rmfDCA.", type=float, default=1)
     mfdca_args.add_argument('--shrinkage_coeff', help="Shrinkage coefficient for rmfDCA.", type=float, default=0.5)
+    mfdca_args.add_argument('--mfdca_pc', help="use original mfDCA pseudo-counts instead of CCMpredPy ones", action='store_true', default=False)
 
 
     # Potts model
