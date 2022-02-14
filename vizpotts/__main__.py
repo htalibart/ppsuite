@@ -16,6 +16,7 @@ def main():
     parser.add_argument('-j', '--j_index', help="j index", type=int, default=None)
     parser.add_argument('-1', '--start_at_1', help="Start numbering at 1", action='store_true', default=True), 
     parser.add_argument('-0', '--start_at_0', help="Start numbering at 0", action='store_true', default=False), 
+    parser.add_argument('-20', '--force_q_20', help="Act as if all parameters have only q=20 parameters even if they have more", action='store_true', default=False), 
     parser.add_argument('-va', '--visualize_alignment', help="Visualize aligned scores, requires PPalign output folder path (-o option) or aln.csv (-aln) and README.txt (-ar)", action='store_true', default=False), 
     parser.add_argument('-af', '--alignment_folder', help="PPalign output folder", type=pathlib.Path, default=None),
     parser.add_argument('-aln', '--aln_file', help="PPalign output csv file (aln.csv)", type=pathlib.Path, default=None), 
@@ -42,6 +43,11 @@ def main():
         potts_objects.append(po)
         potts_models.append(po.potts_model)
 
+
+    if args["force_q_20"]:
+        for pm in potts_models:
+            pm.v = pm.v[:,:20]
+            pm.w = pm.w[:,:,:20,:20]
 
     if args["alignment_readme"] is not None:
         params = fm.get_parameters_from_readme_file(args["alignment_readme"])
