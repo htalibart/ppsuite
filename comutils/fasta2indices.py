@@ -20,11 +20,11 @@ def fasta2indices(alignment_handle, start_at_1=False):
         pos0, pos1 = -1, -1
     for pair in zip(align[0].seq, align[1].seq):
         aligned_residues = True
-        if pair[0].upper() in ExtendedIUPACProtein.letters:
+        if pair[0].upper() in ExtendedIUPACProtein:
             pos0 += 1
         else:
             aligned_residues = False
-        if pair[1].upper() in ExtendedIUPACProtein.letters:
+        if pair[1].upper() in ExtendedIUPACProtein:
             pos1 += 1
         else:
             aligned_residues = False
