@@ -127,7 +127,7 @@ def get_w_score_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_fu
     return 0.5*np.sum(get_w_scores_for_alignment(aligned_potts_models, dict_aligned_pos, w_score_function=w_score_function, **kwargs))
 
 
-def get_total_gap_cost(ad, gap_open, sequence_lengths, **kwargs):
+def get_total_gap_cost(ad, gap_open, gap_extend, sequence_lengths, free_end_gaps, **kwargs):
     """ inputs:
         @ad: aligned positions dict outputted by PPalign
         @sequence_lengths: list of lengths for each sequence
@@ -135,7 +135,10 @@ def get_total_gap_cost(ad, gap_open, sequence_lengths, **kwargs):
     gap_cost=0
     for counter, pos_type in enumerate(["pos_ref", "pos_2"]):
         in_gap=False
-        previous_aln_pos=-1
+        if not free_end_gaps:
+            previous_aln_pos=-1
+        else:
+            previous_aln_pos=ad[pos_type][0]-1
         for pos_in_aln in range(len(ad[pos_type])):
             if not in_gap:
                 if ad[pos_type][pos_in_aln]-previous_aln_pos>1:
@@ -144,8 +147,10 @@ def get_total_gap_cost(ad, gap_open, sequence_lengths, **kwargs):
             else:
                 if ad[pos_type][pos_in_aln]-previous_aln_pos==1:
                     in_gap=False
+                else:
+                    gap_cost+=gap_extend
             previous_aln_pos = ad[pos_type][pos_in_aln]
-        if ad[pos_type][-1]<(sequence_lengths[counter]-1):
+        if ad[pos_type][-1]<(sequence_lengths[counter]-1) and not free_end_gaps:
             gap_cost+=gap_open
     return gap_cost
 
