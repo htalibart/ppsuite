@@ -283,24 +283,17 @@ class Potts_Model:
 
 
     def get_w_norms(self):
-        if hasattr(self, 'w_norms'):
-            return self.w_norms
-        else:
-            w_norms = np.zeros((self.ncol, self.ncol))
-            for i in range(0, self.ncol):
-                for j in range(0, self.ncol):
-                    w_norms[i][j] = self.get_w_norm_at_pos(i,j)
-                    #w_norms[j][i] = w_norms[i][j]
-            self.w_norms = w_norms
-            return w_norms
+        w_norms = np.zeros((self.ncol, self.ncol))
+        for i in range(0, self.ncol):
+            for j in range(0, self.ncol):
+                w_norms[i][j] = self.get_w_norm_at_pos(i,j)
+                #w_norms[j][i] = w_norms[i][j]
+        return w_norms
 
 
 
     def get_w_norm_at_pos(self, i, j):
-        if hasattr(self, 'w_norms'):
-            return self.w_norms[i][j]
-        else:
-            return math.sqrt(scalar_product(self.w[i][j],self.w[i][j]))
+        return math.sqrt(scalar_product(self.w[i][j],self.w[i][j]))
 
 
     def get_v_norms(self):
@@ -486,5 +479,3 @@ class Potts_Model:
                         zw[i,j,a,b] = w[i,j,a,b]-average_w_b[i,j,a]-average_w_a[i,j,b]+average_w[i,j]
                 #zw[j,i] = np.transpose(zw[i,j])
         return Potts_Model.from_parameters(zv, zw)
-
-

@@ -3,6 +3,7 @@ from comutils.global_variables import *
 from makepotts.rescaling import *
 import numpy as np
 import math
+import copy
 from numpy import linalg as LA
 
 
@@ -43,6 +44,13 @@ def get_edges_map(mrf, w_percent, w_norm_min, remove_w_where_conserved):
     if remove_w_where_conserved:
         set_edges_to_0_where_conserved_columns(mrf, edges_map)
     return edges_map
+
+
+def get_potts_model_without_unused_couplings(mrf, w_percent, w_norm_min, remove_w_where_conserved):
+    edge_map = get_edges_map(mrf, w_percent, w_norm_min, remove_w_where_conserved)
+    w = copy.deepcopy(mrf.w)
+    w[edge_map==0] = np.zeros_like(mrf.w[0,0])
+    return Potts_Model.from_parameters(mrf.v, w)
 
 
 def get_vi_vk_score(vi, vk, remove_v0=False, offset_v=0, v_score_function=scalar_product, rescale_removed_v0=False, **kwargs):

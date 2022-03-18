@@ -26,6 +26,7 @@ def main():
     parser.add_argument('-wn', '--w_norms_only', help="Only plot wij norms", action='store_true', default=False), 
     parser.add_argument('-ip', '--insertion_penalties_only', help="Only plot insertion penalties", action='store_true', default=False), 
     parser.add_argument('-alph', '--alphabetical', help="Use alphabetical amino acid order", action='store_true', default=False), 
+    parser.add_argument('--w_percent', help="%% couplings considered (wij with lowest norms are set to 0)", default=100, type=float)
     args = vars(parser.parse_args())
 
     if args["alphabetical"]:
@@ -58,6 +59,15 @@ def main():
         print("No PPalign parameters were provided, using default")
     potts_models = [get_rescaled_potts_model(pm, **params) for pm in potts_models]
 
+    if 'w_percent' not in params:
+        params['w_percent'] = args['w_percent']
+    if 'w_norm_min' not in params:
+        params['w_norm_min'] = 0
+    if 'remove_w_where_conserved' not in params:
+        params['remove_w_where_conserved'] = False
+
+    for i in range(len(potts_models)):
+        potts_models[i] = get_potts_model_without_unused_couplings(potts_models[i], params['w_percent'], params['w_norm_min'], params['remove_w_where_conserved'])
 
     if (args["i_index"] is not None) and (args["j_index"] is not None):
         for mrf in potts_models:
