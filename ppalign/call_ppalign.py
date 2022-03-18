@@ -15,6 +15,14 @@ INFINITY = 1000000000
 
 def align_two_potts_models(mrfs, output_folder, insert_costs=None, n_limit_param=INFINITY, iter_limit_param=1000, t_limit=36000, disp_level=1, epsilon_sim=0.005, w_percent=100, w_norm_min=0, remove_w_where_conserved=False, use_w=True, use_v=True, gamma=1.0, theta=0.9, stepsize_min=0.000000005, nb_non_increasing_steps_max=500, alpha_w=1, sim_min=-100, offset_v=0, remove_v0=False, insertion_penalties_coefficient=1, gap_open=8, gap_extend=0, free_end_gaps=False, ignore_gap_symbol=True, **kwargs):
 
+    if (ignore_gap_symbol):
+        for mrf in mrfs:
+            if mrf.w.shape[2]==21:
+                mrf.w[:,:,20,:]=0
+                mrf.w[:,:,:,20]=0
+            if mrf.v.shape[1]==21:
+                mrf.v[:,20]=0
+
     # handle output files and folder
     if not output_folder.is_dir():
         fm.create_folder(output_folder)

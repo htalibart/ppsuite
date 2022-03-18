@@ -44,6 +44,11 @@ def main():
         potts_objects.append(po)
         potts_models.append(po.potts_model)
 
+    if args["force_q_20"]:
+        for pm in potts_models:
+            pm.v = pm.v[:,:20]
+            pm.w = pm.w[:,:,:20,:20]
+
     if args["alignment_readme"] is not None:
         params = fm.get_parameters_from_readme_file(args["alignment_readme"])
     elif args["alignment_folder"] is not None:
@@ -63,11 +68,6 @@ def main():
     for i in range(len(potts_models)):
         potts_models[i] = get_potts_model_without_unused_couplings(potts_models[i], params['w_percent'], params['w_norm_min'], params['remove_w_where_conserved'])
 
-
-    if args["force_q_20"]:
-        for pm in potts_models:
-            pm.v = pm.v[:,:20]
-            pm.w = pm.w[:,:,:20,:20]
 
     if (args["i_index"] is not None) and (args["j_index"] is not None):
         for mrf in potts_models:
