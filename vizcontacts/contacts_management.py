@@ -93,6 +93,7 @@ def translate_dict_to_pdb_pos(couplings_dict, pdb_file, chain_id, real_sequence)
 
 def is_true_contact(pdb_sequence_coupling, pdb_file, chain_id, contact_distance=8):
     pdb_chain = fm.get_pdb_chain(pdb_file, chain_id)
+    assert(pdb_chain is not None)
     return aa_distance(pdb_sequence_coupling[0], pdb_sequence_coupling[1], pdb_chain) <= contact_distance
 
 
