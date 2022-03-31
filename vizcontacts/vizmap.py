@@ -31,6 +31,7 @@ def main(args=sys.argv[1:]):
     parser.add_argument('--pdb_file', help="PDB file", type=pathlib.Path, default=None)
     parser.add_argument('-i', '--pdb_id', help="PDB file", required=True)
     parser.add_argument('-cid', '--chain_id', help="PDB chain id", default='A')
+    parser.add_argument('--contact_distance', help="distance (in Angstrom) to define true contact", default=8)
 
     args = vars(parser.parse_args(args))
 
