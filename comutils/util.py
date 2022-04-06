@@ -173,37 +173,4 @@ def aa_3to1(aa_3):
     else:
         return 'X'
 
-def get_sequence_from_pdb_chain(pdb_chain):
-    #ppb = PPBuilder()
-    #pdb_sequence = ppb.build_peptides(pdb_chain)[0].get_sequence()
-    #return pdb_sequence
-    return "".join([aa_3to1(r.get_resname()) for r in pdb_chain.get_residues()])
-
-
-def get_sequence_from_pdb_file(pdb_file, chain_id):
-    return get_sequence_from_pdb_chain(get_pdb_chain(pdb_file, chain_id))
-#    records = list(SeqIO.parse(pdb_file, "pdb-atom"))
-#    records_for_chain = [record for record in records if record.annotations["chain"]==chain_id]
-#
-#    if len(records_for_chain)==0:
-#        raise Exception("no record for chain "+str(chain_id)+" in PDB file")
-#    if len(records_for_chain)>1:
-#        raise Exception("more than one record for chain "+str(chain_id)+" in PDB file")
-#
-#    return str(records_for_chain[0].seq)
-
-def get_pdb_chain(pdb_file, chain_id='A'):
-    pdbfile = str(pdb_file)
-    pdbid = pdbfile.split('/')[-1].split('.')[0]
-    if pdbfile.endswith(".pdb"):
-        structure = Bio.PDB.PDBParser().get_structure(pdbid, pdbfile)
-    elif pdbfile.endswith(".cif"):
-        structure = Bio.PDB.MMCIFParser().get_structure(pdbid, pdbfile)
-    else:
-        raise Exception("Unknown PDB file format")
-    model = structure[0]
-    chain = model[chain_id]
-    return chain
-
-
 

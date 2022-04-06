@@ -59,7 +59,7 @@ def get_contact_scores_for_sequence(potts_object):
 
 def get_pdb_offset(pdb_file, chain_id):
     """ returns the number at which numbering starts in PDB file """
-    pdb_chain = get_pdb_chain(pdb_file, chain_id)
+    pdb_chain = fm.get_pdb_chain(pdb_file, chain_id)
     r = next(pdb_chain.get_residues())
     offset = r.get_full_id()[3][1]-1
     return offset
@@ -67,9 +67,7 @@ def get_pdb_offset(pdb_file, chain_id):
 
 def get_real_pos_to_pdb_pos(pdb_file, chain_id, real_sequence):
     """ returns rtpdb where rtpdb[i] is the position in the PDB file for residue at position i in @real_sequence"""
-    pdb_sequence = get_sequence_from_pdb_file(pdb_file, chain_id)
-    print(real_sequence)
-    print(pdb_sequence)
+    pdb_sequence = fm.get_sequence_from_pdb_file(pdb_file, chain_id)
     d = get_pos_first_seq_to_second_seq(real_sequence, pdb_sequence) # d[pos_in_real_seq] = pos_in_pdb_seq
     pdb_offset = get_pdb_offset(pdb_file, chain_id)
     rtpdb = []
@@ -94,12 +92,16 @@ def translate_dict_to_pdb_pos(couplings_dict, pdb_file, chain_id, real_sequence)
 
 
 def is_true_contact(pdb_sequence_coupling, pdb_file, chain_id, contact_distance=8):
-    pdb_chain = get_pdb_chain(pdb_file, chain_id)
+    pdb_chain = fm.get_pdb_chain(pdb_file, chain_id)
     assert(pdb_chain is not None)
+    if (pdb_sequence_coupling[0] not in pdb_chain) or (pdb_sequence_coupling[1] not in pdb_chain):
+        raise Exception("position is not in pdb chain")
     return aa_distance(pdb_sequence_coupling[0], pdb_sequence_coupling[1], pdb_chain) <= contact_distance
 
 
 def aa_distance(pos1, pos2, pdb_chain):
+    if (pos1 not in pdb_chain) or (pos2 not in pdb_chain):
+        raise Exception("position is not in pdb chain")
     r1 = pdb_chain[pos1]
     r2 = pdb_chain[pos2]
     diff_vector = r1['CA'].coord - r2['CA'].coord
