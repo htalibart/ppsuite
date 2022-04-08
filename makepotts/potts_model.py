@@ -99,7 +99,7 @@ class Potts_Model:
 
 
     @classmethod
-    def from_training_set(cls, aln_file, binary_file, write_readme=True, readme_file=None, inference_method='CCMpredPy',  wt_cutoff=0.8, apply_zero_sum_gauge_if_mfdca=True, reg_lambda_w_mfdca=1, pc_tau_mfdca=0.5, shrinkage_coeff=0.5, mfdca_pc=False, **kwargs):
+    def from_training_set(cls, aln_file, binary_file, write_readme=True, readme_file=None, inference_method='CCMpredPy',  wt_cutoff=0.8, lattice=False, reg_lambda_w_mfdca=1, pc_tau_mfdca=0.5, shrinkage_coeff=0.5, mfdca_pc=False, **kwargs):
         """
             initialize Potts model from train MSA file
         """
@@ -142,7 +142,7 @@ class Potts_Model:
 
 
         elif inference_method=='mfDCA':
-            v, w = rmfdca_main.infer_parameters_for_msa(aln_file, reg_lambda_w=reg_lambda_w_mfdca, pc_tau=pc_tau_mfdca, shrinkage_coeff=shrinkage_coeff, lattice=not(apply_zero_sum_gauge_if_mfdca), mfdca_pc=mfdca_pc) 
+            v, w = rmfdca_main.infer_parameters_for_msa(aln_file, reg_lambda_w=reg_lambda_w_mfdca, pc_tau=pc_tau_mfdca, shrinkage_coeff=shrinkage_coeff, lattice=lattice, mfdca_pc=mfdca_pc) 
             mrf = cls.from_parameters(v, w)
             mrf.to_msgpack(binary_file)
             
