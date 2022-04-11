@@ -502,6 +502,7 @@ def main(args=sys.argv[1:]):
     mfdca_args.add_argument('--shrinkage_coeff', help="Shrinkage coefficient for rmfDCA.", type=float, default=0.5)
     mfdca_args.add_argument('--mfdca_pc', help="use original mfDCA pseudo-counts instead of CCMpredPy ones", action='store_true', default=False)
     mfdca_args.add_argument('--lattice', help="don't apply zero-sum gauge after inferring Potts model with mfDCA", action='store_true', default=False)
+    mfdca_args.add_argument('--fields_zero_sum', help="keep lattice gauge on couplings but apply zero-sum gauge on fields after inferring Potts model with mfDCA", action='store_true', default=False)
 
 
     # Potts model
