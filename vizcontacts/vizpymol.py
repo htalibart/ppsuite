@@ -3,8 +3,7 @@ import sys
 
 from comutils import files_management as fm
 from vizcontacts.contacts_management import *
-from comutils import files_management as fm
-from makepotts.potts_object import *
+from vizcontacts.pdb_utils import *
 
 import pymol
 
@@ -87,7 +86,7 @@ def show_coupling(fout, pdb_coupling, strength, color, chain_id='A'):
     pymol.cmd.label("coupling", 'resi')
 
 
-def show_n_couplings(fout, nb_couplings, pdb_seq_couplings_dict, pdb_file, chain_id='A', coupling_sep_min=2, thickness=1, colors={True: 'contact_coupling_color1', False: 'distant_coupling_color1'}, contact_distance=8):
+def show_n_couplings(fout, nb_couplings, pdb_seq_couplings_dict, pdb_chain, coupling_sep_min=2, thickness=1, colors={True: 'contact_coupling_color1', False: 'distant_coupling_color1'}, contact_distance=8):
     #pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
     n = 0
     for i, (c, score) in enumerate(pdb_seq_couplings_dict.items()):
@@ -95,7 +94,7 @@ def show_n_couplings(fout, nb_couplings, pdb_seq_couplings_dict, pdb_file, chain
             if abs(c[0]-c[1]) > coupling_sep_min:
                 strength = score*thickness
                 show_coupling(fout, c, strength,
-                              colors[is_true_contact(c, pdb_file, chain_id, contact_distance=contact_distance)], chain_id)
+                              colors[is_pdb_pair_contact(*c, pdb_chain, contact_threshold=contact_distance)])
                 n += 1
 
 
@@ -107,18 +106,15 @@ def show_predicted_contacts_with_pymol(fout, potts_folders, pdb_id=None, chain_i
 
     if (pdb_file is None) and (pdb_id is not None):
         name = str(potts_objects[0].folder)+'/'+pdb_id
-        pdb_file = fm.fetch_pdb_file(pdb_id, name)
-    #pdb_chain = fm.get_pdb_chain(pdb_id, pdb_file, chain_id)
+        pdb_file = fetch_pdb_file(pdb_id, name)
+    pdb_chain = get_pdb_chain(pdb_file, pdb_id, chain_id)
 
     pdb_couplings_dicts = []
     tops = []
     for potts_object in potts_objects:
-        couplings_dict = get_contact_scores_for_sequence(potts_object)
-        pdb_couplings_dict = translate_dict_to_pdb_pos(
-            couplings_dict, pdb_file, chain_id, potts_object.sequence)
+        pdb_couplings_dict = get_contact_scores_with_pdb_indexes(potts_object, pdb_chain)
         if auto_top:
-            cutindex = get_elbow_index(
-                pdb_couplings_dict, plot_elbow=debug_mode)
+            cutindex = get_elbow_index(pdb_couplings_dict, plot_elbow=debug_mode)
             pdb_couplings_dict = get_smaller_dict(pdb_couplings_dict, cutindex)
             nb_couplings = len(pdb_couplings_dict)
         if wij_cutoff:
@@ -127,8 +123,7 @@ def show_predicted_contacts_with_pymol(fout, potts_folders, pdb_id=None, chain_i
             nb_couplings = len(pdb_couplings_dict)
         else:
             nb_couplings = top
-        pdb_couplings_dict = remove_couplings_too_close(
-            pdb_couplings_dict, coupling_sep_min)
+        pdb_couplings_dict = remove_couplings_too_close(pdb_couplings_dict, coupling_sep_min)
         pdb_couplings_dicts.append(pdb_couplings_dict)
         tops.append(nb_couplings)
 
@@ -141,7 +136,7 @@ def show_predicted_contacts_with_pymol(fout, potts_folders, pdb_id=None, chain_i
             exclus_overlap[k] = get_normalized_ordered_dict(exclus_overlap[k])
 
     for d, colors in zip(exclus_overlap, [{True: 'contact_coupling_color1', False: 'distant_coupling_color1'}, {True: 'contact_coupling_color2', False: 'distant_coupling_color2'}, {True: 'contact_coupling_color3', False: 'distant_coupling_color3'}]):
-        show_n_couplings(fout, len(d), d, pdb_file, chain_id=chain_id,
+        show_n_couplings(fout, len(d), d, pdb_chain,
                          coupling_sep_min=coupling_sep_min, thickness=thickness, colors=colors, contact_distance=contact_distance)
 
 

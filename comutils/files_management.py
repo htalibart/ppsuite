@@ -1,11 +1,8 @@
 import os
-from urllib.request import urlopen
 import re
 import json
 import pandas as pd
-from Bio import SeqIO, AlignIO, Align, pairwise2
-import Bio.PDB
-from Bio.PDB.Polypeptide import PPBuilder
+from Bio import SeqIO, AlignIO, Align
 import ctypes
 import pathlib
 import shutil
@@ -167,53 +164,6 @@ def write_list_to_csv(l_, csv_file):
     with open(str(csv_file), 'w') as f:
         csvwriter = csv.writer(f)
         csvwriter.writerow(l)
-
-def fetch_pdb_file(pdb_id, outputfname):
-    try:
-        url = "https://files.rcsb.org/download/"+pdb_id+".pdb"
-        pdbfile = urlopen(url)
-        with open(outputfname+".pdb",'wb') as output:
-            output.write(pdbfile.read())
-        return outputfname+".pdb"
-    except Exception as e:
-        url = "https://files.rcsb.org/download/"+pdb_id+".cif"
-        ciffile = urlopen(url)
-        with open(outputfname+".cif", 'wb') as output:
-            output.write(ciffile.read())
-        return outputfname+".cif"
-
-def get_sequence_from_pdb_chain(pdb_chain):
-    ppb = PPBuilder()
-    pdb_sequence = ppb.build_peptides(pdb_chain)[0].get_sequence()
-    return pdb_sequence
-    #return "".join([aa_3to1(r.get_resname()) for r in pdb_chain.get_residues()])
-
-
-def get_sequence_from_pdb_file(pdb_file, chain_id):
-    #return get_sequence_from_pdb_chain(get_pdb_chain(pdb_file, chain_id))
-    records = list(SeqIO.parse(pdb_file, "pdb-atom"))
-    records_for_chain = [record for record in records if record.annotations["chain"]==chain_id]
-
-    if len(records_for_chain)==0:
-        raise Exception("no record for chain "+str(chain_id)+" in PDB file")
-    if len(records_for_chain)>1:
-        raise Exception("more than one record for chain "+str(chain_id)+" in PDB file")
-
-    return str(records_for_chain[0].seq)
-
-def get_pdb_chain(pdb_file, chain_id='A'):
-    pdbfile = str(pdb_file)
-    pdbid = pdbfile.split('/')[-1].split('.')[0]
-    if pdbfile.endswith(".pdb"):
-        structure = Bio.PDB.PDBParser(PERMISSIVE=True).get_structure(pdbid, pdbfile)
-    elif pdbfile.endswith(".cif"):
-        structure = Bio.PDB.MMCIFParser(PERMISSIVE=True).get_structure(pdbid, pdbfile)
-    else:
-        raise Exception("Unknown PDB file format")
-    model = structure[0]
-    chain = model[chain_id]
-    return chain
-
 
 
 def check_if_file_ok(f):

@@ -21,11 +21,6 @@ from rmfdca.io_functions import *
 from rmfdca.msa_statistics import *
 
 
-DICT_3_TO_1 = {'CYS': 'C', 'ASP': 'D', 'SER': 'S', 'GLN': 'Q', 'LYS': 'K',
-     'ILE': 'I', 'PRO': 'P', 'THR': 'T', 'PHE': 'F', 'ASN': 'N',
-     'GLY': 'G', 'HIS': 'H', 'LEU': 'L', 'ARG': 'R', 'TRP': 'W',
-     'ALA': 'A', 'VAL':'V', 'GLU': 'E', 'TYR': 'Y', 'MET': 'M'}
-
 def code(c):
     """ gives number code in [0,21] for letter @c"""
     return ALPHABET.find(c.upper())
@@ -166,11 +161,3 @@ def compute_v_with_blosum_pseudocounts_for_gaps(msa_file, freq_gap_min, pc_tau):
     fi = compute_single_frequencies(msa)
     fi_pc = apply_uniform_pseudocounts_on_single_frequencies(get_blosum_pseudocounts_for_gaps(fi, freq_gap_min), pc_tau)
     return f_to_v_star(fi_pc)
-
-def aa_3to1(aa_3):
-    if aa_3 in DICT_3_TO_1:
-        return DICT_3_TO_1[aa_3]
-    else:
-        return 'X'
-
-

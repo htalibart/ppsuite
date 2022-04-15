@@ -7,23 +7,13 @@ from kneebow.rotor import Rotor
 import matplotlib.pyplot as plt
 from makepotts.potts_object import *
 from comutils.util import *
+
+
 from vizcontacts import top_couplings
-
-
-def get_contact_scores_for_aln_train(potts_object):
-    """ returns an ordered dictionary of contact scores for positions in the train MSA """
-    pm = Potts_Model.from_msgpack(potts_object.potts_model_file)
-    pm.w = pm.w[:,:,:20,:20]
-    w_norms = pm.get_w_norms()
-    top_ind1, top_ind2 = top_couplings.get_top_pairs(w_norms, reverse_order=False)
-    contact_scores = OrderedDict()
-    for ind1, ind2 in zip(top_ind1, top_ind2):
-        contact_scores[(ind1, ind2)] = w_norms[ind1, ind2]
-    return contact_scores
+from vizcontacts.pdb_utils import *
 
 def get_contact_scores_for_aln_train_via_ccmpredpy(potts_object):
     """ returns an ordered dictionary of contact scores for positions in the train MSA by calling CCMpredPy (deprecated)"""
-
     # Get contact scores in a csv file
     mat_file = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
     apc_file = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names()))
@@ -47,75 +37,48 @@ def get_contact_scores_for_aln_train_via_ccmpredpy(potts_object):
     return interesting_contact_scores
 
 
-def get_contact_scores_for_sequence(potts_object):
-    """ returns an ordered dictionary of contact scores for positions in the original sequence """
-    aln_scores = get_contact_scores_for_aln_train(potts_object)
-    seq_contact_scores = OrderedDict()
-    for c in aln_scores:
-        c_seq = (potts_object.mrf_pos_to_seq_pos[c[0]], potts_object.mrf_pos_to_seq_pos[c[1]])
-        seq_contact_scores[c_seq] = aln_scores[c]
-    return seq_contact_scores
+def get_contact_scores_for_potts_model(pm):
+    """ returns an ordered dictionary of contact scores for positions in the train MSA """
+    pm.w = pm.w[:,:,:20,:20]
+    w_norms = pm.get_w_norms()
+    top_ind1, top_ind2 = top_couplings.get_top_pairs(w_norms, reverse_order=False)
+    contact_scores = OrderedDict()
+    for ind1, ind2 in zip(top_ind1, top_ind2):
+        contact_scores[(ind1, ind2)] = w_norms[ind1, ind2]
+    return contact_scores
 
 
-def get_pdb_offset(pdb_file, chain_id):
-    """ returns the number at which numbering starts in PDB file """
-    pdb_chain = fm.get_pdb_chain(pdb_file, chain_id)
-    r = next(pdb_chain.get_residues())
-    offset = r.get_full_id()[3][1]-1
-    return offset
 
 
-def get_real_pos_to_pdb_pos(pdb_file, chain_id, real_sequence):
-    """ returns rtpdb where rtpdb[i] is the position in the PDB file for residue at position i in @real_sequence"""
-    pdb_sequence = fm.get_sequence_from_pdb_file(pdb_file, chain_id)
-    d = get_pos_first_seq_to_second_seq(real_sequence, pdb_sequence) # d[pos_in_real_seq] = pos_in_pdb_seq
-    pdb_offset = get_pdb_offset(pdb_file, chain_id)
-    rtpdb = []
-    for pos in range(len(real_sequence)):
-        if d[pos] is None:
-            rtpdb.append(None)
-        else:
-            rtpdb.append(d[pos]+1+pdb_offset)
-    return rtpdb
+def get_contact_scores_with_pdb_indexes(potts_object, pdb_chain):
+    mrf_pos_to_pdb_pos = get_mrf_pos_to_pdb_chain_pos(potts_object.mrf_pos_to_seq_pos, potts_object.sequence, pdb_chain)
+    pm_scores = get_contact_scores_for_potts_model(potts_object.potts_model)
+    pdb_contact_scores = OrderedDict()
+    for c in pm_scores:
+        c_pdb = (mrf_pos_to_pdb_pos[c[0]], mrf_pos_to_pdb_pos[c[1]])
+        if (c_pdb[0] is not None) and (c_pdb[1] is not None):
+            pdb_contact_scores[c_pdb] = pm_scores[c]
+    return pdb_contact_scores
 
 
-def translate_dict_to_pdb_pos(couplings_dict, pdb_file, chain_id, real_sequence):
-    """ converts dictionary of coupled positions in real sequence to coupled positions in PDB """
-    d = get_real_pos_to_pdb_pos(pdb_file, chain_id, real_sequence)
-    pdb_couplings_dict = OrderedDict()
-    for c in couplings_dict:
-        if not None in c:
-            new_c = (d[c[0]], d[c[1]])
-            if not None in new_c:
-                pdb_couplings_dict[new_c] = couplings_dict[c]
-    return pdb_couplings_dict
+
+#def get_contact_scores_for_sequence(potts_object):
+#    """ returns an ordered dictionary of contact scores for positions in the original sequence """
+#    aln_scores = get_contact_scores_for_potts_modelpotts_object.potts_model)
+#    seq_contact_scores = OrderedDict()
+#    for c in aln_scores:
+#        c_seq = (potts_object.mrf_pos_to_seq_pos[c[0]], potts_object.mrf_pos_to_seq_pos[c[1]])
+#        seq_contact_scores[c_seq] = aln_scores[c]
+#    return seq_contact_scores
 
 
-def is_true_contact(pdb_sequence_coupling, pdb_file, chain_id, contact_distance=8):
-    pdb_chain = fm.get_pdb_chain(pdb_file, chain_id)
-    assert(pdb_chain is not None)
-    if (pdb_sequence_coupling[0] not in pdb_chain) or (pdb_sequence_coupling[1] not in pdb_chain):
-        raise Exception("position is not in pdb chain")
-    return aa_distance(pdb_sequence_coupling[0], pdb_sequence_coupling[1], pdb_chain) <= contact_distance
 
-
-def aa_distance(pos1, pos2, pdb_chain):
-    if (pos1 not in pdb_chain) or (pos2 not in pdb_chain):
-        raise Exception("position is not in pdb chain")
-    r1 = pdb_chain[pos1]
-    r2 = pdb_chain[pos2]
-    diff_vector = r1['CA'].coord - r2['CA'].coord
-    return np.sqrt(np.sum(diff_vector*diff_vector))
-
-
-def get_colored_true_false_dicts(couplings_dict, pdb_file, chain_id, real_sequence, colors={True:'blue', False:'red'}, contact_distance=8):
+def get_colored_true_false_dicts(pdb_couplings_dict, pdb_chain, real_sequence, colors={True:'blue', False:'red'}, contact_threshold=8):
     """ tf_d['blue'][c] is the strength of coupling c predicted as true contact and tf_d['red'][c] is the strength of coupling c not predicted as contact """
-    d = get_real_pos_to_pdb_pos(pdb_file, chain_id, real_sequence)
     tf_d = {colors[val]:OrderedDict() for val in colors}
-    for c in couplings_dict:
-        pdb_c = (d[c[0]], d[c[1]])
+    for pdb_c in pdb_couplings_dict:
         if not None in pdb_c:
-            tf_d[colors[is_true_contact(pdb_c, pdb_file, chain_id, contact_distance=contact_distance)]][c] = couplings_dict[c]
+            tf_d[colors[is_true_contact(pdb_c, pdb_chain, contact_threshold=contact_threshold)]][pdb_c] = pdb_couplings_dict[pdb_c]
     return tf_d
 
 def remove_couplings_too_close(couplings_dict, coupling_sep_min):
