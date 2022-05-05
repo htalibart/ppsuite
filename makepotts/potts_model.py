@@ -389,6 +389,7 @@ class Potts_Model:
 
     def insert_vi_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, v_fill):
         """ insert appropriate column of v_fill at each position in the sequence which is not in the Potts model """
+        q = self.v.shape[1]
         for pos_in_seq in range(sequence_length):
             if not pos_in_seq in mrf_pos_to_seq_pos:
                 v_i = v_fill[pos_in_seq].reshape((1,q))
