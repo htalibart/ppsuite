@@ -397,8 +397,8 @@ class Potts_Model:
 
     def insert_vi_star_gapped_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, msa_file_before_trim, nb_pc_for_v_star=1, wt_cutoff=0.8):
         """ insert v* column at each position in the sequence which is not in the Potts model """
-        v_star = compute_v_star(msa_file_before_trim, wt_cutoff, nb_pc_for_v_star)
         q = self.v.shape[1]
+        v_star = compute_v_star(msa_file_before_trim, wt_cutoff, nb_pc_for_v_star, q=q)
         if (q==21):
             v_star[:, 20]=0
         self.insert_vi_to_complete_mrf_pos(mrf_pos_to_seq_pos, sequence_length, v_star)
