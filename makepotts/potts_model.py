@@ -103,10 +103,12 @@ class Potts_Model:
         """
             initialize Potts model from train MSA file
         """
+
         fm.check_if_file_ok(aln_file)
 
         if inference_method=='CCMpredPy':
             call = "ccmpred "+str(aln_file)+ " -b "+str(binary_file)
+            call += " --wt-cutoff "+str(wt_cutoff)
             for key_arg in kwargs:
                 arg_ccm = key_arg.replace('_', '-')
                 if arg_ccm in POSSIBLE_CCMPRED_OPTIONS:
