@@ -40,7 +40,7 @@ def set_edges_to_0_where_conserved_columns(mrf, edges_map):
 def get_edges_map(mrf, w_percent, w_norm_min, remove_w_where_conserved):
     """ returns a 2D array where array[i][j] if edge (i,j) should be considered by PPalign and 0 otherwise when considering the first @w_percent % strongest couplings """
     w_threshold = max(get_w_threshold(mrf, w_percent), w_norm_min)
-    edges_map = 1*(mrf.get_w_norms()>w_threshold)
+    edges_map = 1*(mrf.get_w_norms()>=w_threshold)
     if remove_w_where_conserved:
         set_edges_to_0_where_conserved_columns(mrf, edges_map)
     return edges_map
