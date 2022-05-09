@@ -285,13 +285,7 @@ class Potts_Model:
 
 
     def get_w_norms(self):
-        w_norms = np.zeros((self.ncol, self.ncol))
-        for i in range(0, self.ncol):
-            for j in range(0, self.ncol):
-                w_norms[i][j] = self.get_w_norm_at_pos(i,j)
-                #w_norms[j][i] = w_norms[i][j]
-        return w_norms
-
+        return compute_w_norms(self.w)
 
 
     def get_w_norm_at_pos(self, i, j):

@@ -66,6 +66,19 @@ def scalar_product(v1, v2):
     return np.dot(v1.flatten(), v2.flatten())
 
 
+def compute_w_norms(w):
+    L = w.shape[0]
+    w_norms = np.zeros((L,L))
+    for i in range(0, L-1):
+        for j in range(i+1, L):
+            w_norms[i][j] = euclidean_norm(w[i,j])
+            w_norms[j][i] = w_norms[i][j]
+    return w_norms
+
+
+
+
+
 def sign_ind(x):
     """ returns 1 if @x>=0, -1 otherwise """
     return 2*(x>=0)-1
