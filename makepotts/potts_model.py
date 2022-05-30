@@ -144,7 +144,7 @@ class Potts_Model:
 
 
         elif inference_method=='mfDCA':
-            v, w = infer_parameters_for_msa(aln_file, pc_tau=pc_tau, shrinkage_coeff=shrinkage_coeff, alphabet=ALPHABET, lattice=lattice, mfdca_pc=mfdca_pc, apply_threshold=apply_covariance_matrix_threshold_mfdca)
+            v, w = rmfdca_main.infer_parameters_for_msa(aln_file, pc_tau=pc_tau_mfdca, shrinkage_coeff=shrinkage_coeff, alphabet=ALPHABET, lattice=lattice, mfdca_pc=mfdca_pc, apply_threshold=apply_covariance_matrix_threshold_mfdca)
             mrf = cls.from_parameters(v, w)
             mrf.to_msgpack(binary_file)
             
