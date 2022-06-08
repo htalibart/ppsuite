@@ -197,7 +197,7 @@ class Potts_Object:
 
 
     @classmethod
-    def from_aln_file(cls, potts_folder, aln_file, sequence_file=None, trim_alignment=False, trimal_gt=0.8, trimal_cons=0, min_nb_sequences=1, max_potts_model_length=250, pc_single_count=1, aln_with_insertions=None, infer_potts_model=True, potts_model_file=None, **kwargs):
+    def from_aln_file(cls, potts_folder, aln_file, sequence_file=None, trim_alignment=False, trimal_gt=0.8, min_nb_sequences=1, max_potts_model_length=250, pc_single_count=1, aln_with_insertions=None, infer_potts_model=True, potts_model_file=None, **kwargs):
 
         aln_train = aln_file
 
@@ -205,7 +205,7 @@ class Potts_Object:
         if trim_alignment:
             colnumbering_file = potts_folder/"colnumbering.csv"
             trimmed_aln = potts_folder/("trim.fasta")
-            call_trimal(aln_train, trimmed_aln, trimal_gt, trimal_cons, colnumbering_file)
+            call_trimal(aln_train, trimmed_aln, trimal_gt, colnumbering_file)
             aln_train = trimmed_aln
             mrf_pos_to_aln_pos = fm.get_trimal_ncol(colnumbering_file)
         else:
@@ -474,7 +474,6 @@ def main(args=sys.argv[1:]):
     aln_processing_args.add_argument('-evcut', '--use_evalue_cutoff', help="Stop taking sequences in the alignment when we reach the elbow of the E-value curve (default : False)", action='store_true', default=False)
     aln_processing_args.add_argument('-notrim', '--dont_trim_alignment', help="Don't trim alignment using trimal (default = do)", action='store_true', default=False)
     aln_processing_args.add_argument('--trimal_gt', help="trimal -gt parameter (default : 0.8)", type=float, default=0.8)
-    aln_processing_args.add_argument('--trimal_cons', help="trimal -cons parameter (default : 0)", type=float, default=0)
     aln_processing_args.add_argument('--keep_tmp_files', help="keep temporary files (filtered alignments etc.) (default : false)", action='store_true', default=False)
     aln_processing_args.add_argument('--light', help="keep only Potts model, original sequence and csv files to map positions (default : false)", action='store_true', default=False)
 

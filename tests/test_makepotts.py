@@ -29,7 +29,7 @@ class Test_MakePotts(unittest.TestCase):
     def test_pos_trim_aln(self):
        aln_file = pathlib.Path(LARGER_SMALL_ALN_1CC8)
        aln_file_trim_80 = pathlib.Path(LARGER_SMALL_ALN_1CC8_TRIM_80)
-       cf = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, trim_alignment=True, trimal_gt=0.8, trimal_cons=0)
+       cf = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, trim_alignment=True, trimal_gt=0.8)
        assert(cf.potts_model.ncol==fm.get_nb_columns_in_alignment(aln_file_trim_80))
        assert(len(cf.mrf_pos_to_aln_pos)==fm.get_nb_columns_in_alignment(aln_file_trim_80))
        assert(len(cf.mrf_pos_to_seq_pos)==fm.get_nb_columns_in_alignment(aln_file_trim_80))
@@ -37,7 +37,7 @@ class Test_MakePotts(unittest.TestCase):
     def test_correctly_trimmed(self):
        aln_file = pathlib.Path(LARGER_SMALL_ALN_1CC8)
        seq_file = pathlib.Path(SEQ_1CC8)
-       cf = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, trim_alignment=True, trimal_gt=0.8, trimal_cons=0, sequence_file=seq_file)
+       cf = Potts_Object.from_aln_file(self.potts_folder, aln_file=aln_file, trim_alignment=True, trimal_gt=0.8, sequence_file=seq_file)
        sequence = fm.get_first_sequence_in_fasta_file(seq_file)
        sequence_mrf = ''.join(sequence[ind] for ind in cf.mrf_pos_to_seq_pos)
        aln_file_trim_80 = pathlib.Path(LARGER_SMALL_ALN_1CC8_TRIM_80)

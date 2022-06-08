@@ -211,12 +211,12 @@ def lower_case_trimmed_columns(aln_with_insertions, output_file, list_of_columns
     SeqIO.write(output_records, str(output_file), 'fasta')
 
 
-def ins_file_to_trimmed_ins_file(ins_file, output_file, trimal_gt, trimal_cons=0):
+def ins_file_to_trimmed_ins_file(ins_file, output_file, trimal_gt):
     reformat_file = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names())) 
     call_reformat(ins_file, reformat_file)
     trimmed_fasta = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names())) 
     colnum_file = pathlib.Path('/tmp/'+next(tempfile._get_candidate_names())) 
-    call_trimal(reformat_file, trimmed_fasta, trimal_gt, trimal_cons, colnumbering_file=colnum_file)
+    call_trimal(reformat_file, trimmed_fasta, trimal_gt, colnumbering_file=colnum_file)
     list_of_columns_not_trimmed = fm.get_trimal_ncol(colnum_file)
     lower_case_trimmed_columns(ins_file, output_file, list_of_columns_not_trimmed, fileformat='fasta')
     reformat_file.unlink()
