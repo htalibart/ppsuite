@@ -16,7 +16,6 @@ from comutils import files_management as fm
 from comutils import pseudocounts
 from comutils.adabmdca_to_ccmpredpy import *
 
-from rmfdca import __main__ as rmfdca_main
 
 POSSIBLE_CCMPRED_OPTIONS = ["wt-simple", "wt-simple", "wt-uniform", "wt-cutoff", "reg-lambda-single", "reg-lambda-pair-factor", "reg-L2", "reg-noscaling", "reg-scale-by-L", "v-center", "v-zero", "max-gap-pos", "max-gap_seq", "pc-uniform", "pc-submat", "pc-constant", "pc-none", "pc-single-count", "pc-pair-count", "maxit", "ofn-pll", "ofn-cd", "pc-pair-submat", "persistent", "no-decay", "nr-markov-chains"]
 
@@ -144,6 +143,7 @@ class Potts_Model:
 
 
         elif inference_method=='mfDCA':
+            from rmfdca import __main__ as rmfdca_main
             v, w = rmfdca_main.infer_parameters_for_msa(aln_file, pc_tau=pc_tau_mfdca, shrinkage_coeff=shrinkage_coeff, alphabet=ALPHABET, mfdca_pc=mfdca_pc, apply_threshold=apply_covariance_matrix_threshold_mfdca)
             mrf = cls.from_parameters(v, w)
             mrf.to_msgpack(binary_file)
@@ -399,12 +399,6 @@ class Potts_Model:
         if (q==21):
             v_star[:, 20]=0
         self.insert_vi_to_complete_mrf_pos(mrf_pos_to_seq_pos, sequence_length, v_star)
-
-
-    def insert_vi_with_blosum_pseudocounts_to_complete_mrf_pos(self, mrf_pos_to_seq_pos, sequence_length, msa_file_before_trim, freq_gap_min, pc_tau):
-        v_fill = compute_v_with_blosum_pseudocounts_for_gaps(msa_file_before_trim, freq_gap_min, pc_tau)
-        self.insert_vi_to_complete_mrf_pos(mrf_pos_to_seq_pos, sequence_length, v_fill)
-
 
 
     def change_gauge_l2_zero_to_l2_center(self, v_star, reg_lambda_single=None, reg_lambda_pair_factor=None):

@@ -54,11 +54,5 @@ class Test_Util(unittest.TestCase):
         assert(pm.ncol==60)
 
 
-    def test_compute_v_with_blosum_pseudocounts_for_gaps(self):
-        freq_gap_min = 0.2
-        pc_tau = 0.5
-        v = compute_v_with_blosum_pseudocounts_for_gaps(ALN_1CC8, freq_gap_min, pc_tau)
-        assert(np.allclose(v.sum(axis=1), np.zeros_like(v.sum(axis=1))))
-
 if __name__=='__main__':
     unittest.main()

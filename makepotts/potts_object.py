@@ -254,21 +254,19 @@ class Potts_Object:
 
 
     @classmethod
-    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_blosum_pc_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, use_insertion_penalties=False, keep_tmp_files=False, pc_insertions_tau=0, light=False, freq_gap_min=0.25, pc_tau=0.5, mfdca_pc=False, **kwargs):
+    def from_potts_model(cls, potts_folder, potts_model_file, v_rescaling_function="identity", w_rescaling_function="identity", sequence_file=None, aln_train=None, aln_before_trim=None, aln_with_insertions=None, mrf_pos_to_aln_pos=None, aln_pos_to_seq_pos=None, mrf_pos_to_seq_pos=None, insert_null_at_trimmed=False, insert_v_star_at_trimmed=False, v_null_is_v0=True, use_insertion_penalties=False, keep_tmp_files=False, pc_insertions_tau=0, light=False, freq_gap_min=0.25, pc_tau=0.5, mfdca_pc=False, **kwargs):
 
         if potts_model_file is not None:
             potts_model = Potts_Model.from_msgpack(potts_model_file)
 
             q = potts_model.v.shape[1]
 
-            if ((insert_null_at_trimmed) or (insert_v_star_at_trimmed) or (insert_v_blosum_pc_at_trimmed)): # RE-INSERT NULL COLUMNS
+            if ((insert_null_at_trimmed) or (insert_v_star_at_trimmed)): # RE-INSERT NULL COLUMNS
                 if aln_before_trim is None:
                     raise Exception("MSA before trim should be provided")
                 if mrf_pos_to_aln_pos is None:
                     raise Exception("mrf_pos_to_aln_pos is None")
-                if (insert_v_blosum_pc_at_trimmed):
-                    potts_model.insert_vi_with_blosum_pseudocounts_to_complete_mrf_pos(mrf_pos_to_seq_pos, fm.get_nb_columns_in_alignment(aln_before_trim), aln_before_trim, freq_gap_min, pc_tau)
-                elif (insert_v_star_at_trimmed):
+                if (insert_v_star_at_trimmed):
                     potts_model.insert_vi_star_gapped_to_complete_mrf_pos(mrf_pos_to_aln_pos, fm.get_nb_columns_in_alignment(aln_before_trim), aln_before_trim)
                 elif (insert_null_at_trimmed):
                     if v_null_is_v0:
@@ -447,7 +445,7 @@ def main(args=sys.argv[1:]):
 
     # files
     file_args = parser.add_argument_group('file_args')
-    file_args.add_argument('-pf', '--potts_folder', help="Output feature folder", type=pathlib.Path, default=None)
+    file_args.add_argument('-pf', '-f', '--potts_folder', help="Output feature folder", type=pathlib.Path, default=None)
     file_args.add_argument('-aln', '--aln_file', help="Alignment file", type=pathlib.Path)
     file_args.add_argument('-alni', '--aln_with_insertions', help="Alignment file with insertions as lower letters", type=pathlib.Path)
     file_args.add_argument('-ualn', '--unaligned_fasta', help="Unaligned sequences in fasta format", type=pathlib.Path)
@@ -458,8 +456,8 @@ def main(args=sys.argv[1:]):
     # hhblits
     hhblits_args = parser.add_argument_group('hhblits_args')
     hhblits_args.add_argument('--hhfilter_threshold', help="HHfilter threshold (default : 80)", type=float, default=80)
-    hhblits_args.add_argument('-hhblits', '--call_hhblits', help="Fetch sequences with HHblits", action='store_true', default=False)
-    hhblits_args.add_argument('-hd', '--hhblits_database', help="Database path for HHblits call", default=None)
+    hhblits_args.add_argument('-hhblits', '-fetch', '--call_hhblits', help="Fetch sequences with HHblits", action='store_true', default=False)
+    hhblits_args.add_argument('-hd', '-d', '--hhblits_database', help="Database path for HHblits call", default=None)
     
     # BLAST
     #parser.add_argument('--nb_sequences_blast', help="Nb sequences fetched by BLAST (default : 100000)", type=int, default=100000)
@@ -474,6 +472,7 @@ def main(args=sys.argv[1:]):
     aln_processing_args.add_argument('-evcut', '--use_evalue_cutoff', help="Stop taking sequences in the alignment when we reach the elbow of the E-value curve (default : False)", action='store_true', default=False)
     aln_processing_args.add_argument('-notrim', '--dont_trim_alignment', help="Don't trim alignment using trimal (default = do)", action='store_true', default=False)
     aln_processing_args.add_argument('--trimal_gt', help="trimal -gt parameter (default : 0.8)", type=float, default=0.8)
+    #aln_processing_args.add_argument('--max_gap_w', help="Columns with more than max_gap_w fraction of gaps will not be considered in coupling inference, their wij will be set to 0 and their vi will be computed as if they were fields of an independent model", type=float, default=0.5)
     aln_processing_args.add_argument('--keep_tmp_files', help="keep temporary files (filtered alignments etc.) (default : false)", action='store_true', default=False)
     aln_processing_args.add_argument('--light', help="keep only Potts model, original sequence and csv files to map positions (default : false)", action='store_true', default=False)
 
@@ -521,7 +520,6 @@ def main(args=sys.argv[1:]):
     post_inference_args.add_argument('-nw', '--dont_use_w', help="Speed up computations if we are not interested in w parameters (not recommended)", action='store_true', default=False)
     post_inference_args.add_argument('--insert_null_at_trimmed', help="Insert background parameters at positions trimmed by trimal", action='store_true', default=False)
     post_inference_args.add_argument('--insert_v_star_at_trimmed', help="Insert v parameters at positions trimmed by trimal (computed from frequencies)", action='store_true', default=False)
-    post_inference_args.add_argument('--insert_v_blosum_pc_at_trimmed', help="Insert v parameters computed with BLOSUM pseudo-counts for each gap symbol at positions trimmed by trimal, keeping freq_gap_min gaps", action='store_true', default=False)
     post_inference_args.add_argument('--freq_gap_min', help="Minimum gap frequency kept when applying insertion of columns with BLOSUM pseudocounts to replace gap symbols", type=float, default=0.25)
 
 

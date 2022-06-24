@@ -17,10 +17,6 @@ import ccmpred.io
 import ccmpred.counts
 
 
-from rmfdca.io_functions import *
-from rmfdca.msa_statistics import *
-
-
 def code(c):
     """ gives number code in [0,21] for letter @c"""
     return ALPHABET.find(c.upper())
@@ -167,10 +163,3 @@ def compute_v_star(msa_file, wt_cutoff, pc_single_count, q=21):
     lsingle_freqs = np.log(single_freqs)
     v_star = lsingle_freqs - np.mean(lsingle_freqs[:,:q], axis=1)[:, np.newaxis]
     return v_star[:,:q]
-
-
-def compute_v_with_blosum_pseudocounts_for_gaps(msa_file, freq_gap_min, pc_tau):
-    msa = get_int_msa_array(msa_file) 
-    fi = compute_single_frequencies(msa)
-    fi_pc = apply_uniform_pseudocounts_on_single_frequencies(get_blosum_pseudocounts_for_gaps(fi, freq_gap_min), pc_tau)
-    return f_to_v_star(fi_pc)
