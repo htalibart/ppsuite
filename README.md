@@ -1,10 +1,8 @@
-# IMPORTANT NOTICE
+# Notice
 
 This GitHub repository contains the "research" version of PPSuite, with a lot of dependencies, functions and options that were tested during our research. Most of them are never used in practice, it's not exactly user-friendly, and it is not optimized in terms of computation time.
 
-We are currently working on a lighter, faster, friendlier version, that will be available very soon (by the end of August 2022) at this address: https://github.com/htalibart/ppsuite_light where Potts models will be inferred with our own implementation of mfDCA.
-
-(We're just waiting for the results of an experiment to make sure that this new version provides better alignments than the old one, and to make sure that default hyperparameters provide the best alignments.)
+We are currently working on the next version, which will be lighter and include our own method for DCA model inference!
 
 
 
